@@ -1,7 +1,3 @@
-import sys
-sys.path.append("/path/to/vunit_repo_root/")
-
-
 from pathlib import Path
 from vunit import VUnit
 
