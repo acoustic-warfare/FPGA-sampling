@@ -1,4 +1,4 @@
-venv
 .Xil
-vunit_out
 ethernet_test
+venv
+vunit_out
