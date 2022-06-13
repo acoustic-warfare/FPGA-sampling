@@ -1,5 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+library vunit_lib;
+context vunit_lib.vunit_context;
 
 use std.textio.all;
 
@@ -7,10 +9,14 @@ library vunit_lib;
 context vunit_lib.vunit_context;
 
 entity tb_fifo_test is
+<<<<<<< HEAD
 
     generic (
     runner_cfg : string;
     message : string);
+=======
+    generic (runner_cfg : string);
+>>>>>>> 628820ac41f24680ae1bab21414a67fb72984ef8
 
 --    port(
 --    data_in : in std_logic;
