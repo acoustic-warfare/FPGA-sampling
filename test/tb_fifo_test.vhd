@@ -71,6 +71,7 @@ begin
     
                     rst <= '0', '1' after 195 ns, '0' after 200 ns;
 
+                    wait for 400 ns; -- hur länge testet ska köra
 
                 elsif run("Test_2") then
                     --assert message = "set-for-test";
@@ -79,14 +80,12 @@ begin
                         
 
                 end if;
-                wait for 1 ms;
               end loop;
 
             test_runner_cleanup(runner);
-            wait for 20 ns;
     end process;
     
-    test_runner_watchdog(runner, 10 ms);
+    test_runner_watchdog(runner, 100 ms);
 end architecture;
 
 
