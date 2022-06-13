@@ -3,6 +3,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
+library vunit_lib;
+context vunit_lib.vunit_context;
+
 entity tb_fifo_test is
     generic (runner_cfg : string);
 
