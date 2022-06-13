@@ -26,6 +26,8 @@ end fifo_test;
 
 -- test tillbaka
 
+-- jacob oush test
+
 architecture Behavioral of fifo_test is
 
     -- 8 platser (7 downto 0)
