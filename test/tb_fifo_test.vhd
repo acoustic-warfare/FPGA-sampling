@@ -7,13 +7,10 @@ library vunit_lib;
 context vunit_lib.vunit_context;
 
 entity tb_fifo_test is
-
     generic (
-    runner_cfg : string);
-
+        runner_cfg : string
+    );
 end tb_fifo_test ;
-
-
 
 
 architecture tb of tb_fifo_test  is
@@ -55,7 +52,7 @@ begin
     );
     
 
-    clk   <= NOT clk after T / 2;
+    clk <= NOT clk after T / 2;
 
     main : process
         begin
@@ -64,8 +61,8 @@ begin
            
             while test_suite loop
                 if run("Test 1") then
-                  --assert message = "set-for-entity";
-                  --dump_generics;
+                    --assert message = "set-for-entity";
+                    --dump_generics;
 
                     data_in <= '1';
                     write_enable <= '0', '1' after 20 ns, '0' after 40 ns, '1' after 60 ns;
@@ -76,8 +73,8 @@ begin
 
 
                 elsif run("Test 2") then
-                  --assert message = "set-for-test";
-                  --dump_generics;
+                    --assert message = "set-for-test";
+                    --dump_generics;
                     assert 1 = 1;
                         
 
@@ -98,7 +95,7 @@ end architecture;
         
 --begin
 
-  --  clock : process 
+  --clock : process 
     --begin
         --clk <= '0';
         --wait for T/2;
@@ -107,31 +104,3 @@ end architecture;
         --nr_clk <= nr_clk + 1;
     --end process;
 
-    
-
-
-
-    --namn: fifo_test port map(
-    --data_in => data_in,
-    --clk => clk,
-    --rst => rst,
-    --data_out => data_out,
-    --write_enable => write_enable,
-    --read_enable => read_enable
-    --);
-    
-    
-    
-    
-    --data_in <= '1';
-    --write_enable <= '0', '1' after 20 ns, '0' after 40 ns, '1' after 60 ns;
-    
-    --read_enable <= '0', '1' after 60 ns, '0' after 80 ns;
-    
-    --rst <= '0', '1' after 195 ns, '0' after 200 ns;
-    
-    --test_runner_cleanup(runner);
-    --wait;
-
-    --end process;
---end a;

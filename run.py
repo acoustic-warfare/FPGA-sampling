@@ -7,5 +7,4 @@ lib = vu.add_library("lib")   # create library lib
 
 lib.add_source_files("*/*.vhd")
 
-
 vu.main()
