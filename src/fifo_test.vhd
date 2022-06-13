@@ -18,8 +18,7 @@ entity fifo_test is
            
            write_enable : in std_logic;
            read_enable : in std_logic
-           
-           );
+    );
 end fifo_test;
 
 architecture Behavioral of fifo_test is
@@ -35,22 +34,18 @@ architecture Behavioral of fifo_test is
 begin
 
 process(clk,rst)
-
-
-
-
 begin
 
-if(rst = '1') then
+    if(rst = '1') then
 
-    data_out <= '0';
-    empty <= '1';
-    full <= '0';
-    read_point <= 0;
-    write_point <= 0;
-    size <= 0;
+        data_out <= '0';
+        empty <= '1';
+        full <= '0';
+        read_point <= 0;
+        write_point <= 0;
+        size <= 0;
 
-elsif(rising_edge(clk)) then
+    elsif(rising_edge(clk)) then
         
         if(size = 0) then 
             empty <= '1';
@@ -87,8 +82,7 @@ elsif(rising_edge(clk)) then
         if(write_point = 7) then
             write_point <= 0;
         end if;
-    
-end if;
+    end if;
 end process;
 
 end Behavioral;
