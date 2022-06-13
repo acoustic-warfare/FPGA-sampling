@@ -60,7 +60,7 @@ begin
 
            
             while test_suite loop
-                if run("Test 1") then
+                if run("Test_1") then
                     --assert message = "set-for-entity";
                     --dump_generics;
 
@@ -72,13 +72,14 @@ begin
                     rst <= '0', '1' after 195 ns, '0' after 200 ns;
 
 
-                elsif run("Test 2") then
+                elsif run("Test_2") then
                     --assert message = "set-for-test";
                     --dump_generics;
                     assert 1 = 1;
                         
 
                 end if;
+                wait for 1 ms;
               end loop;
 
             test_runner_cleanup(runner);
