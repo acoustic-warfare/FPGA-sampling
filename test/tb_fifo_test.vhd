@@ -1,6 +1,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
+library vunit_lib;
+context vunit_lib.vunit_context;
+
 entity tb_fifo_test is
 --    port(
 --    data_in : in std_logic;
