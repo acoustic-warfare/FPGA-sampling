@@ -1,8 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
-use std.textio.all;
-
 library vunit_lib;
 context vunit_lib.vunit_context;
 
@@ -14,35 +12,31 @@ end tb_fifo_test ;
 
 
 architecture tb of tb_fifo_test  is
-    constant T : time := 20 ns;
-    signal nr_clk : integer;
+    constant clk_cykle : time := 20 ns;
+    signal nr_clk : integer; --används inte än
 
     component fifo_test
         port(
         data_in : in STD_LOGIC;
         data_out : out STD_LOGIC;
-        clk : in STD_LOGIC := '0';
-        rst : in std_logic := '0'; --reset om 1 (asynkron)
-        write_enable : in std_logic;
-        read_enable : in std_logic
+        clk : in STD_LOGIC;
+        rst : in STD_LOGIC; --reset om 1 (asynkron)
+        write_enable : in STD_LOGIC;
+        read_enable : in STD_LOGIC
        );
     end component;
     
-    
-    signal clk : std_logic := '0';
-    signal data_in : std_logic;
-    signal rst : std_logic := '0';
-    signal data_out : std_logic;
-    signal write_enable : std_logic;
-    signal read_enable : std_logic;
-    
+    signal clk : STD_LOGIC := '0';
+    signal data_in : STD_LOGIC;
+    signal rst : STD_LOGIC := '0';
+    signal data_out : STD_LOGIC;
+    signal write_enable : STD_LOGIC;
+    signal read_enable : STD_LOGIC;
     signal v : std_logic_vector(9 downto 0) := "1011011100"; --test number sequense 
-
-    
 
 begin 
 
-    namn: fifo_test port map(
+    namn : fifo_test port map(
     data_in => data_in,
     clk => clk,
     rst => rst,
@@ -51,49 +45,43 @@ begin
     read_enable => read_enable
     );
     
+    clk <= NOT clk after clk_cykle / 2;
 
-    clk <= NOT clk after T / 2;
-
-    main : process
-        begin
-            test_runner_setup(runner, runner_cfg);
+    main : process 
+    begin
+        test_runner_setup(runner, runner_cfg);
 
            
-            while test_suite loop
-                if run("Test_1") then
-                    --assert message = "set-for-entity";
-                    --dump_generics;
+        while test_suite loop
+            if run("Test_1") then
+                --assert message = "set-for-entity";
+                --dump_generics;
 
-                    data_in <= '1';
-                    write_enable <= '0', '1' after 20 ns, '0' after 40 ns, '1' after 60 ns;
+                data_in <= '1';
+                write_enable <= '0', '1' after 20 ns, '0' after 40 ns, '1' after 60 ns;
+
+                read_enable <= '0', '1' after 60 ns, '0' after 80 ns;
     
-                    read_enable <= '0', '1' after 60 ns, '0' after 80 ns;
-    
-                    rst <= '0', '1' after 195 ns, '0' after 200 ns;
+                rst <= '0', '1' after 195 ns, '0' after 200 ns;
 
-                    wait for 400 ns; -- hur länge testet ska köra
+                wait for 400 ns; -- hur länge testet ska köra
 
-                elsif run("Test_2") then
-                    --assert message = "set-for-test";
-                    --dump_generics;
-                    assert 1 = 1;
+            elsif run("Test_2") then
+                --assert message = "set-for-test";
+                --dump_generics;
+                assert 1 = 1;
                         
 
-                end if;
-              end loop;
+            end if;
+        end loop;
 
-            test_runner_cleanup(runner);
+    test_runner_cleanup(runner);
     end process;
     
-    test_runner_watchdog(runner, 100 ms);
+test_runner_watchdog(runner, 100 ms);
 end architecture;
 
 
-
-
-
-        
---begin
 
   --clock : process 
     --begin
