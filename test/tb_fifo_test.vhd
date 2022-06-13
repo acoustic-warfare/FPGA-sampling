@@ -12,7 +12,7 @@ end tb_fifo_test ;
 
 
 architecture tb of tb_fifo_test  is
-    constant clk_cykle : time := 20 ns;
+    constant clk_cykle : time := 10 ns;
     signal nr_clk : integer; --används inte än
 
     component fifo_test
@@ -54,17 +54,19 @@ begin
            
         while test_suite loop
             if run("Test_1") then
-                --assert message = "set-for-entity";
-                --dump_generics;
+
+                -- Test_1 provar att fylla fifot med 1or (fler än som får plats)
 
                 data_in <= '1';
-                write_enable <= '0', '1' after 20 ns, '0' after 40 ns, '1' after 60 ns;
+                write_enable <= '0', '1' after 20 ns, '0' after 100 ns; --fyller registret med 1or
 
-                read_enable <= '0', '1' after 60 ns, '0' after 80 ns;
+                read_enable <= '0', '1' after 120 ns, '0' after 150 ns; -- läser ut 3st
     
-                rst <= '0', '1' after 195 ns, '0' after 200 ns;
+                rst <= '0', '1' after 195 ns, '0' after 200 ns; --resetar asynkront 
 
-                wait for 400 ns; -- hur länge testet ska köra
+                wait for 300 ns; -- hur länge testet ska köra
+
+                --check(size = '0', "Expected active read enable at this point");
 
             elsif run("Test_2") then
                 --assert message = "set-for-test";
