@@ -22,6 +22,8 @@ entity fifo_test is
            );
 end fifo_test;
 
+-- hello test
+
 architecture Behavioral of fifo_test is
 
     -- 8 platser (7 downto 0)
