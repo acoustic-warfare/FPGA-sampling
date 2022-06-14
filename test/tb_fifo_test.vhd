@@ -58,22 +58,42 @@ begin
                 -- Test_1 provar att fylla fifot med 1or (fler än som får plats)
 
                 data_in <= '1';
-                write_enable <= '0', '1' after 20 ns, '0' after 100 ns; --fyller registret med 1or
+                write_enable <= '0', '1' after 20 ns, '0' after 100 ns; --fyller registret fullt med 1or
 
                 read_enable <= '0', '1' after 120 ns, '0' after 150 ns; -- läser ut 3st
     
-                rst <= '0', '1' after 195 ns, '0' after 200 ns; --resetar asynkront 
+                rst <= '0', '1' after 195 ns, '0' after 200 ns; --resetar asynkront  
 
                 wait for 300 ns; -- hur länge testet ska köra
 
                 --check(size = '0', "Expected active read enable at this point");
+                -- fråga Rasmus om vi kan kolla size på något bra sätt här?
 
             elsif run("Test_2") then
                 --assert message = "set-for-test";
                 --dump_generics;
-                assert 1 = 1;
-                        
 
+                data_in <= '1';
+
+                if(1 = 0) then
+                    assert false report "demo error 1" severity warning;
+                end if;
+
+                assert (1=0)
+                    report "demo error 2"
+                    severity note;
+        
+
+                --assert 1 = 1;
+                --assert 1 = 1;
+                
+                
+
+                wait for 10 ns;
+                check(data_in = '1', "1 test med flera checks");
+                check(1 = 1, "2 test med flera checks");
+                check(1 = 0, "3 test med flera checks");
+                
             end if;
         end loop;
 
