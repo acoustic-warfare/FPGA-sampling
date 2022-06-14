@@ -10,10 +10,12 @@ entity tb_fifo_test is
     );
 end tb_fifo_test ;
 
+--TEST GITHUB Branch
+
 
 architecture tb of tb_fifo_test  is
     constant clk_cykle : time := 10 ns;
-    signal nr_clk : integer; --används inte än
+    signal nr_clk : integer := 0; --används inte än
 
     component fifo_test
         port(
@@ -75,25 +77,21 @@ begin
 
                 data_in <= '1';
 
-                if(1 = 0) then
-                    assert false report "demo error 1" severity warning;
-                end if;
+                wait for 10 ns; --total tid för test 2
 
-                assert (1=0)
+                assert (data_in = '0')
+                    report "demo error 1"
+                    severity warning;
+
+                assert (1 = 0)
                     report "demo error 2"
-                    severity note;
-        
-
-                --assert 1 = 1;
-                --assert 1 = 1;
-                
+                    severity warning;
                 
 
-                wait for 10 ns;
-                check(data_in = '1', "1 test med flera checks");
-                check(1 = 1, "2 test med flera checks");
-                check(1 = 0, "3 test med flera checks");
-                
+                check(data_in = '0', "1 test med flera checks");
+                check(1 = 0, "2 test med flera checks");
+                check(1 = 1, "3 test med flera checks");
+
             end if;
         end loop;
 
