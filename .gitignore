@@ -1,8 +1,9 @@
 *.jou
 *.log
+*.str
 .Xil
 ethernet_test
 venv
 vunit_out
-vivado_proj
+vivado_files
 led_switch.tcl
