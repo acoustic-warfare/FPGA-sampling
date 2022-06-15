@@ -1,10 +1,31 @@
 set PROJECT_NAME              sync_fifo
-set PROJECT_CONSTRAINT_FILE ./sync_fifo_constraint.xdc
+set PROJECT_CONSTRAINT_FILE ../src
 set DIR_OUTPUT ../layout 
             
 file mkdir ${DIR_OUTPUT}
-create_project ${PROJECT_NAME} ${DIR_OUTPUT}/${PROJECT_NAME} -part xc7k70tfbg484-2
-add_files {../vhdl/fir.vhd }
+create_project ${PROJECT_NAME} ${DIR_OUTPUT}/${PROJECT_NAME} -part xc7z020clg400-1
+
+#add_files {../vhdl/fir.vhd }
+
+# Check file required for this script exists
+proc checkRequiredFiles { origin_dir} {
+  set status true
+  set files [list \
+   "/home/ljudkriget/Projects/ljud_kriget/src/fifo_test.vhd"\
+   #"/home/ljudkriget/Projects/led_switch/led_switch.srcs/sources_1/bd/design_1/design_1.bd" \
+
+   "/home/ljudkriget/Projects/ljud_kriget/src/sync_fifo_constraint.xdc" \
+  ]
+  foreach ifile $files {
+    if { ![file isfile $ifile] } {
+      puts " Could not find local file $ifile "
+      set status false
+    }
+  }
+
+  return $status
+}
+
 import_files -force
 import_files -fileset constrs_1 -force -norecurse ${PROJECT_CONSTRAINT_FILE}
 # Mimic GUI behavior of automatically setting top and file compile order
