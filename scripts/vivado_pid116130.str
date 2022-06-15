@@ -1,0 +1,114 @@
+/*
+
+Xilinx Vivado v2020.2 (64-bit) [Major: 2020, Minor: 2]
+SW Build: 3064766 on Wed Nov 18 09:12:47 MST 2020
+IP Build: 3064653 on Wed Nov 18 14:17:31 MST 2020
+
+Process ID (PID): 116130
+License: Customer
+Mode: GUI Mode
+
+Current time: 	Wed Jun 15 16:06:09 CEST 2022
+Time zone: 	Central European Standard Time (Europe/Stockholm)
+
+OS: Ubuntu
+OS Version: 5.13.0-48-generic
+OS Architecture: amd64
+Available processors (cores): 4
+
+Display: 1
+Screen size: 1920x1200
+Screen resolution (DPI): 100
+Available screens: 1
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+Scale size: 12
+
+Java version: 	11.0.2 64-bit
+Java home: 	/tools/Xilinx/Vivado/2020.2/tps/lnx64/jre11.0.2
+Java executable location: 	/tools/Xilinx/Vivado/2020.2/tps/lnx64/jre11.0.2/bin/java
+Java initial memory (-Xms): 	128 MB
+Java maximum memory (-Xmx):	 3 GB
+
+
+User name: 	ljudkriget
+User home directory: /home/ljudkriget
+User working directory: /home/ljudkriget/Projects/ljud_kriget/scripts
+User country: 	US
+User language: 	en
+User locale: 	en_US
+
+RDI_BASEROOT: /tools/Xilinx/Vivado
+HDI_APPROOT: /tools/Xilinx/Vivado/2020.2
+RDI_DATADIR: /tools/Xilinx/Vivado/2020.2/data
+RDI_BINDIR: /tools/Xilinx/Vivado/2020.2/bin
+
+Vivado preferences file location: /home/ljudkriget/.Xilinx/Vivado/2020.2/vivado.xml
+Vivado preferences directory: /home/ljudkriget/.Xilinx/Vivado/2020.2/
+Vivado layouts directory: /home/ljudkriget/.Xilinx/Vivado/2020.2/data/layouts
+PlanAhead jar file location: 	/tools/Xilinx/Vivado/2020.2/lib/classes/planAhead.jar
+Vivado log file location: 	/home/ljudkriget/Projects/ljud_kriget/scripts/vivado.log
+Vivado journal file location: 	/home/ljudkriget/Projects/ljud_kriget/scripts/vivado.jou
+Engine tmp dir: 	./.Xil/Vivado-116130-jokern
+
+Xilinx Environment Variables
+----------------------------
+XILINX: /tools/Xilinx/Vivado/2020.2/ids_lite/ISE
+XILINX_DSP: /tools/Xilinx/Vivado/2020.2/ids_lite/ISE
+XILINX_HLS: /tools/Xilinx/Vitis_HLS/2020.2
+XILINX_PLANAHEAD: /tools/Xilinx/Vivado/2020.2
+XILINX_SDK: /tools/Xilinx/Vitis/2020.2
+XILINX_VITIS: /tools/Xilinx/Vitis/2020.2
+XILINX_VIVADO: /tools/Xilinx/Vivado/2020.2
+XILINX_VIVADO_HLS: /tools/Xilinx/Vivado/2020.2
+
+
+GUI allocated memory:	222 MB
+GUI max memory:		3,072 MB
+Engine allocated memory: 1,590 MB
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// [GUI Memory]: 52 MB (+52388kb) [00:00:08]
+// [Engine Memory]: 1,472 MB (+1392278kb) [00:00:08]
+// [GUI Memory]: 69 MB (+15056kb) [00:00:08]
+// [GUI Memory]: 87 MB (+15213kb) [00:00:08]
+// [GUI Memory]: 93 MB (+1687kb) [00:00:09]
+// [GUI Memory]: 101 MB (+2947kb) [00:00:09]
+// TclEventType: START_PROGRESS_DIALOG
+// Tcl Message: source xlininx_tcl_example.tcl 
+// Tcl Message: # create_project -force ../project ./project -part xc7z020clg400-1 
+// Tcl Message: # add_files ../src/fifo_test.vhd\ #  # add_files -fileset sim_1 ../test/tb_fifo_test.vhd # add_files -fileset constrs_1 ../src/sync_fifo_constraint.xdc # import_files -force 
+// Tcl Message: INFO: [filemgmt 20-348] Importing the appropriate files for fileset: 'constrs_1' INFO: [filemgmt 20-348] Importing the appropriate files for fileset: 'sim_1' INFO: [filemgmt 20-348] Importing the appropriate files for fileset: 'sources_1' 
+// Tcl Message: # update_compile_order -fileset sources_1 # update_compile_order -fileset sim_1 # start_gui 
+// TclEventType: START_PROGRESS_DIALOG
+// TclEventType: STOP_PROGRESS_DIALOG
+// bz (cr):  Sourcing Tcl script 'xlininx_tcl_example.tcl' : addNotify
+// TclEventType: STOP_PROGRESS_DIALOG
+// [GUI Memory]: 120 MB (+14483kb) [00:00:11]
+dismissDialog("Sourcing Tcl script 'xlininx_tcl_example.tcl'"); // bz
+// [Engine Memory]: 1,573 MB (+28372kb) [00:00:13]
+// Tcl Command: 'rdi::info_commands {device::*}'
+// Tcl Command: 'rdi::info_commands {debug::*}'
+// Tcl Command: 'rdi::info_commands {*}'
+// HMemoryUtils.trashcanNow. Engine heap size: 1,592 MB. GUI used memory: 68 MB. Current time: 6/15/22, 4:06:10 PM CEST
+// bz (cr):  Opening IP Catalog : addNotify
+dismissDialog("Opening IP Catalog"); // bz
+// Tcl Message: update_compile_order -fileset sources_1 
+// PAPropertyPanels.initPanels (fifo_test.vhd) elapsed time: 0.2s
+// Elapsed time: 15 seconds
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Design Sources, fifo_test(Behavioral) (fifo_test.vhd)]", 1, false); // D
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Constraints]", 2); // D
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Constraints, constrs_1, sync_fifo_constraint.xdc]", 4, false); // D
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 5); // D
+collapseTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Constraints]", 2); // D
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Constraints]", 2); // D
+collapseTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Constraints]", 2); // D
+collapseTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 3); // D
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources]", 3); // D
+expandTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1]", 4); // D
+selectTree(PAResourceEtoH.FileSetPanel_FILE_SET_PANEL_TREE, "[root, Simulation Sources, sim_1, tb_fifo_test(tb) (tb_fifo_test.vhd)]", 6, true); // D - Node
+// Elapsed time: 21 seconds
+selectButton(PAResourceEtoH.FileSetPanel_MESSAGES, "1"); // h
