@@ -1,10 +1,12 @@
 from pathlib import Path
 from vunit import VUnit
 
-vu = VUnit.from_argv()   # Create Vuinit instance 
+# NOTE: Path to directory containing this file
+ROOT = Path(__file__).parent
 
-lib = vu.add_library("lib")   # create library lib
+vu = VUnit.from_argv()
 
-lib.add_source_files("*/*.vhd")
+lib = vu.add_library("lib")
+lib.add_source_files(ROOT.glob("*/*.vhd"))
 
 vu.main()

@@ -1,3 +1,5 @@
+*.jou
+*.log
 .Xil
 ethernet_test
 venv
