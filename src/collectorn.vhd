@@ -20,12 +20,12 @@ entity collectorn is
         mic_7   : out std_logic_vector(bits_mic-1 downto 0);
         mic_8   : out std_logic_vector(bits_mic-1 downto 0);
         mic_9   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_10   : out std_logic_vector(bits_mic-1 downto 0);
+        mic_10  : out std_logic_vector(bits_mic-1 downto 0);
         mic_11  : out std_logic_vector(bits_mic-1 downto 0);
         mic_12  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_13   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_14   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_15   : out std_logic_vector(bits_mic-1 downto 0)
+        mic_13  : out std_logic_vector(bits_mic-1 downto 0);
+        mic_14  : out std_logic_vector(bits_mic-1 downto 0);
+        mic_15  : out std_logic_vector(bits_mic-1 downto 0)
     );
 end collectorn;
 
@@ -44,12 +44,12 @@ architecture Collectorn_Behavioral of collectorn is
     signal tmp_7 : std_logic_vector(bits_mic-1 downto 0);
     signal tmp_8 : std_logic_vector(bits_mic-1 downto 0);
     signal tmp_9 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_10 : std_logic_vector(bits_mic-1 downto 0);
+    signal tmp_10: std_logic_vector(bits_mic-1 downto 0);
     signal tmp_11: std_logic_vector(bits_mic-1 downto 0);
     signal tmp_12: std_logic_vector(bits_mic-1 downto 0);
     signal tmp_13: std_logic_vector(bits_mic-1 downto 0);
     signal tmp_14: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_15 : std_logic_vector(bits_mic-1 downto 0);
+    signal tmp_15: std_logic_vector(bits_mic-1 downto 0);
 begin
 
     send_sample : process(mic_state)
@@ -77,7 +77,7 @@ begin
 
     collect : process(data_in,clk)
     begin
-        --------------------------
+        
         if (counter = bits_mic) then
             mic_state <= mic_state+1;
             counter <= 0;

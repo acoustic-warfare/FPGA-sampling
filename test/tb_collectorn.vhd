@@ -114,8 +114,6 @@ BEGIN
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-            check(1 = 1, "test");
-
             wait for 8500 ns;
 
             check(1 = 1, "test");
