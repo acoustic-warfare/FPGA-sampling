@@ -64,9 +64,10 @@ BEGIN
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-            IF (rising_edge(clk)) THEN
-                data_in <= v8(nr_clk);
-            END IF;
+            --IF (rising_edge(clk)) THEN
+                data_in <= '1';
+                --nr_clk <= nr_clk + 1;
+            --END IF;
 
             wait for 70 ns;
 
