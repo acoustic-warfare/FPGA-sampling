@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity collectorn is
     generic(
             bits_mic : integer := 8;
-            nr_mics  : integer := 4
+            nr_mics  : integer := 16
     );
 
     Port (
