@@ -16,24 +16,26 @@ ARCHITECTURE tb OF tb_collectorn IS
 
     COMPONENT collectorn
         PORT (
-            data_in : in std_logic;
-            clk : in std_logic;
-            rst : in std_logic;
-            mic_1 : out std_logic_vector(7 downto 0);
-            mic_2 : out std_logic_vector(7 downto 0);
-            mic_3 : out std_logic_vector(7 downto 0);
-            mic_4 : out std_logic_vector(7 downto 0)
+            data_in : IN STD_LOGIC;
+            clk : IN STD_LOGIC;
+            rst : IN STD_LOGIC;
+            mic_1 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+            mic_2 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+            mic_3 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+            mic_4 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
         );
     END COMPONENT;
 
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL data_in : STD_LOGIC;
     SIGNAL rst : STD_LOGIC := '0';
-    SIGNAL v : STD_LOGIC_VECTOR(9 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101112"; --test number sequense 8*12 
-    SIGNAL mic_1 : std_logic_vector(7 downto 0);
-    SIGNAL mic_2 : std_logic_vector(7 downto 0);
-    SIGNAL mic_3 : std_logic_vector(7 downto 0);
-    SIGNAL mic_4 : std_logic_vector(7 downto 0);
+    SIGNAL v8x12 : STD_LOGIC_VECTOR(95 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101110"; --test number sequense 8*12 
+    SIGNAL v8x4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := "10110111000101110100110111010111";
+    SIGNAL v8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := "11001100";
+    SIGNAL mic_1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_3 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_4 : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
 
@@ -47,7 +49,14 @@ BEGIN
         mic_2 => mic_2
     );
 
-    clk <= NOT clk AFTER clk_cykle / 2;
+    clock : process 
+    begin
+    clk <= '0';
+    wait for clk_cykle/2;
+    clk <= '1';
+    wait for clk_cykle/2;
+    nr_clk <= nr_clk + 1;
+    end process;
 
     main : PROCESS
     BEGIN
@@ -55,12 +64,14 @@ BEGIN
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-                
+            IF (rising_edge(clk)) THEN
+                data_in <= v8(nr_clk);
+            END IF;
+
+            wait for 80 ns;
 
             ELSIF run("Test_2") THEN
-                --assert message = "set-for-test";
-                --dump_generics;
-
+                
                 data_in <= '1';
 
                 WAIT FOR 10 ns; --total tid för test 2
