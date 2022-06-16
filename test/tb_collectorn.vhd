@@ -29,13 +29,25 @@ ARCHITECTURE tb OF tb_collectorn IS
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL data_in : STD_LOGIC := '0';
     SIGNAL rst : STD_LOGIC := '0';
-    SIGNAL v8x12 : STD_LOGIC_VECTOR(95 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101110"; --test number sequense 8*12 
+    SIGNAL v8x12 : STD_LOGIC_VECTOR(95 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101110"; --test number sequense 8*12
     SIGNAL v8x4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := "10110111000101110100110111010111";
     SIGNAL v8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := "11001100";
     SIGNAL mic_0 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_3 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_4 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_5 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_6 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_7 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_8 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_9 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_10 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_11 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_12 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_13 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_14 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_15 : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
 
@@ -46,10 +58,22 @@ BEGIN
         mic_0 => mic_0,
         mic_1 => mic_1,
         mic_2 => mic_2,
-        mic_3 => mic_3
+        mic_3 => mic_3,
+        mic_4 => mic_4,
+        mic_5 => mic_5,
+        mic_6 => mic_6,
+        mic_7 => mic_7,
+        mic_8 => mic_8,
+        mic_9 => mic_9,
+        mic_10 => mic_10,
+        mic_11 => mic_11,
+        mic_12 => mic_12,
+        mic_13=> mic_13,
+        mic_14 => mic_14,
+        mic_15 => mic_15
     );
 
-    clock : process 
+    clock : process
     begin
     clk <= '0';
     wait for clk_cykle/2;
@@ -60,7 +84,7 @@ BEGIN
 
     bitgen : process (clk)
     begin
-        
+
         IF (rising_edge(clk)) THEN
         data_in <= v8x12(nr_clk);
 
@@ -75,13 +99,13 @@ BEGIN
             IF run("Test_1") THEN
 
             check(1 = 1, "test");
-            
+
             wait for 960 ns;
 
             check(1 = 1, "test");
 
             ELSIF run("Test_2") THEN
-                
+
                 --data_in <= '1';
 
                 --WAIT FOR 10 ns; --total tid för test 2
