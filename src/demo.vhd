@@ -19,42 +19,45 @@ architecture Collectorn_Behavioral of demo is
     signal mic_state : integer := 0;
 begin
 
-    count : process(counter, mic_state)
-    begin 
-        if (counter = 23) then 
-            mic_state <= mic_state+1;
-            counter <= 0;
-        end if;
-        if (mic_state = 4) then
+    --count : process
+    --begin 
+    --    if (counter = 23) then 
+    --        mic_state <= mic_state+1;
+    --        counter <= 0;
+    --    end if;
+    --end process;
+
+collect : process(data_in,clk) 
+begin
+
+    if (counter = 23) then 
+        mic_state <= mic_state+1;
+        counter <= 0;
+    end if;
+
+    case mic_state is
+        when 0 =>      
+            if(rising_edge(clk)) then 
+                mic_0(counter) <= data_in;
+                counter <= counter +1;
+            end if;
+        when 1 =>      
+            if(rising_edge(clk)) then 
+                mic_1(counter) <= data_in;
+                counter <= counter +1;
+            end if; 
+        when 2 =>      
+            if(rising_edge(clk)) then 
+                mic_2(counter) <= data_in;
+                counter <= counter +1;
+            end if;  
+        when 3 =>      
+            if(rising_edge(clk)) then 
+                mic_3(counter) <= data_in;
+                counter <= counter +1;
+            end if; 
+        when others => 
             mic_state <= 0;
-        end if;
-    end process;
-
-    collect : process(data_in,clk, counter) 
-    begin
-        case mic_state is
-            when 0 =>      
-                if(rising_edge(clk)) then 
-                    mic_0(counter) <= data_in;
-                    counter <= counter + 1;
-                end if;
-            when 1 =>      
-                if(rising_edge(clk)) then 
-                    mic_1(counter) <= data_in;
-                    counter <= counter + 1;
-                end if; 
-            when 2 =>      
-                if(rising_edge(clk)) then 
-                    mic_2(counter) <= data_in;
-                    counter <= counter + 1;
-                end if;  
-            when others =>  
-                if(rising_edge(clk)) then 
-                    mic_3(counter) <= data_in;
-                    counter <= counter + 1;
-                end if;     
-        end case; 
-    end process;
-
-    
+    end case; 
+end process;
 end Collectorn_Behavioral;

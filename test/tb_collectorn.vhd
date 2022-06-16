@@ -49,14 +49,14 @@ BEGIN
         mic_3 => mic_3
     );
 
-    --clock : process 
-    --begin
-    --clk <= '0';
-    --wait for clk_cykle/2;
-    --clk <= '1';
-    --wait for clk_cykle/2;
-    --nr_clk <= nr_clk + 1;
-    --end process;
+    clock : process 
+    begin
+    clk <= '0';
+    wait for clk_cykle/2;
+    clk <= '1';
+    wait for clk_cykle/2;
+    nr_clk <= nr_clk + 1;
+    end process;
 
     main : PROCESS
     BEGIN
@@ -64,9 +64,9 @@ BEGIN
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-            --IF (rising_edge(clk)) THEN
-            --    data_in <= v8(nr_clk);
-            --END IF;
+            IF (rising_edge(clk)) THEN
+                data_in <= v8(nr_clk);
+            END IF;
 
             wait for 70 ns;
 
