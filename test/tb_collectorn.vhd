@@ -45,8 +45,8 @@ BEGIN
         rst => rst,
         mic_1 => mic_1,
         mic_2 => mic_2,
-        mic_2 => mic_2,
-        mic_2 => mic_2
+        mic_3 => mic_3,
+        mic_4 => mic_4
     );
 
     clock : process 
