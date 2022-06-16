@@ -45,11 +45,11 @@ begin
                     mic_2(counter) <= data_in;
                     counter <= counter +1;
                 end if;  
-            when 3 =>      
+            when others =>      
                 if(rising_edge(clk)) then 
                     mic_3(counter) <= data_in;
                     counter <= counter +1;
-                end if;  
+                end if; 
         end case; 
     end process;
 end Collectorn_Behavioral;
