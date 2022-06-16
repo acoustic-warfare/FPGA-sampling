@@ -1,6 +1,7 @@
 *.jou
 *.log
 *.str
+*.zip
 .Xil
 ethernet_test
 venv
