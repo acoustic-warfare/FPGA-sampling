@@ -74,15 +74,15 @@ BEGIN
 
                 WAIT FOR 10 ns; --total tid för test 2
 
-                ASSERT (data_in = '0')
-                REPORT "demo error 1"
-                    SEVERITY warning;
+                --ASSERT (data_in = '0')
+                --REPORT "demo error 1"
+                --    SEVERITY warning;
 
-                ASSERT (1 = 0)
-                REPORT "demo error 2"
-                    SEVERITY warning;
-                check(data_in = '0', "1 test med flera checks");
-                check(1 = 0, "2 test med flera checks");
+                --ASSERT (1 = 0)
+                --REPORT "demo error 2"
+                --    SEVERITY warning;
+                --check(data_in = '0', "1 test med flera checks");
+                --check(1 = 0, "2 test med flera checks");
                 check(1 = 1, "3 test med flera checks");
 
             END IF;
