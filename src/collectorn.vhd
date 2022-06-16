@@ -24,7 +24,7 @@ architecture Collectorn_Behavioral of collectorn is
     signal tmp_3 : std_logic_vector(7 downto 0);
 begin
     
-    send_sample : process
+    send_sample : process(mic_state)
     begin 
         if (mic_state = 4) then 
             mic_0 <= tmp_0;
@@ -38,7 +38,7 @@ begin
     collect : process(data_in,clk) 
     begin
         --------------------------
-        if (counter = 7) then 
+        if (counter = 7) then
             mic_state <= mic_state+1;
             counter <= 0;
         end if;
