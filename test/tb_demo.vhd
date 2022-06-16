@@ -4,15 +4,15 @@ USE IEEE.STD_LOGIC_1164.ALL;
 LIBRARY vunit_lib;
 CONTEXT vunit_lib.vunit_context;
 
-ENTITY tb_collectorn IS
+ENTITY tb_demo IS
     GENERIC (
         runner_cfg : STRING
     );
-END tb_collectorn;
+END tb_demo;
 
-ARCHITECTURE tb OF tb_collectorn IS
+ARCHITECTURE tb OF tb_demo IS
     CONSTANT clk_cykle : TIME := 10 ns;
-    SIGNAL nr_clk : INTEGER := 0; --används inte än
+    SIGNAL nr_clk : INTEGER := 0; --anvÃ¤nds inte Ã¤n
 
     COMPONENT collectorn
         PORT (
@@ -48,15 +48,7 @@ BEGIN
         mic_2 => mic_2,
         mic_3 => mic_3
     );
-
-    --clock : process 
-    --begin
-    --clk <= '0';
-    --wait for clk_cykle/2;
-    --clk <= '1';
-    --wait for clk_cykle/2;
-    --nr_clk <= nr_clk + 1;
-    --end process;
+    clk <= NOT clk AFTER clk_cykle / 2;
 
     main : PROCESS
     BEGIN
@@ -64,29 +56,8 @@ BEGIN
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-            --IF (rising_edge(clk)) THEN
-            --    data_in <= v8(nr_clk);
-            --END IF;
-
-            wait for 70 ns;
-
-            check(1 = 1, "test");
-
             ELSIF run("Test_2") THEN
-                
-                --data_in <= '1';
 
-                --WAIT FOR 10 ns; --total tid för test 2
-
-                --ASSERT (data_in = '0')
-                --REPORT "demo error 1"
-                --    SEVERITY warning;
-
-                --ASSERT (1 = 0)
-                --REPORT "demo error 2"
-                --    SEVERITY warning;
-                --check(data_in = '0', "1 test med flera checks");
-                --check(1 = 0, "2 test med flera checks");
                 check(1 = 1, "3 test med flera checks");
 
             END IF;
