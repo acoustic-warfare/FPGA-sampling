@@ -31,7 +31,7 @@ begin
     collect : process(data_in,clk) 
     begin
         --------------------------
-        if (counter = 23) then 
+        if (counter = 7) then 
             mic_state <= mic_state+1;
             counter <= 0;
         end if;

@@ -58,18 +58,25 @@ BEGIN
     nr_clk <= nr_clk + 1;
     end process;
 
+    bitgen : process (clk)
+    begin
+        
+        IF (rising_edge(clk)) THEN
+        data_in <= v8x12(nr_clk);
+
+    END IF;
+
+    end process;
+
     main : PROCESS
     BEGIN
         test_runner_setup(runner, runner_cfg);
         WHILE test_suite LOOP
             IF run("Test_1") THEN
 
-            --IF (rising_edge(clk)) THEN
-                data_in <= '1';
-                --nr_clk <= nr_clk + 1;
-            --END IF;
-
-            wait for 70 ns;
+            check(1 = 1, "test");
+            
+            wait for 960 ns;
 
             check(1 = 1, "test");
 
@@ -88,6 +95,7 @@ BEGIN
                 --    SEVERITY warning;
                 --check(data_in = '0', "1 test med flera checks");
                 --check(1 = 0, "2 test med flera checks");
+
                 check(1 = 1, "3 test med flera checks");
 
             END IF;
