@@ -24,11 +24,7 @@ update_compile_order -fileset sim_1
 
 
 
-################################################
-
-
-
-
+################################################ Ska flyttas till etget script
 
 # Launch Synthesis
 
