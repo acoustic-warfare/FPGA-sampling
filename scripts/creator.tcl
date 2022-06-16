@@ -1,9 +1,19 @@
-# Typical usage: vivado -mode tcl -source run_bft_project.tcl
+# vivado -notrace -mode tcl -source creator.tcl   
+
+
 # Create the project and directory structure
-create_project -force ../vivado_files/project ./project -part xc7z020clg400-1
+set ROOT [file normalize [file join [file dirname [info script]] .. ]]
+#puts $ROOT
+create_project -force ../../vivado_files/project ./project -part xc7z020clg400-1
+
+
+set_property target_language VHDL [current_project]
+
 #
 # Add various sources to the project
 add_files ../src/fifo_test.vhd\
+
+set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 #add_files -fileset sim_1 ../test/tb_fifo_test.vhd
 #add_files ./Sources/hdl/bftLib/
@@ -19,6 +29,5 @@ bft_package.vhdl}]
 # Update to set top and file compile order
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
-#
 
 start_gui
