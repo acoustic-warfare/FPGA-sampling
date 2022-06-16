@@ -18,11 +18,11 @@ ARCHITECTURE tb OF tb_collectorn IS
         PORT (
             data_in : IN STD_LOGIC;
             clk : IN STD_LOGIC;
-            rst : IN STD_LOGIC;
+            --rst : IN STD_LOGIC;
+            mic_0 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
             mic_1 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
             mic_2 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_3 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_4 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+            mic_3 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -32,21 +32,21 @@ ARCHITECTURE tb OF tb_collectorn IS
     SIGNAL v8x12 : STD_LOGIC_VECTOR(95 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101110"; --test number sequense 8*12 
     SIGNAL v8x4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := "10110111000101110100110111010111";
     SIGNAL v8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := "11001100";
+    SIGNAL mic_0 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL mic_3 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_4 : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 BEGIN
 
     collector1 : collectorn PORT MAP(
         data_in => data_in,
         clk => clk,
-        rst => rst,
+        --rst => rst,
+        mic_0 => mic_0,
         mic_1 => mic_1,
         mic_2 => mic_2,
-        mic_3 => mic_3,
-        mic_4 => mic_4
+        mic_3 => mic_3
     );
 
     clock : process 
@@ -68,7 +68,9 @@ BEGIN
                 data_in <= v8(nr_clk);
             END IF;
 
-            wait for 80 ns;
+            wait for 70 ns;
+
+            check(1 = 1, "test");
 
             ELSIF run("Test_2") THEN
                 
