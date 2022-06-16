@@ -18,17 +18,24 @@ architecture Collectorn_Behavioral of collectorn is
     signal counter : integer := 0;
     signal mic_state : integer := 0;
 begin
+    
 
-    count : process(counter)
-    begin 
+    --count : process(counter)
+    --begin 
+      --  if (counter = 23) then 
+        --    mic_state <= mic_state+1;
+          --  counter <= 0;
+       -- end if;
+   --+ end process;
+----------------------------------------------------
+    collect : process(data_in,clk) 
+    begin
+        --------------------------
         if (counter = 23) then 
             mic_state <= mic_state+1;
             counter <= 0;
         end if;
-    end process;
-----------------------------------------------------
-    collect : process(data_in,clk) 
-    begin
+ -----------------------------------------
         case mic_state is
             when 0 =>      
                 if(rising_edge(clk)) then 
