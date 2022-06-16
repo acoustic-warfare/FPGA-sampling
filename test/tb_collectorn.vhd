@@ -99,7 +99,7 @@ BEGIN
     begin
 
         IF (rising_edge(clk)) THEN
-        data_in <= v8x12(nr_clk);
+        data_in <= v850(nr_clk);
 
     END IF;
 
