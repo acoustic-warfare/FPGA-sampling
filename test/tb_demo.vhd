@@ -14,7 +14,7 @@ ARCHITECTURE tb OF tb_demo IS
     CONSTANT clk_cykle : TIME := 10 ns;
     SIGNAL nr_clk : INTEGER := 0; --används inte än
 
-    COMPONENT collectorn
+    COMPONENT demo
         PORT (
             data_in : IN STD_LOGIC;
             clk : IN STD_LOGIC;
@@ -39,7 +39,7 @@ ARCHITECTURE tb OF tb_demo IS
 
 BEGIN
 
-    collector1 : collectorn PORT MAP(
+    collector1 : demo PORT MAP(
         data_in => data_in,
         clk => clk,
         --rst => rst,
