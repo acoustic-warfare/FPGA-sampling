@@ -7,34 +7,37 @@ CONTEXT vunit_lib.vunit_context;
 ENTITY tb_collectorn IS
     GENERIC (
         runner_cfg : STRING
+
     );
 END tb_collectorn;
 
 ARCHITECTURE tb OF tb_collectorn IS
     CONSTANT clk_cykle : TIME := 10 ns;
     SIGNAL nr_clk : INTEGER := 0; --används inte än
+    SIGNAL bits_mic : integer := 24;
+    SIGNAL  nr_mics  : integer := 16;
 
     COMPONENT collectorn
         PORT (
             data_in : IN STD_LOGIC;
             clk : IN STD_LOGIC;
             --rst : IN STD_LOGIC;
-            mic_0  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_1  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_2  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_3  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_4  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_5  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_6  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_7  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_8  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_9  : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_10 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_11 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_12 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_13 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_14 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-            mic_15 : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+            mic_0  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_1  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_2  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_3  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_4  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_5  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_6  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_7  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_8  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_9  : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_10 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_11 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_12 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_13 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_14 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+            mic_15 : OUT STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -45,22 +48,22 @@ ARCHITECTURE tb OF tb_collectorn IS
     SIGNAL v8x12 : STD_LOGIC_VECTOR(95 DOWNTO 0) := "101101110001011101001101110101111011010101011010101010110101010110111010101000010111111010101110"; --test number sequense 8*12
     SIGNAL v8x4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := "10110111000101110100110111010111";
     SIGNAL v8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := "11001100";
-    SIGNAL mic_0 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_1 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_2 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_3 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_4 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_5 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_6 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_7 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_8 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_9 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_10 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_11 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_12 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_13 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_14 : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL mic_15 : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL mic_0  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_1  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_2  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_3  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_4  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_5  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_6  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_7  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_8  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_9  : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_10 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_11 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_12 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_13 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_14 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
+    SIGNAL mic_15 : STD_LOGIC_VECTOR(bits_mic-1 DOWNTO 0);
 
 BEGIN
 
