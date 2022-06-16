@@ -106,63 +106,63 @@ begin
                 end if;
             when 4 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_4(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 5 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_5(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 6 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_6(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 7 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_7(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 8 =>
                 if(rising_edge(clk)) then
-                    tmp_1(counter) <= data_in;
+                    tmp_8(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 9 =>
                 if(rising_edge(clk)) then
-                    tmp_2(counter) <= data_in;
+                    tmp_9(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 10 =>
                 if(rising_edge(clk)) then
-                    tmp_3(counter) <= data_in;
+                    tmp_10(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 11 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_11(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 12 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_12(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 13 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_13(counter) <= data_in;
                     counter <= counter +1;
                 end if;
             when 14 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_14(counter) <= data_in;
                     counter <= counter +1;
                 end if;
 
             when 15 =>
                 if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
+                    tmp_15(counter) <= data_in;
                     counter <= counter +1;
                 end if;
 
