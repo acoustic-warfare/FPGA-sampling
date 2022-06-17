@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-06-17T12:36:29.298Z" agent="5.0 (X11)" etag="-d6E4cyo07lvb3YHQiOh" version="20.0.1" type="github">
+<mxfile host="app.diagrams.net" modified="2022-06-17T12:37:54.397Z" agent="5.0 (X11)" etag="GLdfjCkDqI4zQYXgPC8q" version="20.0.1" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="734" dy="470" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -200,11 +200,27 @@
         <mxCell id="femL7Xx1sEt55K2A62W7-85" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" vertex="1" parent="femL7Xx1sEt55K2A62W7-83">
           <mxGeometry y="52" width="160" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="femL7Xx1sEt55K2A62W7-86" value="ethernet_packet" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="femL7Xx1sEt55K2A62W7-83">
+        <mxCell id="femL7Xx1sEt55K2A62W7-86" value="ethernet_packet_out" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="femL7Xx1sEt55K2A62W7-83">
           <mxGeometry y="60" width="160" height="26" as="geometry" />
         </mxCell>
         <mxCell id="femL7Xx1sEt55K2A62W7-87" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="femL7Xx1sEt55K2A62W7-51" target="femL7Xx1sEt55K2A62W7-84">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="femL7Xx1sEt55K2A62W7-88" value="ethernet_ip_block" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="420" y="740" width="160" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="femL7Xx1sEt55K2A62W7-89" value="ethernet_packet_in" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="femL7Xx1sEt55K2A62W7-88">
+          <mxGeometry y="26" width="160" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="femL7Xx1sEt55K2A62W7-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="femL7Xx1sEt55K2A62W7-86" target="femL7Xx1sEt55K2A62W7-89">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="473" />
+              <mxPoint x="730" y="670" />
+              <mxPoint x="400" y="670" />
+              <mxPoint x="400" y="779" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
