@@ -37,6 +37,8 @@ ARCHITECTURE tb OF tb_demo IS
     SIGNAL v8x4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := "10110111000101110100110111010111";
     SIGNAL v8 : STD_LOGIC_VECTOR(7 DOWNTO 0) := "11001100";
 
+    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
+    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
 
 BEGIN
 
@@ -57,13 +59,25 @@ BEGIN
     nr_clk <= nr_clk + 1;
     end process;
 
-    bitgen : process (clk)
+    --bitgen1 : process (clk)
+    --begin
+    --    IF (rising_edge(clk)) THEN
+    --    data_in <= v850(nr_clk);
+    --END IF;
+
+    bitgen2 : process (clk)
+    variable counter : integer := 0;
+    variable high_or_low : std_logic := '1';
     begin
-
-        IF (rising_edge(clk)) THEN
-        data_in <= v850(nr_clk);
-
-    END IF;
+        if (counter < 24) then
+            data_in <= '1';
+            counter := counter+ 1;
+        elsif (counter >= 24 and counter < 48) then
+            data_in <= '0';
+            counter := counter+ 1;
+        else
+            counter := 0;
+        end if;
 
     end process;
 

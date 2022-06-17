@@ -7,7 +7,6 @@ CONTEXT vunit_lib.vunit_context;
 ENTITY tb_collectorn IS
     GENERIC (
         runner_cfg : STRING
-
     );
 END tb_collectorn;
 
@@ -132,7 +131,7 @@ BEGIN
                 --REPORT "demo error 2"
                 --    SEVERITY warning;
                 --check(data_in = '0', "1 test med flera checks");
-                
+
                 --check(1 = 0, "2 test med flera checks");
 
                 check(1 = 1, "3 test med flera checks");
