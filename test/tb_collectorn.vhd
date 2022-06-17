@@ -112,7 +112,7 @@ BEGIN
     BEGIN
         test_runner_setup(runner, runner_cfg);
         WHILE test_suite LOOP
-            IF run("Test_1") THEN
+            IF run("test_collectorn_1") THEN
 
             wait for 8500 ns;
 
