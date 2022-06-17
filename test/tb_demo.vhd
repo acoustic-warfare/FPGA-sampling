@@ -27,7 +27,7 @@ ARCHITECTURE tb OF tb_demo IS
     END COMPONENT;
 
     SIGNAL clk : STD_LOGIC := '0';
-    SIGNAL data_in : STD_LOGIC := '0';
+    SIGNAL data_in : STD_LOGIC := '1';
     SIGNAL reset : STD_LOGIC := '0';
     Signal data_out_matrix : MATRIX;
     signal data_valid : std_logic;
@@ -66,16 +66,16 @@ BEGIN
     --END IF;
 
     bitgen2 : process (clk)
-    variable counter : integer := 0;
+    variable counter : integer := 1;
     variable high_or_low : std_logic := '1';
     begin
-        if (counter < 24) then
+        if (rising_edge(clk) and counter < 24) then
             data_in <= '1';
             counter := counter+ 1;
-        elsif (counter >= 24 and counter < 48) then
+        elsif (rising_edge(clk) and counter >= 24 and counter < 47) then
             data_in <= '0';
             counter := counter+ 1;
-        else
+        elsif (rising_edge(clk)) then
             counter := 0;
         end if;
 
