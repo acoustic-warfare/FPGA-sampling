@@ -1,5 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use work.MATRIX_TYPE.all;
 
 entity demo is
     generic(
@@ -7,167 +9,48 @@ entity demo is
             nr_mics  : integer := 16
     );
 
+
+
     Port (
+        data_out_matrix : out MATRIX;
         data_in : in std_logic;
         clk     : in std_logic;
-        mic_0   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_1   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_2   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_3   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_4   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_5   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_6   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_7   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_8   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_9   : out std_logic_vector(bits_mic-1 downto 0);
-        mic_10  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_11  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_12  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_13  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_14  : out std_logic_vector(bits_mic-1 downto 0);
-        mic_15  : out std_logic_vector(bits_mic-1 downto 0)
+        data_valid : out std_logic := '0';
+        reset : in std_logic
+
     );
 end demo;
 
 
 architecture demo_behavroal of demo is
-    signal counter : integer := 0;
-    signal mic_state : integer := 0;
-    signal sample_count : integer :=0;
-    signal tmp_0 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_1 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_2 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_3 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_4 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_5 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_6 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_7 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_8 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_9 : std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_10: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_11: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_12: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_13: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_14: std_logic_vector(bits_mic-1 downto 0);
-    signal tmp_15: std_logic_vector(bits_mic-1 downto 0);
+
+    signal tmp_vector : std_logic_vector(bits_mic-1 downto 0);
+    signal send : std_logic :='0';
+    signal enable : std_logic := '0';
+    signal counter_col : integer := 0;
+    signal counter_row : integer := 0;
+
 begin
 
-    send_sample : process(mic_state)
+    collect : process(clk)
     begin
-        if (mic_state = nr_mics) then
-            mic_0 <= tmp_0;
-            mic_1 <= tmp_1;
-            mic_2 <= tmp_2;
-            mic_3 <= tmp_3;
-            mic_4 <= tmp_4;
-            mic_5 <= tmp_5;
-            mic_6 <= tmp_6;
-            mic_7 <= tmp_7;
-            mic_8 <= tmp_8;
-            mic_9 <= tmp_9;
-            mic_10 <= tmp_10;
-            mic_11 <= tmp_11;
-            mic_12 <= tmp_12;
-            mic_13 <= tmp_13;
-            mic_14 <= tmp_14;
-            mic_15 <= tmp_15;
-        end if;
-    end process send_sample;
 
+            if(rising_edge(clk)) then
+                tmp_vector(counter_col) <= data_in;
+                counter_col <= counter_col + 1;
+            end if;
 
-    collect : process(data_in,clk)
-    begin
-        
-        if (counter = bits_mic) then
-            mic_state <= mic_state+1;
-            counter <= 0;
-        end if;
+            if (counter_col = bits_mic) then
+                data_out_matrix(counter_row) <= tmp_vector;
+                counter_col <= 0;
+                counter_row <= counter_row +1;
+            end if;
 
-        case mic_state is
-            when 0 =>
-                if(rising_edge(clk)) then
-                    tmp_0(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 1 =>
-                if(rising_edge(clk)) then
-                    tmp_1(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 2 =>
-                if(rising_edge(clk)) then
-                    tmp_2(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 3 =>
-                if(rising_edge(clk)) then
-                    tmp_3(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 4 =>
-                if(rising_edge(clk)) then
-                    tmp_4(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 5 =>
-                if(rising_edge(clk)) then
-                    tmp_5(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 6 =>
-                if(rising_edge(clk)) then
-                    tmp_6(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 7 =>
-                if(rising_edge(clk)) then
-                    tmp_7(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 8 =>
-                if(rising_edge(clk)) then
-                    tmp_8(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 9 =>
-                if(rising_edge(clk)) then
-                    tmp_9(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 10 =>
-                if(rising_edge(clk)) then
-                    tmp_10(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 11 =>
-                if(rising_edge(clk)) then
-                    tmp_11(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 12 =>
-                if(rising_edge(clk)) then
-                    tmp_12(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 13 =>
-                if(rising_edge(clk)) then
-                    tmp_13(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-            when 14 =>
-                if(rising_edge(clk)) then
-                    tmp_14(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-
-            when 15 =>
-                if(rising_edge(clk)) then
-                    tmp_15(counter) <= data_in;
-                    counter <= counter +1;
-                end if;
-
-            when others =>
-                mic_state <= 0;
-        end case;
+            if(counter_row = nr_mics) then
+                data_valid <= '1';
+                counter_row <= 0;
+            elsif(data_valid = '1') then
+                data_valid <= '0';
+            end if;
     end process;
 end demo_behavroal;
