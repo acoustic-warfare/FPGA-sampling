@@ -6,17 +6,17 @@ CONTEXT vunit_lib.vunit_context;
 
 USE work.MATRIX_TYPE.ALL;
 
-ENTITY tb_demo IS
+ENTITY tb_collectorn IS
     GENERIC (
         runner_cfg : STRING
     );
-END tb_demo;
+END tb_collectorn;
 
-ARCHITECTURE tb OF tb_demo IS
+ARCHITECTURE tb OF tb_collectorn IS
     CONSTANT clk_cykle : TIME := 10 ns;
     SIGNAL nr_clk : INTEGER := 0; --not yet in use
 
-    COMPONENT demo
+    COMPONENT collectorn
         PORT (
             data_out_matrix : OUT MATRIX;
             data_in : IN STD_LOGIC;
@@ -44,7 +44,7 @@ ARCHITECTURE tb OF tb_demo IS
 
 BEGIN
 
-    demo1 : demo PORT MAP(
+    collectorn1 : collectorn PORT MAP(
         data_in => data_in,
         clk => clk,
         reset => reset,
@@ -89,7 +89,7 @@ BEGIN
     BEGIN
         test_runner_setup(runner, runner_cfg);
         WHILE test_suite LOOP
-            IF run("tb_demo_1") THEN
+            IF run("tb_collectorn_1") THEN
 
                 WAIT FOR 8500 ns;
 
@@ -111,7 +111,7 @@ BEGIN
                 check(data_out_matrix(14) = v1_24, "fail!15 row 14 in matrix");
                 check(data_out_matrix(15) = v0_24, "fail!16 row 15 in matrix");
 
-            ELSIF run("tb_demo_2") THEN
+            ELSIF run("tb_collectorn_2") THEN
 
                 wait for 3845.1 ns; -- first rise (3845 ns after start)
                 check(data_valid = '1', "fail!1 data_valid first rise");
