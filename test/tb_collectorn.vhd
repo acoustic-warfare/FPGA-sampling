@@ -115,7 +115,8 @@ BEGIN
 
             wait for 8500 ns;
 
-            check(1 = 1, "test");
+            check(1 = 1, "fail! 1.1");
+            check(1 = 1, "fail! 1.2");
 
             ELSIF run("Test_2") THEN
 
