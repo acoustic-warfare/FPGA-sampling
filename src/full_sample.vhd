@@ -23,7 +23,6 @@ end full_sample;
 
 architecture behavroal of full_sample is
 
-    signal tmp_vector : std_logic_vector(bits_mic-1 downto 0);
     signal counter_col : integer := 0;
     signal counter_row : integer := 0;
 

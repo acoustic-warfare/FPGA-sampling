@@ -34,7 +34,14 @@ ARCHITECTURE tb OF tb_full_sample IS
     SIGNAL data_in_matrix_2 : MATRIX;
     SIGNAL data_in_matrix_3 : MATRIX;
     SIGNAL data_in_matrix_4 : MATRIX;
-    SIGNAL data_valid : STD_LOGIC;
+    SIGNAL data_valid : STD_LOGIC := '1';
+
+    SIGNAL setup : std_logic := '0';
+
+    SIGNAL v0_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "000000000000000000000000";
+    SIGNAL v1_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "111111111111111111111111";
+
+    SIGNAL matrix_1 : MATRIX;
 
 
 BEGIN
@@ -58,12 +65,32 @@ BEGIN
         nr_clk <= nr_clk + 1;
     END PROCESS;
 
+    vector_create : process(setup)
+    begin
+        
+        for i in 0 to 15 loop
+            matrix_1(i) <= v1_24;
+        end loop;
+
+        data_in_matrix_1 <= matrix_1;
+        data_in_matrix_2 <= matrix_1;
+        data_in_matrix_3 <= matrix_1;
+        data_in_matrix_4 <= matrix_1;
+
+    end process;
+
+
     main : PROCESS
     BEGIN
         test_runner_setup(runner, runner_cfg);
         WHILE test_suite LOOP
             IF run("tb_full_sample_1") THEN
-                WAIT FOR 10 ns;
+                
+                setup <= '1';
+
+                WAIT FOR 100 ns;
+
+                check(sample_out_matrix(3) = v1_24, "fail!1  row 0  in matrix");
 
                 check(1 = 1, "test_1");
 
