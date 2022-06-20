@@ -11,14 +11,19 @@ ENTITY top IS
     );
 
     PORT (
-
+    data_in_1 : in std_logic;
+    data_in_2 : in std_logic;
+    data_in_3 : in std_logic;
+    data_in_4 : in std_logic;
+    clk : in std_logic;
+    reset : in std_logic;
+    sample_out_matrix : out SAMPLE_MATRIX
     );
 END top;
 
 ARCHITECTURE structual OF top IS
-    SIGNAL data_in_1, data_in_2, data_in_3, data_in_4, clk, reset, data_valid_1, data_valid_2, data_valid_3, data_valid_4 : STD_LOGIC;
+    SIGNAL data_valid_1, data_valid_2, data_valid_3, data_valid_4 : STD_LOGIC;
     SIGNAL data_out_matrix_1, data_out_matrix_2, data_out_matrix_3, data_out_matrix_4 : MATRIX;
-    SIGNAL sample_out_matrix : SAMPLE_MATRIX;
 
     COMPONENT collectorn IS
         PORT (
@@ -64,7 +69,7 @@ BEGIN
         clk => clk,
         reset => reset,
         data_out_matrix => data_out_matrix_1,
-        data_valid1 => data_valid_1
+        data_valid => data_valid_1
     );
 
     collectorn_2 : collectorn PORT MAP(

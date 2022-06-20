@@ -24,7 +24,10 @@ ARCHITECTURE tb OF tb_full_sample IS
             data_in_matrix_2 : IN MATRIX;
             data_in_matrix_3 : IN MATRIX;
             data_in_matrix_4 : IN MATRIX;
-            data_valid : IN STD_LOGIC
+            data_valid_1 : in std_logic;
+            data_valid_2 : in std_logic;
+            data_valid_3 : in std_logic;
+            data_valid_4 : in std_logic
         );
     END COMPONENT;
 
@@ -34,7 +37,7 @@ ARCHITECTURE tb OF tb_full_sample IS
     SIGNAL data_in_matrix_2 : MATRIX;
     SIGNAL data_in_matrix_3 : MATRIX;
     SIGNAL data_in_matrix_4 : MATRIX;
-    SIGNAL data_valid : STD_LOGIC := '1';
+    SIGNAL data_valid_1, data_valid_2, data_valid_3, data_valid_4 : STD_LOGIC := '1';
 
     SIGNAL setup : std_logic := '0';
 
@@ -63,7 +66,10 @@ BEGIN
         data_in_matrix_2 => data_in_matrix_2,
         data_in_matrix_3 => data_in_matrix_3,
         data_in_matrix_4 => data_in_matrix_4,
-        data_valid => data_valid
+        data_valid_1 => data_valid_1,
+        data_valid_2 => data_valid_2,
+        data_valid_3 => data_valid_3,
+        data_valid_4 => data_valid_4
     );
 
     clock : PROCESS
@@ -113,7 +119,7 @@ BEGIN
 
                 wait for 10 ns;
 
-                data_valid <= '1';
+                data_valid_1 <= '1';
 
 
 
