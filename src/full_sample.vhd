@@ -25,7 +25,7 @@ end full_sample;
 
 
 architecture behavroal of full_sample is
-
+    signal apa0, apa1, apa2, apa3 : std_logic_vector(23 downto 0);
 
 
 begin

@@ -121,8 +121,6 @@ BEGIN
 
                 data_valid_1 <= '1';
 
-
-
                 WAIT FOR 10 ns;
 
                 check(sample_out_matrix(3) = v1_24, "fail!1  row 0  in matrix");

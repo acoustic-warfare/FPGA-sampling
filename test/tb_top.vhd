@@ -51,6 +51,7 @@ ARCHITECTURE tb OF tb_top IS
     SIGNAL temp_63 : STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     signal test_1, test_2, test_3, test_4:  STD_LOGIC_VECTOR(23 DOWNTO 0);
+    signal apa0, apa1, apa2, apa3 : std_logic_vector(23 downto 0);
 
 BEGIN
 
@@ -73,7 +74,7 @@ BEGIN
         nr_clk <= nr_clk + 1;
     END PROCESS;
 
-
+    apa0 <= sample_out_matrix(0);
 
     main : PROCESS
     BEGIN
@@ -84,10 +85,10 @@ BEGIN
         WHILE test_suite LOOP
             IF run("tb_top_1") THEN
 
-                
+
 
                 wait for 10 ns;
-
+                apa2 <= sample_out_matrix(0);
                 
                 temp_0 <= sample_out_matrix(0);
                 temp_1 <= sample_out_matrix(1);
@@ -101,10 +102,16 @@ BEGIN
                 --test_2 <= data_in_matrix_2(10);
                 --test_3 <= data_in_matrix_3(10);
                 --test_4 <= data_in_matrix_4(10);
+                
+                
 
-                WAIT FOR 1000 ns;
+                WAIT FOR 10000 ns;
+
+                apa3 <= sample_out_matrix(0);
 
                 check(1 = 1, "test_1");
+
+                apa1 <= sample_out_matrix(0);
 
             ELSIF run("tb_top_2") THEN
 
