@@ -11,9 +11,11 @@ entity full_sample is
 
     Port (
         clk     : in std_logic;
-        sample_out_matrix : out SAMPLE_MATRIX
-
-
+        sample_out_matrix : out SAMPLE_MATRIX;
+        data_in_matrix_1 : in MATRIX;
+        data_in_matrix_2 : in MATRIX;
+        data_in_matrix_3 : in MATRIX;
+        data_in_matrix_4 : in MATRIX
     );
 end full_sample;
 
@@ -29,19 +31,19 @@ begin
     create_sample_matrix : process(clk)
     begin
         for i in 0 to 15 loop
-            sample_out_matrix(i) <= data_out_matrix_1(i);
+            sample_out_matrix(i) <= data_in_matrix_1(i);
         end loop;
 
         for i in 16 to 31 loop
-            sample_out_matrix(i) <= data_out_matrix_2(i);
+            sample_out_matrix(i) <= data_in_matrix_2(i);
         end loop;
 
         for i in 32 to 47 loop
-            sample_out_matrix(i) <= data_out_matrix_3(i);
+            sample_out_matrix(i) <= data_in_matrix_3(i);
         end loop;
 
         for i in 48 to 63 loop
-            sample_out_matrix(i) <= data_out_matrix_4(i);
+            sample_out_matrix(i) <= data_in_matrix_4(i);
         end loop;
 
 
