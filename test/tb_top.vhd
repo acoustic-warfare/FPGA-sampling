@@ -33,7 +33,6 @@ ARCHITECTURE tb OF tb_top IS
     SIGNAL data_in_1, data_in_2, data_in_3, data_in_4 : STD_LOGIC := '1';
     SIGNAL sample_out_matrix : SAMPLE_MATRIX;
 
-    --SIGNAL data_valid : STD_LOGIC := '1';
 
     SIGNAL setup : STD_LOGIC := '0';
 
@@ -74,7 +73,13 @@ BEGIN
         nr_clk <= nr_clk + 1;
     END PROCESS;
 
-    apa0 <= sample_out_matrix(0);
+    temp_0 <= sample_out_matrix(0);
+    temp_1 <= sample_out_matrix(1);
+    temp_20 <= sample_out_matrix(20);
+    temp_30 <= sample_out_matrix(30);
+    temp_40 <= sample_out_matrix(40);
+    temp_62 <= sample_out_matrix(62);
+    temp_63 <= sample_out_matrix(63);
 
     main : PROCESS
     BEGIN
@@ -85,33 +90,9 @@ BEGIN
         WHILE test_suite LOOP
             IF run("tb_top_1") THEN
 
-
-
-                wait for 10 ns;
-                apa2 <= sample_out_matrix(0);
-                
-                temp_0 <= sample_out_matrix(0);
-                temp_1 <= sample_out_matrix(1);
-                temp_20 <= sample_out_matrix(20);
-                temp_30 <= sample_out_matrix(30);
-                temp_40 <= sample_out_matrix(40);
-                temp_62 <= sample_out_matrix(62);
-                temp_63 <= sample_out_matrix(63);
-
-                --test_1 <= data_in_matrix_1(10);
-                --test_2 <= data_in_matrix_2(10);
-                --test_3 <= data_in_matrix_3(10);
-                --test_4 <= data_in_matrix_4(10);
-                
-                
-
                 WAIT FOR 10000 ns;
 
-                apa3 <= sample_out_matrix(0);
-
                 check(1 = 1, "test_1");
-
-                apa1 <= sample_out_matrix(0);
 
             ELSIF run("tb_top_2") THEN
 
