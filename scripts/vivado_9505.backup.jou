@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:47 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Thu Jun 16 09:19:23 2022
+# Process ID: 9505
+# Current directory: /home/ljudkriget/Projects/ljud_kriget/scripts
+# Command line: vivado
+# Log file: /home/ljudkriget/Projects/ljud_kriget/scripts/vivado.log
+# Journal file: /home/ljudkriget/Projects/ljud_kriget/scripts/vivado.jou
+#-----------------------------------------------------------
+start_gui
+xhub::refresh_catalog [xhub::get_xstores xilinx_board_store]
