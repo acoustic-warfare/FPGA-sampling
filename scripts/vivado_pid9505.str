@@ -1,0 +1,98 @@
+/*
+
+Xilinx Vivado v2020.2 (64-bit) [Major: 2020, Minor: 2]
+SW Build: 3064766 on Wed Nov 18 09:12:47 MST 2020
+IP Build: 3064653 on Wed Nov 18 14:17:31 MST 2020
+
+Process ID (PID): 9505
+License: Customer
+Mode: GUI Mode
+
+Current time: 	Thu Jun 16 09:19:44 CEST 2022
+Time zone: 	Central European Standard Time (Europe/Stockholm)
+
+OS: Ubuntu
+OS Version: 5.13.0-51-generic
+OS Architecture: amd64
+Available processors (cores): 4
+
+Display: 1
+Screen size: 1920x1200
+Screen resolution (DPI): 100
+Available screens: 1
+Default font: family=Dialog,name=Dialog,style=plain,size=12
+Scale size: 12
+
+Java version: 	11.0.2 64-bit
+Java home: 	/tools/Xilinx/Vivado/2020.2/tps/lnx64/jre11.0.2
+Java executable location: 	/tools/Xilinx/Vivado/2020.2/tps/lnx64/jre11.0.2/bin/java
+Java initial memory (-Xms): 	128 MB
+Java maximum memory (-Xmx):	 3 GB
+
+
+User name: 	ljudkriget
+User home directory: /home/ljudkriget
+User working directory: /home/ljudkriget/Projects/ljud_kriget/scripts
+User country: 	US
+User language: 	en
+User locale: 	en_US
+
+RDI_BASEROOT: /tools/Xilinx/Vivado
+HDI_APPROOT: /tools/Xilinx/Vivado/2020.2
+RDI_DATADIR: /tools/Xilinx/Vivado/2020.2/data
+RDI_BINDIR: /tools/Xilinx/Vivado/2020.2/bin
+
+Vivado preferences file location: /home/ljudkriget/.Xilinx/Vivado/2020.2/vivado.xml
+Vivado preferences directory: /home/ljudkriget/.Xilinx/Vivado/2020.2/
+Vivado layouts directory: /home/ljudkriget/.Xilinx/Vivado/2020.2/data/layouts
+PlanAhead jar file location: 	/tools/Xilinx/Vivado/2020.2/lib/classes/planAhead.jar
+Vivado log file location: 	/home/ljudkriget/Projects/ljud_kriget/scripts/vivado.log
+Vivado journal file location: 	/home/ljudkriget/Projects/ljud_kriget/scripts/vivado.jou
+Engine tmp dir: 	./.Xil/Vivado-9505-jokern
+
+Xilinx Environment Variables
+----------------------------
+XILINX: /tools/Xilinx/Vivado/2020.2/ids_lite/ISE
+XILINX_DSP: /tools/Xilinx/Vivado/2020.2/ids_lite/ISE
+XILINX_HLS: /tools/Xilinx/Vitis_HLS/2020.2
+XILINX_PLANAHEAD: /tools/Xilinx/Vivado/2020.2
+XILINX_SDK: /tools/Xilinx/Vitis/2020.2
+XILINX_VITIS: /tools/Xilinx/Vitis/2020.2
+XILINX_VIVADO: /tools/Xilinx/Vivado/2020.2
+XILINX_VIVADO_HLS: /tools/Xilinx/Vivado/2020.2
+
+
+GUI allocated memory:	185 MB
+GUI max memory:		3,072 MB
+Engine allocated memory: 1,486 MB
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+
+*/
+
+// TclEventType: START_GUI
+// Tcl Message: start_gui 
+// Tcl Command: 'rdi::info_commands {device::*}'
+// Tcl Command: 'rdi::info_commands {debug::*}'
+// Tcl Command: 'rdi::info_commands {*}'
+selectButton(PAResourceEtoH.GettingStartedView_OPEN_EXAMPLE_PROJECT, "Open Example Project"); // y
+// [GUI Memory]: 82 MB (+82983kb) [00:00:12]
+// [Engine Memory]: 1,489 MB (+1409747kb) [00:00:12]
+// a (cr): Open Example Project: addNotify
+// HMemoryUtils.trashcanNow. Engine heap size: 1,489 MB. GUI used memory: 64 MB. Current time: 6/16/22, 9:19:45 AM CEST
+selectButton("NEXT", "Next >"); // JButton
+// TclEventType: CED_RESET_GUI_ELEMENT
+// Elapsed time: 12 seconds
+selectButton((HResource) null, "Install/Update Example Designs"); // a
+// TclEventType: LOAD_FEATURE
+// TclEventType: XHUB_XSTORE_DIR_CHANGE
+// TclEventType: XHUB_XSTORE_REFRESH
+// Tcl Message: xhub::refresh_catalog [xhub::get_xstores xilinx_board_store] 
+// bz (cr):  XHub Stores : addNotify
+// Elapsed time: 72 seconds
+selectButton(RDIResource.ProgressDialog_BACKGROUND, "Background"); // a
+selectButton("CANCEL", "Cancel"); // JButton
+dismissDialog("Open Example Project"); // a
+selectButton("HStatusBar_ProgressStatusItem_Cancel", "Cancel"); // NullButton
+selectButton(PAResourceEtoH.GettingStartedView_OPEN_PROJECT, "Open Project"); // y
+// HOptionPane Warning: 'A background task is running. Please wait until it completes and try again. (Background Task)'
