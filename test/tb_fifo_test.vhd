@@ -83,7 +83,7 @@ BEGIN
                 --    SEVERITY warning;
                 --check(data_in = '0', "1 test med flera checks");
                 --
-                check(1 = 0, "2 test med flera checks");
+                --check(1 = 0, "2 test med flera checks");
                 check(1 = 1, "3 test med flera checks");
 
             END IF;

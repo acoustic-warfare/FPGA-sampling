@@ -15,7 +15,8 @@ entity full_sample is
         data_in_matrix_1 : in MATRIX;
         data_in_matrix_2 : in MATRIX;
         data_in_matrix_3 : in MATRIX;
-        data_in_matrix_4 : in MATRIX
+        data_in_matrix_4 : in MATRIX;
+        data_valid : in std_logic
     );
 end full_sample;
 
@@ -35,15 +36,15 @@ begin
         end loop;
 
         for i in 16 to 31 loop
-            sample_out_matrix(i) <= data_in_matrix_2(i);
+            sample_out_matrix(i) <= data_in_matrix_2(i - 16);
         end loop;
 
         for i in 32 to 47 loop
-            sample_out_matrix(i) <= data_in_matrix_3(i);
+            sample_out_matrix(i) <= data_in_matrix_3(i - 32);
         end loop;
 
         for i in 48 to 63 loop
-            sample_out_matrix(i) <= data_in_matrix_4(i);
+            sample_out_matrix(i) <= data_in_matrix_4(i - 48);
         end loop;
 
 
