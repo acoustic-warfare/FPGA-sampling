@@ -1,6 +1,10 @@
 *.jou
 *.log
+*.str
+*.zip
 .Xil
 ethernet_test
 venv
 vunit_out
+vivado_files
+led_switch.tcl
