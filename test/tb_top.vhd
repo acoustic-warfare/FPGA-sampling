@@ -32,10 +32,7 @@ ARCHITECTURE tb OF tb_top IS
     SIGNAL reset : STD_LOGIC;
     SIGNAL data_in_1, data_in_2, data_in_3, data_in_4 : STD_LOGIC := '1';
     SIGNAL sample_out_matrix : SAMPLE_MATRIX;
-    SIGNAL data_in_matrix_1 : MATRIX;
-    SIGNAL data_in_matrix_2 : MATRIX;
-    SIGNAL data_in_matrix_3 : MATRIX;
-    SIGNAL data_in_matrix_4 : MATRIX;
+
     --SIGNAL data_valid : STD_LOGIC := '1';
 
     SIGNAL setup : STD_LOGIC := '0';
@@ -76,17 +73,7 @@ BEGIN
         nr_clk <= nr_clk + 1;
     END PROCESS;
 
-    vector_create : PROCESS (setup)
-    BEGIN
-        FOR i IN 0 TO 15 LOOP
-            matrix_1(i) <= v1_24;
-        END LOOP;
 
-        data_in_matrix_1 <= matrix_1;
-        data_in_matrix_2 <= matrix_1;
-        data_in_matrix_3 <= matrix_1;
-        data_in_matrix_4 <= matrix_1;
-    END PROCESS;
 
     main : PROCESS
     BEGIN
@@ -99,7 +86,7 @@ BEGIN
 
                 
 
-
+                wait for 10 ns;
 
                 
                 temp_0 <= sample_out_matrix(0);
@@ -110,10 +97,10 @@ BEGIN
                 temp_62 <= sample_out_matrix(62);
                 temp_63 <= sample_out_matrix(63);
 
-                test_1 <= data_in_matrix_1(10);
-                test_1 <= data_in_matrix_2(10);
-                test_1 <= data_in_matrix_3(10);
-                test_1 <= data_in_matrix_4(10);
+                --test_1 <= data_in_matrix_1(10);
+                --test_2 <= data_in_matrix_2(10);
+                --test_3 <= data_in_matrix_3(10);
+                --test_4 <= data_in_matrix_4(10);
 
                 WAIT FOR 1000 ns;
 
