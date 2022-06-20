@@ -16,15 +16,17 @@ entity full_sample is
         data_in_matrix_2 : in MATRIX;
         data_in_matrix_3 : in MATRIX;
         data_in_matrix_4 : in MATRIX;
-        data_valid : in std_logic
+        data_valid_1 : in std_logic;
+        data_valid_2 : in std_logic;
+        data_valid_3 : in std_logic;
+        data_valid_4 : in std_logic
     );
 end full_sample;
 
 
 architecture behavroal of full_sample is
 
-    signal counter_col : integer := 0;
-    signal counter_row : integer := 0;
+
 
 begin
 
