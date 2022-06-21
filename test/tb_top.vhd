@@ -16,18 +16,6 @@ architecture tb of tb_top is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
-   component top
-      port (
-         data_in_1 : in std_logic;
-         data_in_2 : in std_logic;
-         data_in_3 : in std_logic;
-         data_in_4 : in std_logic;
-         clk : in std_logic;
-         reset : in std_logic;
-         sample_out_matrix : out SAMPLE_MATRIX
-      );
-   end component;
-
    signal clk : std_logic := '0';
    signal reset : std_logic;
    signal data_in_1, data_in_2, data_in_3, data_in_4 : std_logic := '1';
@@ -52,7 +40,7 @@ architecture tb of tb_top is
 
 begin
 
-   top_1 : top port map(
+   top_1 : entity work.top port map(
       clk => clk,
       reset => reset,
       data_in_1 => data_in_1,

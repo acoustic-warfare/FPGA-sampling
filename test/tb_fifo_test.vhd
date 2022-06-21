@@ -14,17 +14,6 @@ architecture tb of tb_fifo_test is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --används inte än
 
-   component fifo_test
-      port (
-         data_in : in std_logic;
-         data_out : out std_logic;
-         clk : in std_logic;
-         rst : in std_logic; --reset om 1 (asynkron)
-         write_enable : in std_logic;
-         read_enable : in std_logic
-      );
-   end component;
-
    signal clk : std_logic := '0';
    signal data_in : std_logic;
    signal rst : std_logic := '0';
@@ -35,7 +24,7 @@ architecture tb of tb_fifo_test is
 
 begin
 
-   namn : fifo_test port map(
+   fifo_test1 : entity work.fifo_test port map(
       data_in => data_in,
       clk => clk,
       rst => rst,

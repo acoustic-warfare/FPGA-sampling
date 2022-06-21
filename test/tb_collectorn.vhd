@@ -16,16 +16,6 @@ architecture tb of tb_collectorn is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
-   component collectorn
-      port (
-         data_out_matrix : out MATRIX;
-         data_in : in std_logic;
-         clk : in std_logic;
-         data_valid : out std_logic;
-         reset : in std_logic
-      );
-   end component;
-
    signal clk : std_logic := '0';
    signal data_in : std_logic := '1';
    signal reset : std_logic := '0';
@@ -44,7 +34,7 @@ architecture tb of tb_collectorn is
 
 begin
 
-   collectorn1 : collectorn port map(
+   collectorn1 : entity work.collectorn port map(
       data_in => data_in,
       clk => clk,
       reset => reset,

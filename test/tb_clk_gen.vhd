@@ -16,14 +16,6 @@ architecture tb of tb_clk_gen is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
-   component clk_gen
-      port (
-         clk : in std_logic;
-         fsck_clk : out std_logic;
-         fs_clk : out std_logic
-      );
-   end component;
-
    signal clk : std_logic := '0';
    signal reset : std_logic;
    signal fsck_clk : std_logic;
@@ -31,7 +23,7 @@ architecture tb of tb_clk_gen is
 
 begin
 
-   CLK_GEN1 : clk_gen port map(
+   CLK_GEN1 : entity work.clk_gen port map(
       clk => clk,
       fsck_clk => fsck_clk,
       fs_clk => fs_clk

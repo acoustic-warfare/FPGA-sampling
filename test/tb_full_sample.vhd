@@ -16,21 +16,6 @@ architecture tb of tb_full_sample is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
-   component full_sample
-      port (
-         clk : in std_logic;
-         sample_out_matrix : out SAMPLE_MATRIX;
-         data_in_matrix_1 : in MATRIX;
-         data_in_matrix_2 : in MATRIX;
-         data_in_matrix_3 : in MATRIX;
-         data_in_matrix_4 : in MATRIX;
-         data_valid_1 : in std_logic;
-         data_valid_2 : in std_logic;
-         data_valid_3 : in std_logic;
-         data_valid_4 : in std_logic
-      );
-   end component;
-
    signal clk : std_logic := '0';
    signal sample_out_matrix : SAMPLE_MATRIX;
    signal data_in_matrix_1 : MATRIX;
@@ -55,7 +40,7 @@ architecture tb of tb_full_sample is
    signal temp_63 : std_logic_vector(23 downto 0);
 begin
 
-   full_sample_1 : full_sample port map(
+   full_sample_1 : entity work.full_sample port map(
       clk => clk,
       sample_out_matrix => sample_out_matrix,
       data_in_matrix_1 => data_in_matrix_1,

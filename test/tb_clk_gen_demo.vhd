@@ -15,15 +15,6 @@ end tb_clk_gen_demo;
 architecture tb of tb_clk_gen_demo is
    constant clk_cykle : time := 10 ns;
    constant clk_cykle_slow : time := 10.24 us;
-   signal nr_clk : integer := 0; --not yet in use
-
-   component clk_gen_demo
-      port (
-         clk : in std_logic;
-         fsck_clk : out std_logic;
-         fs_clk : out std_logic
-      );
-   end component;
 
    signal clk_slow : std_logic := '0';
    signal clk : std_logic := '0';
@@ -33,7 +24,7 @@ architecture tb of tb_clk_gen_demo is
 
 begin
 
-   CLK_GEN1 : clk_gen_demo port map(
+   G2: entity work.clk_gen_demo port map (
       clk => clk,
       fsck_clk => fsck_clk,
       fs_clk => fs_clk
@@ -45,16 +36,12 @@ begin
       wait for clk_cykle/2;
       clk <= '1';
       wait for clk_cykle/2;
-      nr_clk <= nr_clk + 1;
    end process;
 
    clock_slow : process
    begin
-      clk_slow <= '0';
+      clk_slow <= not clk_slow;
       wait for clk_cykle_slow/2;
-      clk_slow <= '1';
-      wait for clk_cykle_slow/2;
-      --nr_clk <= nr_clk + 1;
    end process;
    main : process
    begin
