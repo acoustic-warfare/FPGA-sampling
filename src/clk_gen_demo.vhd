@@ -103,9 +103,9 @@ BEGIN
     --  end if;
     -- end process;
 
-    fs_clk_gen : PROCESS (clk)
+    fs_clk_gen : PROCESS (tmp7)
     BEGIN
-        IF (rising_edge(clk)) THEN --10
+        IF (rising_edge(tmp7)) THEN --10
             fs_clk <= NOT fs_clk;
         END IF;
     END PROCESS;
