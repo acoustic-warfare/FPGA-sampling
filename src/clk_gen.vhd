@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.all;
 entity clk_gen is
    port (
       clk : in std_logic;
-      fsck_clk : out std_logic := '0';
+      --fsck_clk : out std_logic := '0';
       fs_clk : out std_logic := '0';
       reset : in std_logic -- Asynchronous reset, actevate on 1
    );

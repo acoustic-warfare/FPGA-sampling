@@ -39,5 +39,3 @@ gtkwave::/Time/Zoom/Zoom_Full
 #set dumpname [ gtkwave::getDumpFileName ]
 #gtkwave::/File/Print_To_File PDF {Letter (8.5" x 11")} Minimal $dumpname.pdf
 
-gtk_window_fullscreen(GTK_WINDOW(window));
-
