@@ -6,13 +6,13 @@ context vunit_lib.vunit_context;
 
 use work.MATRIX_TYPE.all;
 
-entity tb_clk_gen is
+entity tb_clk_div is
    generic (
       runner_cfg : string
    );
-end tb_clk_gen;
+end tb_clk_div;
 
-architecture tb of tb_clk_gen is
+architecture tb of tb_clk_div is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
@@ -23,7 +23,7 @@ architecture tb of tb_clk_gen is
 
 begin
 
-   CLK_GEN1 : entity work.clk_gen port map(
+   CLK_DIV1 : entity work.clk_div port map(
       clk => clk,
       fsck_clk => fsck_clk,
       fs_clk => fs_clk,
@@ -43,12 +43,12 @@ begin
 
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_clk_gen_1") then
+         if run("tb_clk_div_1") then
 
             wait for 30000 ns;
 
             check(1 = 1, "test_1");
-         elsif run("tb_clk_gen_2") then
+         elsif run("tb_clk_div_2") then
 
             check(1 = 1, "test_1");
 

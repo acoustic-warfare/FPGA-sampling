@@ -26,7 +26,7 @@ architecture Behavioral of clk_gen_demo is -- Simply takes the input CLK and div
 begin
    fsck_clk_gen : process (clk, reset) -- Divide CLK 1
    begin
-      if (reset = 1) then
+      if (reset = '1') then
          fsck_clk <= '0';
          fs_clk <= '0';
          tmp0 <= '0';

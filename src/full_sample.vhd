@@ -29,7 +29,7 @@ begin
 
    create_sample_matrix : process (clk, reset)
    begin
-      if (reset = 1) then
+      if (reset = '1') then
          sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
       else
          for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
