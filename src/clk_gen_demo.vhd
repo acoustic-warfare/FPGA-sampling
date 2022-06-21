@@ -1,134 +1,130 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
 
-ENTITY clk_gen_demo IS
+entity clk_gen_demo is
 
-    PORT (
-        clk : IN STD_LOGIC;
-        fsck_clk : OUT STD_LOGIC := '0';
-        fs_clk : OUT STD_LOGIC := '0'
-    );
+   port (
+      clk : in std_logic;
+      fsck_clk : out std_logic := '0';
+      fs_clk : out std_logic := '0'
+   );
 
-END clk_gen_demo;
+end clk_gen_demo;
 
-ARCHITECTURE Behavioral OF clk_gen_demo IS
-    SIGNAL tmp0 : STD_LOGIC := '0';
-    SIGNAL tmp1 : STD_LOGIC := '0';
-    SIGNAL tmp2 : STD_LOGIC := '0';
-    SIGNAL tmp3 : STD_LOGIC := '0';
-    SIGNAL tmp4 : STD_LOGIC := '0';
-    SIGNAL tmp5 : STD_LOGIC := '0';
-    SIGNAL tmp6 : STD_LOGIC := '0';
-    SIGNAL tmp7 : STD_LOGIC := '0';
-    SIGNAL tmp8 : STD_LOGIC := '0';
+architecture Behavioral of clk_gen_demo is
+   signal tmp0 : std_logic := '0';
+   signal tmp1 : std_logic := '0';
+   signal tmp2 : std_logic := '0';
+   signal tmp3 : std_logic := '0';
+   signal tmp4 : std_logic := '0';
+   signal tmp5 : std_logic := '0';
+   signal tmp6 : std_logic := '0';
+   signal tmp7 : std_logic := '0';
+   signal tmp8 : std_logic := '0';
 
-    SIGNAL fs_clk2 : STD_LOGIC := '1';
-    SIGNAL rising_edge_counter : INTEGER := -1;
+   signal fs_clk2 : std_logic := '1';
+   signal rising_edge_counter : integer := - 1;
 
-    --procedure clk_div ( clk : in std_logic;
-    --                signal clk_half : out std_logic) is
-    --begin
-    --  if(rising_edge(clk)) then
-    --    clk_half <= not clk;
-    --end if;
-    --end procedure;
+   --procedure clk_div ( clk : in std_logic;
+   --                signal clk_half : out std_logic) is
+   --begin
+   --  if(rising_edge(clk)) then
+   --    clk_half <= not clk;
+   --end if;
+   --end procedure;
 
-BEGIN
+begin
 
-    fsck_clk_gen : PROCESS (clk)
-    BEGIN
-        IF (rising_edge(clk)) THEN
-            fsck_clk <= NOT fsck_clk;
-        END IF;
-    END PROCESS;
+   fsck_clk_gen : process (clk)
+   begin
+      if (rising_edge(clk)) then
+         fsck_clk <= not fsck_clk;
+      end if;
+   end process;
 
-    fs_clk_gen2 : PROCESS (clk)                       ---## counter clk example
-    BEGIN
-        IF (rising_edge(clk)) then
-            if(rising_edge_counter = 511) then
-                fs_clk2 <= not(fs_clk2);
-                rising_edge_counter <= 0;
-            else
-                rising_edge_counter <= rising_edge_counter + 1;
-            end if;
-        end if;
-        --IF (rising_edge(clk) AND rising_edge_counter = 511) THEN
-        --    fs_clk2 <= NOT fs_clk2;
-        --END IF;
-    END PROCESS;
------------------------------------------------------------
+   fs_clk_gen2 : process (clk) ---## counter clk example
+   begin
+      if (rising_edge(clk)) then
+         if (rising_edge_counter = 511) then
+            fs_clk2 <= not(fs_clk2);
+            rising_edge_counter <= 0;
+         else
+            rising_edge_counter <= rising_edge_counter + 1;
+         end if;
+      end if;
+      --IF (rising_edge(clk) AND rising_edge_counter = 511) THEN
+      --    fs_clk2 <= NOT fs_clk2;
+      --END IF;
+   end process;
+   -----------------------------------------------------------
+   tmp_clk : process (fsck_clk)
+   begin
+      if (rising_edge(fsck_clk)) then ---2
+         tmp0 <= not tmp0;
+      end if;
+   end process;
 
+   process (tmp0)
+   begin
+      if (rising_edge(tmp0)) then --3
+         tmp1 <= not tmp1;
+      end if;
+   end process;
 
-    tmp_clk : PROCESS (fsck_clk)
-    BEGIN
-        IF (rising_edge(fsck_clk)) THEN ---2
-            tmp0 <= NOT tmp0;
-        END IF;
-    END PROCESS;
+   process (tmp1)
+   begin
+      if (rising_edge(tmp1)) then --4
+         tmp2 <= not tmp2;
+      end if;
+   end process;
 
-    PROCESS (tmp0)
-    BEGIN
-        IF (rising_edge(tmp0)) THEN --3
-            tmp1 <= NOT tmp1;
-        END IF;
-    END PROCESS;
+   process (tmp2)
+   begin
+      if (rising_edge(tmp2)) then --5
+         tmp3 <= not tmp3;
+      end if;
+   end process;
 
-    PROCESS (tmp1)
-    BEGIN
-        IF (rising_edge(tmp1)) THEN --4
-            tmp2 <= NOT tmp2;
-        END IF;
-    END PROCESS;
+   process (tmp3)
+   begin
+      if (rising_edge(tmp3)) then --6
+         tmp4 <= not tmp4;
+      end if;
+   end process;
 
-    PROCESS (tmp2)
-    BEGIN
-        IF (rising_edge(tmp2)) THEN --5
-            tmp3 <= NOT tmp3;
-        END IF;
-    END PROCESS;
+   process (tmp4)
+   begin
+      if (rising_edge(tmp4)) then --7
+         tmp5 <= not tmp5;
+      end if;
+   end process;
 
-    PROCESS (tmp3)
-    BEGIN
-        IF (rising_edge(tmp3)) THEN --6
-            tmp4 <= NOT tmp4;
-        END IF;
-    END PROCESS;
+   process (tmp5)
+   begin
+      if (rising_edge(tmp5)) then --8
+         tmp6 <= not tmp6;
+      end if;
+   end process;
 
-    PROCESS (tmp4)
-    BEGIN
-        IF (rising_edge(tmp4)) THEN --7
-            tmp5 <= NOT tmp5;
-        END IF;
-    END PROCESS;
+   process (tmp6)
+   begin
+      if (rising_edge(tmp6)) then --9
+         tmp7 <= not tmp7;
+      end if;
+   end process;
 
-    PROCESS (tmp5)
-    BEGIN
-        IF (rising_edge(tmp5)) THEN --8
-            tmp6 <= NOT tmp6;
-        END IF;
-    END PROCESS;
+   --process(tmp7)
+   --begin
+   -- if(rising_edge(tmp7)) then
+   --      tmp8 <= not tmp8;
+   --  end if;
+   -- end process;
 
-    PROCESS (tmp6)
-    BEGIN
-        IF (rising_edge(tmp6)) THEN --9
-            tmp7 <= NOT tmp7;
-        END IF;
-    END PROCESS;
+   fs_clk_gen : process (tmp7)
+   begin
+      if (rising_edge(tmp7)) then --10
+         fs_clk <= not fs_clk;
+      end if;
+   end process;
 
-    --process(tmp7)
-    --begin
-    -- if(rising_edge(tmp7)) then
-    --      tmp8 <= not tmp8;
-    --  end if;
-    -- end process;
-
-    fs_clk_gen : PROCESS (tmp7)
-    BEGIN
-        IF (rising_edge(tmp7)) THEN --10
-            fs_clk <= NOT fs_clk;
-        END IF;
-    END PROCESS;
-
-
-
-END Behavioral;
+end Behavioral;

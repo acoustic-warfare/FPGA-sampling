@@ -1,143 +1,135 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
 
-LIBRARY vunit_lib;
-CONTEXT vunit_lib.vunit_context;
+library vunit_lib;
+context vunit_lib.vunit_context;
 
-USE work.MATRIX_TYPE.ALL;
+use work.MATRIX_TYPE.all;
 
-ENTITY tb_full_sample IS
-    GENERIC (
-        runner_cfg : STRING
-    );
-END tb_full_sample;
+entity tb_full_sample is
+   generic (
+      runner_cfg : string
+   );
+end tb_full_sample;
 
-ARCHITECTURE tb OF tb_full_sample IS
-    CONSTANT clk_cykle : TIME := 10 ns;
-    SIGNAL nr_clk : INTEGER := 0; --not yet in use
+architecture tb of tb_full_sample is
+   constant clk_cykle : time := 10 ns;
+   signal nr_clk : integer := 0; --not yet in use
 
-    COMPONENT full_sample
-        PORT (
-            clk : IN STD_LOGIC;
-            sample_out_matrix : OUT SAMPLE_MATRIX;
-            data_in_matrix_1 : IN MATRIX;
-            data_in_matrix_2 : IN MATRIX;
-            data_in_matrix_3 : IN MATRIX;
-            data_in_matrix_4 : IN MATRIX;
-            data_valid_1 : in std_logic;
-            data_valid_2 : in std_logic;
-            data_valid_3 : in std_logic;
-            data_valid_4 : in std_logic
-        );
-    END COMPONENT;
+   component full_sample
+      port (
+         clk : in std_logic;
+         sample_out_matrix : out SAMPLE_MATRIX;
+         data_in_matrix_1 : in MATRIX;
+         data_in_matrix_2 : in MATRIX;
+         data_in_matrix_3 : in MATRIX;
+         data_in_matrix_4 : in MATRIX;
+         data_valid_1 : in std_logic;
+         data_valid_2 : in std_logic;
+         data_valid_3 : in std_logic;
+         data_valid_4 : in std_logic
+      );
+   end component;
 
-    SIGNAL clk : STD_LOGIC := '0';
-    SIGNAL sample_out_matrix : SAMPLE_MATRIX;
-    SIGNAL data_in_matrix_1 : MATRIX;
-    SIGNAL data_in_matrix_2 : MATRIX;
-    SIGNAL data_in_matrix_3 : MATRIX;
-    SIGNAL data_in_matrix_4 : MATRIX;
-    SIGNAL data_valid_1, data_valid_2, data_valid_3, data_valid_4 : STD_LOGIC := '1';
+   signal clk : std_logic := '0';
+   signal sample_out_matrix : SAMPLE_MATRIX;
+   signal data_in_matrix_1 : MATRIX;
+   signal data_in_matrix_2 : MATRIX;
+   signal data_in_matrix_3 : MATRIX;
+   signal data_in_matrix_4 : MATRIX;
+   signal data_valid_1, data_valid_2, data_valid_3, data_valid_4 : std_logic := '1';
 
-    SIGNAL setup : std_logic := '0';
+   signal setup : std_logic := '0';
 
-    SIGNAL v0_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "000000000000000000000000";
-    SIGNAL v1_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "111111111111111111111111";
+   signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
+   signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
 
-    SIGNAL matrix_1 : MATRIX;
+   signal matrix_1 : MATRIX;
 
-    SIGNAL temp_0 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_1 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_20 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_30 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_40 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_62 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_63 : STD_LOGIC_VECTOR(23 DOWNTO 0);
+   signal temp_0 : std_logic_vector(23 downto 0);
+   signal temp_1 : std_logic_vector(23 downto 0);
+   signal temp_20 : std_logic_vector(23 downto 0);
+   signal temp_30 : std_logic_vector(23 downto 0);
+   signal temp_40 : std_logic_vector(23 downto 0);
+   signal temp_62 : std_logic_vector(23 downto 0);
+   signal temp_63 : std_logic_vector(23 downto 0);
+begin
 
+   full_sample_1 : full_sample port map(
+      clk => clk,
+      sample_out_matrix => sample_out_matrix,
+      data_in_matrix_1 => data_in_matrix_1,
+      data_in_matrix_2 => data_in_matrix_2,
+      data_in_matrix_3 => data_in_matrix_3,
+      data_in_matrix_4 => data_in_matrix_4,
+      data_valid_1 => data_valid_1,
+      data_valid_2 => data_valid_2,
+      data_valid_3 => data_valid_3,
+      data_valid_4 => data_valid_4
+   );
 
+   clock : process
+   begin
+      clk <= '0';
+      wait for clk_cykle/2;
+      clk <= '1';
+      wait for clk_cykle/2;
+      nr_clk <= nr_clk + 1;
+   end process;
 
+   vector_create : process (setup)
+   begin
 
-BEGIN
+      for i in 0 to 15 loop
+         matrix_1(i) <= v1_24;
+      end loop;
 
-    full_sample_1 : full_sample PORT MAP(
-        clk => clk,
-        sample_out_matrix => sample_out_matrix,
-        data_in_matrix_1 => data_in_matrix_1,
-        data_in_matrix_2 => data_in_matrix_2,
-        data_in_matrix_3 => data_in_matrix_3,
-        data_in_matrix_4 => data_in_matrix_4,
-        data_valid_1 => data_valid_1,
-        data_valid_2 => data_valid_2,
-        data_valid_3 => data_valid_3,
-        data_valid_4 => data_valid_4
-    );
+      data_in_matrix_1 <= matrix_1;
+      data_in_matrix_2 <= matrix_1;
+      data_in_matrix_3 <= matrix_1;
+      data_in_matrix_4 <= matrix_1;
 
-    clock : PROCESS
-    BEGIN
-        clk <= '0';
-        WAIT FOR clk_cykle/2;
-        clk <= '1';
-        WAIT FOR clk_cykle/2;
-        nr_clk <= nr_clk + 1;
-    END PROCESS;
+   end process;
+   main : process
+   begin
 
-    vector_create : process(setup)
-    begin
-        
-        for i in 0 to 15 loop
-            matrix_1(i) <= v1_24;
-        end loop;
+      setup <= '1';
 
-        data_in_matrix_1 <= matrix_1;
-        data_in_matrix_2 <= matrix_1;
-        data_in_matrix_3 <= matrix_1;
-        data_in_matrix_4 <= matrix_1;
+      test_runner_setup(runner, runner_cfg);
+      while test_suite loop
+         if run("tb_full_sample_1") then
 
-    end process;
+            wait for 10 ns;
 
+            temp_0 <= sample_out_matrix(0);
+            temp_1 <= sample_out_matrix(1);
+            temp_20 <= sample_out_matrix(20);
+            temp_30 <= sample_out_matrix(30);
+            temp_40 <= sample_out_matrix(40);
+            temp_62 <= sample_out_matrix(62);
+            temp_63 <= sample_out_matrix(63);
 
-    main : PROCESS
-    BEGIN
+            wait for 10 ns;
 
-    setup <= '1';
+            data_valid_1 <= '1';
 
-        test_runner_setup(runner, runner_cfg);
-        WHILE test_suite LOOP
-            IF run("tb_full_sample_1") THEN
-                
-                
+            wait for 10 ns;
 
-                wait for 10 ns;
+            check(sample_out_matrix(3) = v1_24, "fail!1  row 0  in matrix");
 
-                temp_0 <= sample_out_matrix(0);
-                temp_1 <= sample_out_matrix(1);
-                temp_20 <= sample_out_matrix(20);
-                temp_30 <= sample_out_matrix(30);
-                temp_40 <= sample_out_matrix(40);
-                temp_62 <= sample_out_matrix(62);
-                temp_63 <= sample_out_matrix(63);
+            check(1 = 1, "test_1");
 
-                wait for 10 ns;
+         elsif run("tb_full_sample_2") then
 
-                data_valid_1 <= '1';
+            check(1 = 1, "test_1");
 
-                WAIT FOR 10 ns;
+            wait for 11 ns;
 
-                check(sample_out_matrix(3) = v1_24, "fail!1  row 0  in matrix");
+         end if;
+      end loop;
 
-                check(1 = 1, "test_1");
+      test_runner_cleanup(runner);
+   end process;
 
-            ELSIF run("tb_full_sample_2") THEN
-
-                check(1 = 1, "test_1");
-
-                WAIT FOR 11 ns;
-
-            END IF;
-        END LOOP;
-
-        test_runner_cleanup(runner);
-    END PROCESS;
-
-    test_runner_watchdog(runner, 100 ms);
-END ARCHITECTURE;
+   test_runner_watchdog(runner, 100 ms);
+end architecture;

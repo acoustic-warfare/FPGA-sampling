@@ -1,110 +1,108 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
 
-LIBRARY vunit_lib;
-CONTEXT vunit_lib.vunit_context;
+library vunit_lib;
+context vunit_lib.vunit_context;
 
-USE work.MATRIX_TYPE.ALL;
+use work.MATRIX_TYPE.all;
 
-ENTITY tb_top IS
-    GENERIC (
-        runner_cfg : STRING
-    );
-END tb_top;
+entity tb_top is
+   generic (
+      runner_cfg : string
+   );
+end tb_top;
 
-ARCHITECTURE tb OF tb_top IS
-    CONSTANT clk_cykle : TIME := 10 ns;
-    SIGNAL nr_clk : INTEGER := 0; --not yet in use
+architecture tb of tb_top is
+   constant clk_cykle : time := 10 ns;
+   signal nr_clk : integer := 0; --not yet in use
 
-    COMPONENT top
-        PORT (
-            data_in_1 : IN STD_LOGIC;
-            data_in_2 : IN STD_LOGIC;
-            data_in_3 : IN STD_LOGIC;
-            data_in_4 : IN STD_LOGIC;
-            clk : IN STD_LOGIC;
-            reset : IN STD_LOGIC;
-            sample_out_matrix : OUT SAMPLE_MATRIX
-        );
-    END COMPONENT;
+   component top
+      port (
+         data_in_1 : in std_logic;
+         data_in_2 : in std_logic;
+         data_in_3 : in std_logic;
+         data_in_4 : in std_logic;
+         clk : in std_logic;
+         reset : in std_logic;
+         sample_out_matrix : out SAMPLE_MATRIX
+      );
+   end component;
 
-    SIGNAL clk : STD_LOGIC := '0';
-    SIGNAL reset : STD_LOGIC;
-    SIGNAL data_in_1, data_in_2, data_in_3, data_in_4 : STD_LOGIC := '1';
-    SIGNAL sample_out_matrix : SAMPLE_MATRIX;
+   signal clk : std_logic := '0';
+   signal reset : std_logic;
+   signal data_in_1, data_in_2, data_in_3, data_in_4 : std_logic := '1';
+   signal sample_out_matrix : SAMPLE_MATRIX;
+   signal setup : std_logic := '0';
 
+   signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
+   signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
 
-    SIGNAL setup : STD_LOGIC := '0';
+   signal matrix_1 : MATRIX;
 
-    SIGNAL v0_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "000000000000000000000000";
-    SIGNAL v1_24 : STD_LOGIC_VECTOR(23 DOWNTO 0) := "111111111111111111111111";
+   signal temp_0 : std_logic_vector(23 downto 0);
+   signal temp_1 : std_logic_vector(23 downto 0);
+   signal temp_20 : std_logic_vector(23 downto 0);
+   signal temp_30 : std_logic_vector(23 downto 0);
+   signal temp_40 : std_logic_vector(23 downto 0);
+   signal temp_62 : std_logic_vector(23 downto 0);
+   signal temp_63 : std_logic_vector(23 downto 0);
 
-    SIGNAL matrix_1 : MATRIX;
+   signal test_1, test_2, test_3, test_4 : std_logic_vector(23 downto 0);
+   signal apa0, apa1, apa2, apa3 : std_logic_vector(23 downto 0);
 
-    SIGNAL temp_0 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_1 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_20 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_30 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_40 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_62 : STD_LOGIC_VECTOR(23 DOWNTO 0);
-    SIGNAL temp_63 : STD_LOGIC_VECTOR(23 DOWNTO 0);
+begin
 
-    signal test_1, test_2, test_3, test_4:  STD_LOGIC_VECTOR(23 DOWNTO 0);
-    signal apa0, apa1, apa2, apa3 : std_logic_vector(23 downto 0);
+   top_1 : top port map(
+      clk => clk,
+      reset => reset,
+      data_in_1 => data_in_1,
+      data_in_2 => data_in_2,
+      data_in_3 => data_in_3,
+      data_in_4 => data_in_4,
+      sample_out_matrix => sample_out_matrix
+   );
 
-BEGIN
+   clock : process
+   begin
+      clk <= '0';
+      wait for clk_cykle/2;
+      clk <= '1';
+      wait for clk_cykle/2;
+      nr_clk <= nr_clk + 1;
+   end process;
 
-    top_1 : top PORT MAP(
-        clk => clk,
-        reset => reset,
-        data_in_1 => data_in_1,
-        data_in_2 => data_in_2,
-        data_in_3 => data_in_3,
-        data_in_4 => data_in_4,
-        sample_out_matrix => sample_out_matrix
-    );
+   temp_0 <= sample_out_matrix(0);
+   temp_1 <= sample_out_matrix(1);
+   temp_20 <= sample_out_matrix(20);
+   temp_30 <= sample_out_matrix(30);
+   temp_40 <= sample_out_matrix(40);
+   temp_62 <= sample_out_matrix(62);
+   temp_63 <= sample_out_matrix(63);
 
-    clock : PROCESS
-    BEGIN
-        clk <= '0';
-        WAIT FOR clk_cykle/2;
-        clk <= '1';
-        WAIT FOR clk_cykle/2;
-        nr_clk <= nr_clk + 1;
-    END PROCESS;
+   main : process
+   begin
 
-    temp_0 <= sample_out_matrix(0);
-    temp_1 <= sample_out_matrix(1);
-    temp_20 <= sample_out_matrix(20);
-    temp_30 <= sample_out_matrix(30);
-    temp_40 <= sample_out_matrix(40);
-    temp_62 <= sample_out_matrix(62);
-    temp_63 <= sample_out_matrix(63);
+      setup <= '1';
 
-    main : PROCESS
-    BEGIN
+      test_runner_setup(runner, runner_cfg);
+      while test_suite loop
+         if run("tb_top_1") then
 
-        setup <= '1';
+            wait for 10000 ns;
 
-        test_runner_setup(runner, runner_cfg);
-        WHILE test_suite LOOP
-            IF run("tb_top_1") THEN
+            check(1 = 1, "test_1");
 
-                WAIT FOR 10000 ns;
+         elsif run("tb_top_2") then
 
-                check(1 = 1, "test_1");
+            check(1 = 1, "test_1");
 
-            ELSIF run("tb_top_2") THEN
+            wait for 11 ns;
 
-                check(1 = 1, "test_1");
+         end if;
+      end loop;
 
-                WAIT FOR 11 ns;
+      test_runner_cleanup(runner);
+   end process;
 
-            END IF;
-        END LOOP;
-
-        test_runner_cleanup(runner);
-    END PROCESS;
-
-    test_runner_watchdog(runner, 100 ms);
-END ARCHITECTURE;
+   test_runner_watchdog(runner, 100 ms);
+end architecture;
