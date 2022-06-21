@@ -14,6 +14,7 @@ END tb_clk_gen_demo;
 
 ARCHITECTURE tb OF tb_clk_gen_demo  IS
     CONSTANT clk_cykle : TIME := 10 ns;
+    COnstant clk_cykle_slow : time := 10.24 us;
     SIGNAL nr_clk : INTEGER := 0; --not yet in use
 
     COMPONENT clk_gen_demo
@@ -23,6 +24,7 @@ ARCHITECTURE tb OF tb_clk_gen_demo  IS
           );
     END COMPONENT;
 
+    Signal clk_slow : std_logic := '0';
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL reset : STD_LOGIC;
     SIGNAL fsck_clk : STD_LOGIC;
@@ -45,6 +47,15 @@ BEGIN
         clk <= '1';
         WAIT FOR clk_cykle/2;
         nr_clk <= nr_clk + 1;
+    END PROCESS;
+
+    clock_slow : PROCESS
+    BEGIN
+        clk_slow <= '0';
+        WAIT FOR clk_cykle_slow/2;
+        clk_slow <= '1';
+        WAIT FOR clk_cykle_slow/2;
+        --nr_clk <= nr_clk + 1;
     END PROCESS;
 
 
