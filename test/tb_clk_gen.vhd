@@ -21,6 +21,8 @@ architecture tb of tb_clk_gen is
    signal fs_clk : std_logic;
    signal reset : std_logic;
 
+   signal fsck_count : integer := 0;
+
 begin
    CLK_GEN1 : entity work.clk_gen port map(
       clk => clk,
@@ -28,6 +30,13 @@ begin
       fs_clk => fs_clk,
       reset => reset
    );
+
+   fsck_counter : process(fsck_clk)
+   begin
+      if(fsck_clk = '1') then
+         fsck_count <= fsck_count + 1;
+      end if;
+   end process;
 
    clock : process
    begin
