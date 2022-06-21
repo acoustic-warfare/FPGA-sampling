@@ -25,7 +25,7 @@ ARCHITECTURE tb OF tb_clk_gen_demo IS
         );
     END COMPONENT;
 
-    SIGNAL clk_slow : STD_LOGIC := '0';
+    SIGNAL clk_slow : STD_LOGIC := '1';
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL reset : STD_LOGIC;
     SIGNAL fsck_clk : STD_LOGIC;
