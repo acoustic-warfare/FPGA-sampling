@@ -38,9 +38,6 @@ begin
     begin
         if(rising_edge(clk) and rising_edge_counter = 1023) then
             fs_clk <= not fs_clk;
-
-
-
         end if;
     end process;
 

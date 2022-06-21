@@ -12,15 +12,18 @@ ENTITY clk_gen_demo IS
 END clk_gen_demo;
 
 ARCHITECTURE Behavioral OF clk_gen_demo IS
-    SIGNAL tmp0 : STD_LOGIC;
-    SIGNAL tmp1 : STD_LOGIC;
-    SIGNAL tmp2 : STD_LOGIC;
-    SIGNAL tmp3 : STD_LOGIC;
-    SIGNAL tmp4 : STD_LOGIC;
-    SIGNAL tmp5 : STD_LOGIC;
-    SIGNAL tmp6 : STD_LOGIC;
-    SIGNAL tmp7 : STD_LOGIC;
-    SIGNAL tmp8 : STD_LOGIC;
+    SIGNAL tmp0 : STD_LOGIC := '0';
+    SIGNAL tmp1 : STD_LOGIC := '0';
+    SIGNAL tmp2 : STD_LOGIC := '0';
+    SIGNAL tmp3 : STD_LOGIC := '0';
+    SIGNAL tmp4 : STD_LOGIC := '0';
+    SIGNAL tmp5 : STD_LOGIC := '0';
+    SIGNAL tmp6 : STD_LOGIC := '0';
+    SIGNAL tmp7 : STD_LOGIC := '0';
+    SIGNAL tmp8 : STD_LOGIC := '0';
+
+    SIGNAL fs_clk2 : STD_LOGIC := '0';
+    SIGNAL rising_edge_counter : INTEGER := 0;
 
     --procedure clk_div ( clk : in std_logic;
     --                signal clk_half : out std_logic) is
@@ -35,9 +38,11 @@ BEGIN
     fsck_clk_gen : PROCESS (clk)
     BEGIN
         IF (rising_edge(clk)) THEN
-            fsck_clk <= NOT fsck_clk; --1
+            fsck_clk <= NOT fsck_clk;
+            rising_edge_counter <= rising_edge_counter + 1;
+        ELSIF (rising_edge_counter = 1024) THEN
+            rising_edge_counter <= 0;
         END IF;
-
     END PROCESS;
 
     tmp_clk : PROCESS (fsck_clk)
@@ -107,6 +112,13 @@ BEGIN
     BEGIN
         IF (rising_edge(tmp7)) THEN --10
             fs_clk <= NOT fs_clk;
+        END IF;
+    END PROCESS;
+    
+    fs_clk_gen2 : PROCESS (clk)
+    BEGIN
+        IF (rising_edge(clk) AND rising_edge_counter = 1023) THEN
+            fs_clk2 <= NOT fs_clk2;
         END IF;
     END PROCESS;
 
