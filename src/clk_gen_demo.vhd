@@ -22,8 +22,8 @@ ARCHITECTURE Behavioral OF clk_gen_demo IS
     SIGNAL tmp7 : STD_LOGIC := '0';
     SIGNAL tmp8 : STD_LOGIC := '0';
 
-    SIGNAL fs_clk2 : STD_LOGIC := '0';
-    SIGNAL rising_edge_counter : INTEGER := 0;
+    SIGNAL fs_clk2 : STD_LOGIC := '1';
+    SIGNAL rising_edge_counter : INTEGER := -1;
 
     --procedure clk_div ( clk : in std_logic;
     --                signal clk_half : out std_logic) is
@@ -39,17 +39,22 @@ BEGIN
     BEGIN
         IF (rising_edge(clk)) THEN
             fsck_clk <= NOT fsck_clk;
-            rising_edge_counter <= rising_edge_counter + 1;
-        ELSIF (rising_edge_counter = 513) THEN
-            rising_edge_counter <= 0;
         END IF;
     END PROCESS;
 
     fs_clk_gen2 : PROCESS (clk)
     BEGIN
-        IF (rising_edge(clk) AND rising_edge_counter = 512) THEN
-            fs_clk2 <= NOT fs_clk2;
-        END IF;
+        IF (rising_edge(clk)) then
+            if(rising_edge_counter = 511) then
+                fs_clk2 <= not(fs_clk2);
+                rising_edge_counter <= 0;
+            else
+                rising_edge_counter <= rising_edge_counter + 1;
+            end if;
+        end if;
+        --IF (rising_edge(clk) AND rising_edge_counter = 511) THEN
+        --    fs_clk2 <= NOT fs_clk2;
+        --END IF;
     END PROCESS;
 -----------------------------------------------------------
 
