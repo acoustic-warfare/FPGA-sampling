@@ -12,25 +12,24 @@ ENTITY tb_clk_gen_demo IS
     );
 END tb_clk_gen_demo;
 
-ARCHITECTURE tb OF tb_clk_gen_demo  IS
+ARCHITECTURE tb OF tb_clk_gen_demo IS
     CONSTANT clk_cykle : TIME := 10 ns;
-    COnstant clk_cykle_slow : time := 10.24 us;
+    CONSTANT clk_cykle_slow : TIME := 10.24 us;
     SIGNAL nr_clk : INTEGER := 0; --not yet in use
 
     COMPONENT clk_gen_demo
-    Port (clk : in std_logic;
-          fsck_clk : out std_logic;
-          fs_clk   : out std_logic
-          );
+        PORT (
+            clk : IN STD_LOGIC;
+            fsck_clk : OUT STD_LOGIC;
+            fs_clk : OUT STD_LOGIC
+        );
     END COMPONENT;
 
-    Signal clk_slow : std_logic := '0';
+    SIGNAL clk_slow : STD_LOGIC := '0';
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL reset : STD_LOGIC;
     SIGNAL fsck_clk : STD_LOGIC;
     SIGNAL fs_clk : STD_LOGIC;
-
-
 
 BEGIN
 
@@ -57,24 +56,16 @@ BEGIN
         WAIT FOR clk_cykle_slow/2;
         --nr_clk <= nr_clk + 1;
     END PROCESS;
-
-
     main : PROCESS
     BEGIN
-
-
 
         test_runner_setup(runner, runner_cfg);
         WHILE test_suite LOOP
             IF run("tb_clk_demo_1") THEN
 
-                 WAIT FOR 30000 ns;
-
-
+                WAIT FOR 30000 ns;
 
                 check(1 = 1, "test_1");
-
-
             ELSIF run("tb_clk_demo_2") THEN
 
                 check(1 = 1, "test_1");
