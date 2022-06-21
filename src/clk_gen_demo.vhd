@@ -22,41 +22,15 @@ architecture Behavioral of clk_gen_demo is
    signal tmp7 : std_logic := '0';
    signal tmp8 : std_logic := '0';
 
-   signal fs_clk2 : std_logic := '1';
-   signal rising_edge_counter : integer := - 1;
-
-   --procedure clk_div ( clk : in std_logic;
-   --                signal clk_half : out std_logic) is
-   --begin
-   --  if(rising_edge(clk)) then
-   --    clk_half <= not clk;
-   --end if;
-   --end procedure;
-
 begin
 
-   fsck_clk_gen : process (clk)
+   fsck_clk_gen : process (clk)      -- Divide CLK 1
    begin
       if (rising_edge(clk)) then
          fsck_clk <= not fsck_clk;
       end if;
    end process;
 
-   fs_clk_gen2 : process (clk) ---## counter clk example
-   begin
-      if (rising_edge(clk)) then
-         if (rising_edge_counter = 511) then
-            fs_clk2 <= not(fs_clk2);
-            rising_edge_counter <= 0;
-         else
-            rising_edge_counter <= rising_edge_counter + 1;
-         end if;
-      end if;
-      --IF (rising_edge(clk) AND rising_edge_counter = 511) THEN
-      --    fs_clk2 <= NOT fs_clk2;
-      --END IF;
-   end process;
-   -----------------------------------------------------------
    tmp_clk : process (fsck_clk)
    begin
       if (rising_edge(fsck_clk)) then ---2
@@ -112,13 +86,6 @@ begin
          tmp7 <= not tmp7;
       end if;
    end process;
-
-   --process(tmp7)
-   --begin
-   -- if(rising_edge(tmp7)) then
-   --      tmp8 <= not tmp8;
-   --  end if;
-   -- end process;
 
    fs_clk_gen : process (tmp7)
    begin
