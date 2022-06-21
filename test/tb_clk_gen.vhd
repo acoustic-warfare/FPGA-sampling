@@ -17,16 +17,17 @@ architecture tb of tb_clk_gen is
    signal nr_clk : integer := 0; --not yet in use
 
    signal clk : std_logic := '0';
-   signal reset : std_logic;
    signal fsck_clk : std_logic;
    signal fs_clk : std_logic;
+   signal reset : std_logic;
 
 begin
 
    CLK_GEN1 : entity work.clk_gen port map(
       clk => clk,
       fsck_clk => fsck_clk,
-      fs_clk => fs_clk
+      fs_clk => fs_clk,
+      reset => reset
    );
 
    clock : process

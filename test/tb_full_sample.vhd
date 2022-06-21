@@ -17,6 +17,7 @@ architecture tb of tb_full_sample is
    signal nr_clk : integer := 0; --not yet in use
 
    signal clk : std_logic := '0';
+   signal reset : std_logic := '0';
    signal sample_out_matrix : SAMPLE_MATRIX;
    signal data_in_matrix_1 : MATRIX;
    signal data_in_matrix_2 : MATRIX;
@@ -42,6 +43,7 @@ begin
 
    full_sample_1 : entity work.full_sample port map(
       clk => clk,
+      reset => reset,
       sample_out_matrix => sample_out_matrix,
       data_in_matrix_1 => data_in_matrix_1,
       data_in_matrix_2 => data_in_matrix_2,

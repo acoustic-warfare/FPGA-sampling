@@ -16,7 +16,7 @@ entity top is
       data_in_3 : in std_logic;
       data_in_4 : in std_logic;
       clk : in std_logic;
-      reset : in std_logic;
+      reset : in std_logic; -- TODO: implement Asynchronous reset that actevate on 1
       sample_out_matrix : out SAMPLE_MATRIX
    );
 end top;

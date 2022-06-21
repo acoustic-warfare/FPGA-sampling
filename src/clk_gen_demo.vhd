@@ -6,12 +6,13 @@ entity clk_gen_demo is
    port (
       clk : in std_logic;
       fsck_clk : out std_logic := '0';
-      fs_clk : out std_logic := '0'
+      fs_clk : out std_logic := '0';
+      reset : in std_logic                -- Asynchronous reset that actevate on 1
    );
 
 end clk_gen_demo;
 
-architecture Behavioral of clk_gen_demo is             -- Simply takes the input CLK and divides it tmp x number of times
+architecture Behavioral of clk_gen_demo is -- Simply takes the input CLK and divides it tmp x number of times
    signal tmp0 : std_logic := '0';
    signal tmp1 : std_logic := '0';
    signal tmp2 : std_logic := '0';
@@ -23,10 +24,21 @@ architecture Behavioral of clk_gen_demo is             -- Simply takes the input
    signal tmp8 : std_logic := '0';
 
 begin
-
-   fsck_clk_gen : process (clk)      -- Divide CLK 1
+   fsck_clk_gen : process (clk, reset) -- Divide CLK 1
    begin
-      if (rising_edge(clk)) then
+      if (reset = 1) then
+         fsck_clk <= '0';
+         fs_clk <= '0';
+         tmp0 <= '0';
+         tmp1 <= '0';
+         tmp2 <= '0';
+         tmp3 <= '0';
+         tmp4 <= '0';
+         tmp5 <= '0';
+         tmp6 <= '0';
+         tmp7 <= '0';
+         tmp8 <= '0';
+      elsif (rising_edge(clk)) then
          fsck_clk <= not fsck_clk;
       end if;
    end process;

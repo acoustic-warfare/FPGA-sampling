@@ -17,17 +17,19 @@ architecture tb of tb_clk_gen_demo is
    constant clk_cykle_slow : time := 10.24 us;
 
    signal clk_slow : std_logic := '0';
+
    signal clk : std_logic := '0';
-   signal reset : std_logic;
    signal fsck_clk : std_logic;
    signal fs_clk : std_logic;
+   signal reset : std_logic := '0';
 
 begin
 
    G2: entity work.clk_gen_demo port map (
       clk => clk,
       fsck_clk => fsck_clk,
-      fs_clk => fs_clk
+      fs_clk => fs_clk,
+      reset => reset
    );
 
    clock : process
