@@ -25,7 +25,7 @@
 
 set nfacs [ gtkwave::getNumFacs ]
 set all_facs [list]
-for {set i 0} {$i < $nfacs } {incr i} {
+for {set i 2} {$i < $nfacs } {incr i} {
     set facname [ gtkwave::getFacName $i ]
     lappend all_facs "$facname"
 }
