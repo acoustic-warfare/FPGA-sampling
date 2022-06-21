@@ -7,7 +7,7 @@ use work.MATRIX_TYPE.all;
 entity top is
    generic (
       bits_mic : integer := 24;
-      nr_mics : integer := 63
+      nr_mics : integer := 64
    );
 
    port (
