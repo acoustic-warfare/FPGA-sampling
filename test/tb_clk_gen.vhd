@@ -22,7 +22,6 @@ architecture tb of tb_clk_gen is
    signal reset : std_logic;
 
 begin
-
    CLK_GEN1 : entity work.clk_gen port map(
       clk => clk,
       fsck_clk => fsck_clk,

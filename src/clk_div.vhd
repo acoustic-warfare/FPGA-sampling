@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.all;
 
 entity clk_div is
    generic (
-      div : integer -- set the number to divide clk by
+      div : integer := 0 -- set the number to divide clk by
    );
    port (
       clk_in : in std_logic;
@@ -19,6 +19,7 @@ begin
    begin
       if (reset = '1') then
          clk_out <= '0';
+         rising_edge_counter <= 0;
       elsif (rising_edge(clk_in)) then
          if (rising_edge_counter = (div / 2) - 1) then
             clk_out <= not(clk_out);
