@@ -35,14 +35,14 @@ ARCHITECTURE Behavioral OF clk_gen_demo IS
 
 BEGIN
 
-    fsck_clk_gen : PROCESS (clk)          ---## counter clk example
+    fsck_clk_gen : PROCESS (clk)
     BEGIN
         IF (rising_edge(clk)) THEN
             fsck_clk <= NOT fsck_clk;
         END IF;
     END PROCESS;
 
-    fs_clk_gen2 : PROCESS (clk)
+    fs_clk_gen2 : PROCESS (clk)                       ---## counter clk example
     BEGIN
         IF (rising_edge(clk)) then
             if(rising_edge_counter = 511) then
