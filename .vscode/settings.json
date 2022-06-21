@@ -1,0 +1,4 @@
+{
+    "vhdl.formatter.case.keyword": "LowerCase",
+    "vhdl.formatter.case.typename": "LowerCase"
+}
