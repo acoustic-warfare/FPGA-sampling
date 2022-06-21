@@ -1,5 +1,4 @@
-#python run.py "*1" --gtkwave-fmt vcd --gtkwave-args=-Stest.tcl --gui
-#python run.py "TEST_NAME" --gtkwave-fmt vcd --gtkwave-args=-Stest.tcl --gui
+#python run.py "TEST_NAME" --gtkwave-fmt vcd --gtkwave-args=-Sgkwave.tcl --gui
 '
 set nfacts [ gtkwave::getNumFacs ]
 
