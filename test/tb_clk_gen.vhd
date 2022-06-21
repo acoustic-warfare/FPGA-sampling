@@ -1,80 +1,71 @@
-LIBRARY IEEE;
-USE IEEE.STD_LOGIC_1164.ALL;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
 
-LIBRARY vunit_lib;
-CONTEXT vunit_lib.vunit_context;
+library vunit_lib;
+context vunit_lib.vunit_context;
 
-USE work.MATRIX_TYPE.ALL;
+use work.MATRIX_TYPE.all;
 
-ENTITY tb_clk_gen IS
-    GENERIC (
-        runner_cfg : STRING
-    );
-END tb_clk_gen;
+entity tb_clk_gen is
+   generic (
+      runner_cfg : string
+   );
+end tb_clk_gen;
 
-ARCHITECTURE tb OF tb_clk_gen  IS
-    CONSTANT clk_cykle : TIME := 10 ns;
-    SIGNAL nr_clk : INTEGER := 0; --not yet in use
+architecture tb of tb_clk_gen is
+   constant clk_cykle : time := 10 ns;
+   signal nr_clk : integer := 0; --not yet in use
 
-    COMPONENT clk_gen
-    Port (clk : in std_logic;
-          fsck_clk : out std_logic;
-          fs_clk   : out std_logic
-          );
-    END COMPONENT;
+   component clk_gen
+      port (
+         clk : in std_logic;
+         fsck_clk : out std_logic;
+         fs_clk : out std_logic
+      );
+   end component;
 
-    SIGNAL clk : STD_LOGIC := '0';
-    SIGNAL reset : STD_LOGIC;
-    SIGNAL fsck_clk : STD_LOGIC;
-    SIGNAL fs_clk : STD_LOGIC;
+   signal clk : std_logic := '0';
+   signal reset : std_logic;
+   signal fsck_clk : std_logic;
+   signal fs_clk : std_logic;
 
+begin
 
+   CLK_GEN1 : clk_gen port map(
+      clk => clk,
+      fsck_clk => fsck_clk,
+      fs_clk => fs_clk
+   );
 
-BEGIN
+   clock : process
+   begin
+      clk <= '0';
+      wait for clk_cykle/2;
+      clk <= '1';
+      wait for clk_cykle/2;
+      nr_clk <= nr_clk + 1;
+   end process;
+   main : process
+   begin
 
-    CLK_GEN1 : clk_gen PORT MAP(
-        clk => clk,
-        fsck_clk => fsck_clk,
-        fs_clk => fs_clk
-    );
+      test_runner_setup(runner, runner_cfg);
+      while test_suite loop
+         if run("tb_clk_1") then
 
-    clock : PROCESS
-    BEGIN
-        clk <= '0';
-        WAIT FOR clk_cykle/2;
-        clk <= '1';
-        WAIT FOR clk_cykle/2;
-        nr_clk <= nr_clk + 1;
-    END PROCESS;
+            wait for 30000 ns;
 
+            check(1 = 1, "test_1");
+         elsif run("tb_clk_2") then
 
-    main : PROCESS
-    BEGIN
+            check(1 = 1, "test_1");
 
+            wait for 11 ns;
 
+         end if;
+      end loop;
 
-        test_runner_setup(runner, runner_cfg);
-        WHILE test_suite LOOP
-            IF run("tb_clk_1") THEN
+      test_runner_cleanup(runner);
+   end process;
 
-                 WAIT FOR 30000 ns;
-
-
-
-                check(1 = 1, "test_1");
-
-
-            ELSIF run("tb_clk_2") THEN
-
-                check(1 = 1, "test_1");
-
-                WAIT FOR 11 ns;
-
-            END IF;
-        END LOOP;
-
-        test_runner_cleanup(runner);
-    END PROCESS;
-
-    test_runner_watchdog(runner, 100 ms);
-END ARCHITECTURE;
+   test_runner_watchdog(runner, 100 ms);
+end architecture;

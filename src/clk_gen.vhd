@@ -3,11 +3,11 @@ use IEEE.STD_LOGIC_1164.all;
 
 entity clk_gen is
 
-    port (
-        clk : in std_logic;
-        fsck_clk : out std_logic := '0';
-        fs_clk : out std_logic := '0'
-    );
+   port (
+      clk : in std_logic;
+      fsck_clk : out std_logic := '0';
+      fs_clk : out std_logic := '0'
+   );
 
 end clk_gen;
 
