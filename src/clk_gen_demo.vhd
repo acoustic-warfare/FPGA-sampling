@@ -11,7 +11,7 @@ entity clk_gen_demo is
 
 end clk_gen_demo;
 
-architecture Behavioral of clk_gen_demo is
+architecture Behavioral of clk_gen_demo is             -- Simply takes the input CLK and divides it tmp x number of times
    signal tmp0 : std_logic := '0';
    signal tmp1 : std_logic := '0';
    signal tmp2 : std_logic := '0';
