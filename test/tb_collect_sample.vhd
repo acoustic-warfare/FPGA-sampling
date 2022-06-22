@@ -6,13 +6,13 @@ context vunit_lib.vunit_context;
 
 use work.MATRIX_TYPE.all;
 
-entity tb_top is
+entity tb_collct_sample is
    generic (
       runner_cfg : string
    );
-end tb_top;
+end tb_collct_sample;
 
-architecture tb of tb_top is
+architecture tb of tb_collct_sample is
    constant clk_cykle : time := 10 ns;
    signal nr_clk : integer := 0; --not yet in use
 
@@ -35,12 +35,9 @@ architecture tb of tb_top is
    signal temp_62 : std_logic_vector(23 downto 0);
    signal temp_63 : std_logic_vector(23 downto 0);
 
-   signal test_1, test_2, test_3, test_4 : std_logic_vector(23 downto 0);
-   signal apa0, apa1, apa2, apa3 : std_logic_vector(23 downto 0);
-
 begin
 
-   top_1 : entity work.top port map(
+   top_1 : entity work.collct_sample port map(
       clk => clk,
       reset => reset,
       data_in_1 => data_in_1,
@@ -74,13 +71,13 @@ begin
 
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_top_1") then
+         if run("tb_collect_sample_1") then
 
             wait for 10000 ns;
 
             check(1 = 1, "test_1");
 
-         elsif run("tb_top_2") then
+         elsif run("tb_collect_sample_2") then
 
             check(1 = 1, "test_1");
 
