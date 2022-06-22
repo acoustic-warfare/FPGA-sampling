@@ -7,7 +7,7 @@ entity clk_div is
    );
    port (
       clk_in : in std_logic;
-      clk_out : out std_logic := '0';
+      clk_out : out std_logic := '1';
       reset : in std_logic -- Asynchronous reset that actevate on 1
    );
 end clk_div;
