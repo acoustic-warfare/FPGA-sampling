@@ -12,7 +12,7 @@ end clk_gen;
 
 architecture Behavioral of clk_gen is
 
-   
+
 
    component clk_div is
       generic (
