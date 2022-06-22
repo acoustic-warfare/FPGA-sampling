@@ -12,8 +12,6 @@ end clk_gen;
 
 architecture Behavioral of clk_gen is
 
-   
-
    component clk_div is
       generic (
          div : integer -- set the number to divide clk by
@@ -45,6 +43,4 @@ begin
       clk_out => fsck_clk,
       reset => reset
    );
-
-
 end Behavioral;

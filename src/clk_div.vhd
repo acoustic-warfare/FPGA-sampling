@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.all;
 
 entity clk_div is
    generic (
-      div : integer := 0 -- set the number to divide clk by
+      div : integer := 2 -- set the number to divide clk by
    );
    port (
       clk_in : in std_logic;
@@ -14,7 +14,6 @@ end clk_div;
 
 architecture Behavioral of clk_div is
    signal rising_edge_counter : integer := 0; -- the counter signal   '
-   signal apa : integer := 0;
 begin
    fsck_clk_gen : process (clk_in, reset) -- divides clk in half
    begin
@@ -22,7 +21,6 @@ begin
          clk_out <= '0';
          rising_edge_counter <= 0;
       elsif (rising_edge(clk_in)) then
-         apa <= apa +1;
          if (rising_edge_counter = (div / 2) - 1) then
             clk_out <= not(clk_out);
             rising_edge_counter <= 0; -- resets the counter after fs_clk reach an edge

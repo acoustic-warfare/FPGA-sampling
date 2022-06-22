@@ -13,55 +13,67 @@ entity tb_clk_gen is
 end tb_clk_gen;
 
 architecture tb of tb_clk_gen is
-   constant clk_cykle : time := 10 ns;
-   signal nr_clk : integer := 0; --not yet in use
+   constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
 
    signal clk : std_logic := '0';
    signal fsck_clk : std_logic;
    signal fs_clk : std_logic;
    signal reset : std_logic;
 
-   signal fsck_count : integer := 0;
-   signal fs_count : integer := 0;
+   signal clk_count : integer := 0; -- counter for the number of clock cycles 
+   signal fsck_count : integer := 0; -- counter for the number of fsck_clk cycles
+   signal fs_count : integer := 0; -- counter for the number of fs_clk cykles
 
 begin
+
+   -- direct instantiation of: clk_gen
    CLK_GEN1 : entity work.clk_gen port map(
       clk => clk,
       fsck_clk => fsck_clk,
       fs_clk => fs_clk,
       reset => reset
-   );
+      );
 
-   fs_counter : process(fs_clk)
+   -- counter for clk cykles
+   clk_counter : process (clk)
    begin
-      if(fs_clk = '1') then
-         fs_count <= fs_count + 1;
+      if (clk = '1') then
+         clk_count <= clk_count + 1;
       end if;
    end process;
 
-   fsck_counter : process(fsck_clk)
+   -- counter for fs_clk cykles
+   fsck_counter : process (fsck_clk)
    begin
-      if(fsck_clk = '1') then
+      if (fsck_clk = '1') then
          fsck_count <= fsck_count + 1;
       end if;
    end process;
 
+   -- counter for fs_clk cykles
+   fs_counter : process (fs_clk)
+   begin
+      if (fs_clk = '1') then
+         fs_count <= fs_count + 1;
+      end if;
+   end process;
+
+   -- generate clock pulses with a clock period of clk_cykle
    clock : process
    begin
-      clk <= '0';
+      clk <= not(clk);
       wait for clk_cykle/2;
-      clk <= '1';
-      wait for clk_cykle/2;
-      nr_clk <= nr_clk + 1;
    end process;
+
    main : process
    begin
-
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("tb_clk_gen_1") then
+            
+            -- test 1 is so far only ment for gktwave
 
-            wait for 30000 ns;
+            wait for 30000 ns;   -- duration of test 1
 
             check(1 = 1, "test_1");
          elsif run("tb_clk_gen_2") then
