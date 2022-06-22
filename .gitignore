@@ -2,6 +2,7 @@
 *.log
 *.str
 *.zip
+*.debug
 .Xil
 ethernet_test
 venv
