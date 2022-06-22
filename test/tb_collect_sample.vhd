@@ -37,7 +37,7 @@ architecture tb of tb_collct_sample is
 
 begin
 
-   top_1 : entity work.collct_sample port map(
+   top_1 : entity work.collect_sample port map(
       clk => clk,
       reset => reset,
       data_in_1 => data_in_1,
