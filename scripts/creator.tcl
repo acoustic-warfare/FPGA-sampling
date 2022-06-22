@@ -4,20 +4,30 @@
 # Create the project and directory structure
 set ROOT [file normalize [file join [file dirname [info script]] .. ]]
 #puts $ROOT
-create_project -force ../../vivado_files/project ./project -part xc7z020clg400-1
+
+set outputdir ./vivado_files
+file mkdir $outputdir
+set files [glob -nocomplain "$outputdir/*"]
+
+create_project -part xc7z020clg400-1 early_test  $outputdir
+
+#create_project -force ../../vivado_files/project ./project -part xc7z020clg400-1
 
 
 set_property target_language VHDL [current_project]
 
-#
+# [glob ./path/to/sources/*.vhd]
 # Add various sources to the project
-add_files ../src/fifo_test.vhd\
+# lägger in alla filer med *.vhd från src mappen
+add_files [glob /home/ljudkriget/Projects/ljud_kriget/src/*.vhd]   
+#
+
 
 set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 #add_files -fileset sim_1 ../test/tb_fifo_test.vhd
 #add_files ./Sources/hdl/bftLib/
-add_files -fileset constrs_1 ../src/sync_fifo_constraint.xdc
+add_files -fileset constrs_1 ../src/constraint.xdc
 #
 # Now import/copy the files into the project
 import_files -force
