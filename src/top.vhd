@@ -22,8 +22,9 @@ entity top is
 end top;
 
 architecture structual of top is
-   signal data_valid_1, data_valid_2, data_valid_3, data_valid_4 : std_logic;
-   signal data_out_matrix_1, data_out_matrix_2, data_out_matrix_3, data_out_matrix_4 : MATRIX;
+   signal data_in_v : std_logic_vector( 3 downto 0);
+   signal data_valid_v : std_logic_vector(3 downto 0);
+   signal collectorns_out  : data_out_matrix;
 
    component collectorn is
       port (
@@ -38,6 +39,7 @@ architecture structual of top is
    component full_sample is
       port (
          clk : in std_logic;
+         reset : in std_logic;
          sample_out_matrix : out SAMPLE_MATRIX;
          data_in_matrix_1 : in MATRIX;
          data_in_matrix_2 : in MATRIX;
@@ -52,61 +54,35 @@ architecture structual of top is
 
 begin
 
-   --c_gen : FOR i IN 0 TO 3 GENERATE
-   --BEGIN
+   data_in_v(0) <= data_in_1;
+   data_in_v(1) <= data_in_2;
+   data_in_v(2) <= data_in_3;
+   data_in_v(3) <= data_in_4;
 
-   --    U : collectorn PORT MAP(
-   --        data_in => data_in,
-   --        clk => clk,
-   --        reset => reset,
-   --        data_out_matrix => data_out_matrix,
-   --        data_valid => data_valid
-   --    );
-   --END GENERATE c_gen;
+   c_gen : FOR i IN 0 TO 3 GENERATE
+   BEGIN
 
-   collectorn_1 : collectorn port map(
-      data_in => data_in_1,
-      clk => clk,
-      reset => reset,
-      data_out_matrix => data_out_matrix_1,
-      data_valid => data_valid_1
-   );
-
-   collectorn_2 : collectorn port map(
-      data_in => data_in_2,
-      clk => clk,
-      reset => reset,
-      data_out_matrix => data_out_matrix_2,
-      data_valid => data_valid_2
-   );
-
-   collectorn_3 : collectorn port map(
-      data_in => data_in_3,
-      clk => clk,
-      reset => reset,
-      data_out_matrix => data_out_matrix_3,
-      data_valid => data_valid_3
-   );
-
-   collectorn_4 : collectorn port map(
-      data_in => data_in_4,
-      clk => clk,
-      reset => reset,
-      data_out_matrix => data_out_matrix_4,
-      data_valid => data_valid_4
-   );
+      U : collectorn PORT MAP(
+          data_in => data_in_v(i),
+          clk => clk,
+          reset => reset,
+          data_out_matrix => collectorns_out(i),
+         data_valid => data_valid_v(i)
+       );
+      END GENERATE c_gen;
 
    full_sample_1 : full_sample port map(
       clk => clk,
+      reset => reset,
       sample_out_matrix => sample_out_matrix,
-      data_in_matrix_1 => data_out_matrix_1,
-      data_in_matrix_2 => data_out_matrix_2,
-      data_in_matrix_3 => data_out_matrix_3,
-      data_in_matrix_4 => data_out_matrix_4,
-      data_valid_1 => data_valid_1,
-      data_valid_2 => data_valid_2,
-      data_valid_3 => data_valid_3,
-      data_valid_4 => data_valid_4
+      data_in_matrix_1 => collectorns_out(0),
+      data_in_matrix_2 => collectorns_out(1),
+      data_in_matrix_3 => collectorns_out(2),
+      data_in_matrix_4 => collectorns_out(3),
+      data_valid_1 => data_valid_v(0),
+      data_valid_2 => data_valid_v(1),
+      data_valid_3 => data_valid_v(2),
+      data_valid_4 => data_valid_v(3)
    );
 
 end architecture;
