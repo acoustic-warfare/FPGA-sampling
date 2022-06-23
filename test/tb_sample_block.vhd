@@ -76,14 +76,14 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_clk_gen_1") then
+         if run("tb_sample_block_1") then
 
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns;   -- duration of test 1
 
             check(1 = 1, "test_1");
-         elsif run("tb_clk_gen_2") then
+         elsif run("tb_sample_block_2") then
 
             check(1 = 1, "test_1");
 
