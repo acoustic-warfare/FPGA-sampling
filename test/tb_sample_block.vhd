@@ -45,7 +45,7 @@ begin
          clk_count <= clk_count + 1;
       end if;
    end process;
-   
+
    feed_data : process (clk)
    begin
       if (rising_edge(clk) and sim_counter < 5) then
@@ -73,10 +73,10 @@ begin
       while test_suite loop
          if run("tb_sample_block_1") then
 
-            --wait for 4 ns;
-            --reset <= '1';
-            --wait for 4 ns;
-            --reset <= '0';
+            wait for 4 ns;
+            reset <= '1';
+            wait for 4 ns;
+            reset <= '0';
 
             -- test 1 is so far only ment for gktwave
 
