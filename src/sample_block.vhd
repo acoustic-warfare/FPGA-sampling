@@ -63,10 +63,10 @@ begin
                counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = 1) then
+               if (data_bitstream = '1') then
                   NS <= COUNT_1; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
-               elsif (data_bitstream = 0) then
+               elsif (data_bitstream = '0') then
                   -- fail!
                   counter_bit <= counter_bit + 1;
                else
@@ -81,10 +81,10 @@ begin
                counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = 1) then
+               if (data_bitstream = '1') then
                   -- fail!
                   counter_bit <= counter_bit + 1;
-               elsif (data_bitstream = 0) then
+               elsif (data_bitstream = '0') then
                   NS <= COUNT_0; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
                else
