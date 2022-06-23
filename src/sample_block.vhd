@@ -5,10 +5,11 @@ entity sample_block is
    port (
       data_bitstream : in std_logic;
       clk : in std_logic;
-      reset : in std_logic; -- Asynchronous reset, actevate on 1
+      reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       send : out std_logic;
       rd_enable : out std_logic;
-      sample_error : out std_logic
+      sample_error : out std_logic;
+      data_valid : out std_logic   --- används inte ännu
    );
 end entity;
 
@@ -27,10 +28,16 @@ architecture rtl of sample_block is
 begin
    sync_proc : process (CLK, state, reset)
    begin
+      --if (counter_slot = 32) then
+         --NS <= IDLE; --tror denna rad är onödig
+      --   counter_slot <= 0;
+    --  end if;
+
+
       if (reset = '1') then
          STATE <= IDLE;
          counter_bit <= 0;
-         --counter_slot <= 0;
+         counter_slot <= 0;
       elsif (rising_edge(CLK)) then
          state_rise1 <= state_rise1 + 1;
 
@@ -50,18 +57,21 @@ begin
                      report "this is a message";
                      -- hög impedan vad gör vi?
                   end if;
-               elsif (counter_slot = 32) then
-                  --NS <= IDLE; --tror denna rad är onödig
-                  counter_slot <= 0;
+
                else
-                  --NS <= IDLE; --tror denna rad är onödig
-                  counter_slot <= counter_slot + 1;
+                  if(counter_bit = 4) then
+                     counter_slot <= counter_slot + 1;
+                     counter_bit <= 0;
+                  else
+                  counter_bit <= counter_bit + 1;
+                  end if;
                end if;
 
             when COUNT_1 =>
                if (counter_bit = 4) then
                   STATE <= IDLE;
                   send <= '1';
+                  counter_slot <= counter_slot +1;
                   counter_bit <= 0;
                   rd_enable <= '1';
                else
@@ -76,6 +86,7 @@ begin
                   STATE <= IDLE;
                   send <= '0';
                   counter_bit <= 0;
+                  counter_slot <= counter_slot +1;
                   rd_enable <= '1';
                else
                   counter_bit <= counter_bit + 1;
@@ -96,6 +107,14 @@ begin
          state_1 <= 1;
       elsif (STATE = IDLE) then
          state_1 <= 2;
+      end if;
+   end process;
+
+   restart : process
+   begin
+    if (counter_slot = 32) then
+        --NS <= IDLE; --tror denna rad är onödig
+        counter_slot <= 0;
       end if;
    end process;
 end architecture;
