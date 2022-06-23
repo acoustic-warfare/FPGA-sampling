@@ -13,16 +13,20 @@ entity sample_block is
 end entity;
 
 architecture rtl of sample_block is
-   type state_type is (START, SAMPLE, FAIL, SLEEP);
+   type state_type is (IDLE, COUNT_0, COUNT_1);
    signal PS, NS : state_type;
-   signal data_vector : std_logic_vector( 4 downto 0);
-   signal counter : integer :=0;
+   --signal data_vector : std_logic_vector( 4 downto 0);
+   signal counter_bit : integer := 0;
+   signal counter_slot : integer := 0;
+   -- signal counter_bit_1 : integer := 0;
+   -- signal counter_bit_2 : integer := 0;
 
 begin
    sync_proc : process (CLK, NS, reset)
    begin
       if (reset = '1') then
-         PS <= START;
+         PS <= IDLE;
+         -- MER RESET GREJER
       elsif (rising_edge(CLK)) then
          PS <= NS;
       end if;
@@ -32,38 +36,61 @@ begin
    begin
       rd_enable <= '0';
       case PS is
-         when start =>
-            NS <= sample;
+         when IDLE =>
 
-         when sample =>
-
-            data_vector(counter) <= data_bitstream;
-            counter <= counter +1;
-
-               if(counter = 5) then
-
-                  if(data_vector = "11111") then
-                     NS <= start;
-                     send <= '1';
-                     rd_enable <= '1';
-
-                  elsif(data_vector = "00000") then
-                     NS <= start;
-                     send <= '0';
-                     rd_enable <= '1';
-                  else
-                     NS <= fail;
-                  end if;
+            if (counter_slot < 24) then
+               if (data_bitstream = '1') then
+                  NS <= COUNT_1;
+                  counter_bit <= counter_bit + 1;
+               elsif (data_bitstream = '0') then
+                  NS <= COUNT_0;
+                  counter_bit <= counter_bit + 1;
+               else
+                  -- hög impedan vad gör vi?
                end if;
+            elsif (counter_slot = 32) then
+               NS <= IDLE; --tror denna rad är onödig
+               counter_slot <= '0';
+            else
+               NS <= IDLE; --tror denna rad är onödig
+               counter_slot <= counter_slot + 1;
+            end if;
 
-         when fail =>
-            rd_enable <= '0';
-            sample_error <='1';
-            NS <= start;
+         when COUNT_1 =>
+            if (counter_bit = 4) then
+               NS <= IDLE;
+               send <= '1';
+               counter_bit <= 1;
+               rd_enable <= '1';
+            else
+               if (data_bitstream = '1') then
+                  NS <= COUNT_1; --tror denna rad är onödig
+                  counter_bit <= counter_bit + 1;
+               elsif (data_bitstream = '0') then
+                  -- fail!
+                  counter_bit <= counter_bit + 1;
+               else
+                  -- hög impedans
+               end if;
+            end if;
+         when COUNT_0 =>
 
-
-
-
+            if (counter_bit = 4) then
+               NS <= IDLE;
+               send <= '0';
+               counter_bit <= 1;
+               rd_enable <= '1';
+            else
+               if (data_bitstream = '1') then
+                  -- fail!
+                  counter_bit <= counter_bit + 1;
+               elsif (data_bitstream = '0') then
+                  NS <= COUNT_0; --tror denna rad är onödig
+                  counter_bit <= counter_bit + 1;
+               else
+                  -- hög impedans
+               end if;
+            end if;
       end case;
    end process comb_proc;
 
