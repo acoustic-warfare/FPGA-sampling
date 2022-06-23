@@ -38,6 +38,8 @@ begin
       case PS is
          when IDLE =>
             rd_enable <= '0';
+            sample_error <= '0';
+
             if (counter_slot < 24) then
                if (data_bitstream = '1') then
                   NS <= COUNT_1;
@@ -49,10 +51,10 @@ begin
                   -- hög impedan vad gör vi?
                end if;
             elsif (counter_slot = 32) then
-               NS <= IDLE; --tror denna rad är onödig
+               --NS <= IDLE; --tror denna rad är onödig
                counter_slot <= 0;
             else
-               NS <= IDLE; --tror denna rad är onödig
+               --NS <= IDLE; --tror denna rad är onödig
                counter_slot <= counter_slot + 1;
             end if;
 
@@ -64,11 +66,12 @@ begin
                rd_enable <= '1';
             else
                if (data_bitstream = '1') then
-                  NS <= COUNT_1; --tror denna rad är onödig
+                  --NS <= COUNT_1; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
                elsif (data_bitstream = '0') then
-                  -- fail!
+                  sample_error <= '1';
                   counter_bit <= counter_bit + 1;
+
                else
                   -- hög impedans
                end if;
@@ -82,10 +85,10 @@ begin
                rd_enable <= '1';
             else
                if (data_bitstream = '1') then
-                  -- fail!
+                  sample_error <= '1';
                   counter_bit <= counter_bit + 1;
                elsif (data_bitstream = '0') then
-                  NS <= COUNT_0; --tror denna rad är onödig
+                  --NS <= COUNT_0; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
                else
                   -- hög impedans
