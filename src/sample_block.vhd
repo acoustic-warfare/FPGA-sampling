@@ -21,14 +21,18 @@ architecture rtl of sample_block is
    -- signal counter_bit_1 : integer := 0;
    -- signal counter_bit_2 : integer := 0;
    signal state : integer;
+   signal state_rise1 : integer := 0;
+   signal state_rise2 : integer := 0;
 
 begin
    sync_proc : process (CLK, NS, reset)
    begin
       if (reset = '1') then
          PS <= IDLE;
-         -- MER RESET GREJER
+         --ounter_bit <= 0;
+         --counter_slot <= 0;
       elsif (rising_edge(CLK)) then
+         state_rise1 <= state_rise1 + 1;
          PS <= NS;
       end if;
    end process;
@@ -46,7 +50,9 @@ begin
 
    comb_proc : process (PS, data_bitstream)
    begin
+      state_rise2 <= state_rise2 + 1;
       rd_enable <= '0';
+      --NS <= PS;
       case PS is
          when IDLE =>
             rd_enable <= '0';
@@ -78,17 +84,10 @@ begin
                counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = '1') then
+               
                   counter_bit <= counter_bit + 1;
                   NS <= COUNT_1; --tror denna rad är onödig
-               elsif (data_bitstream = '0') then
-                  sample_error <= '1';
-                  counter_bit <= counter_bit + 1;
-
-               else
-                  report "this is a message";
-                  -- hög impedans
-               end if;
+               
             end if;
          when COUNT_0 =>
 
@@ -98,17 +97,12 @@ begin
                counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = '1') then
-                  sample_error <= '1';
-                  counter_bit <= counter_bit + 1;
-               elsif (data_bitstream = '0') then
-                  counter_bit <= counter_bit + 1;
-                  NS <= COUNT_0; --tror denna rad är onödig
-               else
-                  report "this is a message";
-                  -- hög impedans
-               end if;
+                 counter_bit <= counter_bit + 1;
+                 NS <= COUNT_0; --tror denna rad är onödig
+               
             end if;
+         when others =>
+          NS <= IDLE;
       end case;
    end process comb_proc;
 
