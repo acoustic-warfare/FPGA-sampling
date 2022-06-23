@@ -21,8 +21,6 @@ architecture rtl of sample_block is
    -- signal counter_bit_1 : integer := 0;
    -- signal counter_bit_2 : integer := 0;
 
-   
-
 begin
    sync_proc : process (CLK, NS, reset)
    begin
@@ -39,7 +37,7 @@ begin
       rd_enable <= '0';
       case PS is
          when IDLE =>
-
+            rd_enable <= '0';
             if (counter_slot < 24) then
                if (data_bitstream = '1') then
                   NS <= COUNT_1;
@@ -52,7 +50,7 @@ begin
                end if;
             elsif (counter_slot = 32) then
                NS <= IDLE; --tror denna rad är onödig
-               counter_slot <= '0';
+               counter_slot <= 0;
             else
                NS <= IDLE; --tror denna rad är onödig
                counter_slot <= counter_slot + 1;
@@ -62,13 +60,13 @@ begin
             if (counter_bit = 4) then
                NS <= IDLE;
                send <= '1';
-               counter_bit <= 1;
+               counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = '1') then
+               if (data_bitstream = 1) then
                   NS <= COUNT_1; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
-               elsif (data_bitstream = '0') then
+               elsif (data_bitstream = 0) then
                   -- fail!
                   counter_bit <= counter_bit + 1;
                else
@@ -80,13 +78,13 @@ begin
             if (counter_bit = 4) then
                NS <= IDLE;
                send <= '0';
-               counter_bit <= 1;
+               counter_bit <= 0;
                rd_enable <= '1';
             else
-               if (data_bitstream = '1') then
+               if (data_bitstream = 1) then
                   -- fail!
                   counter_bit <= counter_bit + 1;
-               elsif (data_bitstream = '0') then
+               elsif (data_bitstream = 0) then
                   NS <= COUNT_0; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
                else
