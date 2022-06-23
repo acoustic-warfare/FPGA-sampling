@@ -20,6 +20,7 @@ architecture rtl of sample_block is
    signal counter_slot : integer := 0;
    -- signal counter_bit_1 : integer := 0;
    -- signal counter_bit_2 : integer := 0;
+   signal state : integer;
 
 begin
    sync_proc : process (CLK, NS, reset)
@@ -29,6 +30,17 @@ begin
          -- MER RESET GREJER
       elsif (rising_edge(CLK)) then
          PS <= NS;
+      end if;
+   end process;
+
+   state_num : process (PS, NS) -- only for findig buggfix
+   begin
+      if (ps = COUNT_0) then
+         state <= 0;
+      elsif (ps = COUNT_1) then
+         state <= 1;
+      elsif (ps = IDLE) then
+         state <= 2;
       end if;
    end process;
 
@@ -42,12 +54,13 @@ begin
 
             if (counter_slot < 24) then
                if (data_bitstream = '1') then
+                  counter_bit <= counter_bit + 1;
                   NS <= COUNT_1;
-                  counter_bit <= counter_bit + 1;
                elsif (data_bitstream = '0') then
-                  NS <= COUNT_0;
                   counter_bit <= counter_bit + 1;
+                  NS <= COUNT_0;
                else
+                  report "this is a message";
                   -- hög impedan vad gör vi?
                end if;
             elsif (counter_slot = 32) then
@@ -66,13 +79,14 @@ begin
                rd_enable <= '1';
             else
                if (data_bitstream = '1') then
-                  --NS <= COUNT_1; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
+                  NS <= COUNT_1; --tror denna rad är onödig
                elsif (data_bitstream = '0') then
                   sample_error <= '1';
                   counter_bit <= counter_bit + 1;
 
                else
+                  report "this is a message";
                   -- hög impedans
                end if;
             end if;
@@ -88,9 +102,10 @@ begin
                   sample_error <= '1';
                   counter_bit <= counter_bit + 1;
                elsif (data_bitstream = '0') then
-                  --NS <= COUNT_0; --tror denna rad är onödig
                   counter_bit <= counter_bit + 1;
+                  NS <= COUNT_0; --tror denna rad är onödig
                else
+                  report "this is a message";
                   -- hög impedans
                end if;
             end if;
