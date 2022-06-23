@@ -21,6 +21,8 @@ architecture rtl of sample_block is
    -- signal counter_bit_1 : integer := 0;
    -- signal counter_bit_2 : integer := 0;
 
+   
+
 begin
    sync_proc : process (CLK, NS, reset)
    begin
