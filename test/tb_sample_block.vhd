@@ -93,20 +93,13 @@ begin
       while test_suite loop
          if run("tb_sample_block_1") then
 
-
-
             wait for 4 ns;
             reset <= '1';
             wait for 4 ns;
             reset <= '0';
-
-
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns; -- duration of test 1
-
-
-
             check(1 = 1, "test_1");
          elsif run("tb_sample_block_2") then
 
