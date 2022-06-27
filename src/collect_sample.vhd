@@ -15,6 +15,10 @@ entity collect_sample is
       data_in_2 : in std_logic;
       data_in_3 : in std_logic;
       data_in_4 : in std_logic;
+      rd_enable_1 : in std_logic;
+      rd_enable_2: in std_logic;
+      rd_enable_3 : in std_logic;
+      rd_enable_4 : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- TODO: implement Asynchronous reset that actevate on 1
       sample_out_matrix : out SAMPLE_MATRIX
@@ -24,6 +28,7 @@ end collect_sample ;
 architecture structual of collect_sample is
    signal data_in_v : std_logic_vector( 3 downto 0);
    signal data_valid_v : std_logic_vector(3 downto 0);
+   signal rd_enable_v : std_logic_vector(3 downto 0);
    signal collectorns_out  : data_out_matrix;
 
    component collectorn is
@@ -59,6 +64,11 @@ begin
    data_in_v(2) <= data_in_3;
    data_in_v(3) <= data_in_4;
 
+   rd_enable_v(0) <= rd_enable_1;
+   rd_enable_v(1) <= rd_enable_2;
+   rd_enable_v(2) <= rd_enable_3;
+   rd_enable_v(3) <= rd_enable_4;
+
    c_gen : FOR i IN 0 TO 3 GENERATE
    BEGIN
 
@@ -66,6 +76,7 @@ begin
           data_in => data_in_v(i),
           clk => clk,
           reset => reset,
+          rd_enable => rd_enable_v(i),
           data_out_matrix => collectorns_out(i),
          data_valid => data_valid_v(i)
        );
