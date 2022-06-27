@@ -20,6 +20,12 @@ architecture tb of tb_collct_sample is
    signal reset : std_logic;
    signal data_in_1, data_in_2, data_in_3, data_in_4 : std_logic := '1';
    signal sample_out_matrix : SAMPLE_MATRIX;
+
+   signal rd_enable_1 : std_logic;
+   signal rd_enable_2 : std_logic;
+   signal rd_enable_3 : std_logic;
+   signal rd_enable_4 : std_logic;
+
    signal setup : std_logic := '0';
 
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
@@ -44,6 +50,10 @@ begin
       data_in_2 => data_in_2,
       data_in_3 => data_in_3,
       data_in_4 => data_in_4,
+      rd_enable_1 => rd_enable_1,
+      rd_enable_2 => rd_enable_2,
+      rd_enable_3 => rd_enable_3,
+      rd_enable_4 => rd_enable_4,
       sample_out_matrix => sample_out_matrix
    );
 
