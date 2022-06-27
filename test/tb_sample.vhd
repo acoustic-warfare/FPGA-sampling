@@ -6,14 +6,14 @@ context vunit_lib.vunit_context;
 
 use work.MATRIX_TYPE.all;
 
-entity tb_sample_block is
+entity tb_sample is
    generic (
       runner_cfg : string
    );
 
-end tb_sample_block;
+end tb_sample;
 
-architecture tb of tb_sample_block is
+architecture tb of tb_sample is
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
 
    signal bit_stream : std_logic := '0';
@@ -29,7 +29,7 @@ architecture tb of tb_sample_block is
 
 begin
 
-   sample_blocket : entity work.sample_block port map (
+   sample1 : entity work.sample port map (
       bit_stream => bit_stream,
       clk => clk,
       reset => reset,
@@ -71,7 +71,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_block_1") then
+         if run("tb_sample_1") then
 
             wait for 4 ns;
             reset <= '1';
@@ -83,7 +83,7 @@ begin
             wait for 30000 ns; -- duration of test 1
 
             check(1 = 1, "test_1");
-         elsif run("tb_sample_block_2") then
+         elsif run("tb_sample_2") then
 
             check(1 = 1, "test_1");
 

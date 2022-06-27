@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 
-entity sample_block is
+entity sample is
    port (
       bit_stream : in std_logic;
       clk : in std_logic;
@@ -12,7 +12,7 @@ entity sample_block is
    );
 end entity;
 
-architecture rtl of sample_block is
+architecture rtl of sample is
    type state_type is (idle, run);
    signal ps, ns : state_type;
    signal counter_bit : integer := 0; -- 0 till 31 (antal bitar data per mic) 
