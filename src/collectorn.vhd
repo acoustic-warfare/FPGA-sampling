@@ -31,7 +31,7 @@ begin
    collect : process (clk) -- Process which collects the input data and put it in the matrix
    begin
 
-      if (rising_edge(clk)) then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
+      if (rising_edge(clk) and rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
          tmp_vector(counter_col) <= data_in;
          counter_col <= counter_col + 1;
       end if;
