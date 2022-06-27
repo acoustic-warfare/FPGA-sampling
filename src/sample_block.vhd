@@ -7,9 +7,8 @@ entity sample_block is
       clk : in std_logic;
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       send : out std_logic;
-      rd_enable : out std_logic;
-      sample_error : out std_logic;
-      data_valid : out std_logic --- används inte ännu
+      rd_enable : out std_logic; 
+      sample_error : out std_logic -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
 end entity;
 
