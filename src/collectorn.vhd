@@ -45,7 +45,7 @@ begin
       if (counter_row = nr_mics) then -- When all Vectors is full in the matrix set the data_valid to HIGH which signals the reciever to recieve the Matrix
          data_valid <= '1';
          counter_row <= 0;
-      elsif (data_valid = '1') then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
+      elsif (data_valid = '1' and rising_edge(clk)) then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
          data_valid <= '0';
       end if;
    end process;

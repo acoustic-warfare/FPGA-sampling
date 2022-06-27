@@ -26,11 +26,16 @@ architecture tb of tb_sample_block is
 
    signal sim_counter : integer := 0;
 
+   signal matrix_row_0 : std_logic_vector(23 downto 0);
+   signal matrix_row_1 : std_logic_vector(23 downto 0);
+   signal matrix_row_15 : std_logic_vector(23 downto 0);
+   signal matrix_row_16 : std_logic_vector(23 downto 0);
+
    signal clk_count : integer := 0; -- counter for the number of clock cycles
 
 begin
 
-   sample1 : entity work.sample_block port map (
+   sample_block1 : entity work.sample_block port map (
       bit_stream_1 => bit_stream_1,
       bit_stream_2 => bit_stream_2,
       bit_stream_3 => bit_stream_3,
@@ -52,10 +57,18 @@ begin
    begin
       if (rising_edge(clk) and sim_counter < 5) then
          bit_stream_1 <= '0';
+         bit_stream_2 <= '0';
+         bit_stream_3 <= '0';
+         bit_stream_4 <= '0';
+
          sim_counter <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10) then
          bit_stream_1 <= '1';
+         bit_stream_2 <= '1';
+         bit_stream_3 <= '1';
+         bit_stream_4 <= '1';
+
          sim_counter <= sim_counter + 1;
       end if;
 
@@ -73,19 +86,28 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_1") then
+         if run("tb_sample_block_1") then
+
+
 
             wait for 4 ns;
             reset <= '1';
             wait for 4 ns;
             reset <= '0';
 
+            matrix_row_0 <= sample_out_matrix(0);
+            matrix_row_1 <= sample_out_matrix(1);
+
+            matrix_row_15 <= sample_out_matrix(15);
+            matrix_row_16 <= sample_out_matrix(16);
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns; -- duration of test 1
 
+
+
             check(1 = 1, "test_1");
-         elsif run("tb_sample_2") then
+         elsif run("tb_sample_block_2") then
 
             check(1 = 1, "test_1");
 

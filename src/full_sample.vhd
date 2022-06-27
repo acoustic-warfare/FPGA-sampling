@@ -31,7 +31,7 @@ begin
    begin
       if (reset = '1') then
          sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
-      elsif (rising_edge(clk)) then
+      else
          if (data_valid_1 = '1') then
             for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
                sample_out_matrix(i) <= data_in_matrix_1(i);
