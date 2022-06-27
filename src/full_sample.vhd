@@ -24,14 +24,16 @@ entity full_sample is
    );
 end full_sample;
 architecture behavroal of full_sample is
-
+   signal apa1 : std_logic_vector(23 downto 0);
+   signal apa2 : std_logic_vector(23 downto 0);
 begin
-
+   apa1 <= data_in_matrix_1(0);
+   apa2 <= sample_out_matrix(0);
    create_sample_matrix : process (clk, reset)
    begin
       if (reset = '1') then
          sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
-      else
+      elsif (rising_edge(clk)) then
          if (data_valid_1 = '1') then
             for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
                sample_out_matrix(i) <= data_in_matrix_1(i);

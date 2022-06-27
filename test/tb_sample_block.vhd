@@ -35,6 +35,11 @@ architecture tb of tb_sample_block is
 
 begin
 
+   matrix_row_0 <= sample_out_matrix(0);
+   matrix_row_1 <= sample_out_matrix(1);
+   matrix_row_15 <= sample_out_matrix(15);
+   matrix_row_16 <= sample_out_matrix(16);
+
    sample_block1 : entity work.sample_block port map (
       bit_stream_1 => bit_stream_1,
       bit_stream_2 => bit_stream_2,
@@ -95,11 +100,7 @@ begin
             wait for 4 ns;
             reset <= '0';
 
-            matrix_row_0 <= sample_out_matrix(0);
-            matrix_row_1 <= sample_out_matrix(1);
 
-            matrix_row_15 <= sample_out_matrix(15);
-            matrix_row_16 <= sample_out_matrix(16);
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns; -- duration of test 1
