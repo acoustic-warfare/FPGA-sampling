@@ -14,6 +14,7 @@ entity collectorn is
       data_in : in std_logic; -- The sequential bitstream from the microphone Matrix
       clk : in std_logic;
       reset : in std_logic; --TO-DO # add a asynchrone reset and read_enable
+      rd_enable : in std_logic;
       data_out_matrix : out MATRIX; -- Our output Matrix with 1 sample from all microphones in the Matrix
       data_valid : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
 
