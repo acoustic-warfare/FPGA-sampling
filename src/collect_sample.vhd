@@ -41,21 +41,6 @@ architecture structual of collect_sample is
       );
    end component collectorn;
 
-   component full_sample is
-      port (
-         clk : in std_logic;
-         reset : in std_logic;
-         sample_out_matrix : out SAMPLE_MATRIX;
-         data_in_matrix_1 : in MATRIX;
-         data_in_matrix_2 : in MATRIX;
-         data_in_matrix_3 : in MATRIX;
-         data_in_matrix_4 : in MATRIX;
-         data_valid_1 : in std_logic;
-         data_valid_2 : in std_logic;
-         data_valid_3 : in std_logic;
-         data_valid_4 : in std_logic
-      );
-   end component full_sample;
 
 begin
 
@@ -82,7 +67,7 @@ begin
       );
    end generate c_gen;
 
-   full_sample_1 : full_sample port map(
+   full_sample_1 : entity work.full_sample port map(
       clk => clk,
       reset => reset,
       sample_out_matrix => sample_out_matrix,
