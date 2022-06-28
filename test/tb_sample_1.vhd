@@ -4,7 +4,7 @@ use IEEE.STD_LOGIC_1164.all;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-use work.MATRIX_TYPE.all;
+-- use work.MATRIX_TYPE.all;
 
 entity tb_sample_1 is
    generic (
@@ -22,6 +22,8 @@ architecture tb of tb_sample_1 is
    signal reg : std_logic_vector(23 downto 0);
    signal rd_enable : std_logic;
    signal sample_error : std_logic;
+   signal ws : std_logic;
+   signal sck : std_logic;
 
    signal sim_counter : integer := 1;
 
@@ -33,6 +35,8 @@ begin
       bit_stream => bit_stream,
       clk => clk,
       reset => reset,
+      ws => ws,
+      sck => sck,
       reg => reg,
       rd_enable => rd_enable,
       sample_error => sample_error
@@ -74,9 +78,9 @@ begin
          if run("tb_sample_1_1") then
 
             --wait for 10 ns;
-            --reset <= '1';
-            --wait for 30 ns;
-            --reset <= '0';
+            reset <= '1';
+            wait for 47 ns;
+            reset <= '0';
 
             -- test 1 is so far only ment for gktwave
 
