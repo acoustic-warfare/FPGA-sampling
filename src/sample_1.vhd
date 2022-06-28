@@ -30,7 +30,7 @@ begin
       if (rising_edge(clk)) then
          if (reset = '1') then
             my_state <= idle; -- många sådana my-state <= idle; här som vi bara skirver över (kanske onödigt)
-            rd_enable <= '1';
+            rd_enable <= '0';
          end if;
 
          rd_enable <= '0';
@@ -39,6 +39,8 @@ begin
 
                if (counter_bit < 24) then
                   my_state <= run;
+               else
+                  my_state <= idle;
                end if;
 
             when run =>
@@ -86,7 +88,7 @@ begin
                counter_samp <= 0;
                counter_1s <= 0;
                counter_bit <= counter_bit + 1;
-            else -- counter_samp increased by one after samping the data once
+            else -- counter_samp increased by one after sampling the data once
                counter_samp <= counter_samp + 1;
             end if;
 
