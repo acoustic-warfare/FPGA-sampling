@@ -26,12 +26,8 @@ architecture tb of tb_full_sample is
    signal data_in_matrix_4 : MATRIX;
    signal data_valid_1, data_valid_2, data_valid_3, data_valid_4 : std_logic := '1';
 
-   signal setup : std_logic := '0';
-
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
-
-   signal matrix_1 : MATRIX;
 
 begin
 
@@ -62,13 +58,11 @@ begin
    main : process
    begin
 
-      setup <= '1';
-
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("tb_full_sample_1") then
 
-            wait for 10 ns;
+            wait for 100 ns;
 
             check(1 = 1, "test_1");
 
