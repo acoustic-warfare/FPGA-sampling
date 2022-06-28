@@ -51,11 +51,11 @@ begin
    feed_data : process (clk)
    begin
       if (rising_edge(clk) and sim_counter < 5) then
-         bit_stream <= '0';
+         bit_stream <= '1';
          sim_counter <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10) then
-         bit_stream <= '1';
+         bit_stream <= '0';
          sim_counter <= sim_counter + 1;
       end if;
 

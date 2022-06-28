@@ -21,10 +21,10 @@ architecture rtl of sample_1 is
    signal counter_1s : integer := 0;
    signal state_1 : integer;
    signal current_bit : std_logic;
-   signal internal_reset : std_logic;
+   signal reset_enable : std_logic;
 
 begin
-   process (clk)
+   state_p : process (clk)
    begin
 
       if (rising_edge(clk)) then -- vet inte om detta är bästa sättet för reset
@@ -40,29 +40,23 @@ begin
                rd_enable <= '0';
                if (ws = '1') then
                   my_state <= run;
-                  internal_reset <= '1';
                end if;
 
             when run =>
-               if (WS = '1') then
-                  internal_reset <= '1';
-               else
-                  internal_reset <= '0';
-                  if (counter_samp = 4) then
-                     if (counter_1s >= 3) then
-                        reg <= '1' & reg(23 downto 1); -- shiftet
-                     else
-                        reg <= '0' & reg(23 downto 1); -- shiftet
-                     end if;
 
-                     if (counter_bit = 23) then
-                        rd_enable <= '1';
-                        my_state <= idle;
-                     end if;
-
+               if (counter_samp = 4) then
+                  if (counter_1s >= 3) then
+                     reg <= '1' & reg(23 downto 1); -- shiftet
+                  else
+                     reg <= '0' & reg(23 downto 1); -- shiftet
                   end if;
-               end if;
 
+                  if (counter_bit = 23) then
+                     rd_enable <= '1';
+                     my_state <= idle;
+                  end if;
+
+               end if;
             when others => -- should never get here
                report("error_1");
                null;
@@ -74,27 +68,37 @@ begin
    count_p : process (clk)
    begin
       if (rising_edge(clk)) then -- vet inte om detta är bästa sättet för reset
-         if (reset = '1' or internal_reset = '1') then
+         if (reset = '1' or (ws = '1' and reset_enable = '1')) then
             counter_bit <= 0;
             counter_samp <= 0;
-            counter_1s <= 0;
-         else
-            if (bit_stream = '1' and my_state = run) then
-               counter_1s <= counter_1s + 1;
-            end if;
+            reset_enable <= '0';
 
-            --if (my_state = idle) then -- current mics data is collected set both counter_bit and counter_samp to zero
-            --   counter_bit <= 0;
-            --   counter_samp <= 0;
-            if (counter_samp = 4) then -- current bit collected set counter_samp to zero and start on next bit
-               counter_samp <= 0;
+            if (bit_stream = '1') then
+               counter_1s <= 1;
+            else
                counter_1s <= 0;
-               counter_bit <= counter_bit + 1;
-            else -- counter_samp increased by one after sampling the data once
-               counter_samp <= counter_samp + 1;
             end if;
 
          end if;
+         if (ws = '0') then
+            reset_enable <= '1';
+         end if;
+
+         if (bit_stream = '1' and my_state = run) then
+            counter_1s <= counter_1s + 1;
+         end if;
+
+         --if (my_state = idle) then -- current mics data is collected set both counter_bit and counter_samp to zero
+         --   counter_bit <= 0;
+         --   counter_samp <= 0;
+         if (counter_samp = 4) then -- current bit collected set counter_samp to zero and start on next bit
+            counter_samp <= 0;
+            counter_1s <= 0;
+            counter_bit <= counter_bit + 1;
+         else -- counter_samp increased by one after sampling the data once
+            counter_samp <= counter_samp + 1;
+         end if;
+
       end if;
    end process;
 
