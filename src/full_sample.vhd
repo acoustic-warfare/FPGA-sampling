@@ -20,43 +20,97 @@ entity full_sample is
       data_valid_1 : in std_logic;
       data_valid_2 : in std_logic;
       data_valid_3 : in std_logic;
-      data_valid_4 : in std_logic
+      data_valid_4 : in std_logic;
+      rd_enable : out std_logic
    );
 end full_sample;
 architecture behavroal of full_sample is
-   signal apa1 : std_logic_vector(23 downto 0);
-   signal apa2 : std_logic_vector(23 downto 0);
+   signal rd_check : std_logic_vector(3 downto 0);
 begin
-   apa1 <= data_in_matrix_1(0);
-   apa2 <= sample_out_matrix(0);
-   create_sample_matrix : process (clk, reset)
+
+
+   fill_sample_matrix_from_trail_1_p : process (clk, reset)
    begin
-      if (reset = '1') then
-         sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
-      else
-         if (data_valid_1 = '1') then
-            for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
-               sample_out_matrix(i) <= data_in_matrix_1(i);
-            end loop;
-         end if;
 
-         if (data_valid_2 = '1') then
-            for i in 16 to 31 loop -- fills the sample matrix with the data from microphones 17-32
-               sample_out_matrix(i) <= data_in_matrix_2(i - 16);
-            end loop;
-         end if;
+      if (rising_edge(clk)) then
 
-         if (data_valid_3 = '1') then
-            for i in 32 to 47 loop -- fills the sample matrix with the data from microphones 33-48
-               sample_out_matrix(i) <= data_in_matrix_3(i - 32);
-            end loop;
-         end if;
-
-         if (data_valid_4 = '1') then
-            for i in 48 to 63 loop -- fills the sample matrix with the data from microphones 49-64
-               sample_out_matrix(i) <= data_in_matrix_4(i - 48);
-            end loop;
+         if (reset = '1') then
+            sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
+         else
+            if (data_valid_1 = '1') then
+               for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
+                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  rd_check(0)<= '1';
+               end loop;
+            end if;
          end if;
       end if;
    end process;
+
+   fill_sample_matrix_from_trail_2_p : process (clk)
+   begin
+
+      if (rising_edge(clk)) then
+
+         if (reset = '1') then
+            sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
+         else
+            if (data_valid_2 = '1') then
+               for i in 16 to 31 loop -- fills the sample matrix with the data from microphones 1-16
+                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  rd_check(1)<= '1';
+               end loop;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   fill_sample_matrix_from_trail_3_p : process (clk)
+   begin
+
+      if (rising_edge(clk)) then
+
+         if (reset = '1') then
+            sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
+         else
+            if (data_valid_3 = '1') then
+               for i in 32 to 47 loop -- fills the sample matrix with the data from microphones 1-16
+                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  rd_check(2)<= '1';
+               end loop;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   fill_sample_matrix_from_trail_4_p : process (clk, reset)
+   begin
+
+      if (rising_edge(clk)) then
+
+         if (reset = '1') then
+            sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
+         else
+            if (data_valid_4 = '1') then
+               for i in 48 to 63 loop -- fills the sample matrix with the data from microphones 1-16
+                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  rd_check(3)<= '1';
+               end loop;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   rd_enable_p : process(clk)
+   begin
+      if (rising_edge(clk)) then
+         if (rd_check = "1111") then
+            rd_enable <= '1';
+         else
+            rd_enable <= '0';
+         end if;
+      end if;
+
+   end process;
+
 end behavroal;

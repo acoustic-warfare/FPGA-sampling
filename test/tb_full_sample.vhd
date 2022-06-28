@@ -18,6 +18,7 @@ architecture tb of tb_full_sample is
 
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
+   signal rd_enable : std_logic := '0';
    signal sample_out_matrix : SAMPLE_MATRIX;
    signal data_in_matrix_1 : MATRIX;
    signal data_in_matrix_2 : MATRIX;
@@ -32,13 +33,6 @@ architecture tb of tb_full_sample is
 
    signal matrix_1 : MATRIX;
 
-   signal temp_0 : std_logic_vector(23 downto 0);
-   signal temp_1 : std_logic_vector(23 downto 0);
-   signal temp_20 : std_logic_vector(23 downto 0);
-   signal temp_30 : std_logic_vector(23 downto 0);
-   signal temp_40 : std_logic_vector(23 downto 0);
-   signal temp_62 : std_logic_vector(23 downto 0);
-   signal temp_63 : std_logic_vector(23 downto 0);
 begin
 
    full_sample_1 : entity work.full_sample port map(
@@ -52,7 +46,8 @@ begin
       data_valid_1 => data_valid_1,
       data_valid_2 => data_valid_2,
       data_valid_3 => data_valid_3,
-      data_valid_4 => data_valid_4
+      data_valid_4 => data_valid_4,
+      rd_enable => rd_enable
    );
 
    clock : process
@@ -64,19 +59,6 @@ begin
       nr_clk <= nr_clk + 1;
    end process;
 
-   vector_create : process (setup)
-   begin
-
-      for i in 0 to 15 loop
-         matrix_1(i) <= v1_24;
-      end loop;
-
-      data_in_matrix_1 <= matrix_1;
-      data_in_matrix_2 <= matrix_1;
-      data_in_matrix_3 <= matrix_1;
-      data_in_matrix_4 <= matrix_1;
-
-   end process;
    main : process
    begin
 
@@ -88,29 +70,15 @@ begin
 
             wait for 10 ns;
 
-            temp_0 <= sample_out_matrix(0);
-            temp_1 <= sample_out_matrix(1);
-            temp_20 <= sample_out_matrix(20);
-            temp_30 <= sample_out_matrix(30);
-            temp_40 <= sample_out_matrix(40);
-            temp_62 <= sample_out_matrix(62);
-            temp_63 <= sample_out_matrix(63);
-
-            wait for 10 ns;
-
-            data_valid_1 <= '1';
-
-            wait for 10 ns;
-
-            check(sample_out_matrix(3) = v1_24, "fail!1  row 0  in matrix");
-
             check(1 = 1, "test_1");
 
          elsif run("tb_full_sample_2") then
 
+
+            wait for 110 ns;
+
             check(1 = 1, "test_1");
 
-            wait for 11 ns;
 
          end if;
       end loop;
