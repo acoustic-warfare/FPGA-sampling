@@ -6,6 +6,8 @@ entity sample_1 is
       bit_stream : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
+      ws : in std_logic; 
+      sck : in std_logic;
       reg : out std_logic_vector(23 downto 0);
       rd_enable : out std_logic;
       sample_error : out std_logic -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
@@ -27,10 +29,10 @@ begin
    process (clk)
    begin
 
-      if (rising_edge(clk)) then
-         if (reset = '1') then
-            my_state <= idle; -- många sådana my-state <= idle; här som vi bara skirver över (kanske onödigt)
-            rd_enable <= '1';
+      if (rising_edge(clk) ) then -- vet inte om detta är bästa sättet för reset
+         if (reset = '1' or (ws = '1' and rising_edge(sck))) then
+            my_state <= idle; 
+            rd_enable <= '0';
          end if;
 
          rd_enable <= '0';
@@ -68,13 +70,14 @@ begin
 
    count_p : process (clk)
    begin
-      if (rising_edge(clk)) then
+      if (rising_edge(clk) or (ws = '1' and rising_edge(sck))) then -- vet inte om detta är bästa sättet för reset
          if (reset = '1') then
             counter_bit <= 0;
             counter_samp <= 0;
             counter_1s <= 0;
          else
 
+               
             if (bit_stream = '1') then
                counter_1s <= counter_1s + 1;
             end if;
