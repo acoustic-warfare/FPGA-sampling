@@ -53,18 +53,12 @@ begin
 
    new_data : process (clk)
    begin
-
-      if(rising_edge(clk) and ws_counter = 20 ) then
-         ws <= '1';
-         data_on <= '1';
-         ws_counter <= ws_counter + 1;
-      elsif(rising_edge(clk)) then
-         ws <= '0';
-         ws_counter <= ws_counter + 1;
-      end if;
-
-      if (rising_edge(clk) and sim_counter < 5 and data_on = '1') then
+      if (rising_edge(clk) and sim_counter < 5) then
          bit_stream <= '1';
+         sim_counter <= sim_counter + 1;
+
+      elsif (rising_edge(clk) and sim_counter < 10) then
+         bit_stream <= '0';
          sim_counter <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10 and data_on = '1') then
