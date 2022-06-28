@@ -2,7 +2,7 @@
 
 ##set nfacts [ gtkwave::getNumFacs ]
 
-##for {set i 0} {$i < $nfacts} {incr $1} {
+##for {set i 0} {$i < $nfacts} {incr i} {
 ##    set name [gtkwave::getFacName $i]
 
 ##    gtkwave::addSignalsFromList $name

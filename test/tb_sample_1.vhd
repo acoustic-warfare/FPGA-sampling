@@ -17,14 +17,16 @@ architecture tb of tb_sample_1 is
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
 
    signal bit_stream : std_logic := '0';
-   signal clk : std_logic := '0';
+   signal clk : std_logic := '1';
    signal reset : std_logic := '0';
    signal reg : std_logic_vector(23 downto 0);
    signal rd_enable : std_logic;
-   signal sample_error : std_logic;
+   signal sample_error : std_logic; -- ws twice to close together
    signal ws : std_logic;
+   signal data_on : std_logic;
+   signal ws_counter : integer := 0;
 
-   signal sim_counter : integer := 1;
+   signal sim_counter : integer := 0;
 
    signal clk_count : integer := 0; -- counter for the number of clock cycles
 
@@ -48,37 +50,42 @@ begin
       end if;
    end process;
 
-   feed_data : process (clk)
-   begin
-      if (rising_edge(clk) and sim_counter < 5) then
-         bit_stream <= '0';
-         sim_counter <= sim_counter + 1;
 
-      elsif (rising_edge(clk) and sim_counter < 10) then
+   new_data : process (clk)
+   begin
+
+      if(rising_edge(clk) and ws_counter = 20 ) then
+         ws <= '1';
+         data_on <= '1';
+         ws_counter <= ws_counter + 1;
+      elsif(rising_edge(clk)) then
+         ws <= '0';
+         ws_counter <= ws_counter + 1;
+      end if;
+
+      if (rising_edge(clk) and sim_counter < 5 and data_on = '1') then
          bit_stream <= '1';
          sim_counter <= sim_counter + 1;
+
+      elsif (rising_edge(clk) and sim_counter < 10 and data_on = '1') then
+         bit_stream <= '0';
+         sim_counter <= sim_counter + 1;
       end if;
 
-      if (sim_counter = 10) then
-         sim_counter <= 0;
-      end if;
+
+
+
    end process;
+
+
+   
    clock : process
    begin
       wait for clk_cykle/2;
       clk <= not(clk);
    end process;
 
-   ws_p : process(clk)
-   begin
-      if(clk_count = 10) then
-         ws <= '1';
-      elsif(clk_count = 125) then
-         ws <= '1';
-      else
-         ws <= '0';
-      end if;
-   end process ws_p;
+  
 
 
    main : process

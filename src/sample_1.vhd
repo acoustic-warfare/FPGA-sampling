@@ -79,7 +79,7 @@ begin
             counter_samp <= 0;
             counter_1s <= 0;
          else
-            if (bit_stream = '1' and my_state = run) then
+            if (bit_stream = '1') then
                counter_1s <= counter_1s + 1;
             end if;
 
