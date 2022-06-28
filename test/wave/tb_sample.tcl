@@ -1,4 +1,4 @@
-#python run.py "TEST_NAME" --gtkwave-fmt vcd --gtkwave-args=-Sgkwave.tcl --gui
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample.tb_sample_1
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"
