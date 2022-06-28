@@ -23,7 +23,6 @@ architecture tb of tb_sample_1 is
    signal rd_enable : std_logic;
    signal sample_error : std_logic;
    signal ws : std_logic;
-   signal sck : std_logic;
 
    signal sim_counter : integer := 1;
 
@@ -36,7 +35,6 @@ begin
       clk => clk,
       reset => reset,
       ws => ws,
-      sck => sck,
       reg => reg,
       rd_enable => rd_enable,
       sample_error => sample_error
@@ -70,6 +68,18 @@ begin
       wait for clk_cykle/2;
       clk <= not(clk);
    end process;
+
+   ws_p : process(clk)
+   begin
+      if(clk_count = 10) then
+         ws <= '1';
+      elsif(clk_count = 125) then
+         ws <= '1';
+      else
+         ws <= '0';
+      end if;
+   end process ws_p;
+
 
    main : process
    begin
