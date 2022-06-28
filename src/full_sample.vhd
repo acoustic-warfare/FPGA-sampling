@@ -57,7 +57,7 @@ begin
          else
             if (data_valid_2 = '1') then
                for i in 16 to 31 loop -- fills the sample matrix with the data from microphones 1-16
-                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  sample_out_matrix(i) <= data_in_matrix_2(i-16);
                   rd_check(1)<= '1';
                end loop;
             end if;
@@ -75,7 +75,7 @@ begin
          else
             if (data_valid_3 = '1') then
                for i in 32 to 47 loop -- fills the sample matrix with the data from microphones 1-16
-                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  sample_out_matrix(i) <= data_in_matrix_3(i-32);
                   rd_check(2)<= '1';
                end loop;
             end if;
@@ -93,7 +93,7 @@ begin
          else
             if (data_valid_4 = '1') then
                for i in 48 to 63 loop -- fills the sample matrix with the data from microphones 1-16
-                  sample_out_matrix(i) <= data_in_matrix_1(i);
+                  sample_out_matrix(i) <= data_in_matrix_4(i-48);
                   rd_check(3)<= '1';
                end loop;
             end if;
