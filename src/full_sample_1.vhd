@@ -17,10 +17,7 @@ entity full_sample_1 is
       data_in_matrix_2 : in MATRIX;
       data_in_matrix_3 : in MATRIX;
       data_in_matrix_4 : in MATRIX;
-      data_valid_1 : in std_logic;
-      data_valid_2 : in std_logic;
-      data_valid_3 : in std_logic;
-      data_valid_4 : in std_logic;
+      data_valid_v : in std_logic_vector(3 downto 0);
       rd_enable : out std_logic
    );
 end full_sample_1;
@@ -44,19 +41,19 @@ begin
             sample_out_matrix <= (others => (others => (others =>'0'))); -- Asynchronous reset that actevate on 1
 
             else
-            if (data_valid_1 = '1') then
+            if (data_valid_v(0) = '1') then
 
                sample_out_matrix(0) <= data_in_matrix_1;
             end if;
-            if (data_valid_2 = '1') then
+            if (data_valid_v(1) = '1') then
 
                sample_out_matrix(1) <= data_in_matrix_2;
             end if;
-            if (data_valid_3 = '1') then
+            if (data_valid_v(2) = '1') then
 
                sample_out_matrix(2) <= data_in_matrix_3;
             end if;
-            if (data_valid_4 = '1') then
+            if (data_valid_v(3) = '1') then
 
                sample_out_matrix(3) <= data_in_matrix_4;
             end if;

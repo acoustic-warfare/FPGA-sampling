@@ -9,7 +9,9 @@ for {set i 0} {$i < $nfacts} {incr i} {
     puts "$name"
 
     switch -glob -- $name {
-   
+      
+      
+
          *clk*    -
          tb_tb.a* {
             puts "$name"

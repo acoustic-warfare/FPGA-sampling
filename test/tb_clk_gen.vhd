@@ -23,8 +23,14 @@ architecture tb of tb_clk_gen is
    signal sck_count : integer := 0; -- counter for the number of fsck_clk cycles
    signal ws_count : integer := 0; -- counter for the number of fs_clk cykles
 
-begin
+   procedure clk_wait (nr_of_cykles : in integer) is
+   begin
+      for i in 0 to nr_of_cykles loop
+         wait for sck_cykle;
+      end loop;
+   end procedure;
 
+begin
    -- direct instantiation of: clk_gen
    CLK_GEN1 : entity work.clk_gen port map(
       sck_clk => sck_clk,
@@ -64,7 +70,11 @@ begin
 
             -- test 1 is so far only ment for gktwave
 
-            wait for 30000 ns;   -- duration of test 1
+            reset <= '1';
+            clk_wait(5);
+            reset <= '0';
+
+            wait for 30000 ns; -- duration of test 1
 
             check(1 = 1, "test_1");
          elsif run("tb_clk_gen_2") then
