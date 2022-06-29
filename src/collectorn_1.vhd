@@ -30,9 +30,11 @@ begin
 
    collect : process (clk) -- Process which collects the input data and put it in the matrix
    begin
+
+      -- reg <= '1' & reg(23 downto 1);
       if (rising_edge(clk)) then
          if (rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
-           data_out_matrix(counter_mic) <= data_in;
+           data_out_matrix <= data_in & data_out_matrix(15 downto 1);
             counter_mic <= counter_mic + 1;
          end if;
 
