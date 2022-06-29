@@ -65,8 +65,6 @@ begin
    begin
       if (rising_edge(clk)) then
          if (rd_enable = '1') then
-            rd_enable_counter <= rd_enable_counter + 1;
-
             if (rd_enable_counter = 31) then
                rd_enable_counter <= 0;
             else

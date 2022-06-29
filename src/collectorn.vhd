@@ -23,8 +23,7 @@ end collectorn;
 architecture demo_behavroal of collectorn is
 
    -- signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
-   signal counter_mic : integer := 0; --Counter for columns
-   signal counter_row : integer := 0; -- Counter for rows
+   signal counter_mic : integer := 0; --Counter for rows
 
 begin
 
@@ -36,7 +35,6 @@ begin
          if (reset = '1') then
             data_valid <= '0';
             counter_mic <= 0;
-            counter_row <= 0;
          else
             if (rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
                data_out_matrix <= data_out_matrix(14 downto 0) & data_in;
