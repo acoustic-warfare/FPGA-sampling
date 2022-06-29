@@ -1,7 +1,5 @@
-import imp
 from pathlib import Path
 from vunit import VUnit
-import sys
 
 
 # NOTE: Path to directory containing this file
