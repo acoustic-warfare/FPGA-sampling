@@ -83,7 +83,7 @@ begin
             elsif (rd_enable_counter >= 16) then
                data_in <= v1_24;
             end if;
-            rd_enable_counter <= rd_enable_counter + 1;
+
          end if;
 
       end if;
