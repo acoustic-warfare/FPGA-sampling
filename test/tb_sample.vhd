@@ -84,7 +84,9 @@ begin
       while test_suite loop
          if run("tb_sample_1") then
 
-           
+           reset <= '1';
+           wait for 4 * clk_cykle;
+           reset <= '0';
 
             -- test 1 is so far only ment for gktwave
 

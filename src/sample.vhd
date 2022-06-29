@@ -28,7 +28,7 @@ begin
    begin
       if (rising_edge(clk)) then
          if (reset = '1') then
-            -- reset
+            state <= idle;
          end if;
          case state is
             when idle => -- after a complete sample of all mics (only exit on ws high)
@@ -39,7 +39,7 @@ begin
 
             when run =>
                if (counter_samp = 4) then
-                  if (counter_1s > 1) then
+                  if (counter_1s >= 2) then
                      reg <= '1' & reg(23 downto 1); -- shiftet
                   else
                      reg <= '0' & reg(23 downto 1); -- shiftet
@@ -77,35 +77,31 @@ begin
             counter_bit <= 0;
             counter_samp <= 0;
             counter_mic <= 0;
-
-            --if(bit_stream = '1') then -- funkar inte om vi har ws = 1 på nolla och det kommer 1a direkt efter
-            --   counter_1s <= 1;
-            --else
-            --   counter_1s <= 0;
-            --end if;
-
-         end if;
-         if (counter_samp = 4) then
-            counter_bit <= counter_bit + 1;
             counter_1s <= 0;
-            counter_samp <= 0;
-         elsif (bit_stream = '1') then
-            counter_1s <= counter_1s + 1;
-            counter_samp <= counter_samp + 1;
          else
-            counter_samp <= counter_samp + 1;
-         end if;
 
-         if (counter_bit = 31) then
-            counter_bit <= 0;
-            counter_mic <= counter_mic + 1;
-         end if;
+            if (bit_stream = '1') then
+               counter_1s <= counter_1s + 1;
+            end if;
 
-         if (counter_mic = 15 and counter_bit = 31) then
-            counter_mic <= 0;
+            if (counter_samp = 4) then
+               counter_bit <= counter_bit + 1;
+               counter_1s <= 0;
+               counter_samp <= 0;
+            else
+               counter_samp <= counter_samp + 1;
+            end if;
+
+            if (counter_bit = 31) then
+               counter_bit <= 0;
+               counter_mic <= counter_mic + 1;
+            end if;
+
+            if (counter_mic = 15 and counter_bit = 31) then
+               counter_mic <= 0;
+            end if;
          end if;
       end if;
-
    end process;
 
    state_num : process (state) -- only for findig buggs
