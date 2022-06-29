@@ -5,11 +5,11 @@
 set ROOT [file normalize [file join [file dirname [info script]] .. ]]
 #puts $ROOT
 
-set outputdir ./vivado_files
+set outputdir [file join "$ROOT" scripts vivado_files]
 file mkdir $outputdir
-set files [glob -nocomplain "$outputdir/*"]
 
-create_project -part xc7z020clg400-1 early_test  $outputdir
+
+create_project -part xc7z020clg400-1 early_test  $outputdir -force
 
 #create_project -force ../../vivado_files/project ./project -part xc7z020clg400-1
 
@@ -27,7 +27,7 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 #add_files -fileset sim_1 ../test/tb_fifo_test.vhd
 #add_files ./Sources/hdl/bftLib/
-add_files -fileset constrs_1 ../src/constraint.xdc
+add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 #
 # Now import/copy the files into the project
 import_files -force
