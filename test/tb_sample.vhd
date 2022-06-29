@@ -19,7 +19,7 @@ architecture tb of tb_sample is
    signal bit_stream : std_logic := '0';
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
-   signal send : std_logic;
+   signal ws : std_logic := '0';
    signal rd_enable : std_logic;
    signal sample_error : std_logic;
 
@@ -33,7 +33,7 @@ begin
       bit_stream => bit_stream,
       clk => clk,
       reset => reset,
-      send => send,
+      ws => ws,
       rd_enable => rd_enable,
       sample_error => sample_error
       );
@@ -43,6 +43,17 @@ begin
    begin
       if (clk = '1') then
          clk_count <= clk_count + 1;
+      end if;
+   end process;
+
+   ws_activate : process (clk)
+   begin
+      if (rising_edge(clk)) then
+         if (clk_count > 9 and clk_count < 15) then
+            ws <= '1';
+         else
+            ws <= '0';
+         end if;
       end if;
    end process;
 
@@ -73,14 +84,11 @@ begin
       while test_suite loop
          if run("tb_sample_1") then
 
-            wait for 4 ns;
-            reset <= '1';
-            wait for 4 ns;
-            reset <= '0';
+           
 
             -- test 1 is so far only ment for gktwave
 
-            wait for 30000 ns; -- duration of test 1
+            wait for 50000 ns; -- duration of test 1
 
             check(1 = 1, "test_1");
          elsif run("tb_sample_2") then

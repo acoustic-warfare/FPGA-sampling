@@ -21,7 +21,7 @@ architecture tb of tb_sample_error is
    signal bit_stream : std_logic := '0';
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
-   signal send : std_logic;
+   signal ws : std_logic;
    signal rd_enable : std_logic;
    signal sample_error : std_logic;
 
@@ -35,7 +35,7 @@ begin
       bit_stream => bit_stream,
       clk => clk,
       reset => reset,
-      send => send,
+      ws => ws,
       rd_enable => rd_enable,
       sample_error => sample_error
       );

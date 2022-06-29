@@ -6,98 +6,116 @@ entity sample is
       bit_stream : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
-      send : out std_logic;
-      rd_enable : out std_logic;
-      sample_error : out std_logic -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
+      ws : in std_logic;
+      reg : out std_logic_vector(23 downto 0);
+      rd_enable : out std_logic := '0';
+      sample_error : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
 end entity;
 
 architecture rtl of sample is
-   type state_type is (idle, run);
-   signal p_state, n_state : state_type;
-   signal counter_bit : integer := 0; -- 0 till 31 (antal bitar data per mic) 
+   type state_type is (idle, run, pause);
+   signal state : state_type;
+   signal counter_bit : integer := 0; -- 0 till 31 (antal bitar data per mic)
    signal counter_samp : integer := 0; -- 0 till 4 (antal samples per bit)
-   signal counter_1s : integer := 0;
-   signal state_1 : integer;
-   signal state_rise1 : integer := 0;
-   signal state_rise2 : integer := 0;
+   signal counter_mic : integer := 0; -- 0 till 15 (antal micar som skickat data)
+   signal counter_1s : integer := 0; -- 0 is IDLE, 1 is RUN, 2 is PAUSE
+   signal state_1 : integer; -- only for buggfixing
 
 begin
-   set_state : process (CLK, n_state, reset)
+
+   main_state_p : process (clk)
    begin
-      if (reset = '1') then
-         p_state <= IDLE;
-         --counter_bit <= 0;
-         --counter_slot <= 0;
-      elsif (rising_edge(CLK)) then
-         p_state <= n_state;
+      if (rising_edge(clk)) then
+         if (reset = '1') then
+            -- reset
+         end if;
+         case state is
+            when idle => -- after a complete sample of all mics (only exit on ws high)
+               if (ws = '1') then
+                  sample_error <= '0';
+                  state <= run;
+               end if;
+
+            when run =>
+               if (counter_samp = 4) then
+                  if (counter_1s > 1) then
+                     reg <= '1' & reg(23 downto 1); -- shiftet
+                  else
+                     reg <= '0' & reg(23 downto 1); -- shiftet
+                  end if;
+
+                  if (counter_bit = 23) then
+                     rd_enable <= '1';
+                     state <= pause;
+                  end if;
+               end if;
+
+            when pause =>
+               if (ws = '1') then
+                  sample_error <= '1';
+               end if;
+
+               rd_enable <= '0';
+               if (counter_mic = 15 and counter_bit = 24) then
+                  state <= idle;
+               elsif (counter_bit = 0) then
+                  state <= run;
+               end if;
+
+            when others => -- should never get here
+               report("error_1");
+               null;
+         end case;
       end if;
    end process;
 
-   process (p_state, bit_stream, counter_samp)
+   count : process (clk)
    begin
-      n_state <= idle;
-      rd_enable <= '0';
-      case p_state is
-         when idle =>
-
-            if (bit_stream = '1' and counter_bit < 24) then
-               counter_1s <= 1;
-               n_state <= run;
-            elsif (bit_stream = '0' and counter_bit < 24) then
-               n_state <= run;
-            end if;
-
-         when run =>
-            n_state <= run;
-            if (bit_stream = '1') then
-               counter_1s <= counter_1s + 1;
-            end if;
-
-            if (counter_samp = 4) then
-               if (counter_1s >= 3) then
-                  -- skicka 1
-                  send <= '1';
-               else
-                  -- skicka 0
-                  send <= '0';
-               end if;
-               rd_enable <= '1';
-               counter_1s <= 0;
-               n_state <= idle;
-            end if;
-
-         when others => -- should never get here
-            report("error_1");
-            null;
-      end case;
-
-   end process;
-
-   count : process (clk, reset)
-   begin
-      if (reset = '1') then
-         counter_bit <= 0;
-         counter_samp <= 0;
-      elsif (rising_edge(clk)) then
-         if (counter_bit = 31 and counter_samp = 4) then -- current mics data is collected set both counter_bit and counter_samp to zero
+      if (rising_edge(clk)) then
+         if (reset = '1' or ws = '1') then
             counter_bit <= 0;
             counter_samp <= 0;
-         elsif (counter_samp = 4) then -- current bit collected set counter_samp to zero and start on next bit
-            counter_samp <= 0;
+            counter_mic <= 0;
+
+            --if(bit_stream = '1') then -- funkar inte om vi har ws = 1 på nolla och det kommer 1a direkt efter
+            --   counter_1s <= 1;
+            --else
+            --   counter_1s <= 0;
+            --end if;
+
+         end if;
+         if (counter_samp = 4) then
             counter_bit <= counter_bit + 1;
-         else -- counter_samp increased by one after samping the data once
+            counter_1s <= 0;
+            counter_samp <= 0;
+         elsif (bit_stream = '1') then
+            counter_1s <= counter_1s + 1;
+            counter_samp <= counter_samp + 1;
+         else
             counter_samp <= counter_samp + 1;
          end if;
+
+         if (counter_bit = 31) then
+            counter_bit <= 0;
+            counter_mic <= counter_mic + 1;
+         end if;
+
+         if (counter_mic = 15 and counter_bit = 31) then
+            counter_mic <= 0;
+         end if;
       end if;
+
    end process;
 
-   state_num : process (p_state) -- only for findig buggs
+   state_num : process (state) -- only for findig buggs
    begin
-      if (p_state = idle) then
+      if (state = idle) then
          state_1 <= 0;
-      elsif (p_state = run) then
+      elsif (state = run) then
          state_1 <= 1;
+      elsif (state = pause) then
+         state_1 <= 2;
       end if;
    end process;
 
