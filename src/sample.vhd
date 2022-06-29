@@ -19,8 +19,8 @@ architecture rtl of sample is
    signal counter_bit : integer := 0; -- 0 till 31 (antal bitar data per mic)
    signal counter_samp : integer := 0; -- 0 till 4 (antal samples per bit)
    signal counter_mic : integer := 0; -- 0 till 15 (antal micar som skickat data)
-   signal counter_1s : integer := 0; -- 0 is IDLE, 1 is RUN, 2 is PAUSE
-   signal state_1 : integer; -- only for buggfixing
+   signal counter_1s : integer := 0;
+   signal state_1 : integer; -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
 
 begin
 
