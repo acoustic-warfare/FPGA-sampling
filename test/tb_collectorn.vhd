@@ -22,12 +22,15 @@ architecture tb of tb_collectorn is
    signal data_out_matrix : MATRIX;
    signal data_valid : std_logic;
    signal rd_enable : std_logic := '0';
+   signal rd_counter : integer := 0;
 
    -- test bitstreams filled with ones and zeroes respectively
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
    signal switch : std_logic := '1';
    signal data_test1,data_test2,data_test3,data_test4 : std_logic_vector(23 downto 0);
+
+
 
 begin
 
@@ -49,10 +52,23 @@ begin
       nr_clk <= nr_clk + 1;
    end process;
 
+   rd_enable_p : process (clk)
+   begin
+      if (rising_edge(clk)) then
+         if(rd_counter = 10) then
+            rd_enable <= '1';
+            rd_counter <= 0;
+         else
+         rd_enable <= '0';
+         rd_counter <= rd_counter + 1;
+         end if;
+      end if;
+   end process;
+
+
    bitgen_p : process(clk)
       begin
          if (rising_edge(clk)) then
-            rd_enable <= not rd_enable;
             if(rd_enable = '1') then
                if(switch = '1') then
                data_in <= v0_24;
