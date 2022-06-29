@@ -11,7 +11,7 @@ entity collectorn is
 
    port (
 
-      data_in : in std_logic; -- The sequential bitstream from the microphone Matrix
+      data_in : in std_logic_vector(23 downto 0); -- The a vector with one sample from one microphone
       clk : in std_logic;
       reset : in std_logic; --TO-DO # add a asynchrone reset and read_enable
       rd_enable : in std_logic;
@@ -22,8 +22,8 @@ entity collectorn is
 end collectorn;
 architecture demo_behavroal of collectorn is
 
-   signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
-   signal counter_col : integer := 0; --Counter for columns
+  -- signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
+   signal counter_mic : integer := 0; --Counter for columns
    signal counter_row : integer := 0; -- Counter for rows
 
 begin
@@ -31,22 +31,20 @@ begin
    collect : process (clk) -- Process which collects the input data and put it in the matrix
    begin
 
-      if (rising_edge(clk) and rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
-         tmp_vector(counter_col) <= data_in;
-         counter_col <= counter_col + 1;
-      end if;
+      -- reg <= '1' & reg(23 downto 1);
+      if (rising_edge(clk)) then
+         if (rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
+           data_out_matrix <= data_in & data_out_matrix(15 downto 1);
+            counter_mic <= counter_mic + 1;
+         end if;
 
-      if (counter_col = bits_mic) then -- When an vector (microphone sample) is full change the data_in target to the next Vector
-         data_out_matrix(counter_row) <= tmp_vector;
-         counter_col <= 0;
-         counter_row <= counter_row + 1;
-      end if;
 
-      if (counter_row = nr_mics) then -- When all Vectors is full in the matrix set the data_valid to HIGH which signals the reciever to recieve the Matrix
-         data_valid <= '1';
-         counter_row <= 0;
-      elsif (data_valid = '1' and rising_edge(clk)) then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
-         data_valid <= '0';
+         if (counter_mic = nr_mics) then -- When all Vectors is full in the matrix set the data_valid to HIGH which signals the reciever to recieve the Matrix
+            data_valid <= '1';
+            counter_mic <= 0;
+         elsif (data_valid = '1') then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
+            data_valid <= '0';
+         end if;
       end if;
    end process;
 end demo_behavroal;

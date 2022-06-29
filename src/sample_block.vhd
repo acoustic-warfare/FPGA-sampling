@@ -16,7 +16,7 @@ entity sample_block is
       bit_stream_2 : in std_logic;
       bit_stream_3 : in std_logic;
       bit_stream_4 : in std_logic;
-      sample_out_matrix : out SAMPLE_MATRIX
+      sample_out_matrix : out data_out_matrix
    );
 end entity;
 

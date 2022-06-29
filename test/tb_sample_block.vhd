@@ -22,7 +22,7 @@ architecture tb of tb_sample_block is
    signal bit_stream_4 : std_logic := '0';
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
-   signal sample_out_matrix : SAMPLE_MATRIX;
+   signal sample_out_matrix : data_out_matrix;
 
    signal sim_counter : integer := 0;
 
@@ -35,10 +35,10 @@ architecture tb of tb_sample_block is
 
 begin
 
-   matrix_row_0 <= sample_out_matrix(0);
-   matrix_row_1 <= sample_out_matrix(1);
-   matrix_row_15 <= sample_out_matrix(15);
-   matrix_row_16 <= sample_out_matrix(16);
+   --matrix_row_0 <= sample_out_matrix(0);
+   --matrix_row_1 <= sample_out_matrix(1);
+   --matrix_row_15 <= sample_out_matrix(15);
+   --matrix_row_16 <= sample_out_matrix(16);
 
    sample_block1 : entity work.sample_block port map (
       bit_stream_1 => bit_stream_1,

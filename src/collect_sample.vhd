@@ -20,7 +20,7 @@ entity collect_sample is
       rd_enable_4 : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- TODO: implement Asynchronous reset that actevate on 1
-      sample_out_matrix : out SAMPLE_MATRIX
+      sample_out_matrix : out data_out_matrix
    );
 end collect_sample;
 
@@ -75,10 +75,7 @@ begin
       data_in_matrix_2 => collectorns_out(1),
       data_in_matrix_3 => collectorns_out(2),
       data_in_matrix_4 => collectorns_out(3),
-      data_valid_1 => data_valid_v(0),
-      data_valid_2 => data_valid_v(1),
-      data_valid_3 => data_valid_v(2),
-      data_valid_4 => data_valid_v(3)
+      data_valid_v => data_valid_v
    );
 
 end architecture;

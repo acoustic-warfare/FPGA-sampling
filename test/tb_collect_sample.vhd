@@ -19,7 +19,7 @@ architecture tb of tb_collct_sample is
    signal clk : std_logic := '0';
    signal reset : std_logic;
    signal data_in_1, data_in_2, data_in_3, data_in_4 : std_logic := '1';
-   signal sample_out_matrix : SAMPLE_MATRIX;
+   signal sample_out_matrix : data_out_matrix;
 
    signal rd_enable_1 : std_logic;
    signal rd_enable_2 : std_logic;
@@ -33,13 +33,13 @@ architecture tb of tb_collct_sample is
 
    signal matrix_1 : MATRIX;
 
-   signal temp_0 : std_logic_vector(23 downto 0);
-   signal temp_1 : std_logic_vector(23 downto 0);
-   signal temp_20 : std_logic_vector(23 downto 0);
-   signal temp_30 : std_logic_vector(23 downto 0);
-   signal temp_40 : std_logic_vector(23 downto 0);
-   signal temp_62 : std_logic_vector(23 downto 0);
-   signal temp_63 : std_logic_vector(23 downto 0);
+   --signal temp_0 : std_logic_vector(23 downto 0);
+   --signal temp_1 : std_logic_vector(23 downto 0);
+   --signal temp_20 : std_logic_vector(23 downto 0);
+   --signal temp_30 : std_logic_vector(23 downto 0);
+   --signal temp_40 : std_logic_vector(23 downto 0);
+   --signal temp_62 : std_logic_vector(23 downto 0);
+   --signal temp_63 : std_logic_vector(23 downto 0);
 
 begin
 
@@ -66,13 +66,13 @@ begin
       nr_clk <= nr_clk + 1;
    end process;
 
-   temp_0 <= sample_out_matrix(0);
-   temp_1 <= sample_out_matrix(1);
-   temp_20 <= sample_out_matrix(20);
-   temp_30 <= sample_out_matrix(30);
-   temp_40 <= sample_out_matrix(40);
-   temp_62 <= sample_out_matrix(62);
-   temp_63 <= sample_out_matrix(63);
+   --temp_0 <= sample_out_matrix(0);
+   --temp_1 <= sample_out_matrix(1);
+   --temp_20 <= sample_out_matrix(20);
+   --temp_30 <= sample_out_matrix(30);
+   --temp_40 <= sample_out_matrix(40);
+   --temp_62 <= sample_out_matrix(62);
+   --temp_63 <= sample_out_matrix(63);
 
    main : process
    begin

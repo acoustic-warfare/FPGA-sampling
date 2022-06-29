@@ -17,12 +17,12 @@ architecture tb of tb_full_sample is
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
    signal rd_enable : std_logic;
-   signal sample_out_matrix : SAMPLE_MATRIX;
+   signal sample_out_matrix : data_out_matrix;
    signal data_in_matrix_1 : MATRIX;
    signal data_in_matrix_2 : MATRIX;
    signal data_in_matrix_3 : MATRIX;
    signal data_in_matrix_4 : MATRIX;
-   signal data_valid_1, data_valid_2, data_valid_3, data_valid_4 : std_logic := '0';
+   signal data_valid_v : std_logic_vector(3 downto 0) := "0000";
 
    signal counter_valid : integer := 0;
 
@@ -39,10 +39,7 @@ begin
       data_in_matrix_2 => data_in_matrix_2,
       data_in_matrix_3 => data_in_matrix_3,
       data_in_matrix_4 => data_in_matrix_4,
-      data_valid_1 => data_valid_1,
-      data_valid_2 => data_valid_2,
-      data_valid_3 => data_valid_3,
-      data_valid_4 => data_valid_4,
+      data_valid_v => data_valid_v,
       rd_enable => rd_enable
       );
 
@@ -57,10 +54,7 @@ begin
       if (rising_edge(clk)) then
          if (counter_valid = 10) then
             counter_valid <= counter_valid + 1;
-            data_valid_1 <= '1';
-            data_valid_2 <= '1';
-            data_valid_3 <= '1';
-            data_valid_4 <= '1';
+            data_valid_v <= "1111";
          else
             counter_valid <= counter_valid + 1;
          end if;
