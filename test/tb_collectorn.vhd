@@ -76,7 +76,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_collectorn_1_1") then
+         if run("tb_collectorn_1") then
 
             wait for 8500 ns;
 
