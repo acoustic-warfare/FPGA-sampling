@@ -68,8 +68,8 @@ begin
 
    data_test1 <= data_out_matrix(0);
    data_test2 <= data_out_matrix(3);
-   data_test3 <= data_out_matrix(33);
-   data_test4 <= data_out_matrix(63);
+   data_test3 <= data_out_matrix(14);
+   data_test4 <= data_out_matrix(15);
 
 
    main : process
