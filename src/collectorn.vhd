@@ -22,7 +22,7 @@ entity collectorn is
 end collectorn;
 architecture demo_behavroal of collectorn is
 
-  -- signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
+   -- signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
    signal counter_mic : integer := 0; --Counter for columns
    signal counter_row : integer := 0; -- Counter for rows
 
@@ -33,17 +33,20 @@ begin
 
       -- reg <= '1' & reg(23 downto 1);
       if (rising_edge(clk)) then
-         if (rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
-           data_out_matrix <= data_out_matrix(14 downto 0) & data_in;
-            counter_mic <= counter_mic + 1;
-         end if;
-
-
-         if (counter_mic = nr_mics) then -- When all Vectors is full in the matrix set the data_valid to HIGH which signals the reciever to recieve the Matrix
-            data_valid <= '1';
-            counter_mic <= 0;
-         elsif (data_valid = '1') then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
+         if (reset = '1') then
             data_valid <= '0';
+            counter_mic <= 0;
+            counter_row <= 0;
+         else
+            if (rd_enable = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
+               data_out_matrix <= data_out_matrix(14 downto 0) & data_in;
+               counter_mic <= counter_mic + 1;
+            elsif (counter_mic = nr_mics) then -- When all Vectors is full in the matrix set the data_valid to HIGH which signals the reciever to recieve the Matrix
+               data_valid <= '1';
+               counter_mic <= 0;
+            elsif (data_valid = '1') then -- Sets the data_valid to LOW which enables the code to prepare for a new sample to be place in data:out_matrix
+               data_valid <= '0';
+            end if;
          end if;
       end if;
    end process;

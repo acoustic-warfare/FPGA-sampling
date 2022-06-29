@@ -17,21 +17,19 @@ architecture tb of tb_collectorn is
    signal nr_clk : integer := 0; --not yet in use
 
    signal clk : std_logic := '0';
-   signal data_in : std_logic_vector(23 downto 0);
+   signal data_in : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal reset : std_logic := '0';
    signal data_out_matrix : MATRIX;
    signal data_valid : std_logic;
    signal rd_enable : std_logic := '0';
    signal rd_counter : integer := 0;
-   signal rd_enable_counter : integer :=0;
+   signal rd_enable_counter : integer := 0;
 
    -- test bitstreams filled with ones and zeroes respectively
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
    signal switch : std_logic := '1';
    signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
-
-
 
 begin
 
@@ -44,50 +42,47 @@ begin
       data_valid => data_valid
       );
 
+
    clock : process
    begin
-      clk <= '0';
       wait for clk_cykle/2;
-      clk <= '1';
-      wait for clk_cykle/2;
-      nr_clk <= nr_clk + 1;
+      clk <= not(clk);
    end process;
-
    rd_enable_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         if(rd_counter = 10) then
+         if (rd_counter = 10) then
             rd_enable <= '1';
             rd_counter <= 0;
          else
-         rd_enable <= '0';
-         rd_counter <= rd_counter + 1;
+            rd_enable <= '0';
+            rd_counter <= rd_counter + 1;
          end if;
       end if;
    end process;
 
-
-   bitgen_p : process(clk)
-      begin
-         if (rising_edge(clk)) then
-            if(rd_enable = '1') then
-               rd_enable_counter<= rd_enable_counter +1;
+   bitgen_p : process (clk)
+   begin
+      if (rising_edge(clk)) then
+         if (rd_enable = '1') then
+            rd_enable_counter <= rd_enable_counter + 1;
 
             if (rd_enable_counter = 31) then
                rd_enable_counter <= 0;
+            else
+
+               if (rd_enable_counter < 15) then
+                  data_in <= v0_24;
+
+               elsif (rd_enable_counter >= 16) then
+                  data_in <= v1_24;
+               end if;
+               rd_enable_counter <= rd_enable_counter + 1;
             end if;
-
-            if (rd_enable_counter < 16) then
-               data_in <= v0_24;
-
-            elsif (rd_enable_counter >= 16) then
-               data_in <= v1_24;
-            end if;
-
          end if;
-
       end if;
    end process;
+
    data_test1 <= data_out_matrix(0);
    data_test2 <= data_out_matrix(1);
    data_test3 <= data_out_matrix(2);
