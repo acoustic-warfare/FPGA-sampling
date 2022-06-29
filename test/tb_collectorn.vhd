@@ -22,12 +22,13 @@ architecture tb of tb_collectorn is
    signal data_out_matrix : MATRIX;
    signal data_valid : std_logic;
    signal rd_enable : std_logic := '0';
+   signal rd_enable_counter : integer :=0;
 
    -- test bitstreams filled with ones and zeroes respectively
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
    signal switch : std_logic := '1';
-   signal data_test1,data_test2,data_test3,data_test4 : std_logic_vector(23 downto 0);
+   signal data_test1,data_test2,data_test3,data_test4,data_test5,data_test6,data_test7,data_test8,data_test9,data_test10,data_test11,data_test12,data_test13,data_test14,data_test15,data_test16  : std_logic_vector(23 downto 0);
 
 begin
 
@@ -54,7 +55,9 @@ begin
          if (rising_edge(clk)) then
             rd_enable <= not rd_enable;
             if(rd_enable = '1') then
-               if(switch = '1') then
+               rd_enable_counter<= rd_enable_counter +1;
+
+               if(rd_enable_counter <16) then
                data_in <= v0_24;
                switch <= '0';
                else
@@ -67,9 +70,22 @@ begin
 
 
    data_test1 <= data_out_matrix(0);
-   data_test2 <= data_out_matrix(3);
-   data_test3 <= data_out_matrix(14);
-   data_test4 <= data_out_matrix(15);
+   data_test2 <= data_out_matrix(1);
+   data_test3 <= data_out_matrix(2);
+   data_test4 <= data_out_matrix(3);
+   data_test5 <= data_out_matrix(4);
+   data_test6 <= data_out_matrix(5);
+   data_test7 <= data_out_matrix(6);
+   data_test8 <= data_out_matrix(7);
+   data_test9 <= data_out_matrix(8);
+   data_test10 <= data_out_matrix(9);
+   data_test11 <= data_out_matrix(10);
+   data_test12 <= data_out_matrix(11);
+   data_test13 <= data_out_matrix(12);
+   data_test14 <= data_out_matrix(13);
+   data_test15 <= data_out_matrix(14);
+   data_test16 <= data_out_matrix(15);
+
 
 
    main : process
