@@ -62,6 +62,10 @@ begin
       while test_suite loop
          if run("tb_clk_gen_1") then
 
+            reset <= '1';
+            wait for 30 ns;
+            reset <= '0';
+
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns;   -- duration of test 1
