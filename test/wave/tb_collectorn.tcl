@@ -5,19 +5,25 @@ puts "$nfacts"
 
 
 for {set i 0} {$i < $nfacts} {incr i} {
-    set name [gtkwave::getFacName $i]
-    puts "$name"
+   set name [gtkwave::getFacName $i]
+   puts "$name"
 
-    switch -glob -- $name {
-      
-      
+   switch -glob -- $name {
 
-         *clk*    -
-         tb_tb.a* {
-            puts "$name"
-            gtkwave::addSignalsFromList "$name"
-         }
-     } 
+      tb_collectorn.collectorn1.clk
+      tb_collectorn.collectorn1.counter_mic
+      tb_collectorn.collectorn1.counter_row
+      tb_collectorn.collectorn1.data_in*    -
+      tb_collectorn.collectorn1.data_valid
+      tb_collectorn.collectorn1.rd_enable
+      tb_collectorn.collectorn1.reset
+      tb_collectorn.data_in*    -
+      tb_collectorn.data_test*    -
+      tb_tb.a* {
+         puts "$name"
+         gtkwave::addSignalsFromList "$name"
+      }
+   }
 }
 
 # zoom full
