@@ -13,56 +13,45 @@ entity tb_clk_gen is
 end tb_clk_gen;
 
 architecture tb of tb_clk_gen is
-   constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
+   constant sck_cykle : time := 10 ns; -- set the duration of one clock cycle
 
-   signal clk : std_logic := '0';
-   signal fsck_clk : std_logic;
-   signal fs_clk : std_logic;
+   signal sck_clk : std_logic := '1';
+   signal ws_clk : std_logic;
    signal reset : std_logic;
 
-   signal clk_count : integer := 0; -- counter for the number of clock cycles 
-   signal fsck_count : integer := 0; -- counter for the number of fsck_clk cycles
-   signal fs_count : integer := 0; -- counter for the number of fs_clk cykles
+   signal sck_count : integer := 0; -- counter for the number of fsck_clk cycles
+   signal ws_count : integer := 0; -- counter for the number of fs_clk cykles
 
 begin
 
    -- direct instantiation of: clk_gen
    CLK_GEN1 : entity work.clk_gen port map(
-      clk => clk,
-      fsck_clk => fsck_clk,
-      fs_clk => fs_clk,
+      sck_clk => sck_clk,
+      ws_clk => ws_clk,
       reset => reset
       );
 
-   -- counter for clk cykles
-   clk_counter : process (clk)
+   -- counter for fs_clk cykles
+   fsck_counter : process (sck_clk)
    begin
-      if (clk = '1') then
-         clk_count <= clk_count + 1;
+      if (sck_clk = '1') then
+         sck_count <= sck_count + 1;
       end if;
    end process;
 
    -- counter for fs_clk cykles
-   fsck_counter : process (fsck_clk)
+   fs_counter : process (ws_clk)
    begin
-      if (fsck_clk = '1') then
-         fsck_count <= fsck_count + 1;
-      end if;
-   end process;
-
-   -- counter for fs_clk cykles
-   fs_counter : process (fs_clk)
-   begin
-      if (fs_clk = '1') then
-         fs_count <= fs_count + 1;
+      if (ws_clk = '1') then
+         ws_count <= ws_count + 1;
       end if;
    end process;
 
    -- generate clock pulses with a clock period of clk_cykle
    clock : process
    begin
-      clk <= not(clk);
-      wait for clk_cykle/2;
+      sck_clk <= not(sck_clk);
+      wait for sck_cykle/2;
    end process;
 
    main : process
