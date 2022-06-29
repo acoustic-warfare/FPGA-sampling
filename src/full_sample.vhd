@@ -16,10 +16,7 @@ entity full_sample is
       data_in_matrix_2 : in MATRIX;
       data_in_matrix_3 : in MATRIX;
       data_in_matrix_4 : in MATRIX;
-      data_valid_1 : in std_logic;
-      data_valid_2 : in std_logic;
-      data_valid_3 : in std_logic;
-      data_valid_4 : in std_logic;
+      data_valid_v : in std_logic_vector(3 downto 0);
       sample_out_matrix : out SAMPLE_MATRIX; --SAMPLE_MATRIX is array (0 to 63) of std_logic_vector(23 downto 0);
       rd_enable : out std_logic
    );
@@ -40,7 +37,7 @@ begin
          if (reset = '1') then
             sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
          else
-            if (data_valid_1 = '1') then
+            if (data_valid_v(0) = '1') then
                for i in 0 to 15 loop -- fills the sample matrix with the data from microphones 1-16
                   sample_out_matrix(i) <= data_in_matrix_1(i);
                   rd_check(0) <= '1';
@@ -61,7 +58,7 @@ begin
          if (reset = '1') then
             sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
          else
-            if (data_valid_2 = '1') then
+            if (data_valid_v(1) = '1') then
                for i in 16 to 31 loop -- fills the sample matrix with the data from microphones 1-16
                   sample_out_matrix(i) <= data_in_matrix_2(i - 16);
                   rd_check(1) <= '1';
@@ -82,7 +79,7 @@ begin
          if (reset = '1') then
             sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
          else
-            if (data_valid_3 = '1') then
+            if (data_valid_v(2) = '1') then
                for i in 32 to 47 loop -- fills the sample matrix with the data from microphones 1-16
                   sample_out_matrix(i) <= data_in_matrix_3(i - 32);
                   rd_check(2) <= '1';
@@ -103,7 +100,7 @@ begin
          if (reset = '1') then
             sample_out_matrix <= (others => (others => '0')); -- Asynchronous reset that actevate on 1
          else
-            if (data_valid_4 = '1') then
+            if (data_valid_v(3) = '1') then
                for i in 48 to 63 loop -- fills the sample matrix with the data from microphones 1-16
                   sample_out_matrix(i) <= data_in_matrix_4(i - 48);
                   rd_check(3) <= '1';
