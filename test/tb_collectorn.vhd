@@ -23,7 +23,7 @@ architecture tb of tb_collectorn is
    signal data_valid : std_logic;
    signal rd_enable : std_logic := '0';
    signal rd_counter : integer := 0;
-   signal rd_enable_counter : integer := 0;
+   signal rd_enable_counter : integer := 1;
 
    -- test bitstreams filled with ones and zeroes respectively
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
