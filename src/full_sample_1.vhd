@@ -26,7 +26,7 @@ entity full_sample_1 is
 end full_sample_1;
 architecture behavroal of full_sample_1 is
    signal rd_check : std_logic;
-   signal internal_reset : std_logic;
+
 
 begin
    fill_sample_matrix_from_trail_1_p : process (clk, reset)

@@ -17,6 +17,7 @@ architecture tb of tb_clk_gen is
 
    signal sck_clk : std_logic := '1';
    signal ws_clk : std_logic;
+   signal ws_out : std_logic;
    signal reset : std_logic;
 
    signal sck_count : integer := 0; -- counter for the number of fsck_clk cycles
@@ -28,6 +29,7 @@ begin
    CLK_GEN1 : entity work.clk_gen port map(
       sck_clk => sck_clk,
       ws_clk => ws_clk,
+      ws_out => ws_out,
       reset => reset
       );
 
@@ -59,7 +61,7 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("tb_clk_gen_1") then
-            
+
             -- test 1 is so far only ment for gktwave
 
             wait for 30000 ns;   -- duration of test 1

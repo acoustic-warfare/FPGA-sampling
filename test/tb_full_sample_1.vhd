@@ -31,7 +31,7 @@ architecture tb of tb_full_sample_1 is
 
 begin
 
-   full_sample_1 : entity work.full_sample port map(
+   full_sample_1 : entity work.full_sample_1 port map(
       clk => clk,
       reset => reset,
       sample_out_matrix => sample_out_matrix,
