@@ -9,9 +9,9 @@ for {set i 2} {$i < $nfacts} {incr i} {
     puts "$name"
 
     switch -glob -- $name {
-   
+         *data_valid_* -
          *clk*    -
-         tb_tb.a* {
+          tb_tb.a* {
             puts "$name"
             gtkwave::addSignalsFromList "$name"
          }

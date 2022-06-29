@@ -1,16 +1,16 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_collectorn.tb_collectorn_1
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_clk_gen.tb_clk_gen_1
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"
 
 
-for {set i 0} {$i < $nfacts} {incr i} {
+for {set i 2} {$i < $nfacts} {incr i} {
     set name [gtkwave::getFacName $i]
     puts "$name"
 
     switch -glob -- $name {
    
-         *clk*    -
+         *ws_clk*    -
          tb_tb.a* {
             puts "$name"
             gtkwave::addSignalsFromList "$name"
@@ -20,4 +20,3 @@ for {set i 0} {$i < $nfacts} {incr i} {
 
 # zoom full
 gtkwave::/Time/Zoom/Zoom_Full
-

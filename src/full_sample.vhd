@@ -12,7 +12,6 @@ entity full_sample is
    port (
       clk : in std_logic;
       reset : in std_logic;
-      sample_out_matrix : out SAMPLE_MATRIX; --SAMPLE_MATRIX is array (0 to 63) of std_logic_vector(23 downto 0);
       data_in_matrix_1 : in MATRIX; --MATRIX is array (0 to 15) of std_logic_vector(23 downto 0);
       data_in_matrix_2 : in MATRIX;
       data_in_matrix_3 : in MATRIX;
@@ -21,6 +20,7 @@ entity full_sample is
       data_valid_2 : in std_logic;
       data_valid_3 : in std_logic;
       data_valid_4 : in std_logic;
+      sample_out_matrix : out SAMPLE_MATRIX; --SAMPLE_MATRIX is array (0 to 63) of std_logic_vector(23 downto 0);
       rd_enable : out std_logic
    );
 end full_sample;
