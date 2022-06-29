@@ -22,12 +22,8 @@ architecture tb of tb_collectorn is
    signal data_out_matrix : MATRIX;
    signal data_valid : std_logic;
    signal rd_enable : std_logic := '0';
-<<<<<<< HEAD
-   signal rd_enable_counter : integer := 0;
-=======
    signal rd_counter : integer := 0;
    signal rd_enable_counter : integer :=0;
->>>>>>> c49a70d2f9373b9b73609a9f259594d81d95b06d
 
    -- test bitstreams filled with ones and zeroes respectively
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
