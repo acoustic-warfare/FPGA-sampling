@@ -22,44 +22,46 @@ entity full_sample_1 is
    );
 end full_sample_1;
 architecture behavroal of full_sample_1 is
-   signal rd_check : std_logic;
-
-
+   signal rd_check : std_logic_vector(3 downto 0);
 begin
    fill_sample_matrix_from_trail_1_p : process (clk, reset)
    begin
 
       if (rising_edge(clk)) then
-         if (rd_check = '1') then
-            rd_enable <= '1';
-         else
-            rd_check <= '0';
-            rd_enable <= '0';
-         end if;
+
+         rd_enable <= '0';
+
 
          if (reset = '1') then
-            sample_out_matrix <= (others => (others => (others =>'0'))); -- Asynchronous reset that actevate on 1
+            sample_out_matrix <= (others => (others => (others => '0'))); -- Asynchronous reset that actevate on 1
 
-            else
+         else
             if (data_valid_v(0) = '1') then
-
+               rd_check(0) <= '1';
                sample_out_matrix(0) <= data_in_matrix_1;
             end if;
-            if (data_valid_v(1) = '1') then
 
+            if (data_valid_v(1) = '1') then
+               rd_check(1) <= '1';
                sample_out_matrix(1) <= data_in_matrix_2;
             end if;
-            if (data_valid_v(2) = '1') then
 
+            if (data_valid_v(2) = '1') then
+               rd_check(2) <= '1';
                sample_out_matrix(2) <= data_in_matrix_3;
             end if;
-            if (data_valid_v(3) = '1') then
 
+            if (data_valid_v(3) = '1') then
+               rd_check(3) <= '1';
                sample_out_matrix(3) <= data_in_matrix_4;
             end if;
-            rd_check <= '1';
+
+            if (rd_check = "1111") then
+               rd_enable <= '1';
+               rd_check <= (others => '0');
+            end if;
          end if;
       end if;
-end process;
+   end process;
 
 end behavroal;
