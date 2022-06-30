@@ -23,7 +23,7 @@ end entity;
 architecture rtl of top is
    signal sample_out_matrix : data_out_matrix;
 begin
-   sample_block : entity work.sample_block port map(
+   top_block : entity work.sample_block port map(
       clk => clk,
       bit_stream_v => bit_stream_v,
       reset => reset,
