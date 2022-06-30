@@ -34,8 +34,7 @@ begin
    -- direct instantiation of: clk_gen
    CLK_GEN1 : entity work.clk_gen port map(
       sck_clk => sck_clk,
-      ws_clk => ws_clk,
-      ws_out => ws_out,
+      ws_pulse => ws_out,
       reset => reset
       );
 

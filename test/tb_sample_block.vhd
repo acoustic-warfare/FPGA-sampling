@@ -16,9 +16,8 @@ end tb_sample_block;
 architecture tb of tb_sample_block is
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
-   signal ws : std_logic := '0';
+   signal ws : std_logic;
    signal sck_clk : std_logic := '0';
-
    signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
 
    signal sample_out_matrix : data_out_matrix;
@@ -45,6 +44,7 @@ architecture tb of tb_sample_block is
 
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
    signal sim_counter : integer := 0;
+   signal sck_counter : integer := 0;
 
    procedure clk_wait (nr_of_cykles : in integer) is
    begin
@@ -56,11 +56,10 @@ architecture tb of tb_sample_block is
 begin
 
    clk_gen1 : entity work.clk_gen port map (
-      sck_clk <= sck_clk,
-      ws_puls <= ws,   
-      reset <= reset
-
-   );
+      sck_clk => sck_clk,
+      ws_pulse => ws,
+      reset => reset
+      );
 
    sample_block1 : entity work.sample_block port map (
       clk => clk,
@@ -113,6 +112,19 @@ begin
       clk <= not(clk);
    end process;
 
+   sck_clock : process (clk)
+   begin
+      if(sck_counter = 10) then
+         sck_counter <= 0;
+      else
+      if (sck_counter < 5) then
+         sck_clk <= '1';
+      elsif(sck_counter >= 5) then
+         sck_clk <= '0';
+      end if;
+      sck_counter <= sck_counter + 1;
+      end if;
+   end process;
    main : process
    begin
       test_runner_setup(runner, runner_cfg);
@@ -123,10 +135,7 @@ begin
             clk_wait(10);
             reset <= '0';
             clk_wait(10);
-            ws <= '1';
-            clk_wait(5);
-            ws <= '0';
-
+           
             wait for 90000 ns;
             check(1 = 1, "test_1");
          elsif run("tb_sample_block_2") then -- test 2, automatic checks after verius intervals
