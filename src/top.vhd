@@ -21,7 +21,7 @@ entity top is
 end entity;
 
 architecture rtl of top is
-   signal sample_out_matrix : data_out_matrix;
+   signal sample_out_matrix : matrix_4_16_24;
 begin
    top_block : entity work.sample_block port map(
       clk => clk,

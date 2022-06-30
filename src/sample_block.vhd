@@ -14,7 +14,7 @@ entity sample_block is
       bit_stream_v : in std_logic_vector(3 downto 0);
       reset : in std_logic;
       ws : in std_logic;
-      sample_out_matrix : out data_out_matrix;
+      sample_out_matrix : out matrix_4_16_24;
       sample_error_v : out std_logic_vector(3 downto 0);
       data_valid : out std_logic --  A signal to tell the receiver to start reading the data_out_matrix
    );
@@ -23,7 +23,7 @@ end entity;
 architecture rtl of sample_block is
 
    signal data_valid_v : std_logic_vector(3 downto 0);
-   signal data_out_matrix_v : DATA_OUT_MATRIX;
+   signal data_out_matrix_v : matrix_4_16_24;
 begin
    sample_machine_gen : for i in 0 to 3 generate
    begin

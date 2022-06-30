@@ -10,12 +10,13 @@ entity sample_machine is
    );
 
    port (
-      bit_stream : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       ws : in std_logic;
+      bit_stream : in std_logic;
+
       sample_error : out std_logic := '0';
-      data_out_matrix : out MATRIX; -- Our output Matrix with 1 sample from all microphones in the Matrix
+      data_out_matrix : out matrix_16_24; -- Our output Matrix with 1 sample from all microphones in the Matrix
       data_valid : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end sample_machine;
