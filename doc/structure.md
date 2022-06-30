@@ -5,7 +5,7 @@ Sample frequency 125 MHz (the clock that is used for the varius components in th
 Data frequency 25 MHz (the frequency that data is sent by the array called fsck or sck)
 Mic sample frequency 48,828 KHz (the frequency at wich the microfones sample new data called fs or ws)
 
-<hi> test for test </h1>
+# test for test 
 
 
 
