@@ -20,7 +20,7 @@ architecture tb of tb_sample_block is
    signal sck_clk : std_logic := '0';
    signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
 
-   signal sample_out_matrix : data_out_matrix;
+   signal sample_out_matrix : matrix_4_16_24;
    signal data_valid : std_logic;
    signal sample_error_v : std_logic_vector (3 downto 0);
 
@@ -37,10 +37,10 @@ architecture tb of tb_sample_block is
    signal matrix_row_49 : std_logic_vector(23 downto 0); -- slinga 3, mic 1
    signal matrix_row_63 : std_logic_vector(23 downto 0); -- slinga 3, mic 15
 
-   signal temp_trail_0 : MATRIX; -- slinga 0, alla micar
-   signal temp_trail_1 : MATRIX; -- slinga 1, alla micar
-   signal temp_trail_2 : MATRIX; -- slinga 2, alla micar
-   signal temp_trail_3 : MATRIX; -- slinga 3, alla micar
+   signal temp_trail_0 : matrix_16_24; -- slinga 0, alla micar
+   signal temp_trail_1 : matrix_16_24; -- slinga 1, alla micar
+   signal temp_trail_2 : matrix_16_24; -- slinga 2, alla micar
+   signal temp_trail_3 : matrix_16_24; -- slinga 3, alla micar
 
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
    signal sim_counter : integer := 0;
@@ -114,15 +114,15 @@ begin
 
    sck_clock : process (clk)
    begin
-      if(sck_counter = 10) then
+      if (sck_counter = 10) then
          sck_counter <= 0;
       else
-      if (sck_counter < 5) then
-         sck_clk <= '1';
-      elsif(sck_counter >= 5) then
-         sck_clk <= '0';
-      end if;
-      sck_counter <= sck_counter + 1;
+         if (sck_counter < 5) then
+            sck_clk <= '1';
+         elsif (sck_counter >= 5) then
+            sck_clk <= '0';
+         end if;
+         sck_counter <= sck_counter + 1;
       end if;
    end process;
    main : process
@@ -135,7 +135,7 @@ begin
             clk_wait(10);
             reset <= '0';
             clk_wait(10);
-           
+
             wait for 90000 ns;
             check(1 = 1, "test_1");
          elsif run("tb_sample_block_2") then -- test 2, automatic checks after verius intervals
