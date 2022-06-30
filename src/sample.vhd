@@ -8,7 +8,7 @@ entity sample is
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       ws : in std_logic;
       reg : out std_logic_vector(23 downto 0);
-      rd_enable : out std_logic := '0';
+      data_valid_sample_out : out std_logic := '0';
       sample_error : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
 end entity;
@@ -46,7 +46,7 @@ begin
                   end if;
 
                   if (counter_bit = 23) then
-                     rd_enable <= '1';
+                     data_valid_sample_out <= '1';
                      state <= pause;
                   end if;
                end if;
@@ -56,7 +56,7 @@ begin
                   sample_error <= '1';
                end if;
 
-               rd_enable <= '0';
+               data_valid_sample_out <= '0';
                if (counter_mic = 15 and counter_bit = 24) then
                   state <= idle;
                elsif (counter_bit = 0) then

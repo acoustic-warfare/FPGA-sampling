@@ -16,14 +16,14 @@ entity sample_machine is
       bit_stream : in std_logic;
 
       sample_error : out std_logic := '0';
-      data_out_matrix : out matrix_16_24; -- Our output Matrix with 1 sample from all microphones in the Matrix
-      data_valid : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
+      data_matrix_16_24_out : out matrix_16_24; -- Our output Matrix with 1 sample from all microphones in the Matrix
+      data_valid_out : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end sample_machine;
 
 architecture structual of sample_machine is
 
-   signal rd_enable : std_logic := '0';
+   signal data_valid_sample_out : std_logic := '0';
    signal reg : std_logic_vector(23 downto 0);
 
 begin
@@ -33,7 +33,7 @@ begin
       reset => reset,
       ws => ws,
       reg => reg,
-      rd_enable => rd_enable,
+      data_valid_sample_out => data_valid_sample_out,
       sample_error => sample_error
       );
 
@@ -41,9 +41,9 @@ begin
       clk => clk,
       reset => reset,
       data_in => reg,
-      rd_enable => rd_enable,
-      data_valid => data_valid,
-      data_out_matrix => data_out_matrix
+      data_valid_collectorn_in => data_valid_sample_out,
+      data_valid_collectorn_out => data_valid_out,
+      data_matrix_16_24_out => data_matrix_16_24_out
       );
 
 end architecture;

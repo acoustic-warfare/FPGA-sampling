@@ -81,22 +81,22 @@ begin
       end if;
    end process;
 
-   data_test1 <= matrix_4_16_24(0);
-   data_test2 <= matrix_4_16_24(1);
-   data_test3 <= matrix_4_16_24(2);
-   data_test4 <= matrix_4_16_24(3);
-   data_test5 <= matrix_4_16_24(4);
-   data_test6 <= matrix_4_16_24(5);
-   data_test7 <= matrix_4_16_24(6);
-   data_test8 <= matrix_4_16_24(7);
-   data_test9 <= matrix_4_16_24(8);
-   data_test10 <= matrix_4_16_24(9);
-   data_test11 <= matrix_4_16_24(10);
-   data_test12 <= matrix_4_16_24(11);
-   data_test13 <= matrix_4_16_24(12);
-   data_test14 <= matrix_4_16_24(13);
-   data_test15 <= matrix_4_16_24(14);
-   data_test16 <= matrix_4_16_24(15);
+   data_test1 <= data_out_matrix(0);
+   data_test2 <= data_out_matrix(1);
+   data_test3 <= data_out_matrix(2);
+   data_test4 <= data_out_matrix(3);
+   data_test5 <= data_out_matrix(4);
+   data_test6 <= data_out_matrix(5);
+   data_test7 <= data_out_matrix(6);
+   data_test8 <= data_out_matrix(7);
+   data_test9 <= data_out_matrix(8);
+   data_test10 <= data_out_matrix(9);
+   data_test11 <= data_out_matrix(10);
+   data_test12 <= data_out_matrix(11);
+   data_test13 <= data_out_matrix(12);
+   data_test14 <= data_out_matrix(13);
+   data_test15 <= data_out_matrix(14);
+   data_test16 <= data_out_matrix(15);
 
    main : process
    begin

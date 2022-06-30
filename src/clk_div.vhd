@@ -17,7 +17,6 @@ architecture Behavioral of clk_div is
 begin
    fsck_clk_gen : process (clk_in, reset) -- divides clk in half
    begin
-
       if (rising_edge(clk_in)) then
          if (reset = '1') then
             clk_out <= '0';

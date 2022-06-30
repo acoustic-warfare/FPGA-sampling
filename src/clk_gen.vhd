@@ -28,7 +28,7 @@ begin
    begin
       if (rising_edge(sck_clk)) then
          if (reset = '1') then
-           -- ws_clk <= '0';
+            ws_clk <= '0';
             ws_d <= '0';
          else
             ws_d <= ws_clk;
