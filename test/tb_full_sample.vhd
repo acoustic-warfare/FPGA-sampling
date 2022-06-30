@@ -18,17 +18,17 @@ architecture tb of tb_full_sample is
    signal reset : std_logic := '0';
    signal rd_enable : std_logic;
    signal sample_out_matrix : data_out_matrix;
-   signal data_in_matrix_1 : MATRIX;
-   signal data_in_matrix_2 : MATRIX;
-   signal data_in_matrix_3 : MATRIX;
-   signal data_in_matrix_4 : MATRIX;
+   signal data_in_matrix_1 : MATRIX := (others => (others => '0'));
+   signal data_in_matrix_2 : MATRIX := (others => (others => '0'));
+   signal data_in_matrix_3 : MATRIX := (others => (others => '0'));
+   signal data_in_matrix_4 : MATRIX := (others => (others => '0'));
    signal data_valid_v : std_logic_vector(3 downto 0) := "0000";
-
+   signal rd_enable_counter : integer := 1;
    signal counter_valid : integer := 0;
+   signal rd_counter : integer := 0;
 
-   signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
-   signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
-
+   signal data_out_matrix : matrix;
+   signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
 begin
 
    full_sample_1 : entity work.full_sample port map(
@@ -48,19 +48,54 @@ begin
       wait for clk_cykle/2;
       clk <= not(clk);
    end process;
-
-   data_gen_p : process (clk)
+   rd_enable_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         if (counter_valid = 10) then
-            counter_valid <= counter_valid + 1;
-            data_valid_v <= "1111";
+         if (rd_counter = 10) then
+            data_valid_v(0) <= '1';
+            rd_counter <= 0;
          else
-            counter_valid <= counter_valid + 1;
+         data_valid_v(0) <= '0';
+            rd_counter <= rd_counter + 1;
          end if;
-
       end if;
    end process;
+   bitgen_p : process (clk)
+   begin
+      if (rising_edge(clk)) then
+         if (rd_enable = '1') then
+            if (rd_enable_counter = 31) then
+               rd_enable_counter <= 0;
+            else
+
+               if (rd_enable_counter < 15) then
+                  data_in_matrix_1 <= (others => (others => '0'));
+               elsif (rd_enable_counter >= 16) then
+                  data_in_matrix_1 <= (others => (others => '1'));
+               end if;
+               rd_enable_counter <= rd_enable_counter + 1;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   data_out_matrix <= sample_out_matrix(0);
+   data_test1 <= data_out_matrix(0);
+   data_test2 <= data_out_matrix(1);
+   data_test3 <= data_out_matrix(2);
+   data_test4 <= data_out_matrix(3);
+   data_test5 <= data_out_matrix(4);
+   data_test6 <= data_out_matrix(5);
+   data_test7 <= data_out_matrix(6);
+   data_test8 <= data_out_matrix(7);
+   data_test9 <= data_out_matrix(8);
+   data_test10 <= data_out_matrix(9);
+   data_test11 <= data_out_matrix(10);
+   data_test12 <= data_out_matrix(11);
+   data_test13 <= data_out_matrix(12);
+   data_test14 <= data_out_matrix(13);
+   data_test15 <= data_out_matrix(14);
+   data_test16 <= data_out_matrix(15);
 
    main : process
    begin
