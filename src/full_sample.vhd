@@ -24,17 +24,13 @@ end full_sample;
 architecture behavroal of full_sample is
    signal rd_check : std_logic_vector(3 downto 0);
 begin
-   fill_sample_matrix_from_trail_1_p : process (clk, reset)
+   fill_sample_matrix_from_trail_1_p : process (clk)
    begin
-
       if (rising_edge(clk)) then
-
          rd_enable <= '0';
-
-
          if (reset = '1') then
-            sample_out_matrix <= (others => (others => (others => '0'))); -- Asynchronous reset that actevate on 1
-
+            rd_enable <= '0';
+            rd_check <= '0';
          else
             if (data_valid_v(0) = '1') then
                rd_check(0) <= '1';
