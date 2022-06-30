@@ -26,19 +26,42 @@ architecture tb of tb_sample_block is
 
    signal sim_counter : integer := 0;
 
-   signal matrix_row_0 : std_logic_vector(23 downto 0);
-   signal matrix_row_1 : std_logic_vector(23 downto 0);
-   signal matrix_row_15 : std_logic_vector(23 downto 0);
-   signal matrix_row_16 : std_logic_vector(23 downto 0);
+   signal matrix_row_0 : std_logic_vector(23 downto 0); -- slinga 0, mic 0
+   signal matrix_row_1 : std_logic_vector(23 downto 0); -- slinga 0, mic 1
+   signal matrix_row_15 : std_logic_vector(23 downto 0); -- slinga 0, mic 15
+   signal matrix_row_16 : std_logic_vector(23 downto 0); -- slinga 1, mic 0
+   signal matrix_row_17 : std_logic_vector(23 downto 0); -- slinga 1, mic 1
+   signal matrix_row_31 : std_logic_vector(23 downto 0); -- slinga 1, mic 15
+   signal matrix_row_32 : std_logic_vector(23 downto 0); -- slinga 2, mic 0
+   signal matrix_row_33 : std_logic_vector(23 downto 0); -- slinga 2, mic 1
+   signal matrix_row_47 : std_logic_vector(23 downto 0); -- slinga 2, mic 15
+   signal matrix_row_48 : std_logic_vector(23 downto 0); -- slinga 3, mic 0
+   signal matrix_row_49 : std_logic_vector(23 downto 0); -- slinga 3, mic 1
+   signal matrix_row_63 : std_logic_vector(23 downto 0); -- slinga 3, mic 15
 
    signal clk_count : integer := 0; -- counter for the number of clock cycles
 
+   procedure clk_wait (nr_of_cykles : in integer) is
+   begin
+      for i in 0 to nr_of_cykles loop
+         wait for clk_cykle;
+      end loop;
+   end procedure;
+
 begin
 
-   --matrix_row_0 <= sample_out_matrix(0);
-   --matrix_row_1 <= sample_out_matrix(1);
-   --matrix_row_15 <= sample_out_matrix(15);
-   --matrix_row_16 <= sample_out_matrix(16);
+   matrix_row_0 <= sample_out_matrix(0);
+   matrix_row_1 <= sample_out_matrix(1);
+   matrix_row_15 <= sample_out_matrix(15);
+   matrix_row_16 <= sample_out_matrix(16);
+   matrix_row_17 <= sample_out_matrix(17);
+   matrix_row_31 <= sample_out_matrix(31);
+   matrix_row_32 <= sample_out_matrix(32);
+   matrix_row_33 <= sample_out_matrix(33);
+   matrix_row_47 <= sample_out_matrix(47);
+   matrix_row_48 <= sample_out_matrix(48);
+   matrix_row_49 <= sample_out_matrix(49);
+   matrix_row_63 <= sample_out_matrix(63);
 
    sample_block1 : entity work.sample_block port map (
       bit_stream_1 => bit_stream_1,
@@ -81,6 +104,7 @@ begin
          sim_counter <= 0;
       end if;
    end process;
+
    clock : process
    begin
       wait for clk_cykle/2;
@@ -91,20 +115,18 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_block_1") then
+         if run("tb_sample_block_1") then -- test 1, only for gktwave
 
-            wait for 4 ns;
             reset <= '1';
-            wait for 4 ns;
+            clk_wait(10);
             reset <= '0';
-            -- test 1 is so far only ment for gktwave
 
-            wait for 30000 ns; -- duration of test 1
+            wait for 30000 ns;
             check(1 = 1, "test_1");
-         elsif run("tb_sample_block_2") then
+         elsif run("tb_sample_block_2") then -- test 2, automatic checks after verius intervals
+
 
             check(1 = 1, "test_1");
-
             wait for 11 ns;
 
          end if;
