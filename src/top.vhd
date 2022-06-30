@@ -24,12 +24,12 @@ architecture rtl of top is
    signal sample_out_matrix : data_out_matrix;
 begin
    sample_block : entity work.sample_block port map(
-      clk <= clk,
-      bit_stream_v <= bit_stream_v,
-      reset <= reset,
-      ws <= ws,
-      sample_out_matrix <= sample_out_matrix,
-      sample_error_v <= sample_error_v,
-      data_valid <= data_valid
+      clk => clk,
+      bit_stream_v => bit_stream_v,
+      reset => reset,
+      ws => ws,
+      sample_out_matrix => sample_out_matrix,
+      sample_error_v => sample_error_v,
+      data_valid => data_valid
       );
 end architecture;
