@@ -53,9 +53,15 @@ begin
       if (rising_edge(clk)) then
          if (rd_counter = 10) then
             data_valid_v(0) <= '1';
+            data_valid_v(1) <= '1';
+            data_valid_v(2) <= '1';
+            data_valid_v(3) <= '1';
             rd_counter <= 0;
          else
-         data_valid_v(0) <= '0';
+            data_valid_v(0) <= '0';
+            data_valid_v(1) <= '0';
+            data_valid_v(2) <= '0';
+            data_valid_v(3) <= '0';
             rd_counter <= rd_counter + 1;
          end if;
       end if;
@@ -63,18 +69,22 @@ begin
    bitgen_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         if (rd_enable = '1') then
-            if (rd_enable_counter = 31) then
-               rd_enable_counter <= 0;
-            else
+         if (rd_enable_counter = 31) then
+            rd_enable_counter <= 0;
+         else
 
-               if (rd_enable_counter < 15) then
-                  data_in_matrix_1 <= (others => (others => '0'));
-               elsif (rd_enable_counter >= 16) then
-                  data_in_matrix_1 <= (others => (others => '1'));
-               end if;
-               rd_enable_counter <= rd_enable_counter + 1;
+            if (rd_enable_counter < 15) then
+               data_in_matrix_1 <= (others => (others => '0'));
+               data_in_matrix_2 <= (others => (others => '0'));
+               data_in_matrix_3 <= (others => (others => '0'));
+               data_in_matrix_4 <= (others => (others => '0'));
+            elsif (rd_enable_counter >= 16) then
+               data_in_matrix_1 <= (others => (others => '1'));
+               data_in_matrix_2 <= (others => (others => '1'));
+               data_in_matrix_3 <= (others => (others => '1'));
+               data_in_matrix_4 <= (others => (others => '1'));
             end if;
+            rd_enable_counter <= rd_enable_counter + 1;
          end if;
       end if;
    end process;
