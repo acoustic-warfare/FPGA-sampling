@@ -43,7 +43,6 @@ architecture tb of tb_sample_block is
    signal temp_trail_3 : MATRIX; -- slinga 3, alla micar
 
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
-   signal clk_count : integer := 0; -- counter for the number of clock cycles
    signal sim_counter : integer := 0;
 
    procedure clk_wait (nr_of_cykles : in integer) is
@@ -83,14 +82,6 @@ begin
    matrix_row_48 <= temp_trail_3(0);
    matrix_row_49 <= temp_trail_3(1);
    matrix_row_63 <= temp_trail_3(15);
-
-   -- counter for clk cykles
-   clk_counter : process (clk)
-   begin
-      if (clk = '1') then
-         clk_count <= clk_count + 1;
-      end if;
-   end process;
 
    feed_data : process (clk)
    begin

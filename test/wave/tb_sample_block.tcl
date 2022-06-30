@@ -12,7 +12,6 @@ for {set i 2} {$i < $nfacts} {incr i} {
 
       tb_sample_block.bit_stream_v -
       tb_sample_block.clk -
-      tb_sample_block.clk_count -
       tb_sample_block.data_valid -
       tb_sample_block.matrix_row_* -
       tb.tb.a* {
