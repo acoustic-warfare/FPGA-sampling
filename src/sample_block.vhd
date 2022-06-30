@@ -23,7 +23,7 @@ end entity;
 architecture rtl of sample_block is
 
    signal data_valid_v : std_logic_vector(3 downto 0);
-   signal data_out_matrix_v : std_logic_vector(3 downto 0);
+   signal data_out_matrix_v : DATA_OUT_MATRIX;
 begin
    sample_machine_gen : for i in 0 to 3 generate
    begin

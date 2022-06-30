@@ -18,7 +18,7 @@ entity full_sample is
       data_in_matrix_3 : in MATRIX;
       data_in_matrix_4 : in MATRIX;
       data_valid_v : in std_logic_vector(3 downto 0);
-      
+
       sample_out_matrix : out data_out_matrix; --SAMPLE_MATRIX is array of matrix(16x24 bits);
       rd_enable : out std_logic
    );
@@ -32,7 +32,7 @@ begin
          rd_enable <= '0';
          if (reset = '1') then
             rd_enable <= '0';
-            rd_check <= '0';
+            rd_check <= "0000";
          else
             if (data_valid_v(0) = '1') then
                rd_check(0) <= '1';

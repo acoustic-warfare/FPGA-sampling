@@ -37,6 +37,11 @@ architecture tb of tb_sample_block is
    signal matrix_row_49 : std_logic_vector(23 downto 0); -- slinga 3, mic 1
    signal matrix_row_63 : std_logic_vector(23 downto 0); -- slinga 3, mic 15
 
+   signal temp_trail_0 : MATRIX; -- slinga 0, alla micar
+   signal temp_trail_1 : MATRIX; -- slinga 1, alla micar
+   signal temp_trail_2 : MATRIX; -- slinga 2, alla micar
+   signal temp_trail_3 : MATRIX; -- slinga 3, alla micar
+
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
    signal clk_count : integer := 0; -- counter for the number of clock cycles
    signal sim_counter : integer := 0;
@@ -61,19 +66,23 @@ begin
       data_valid => data_valid,
       sample_error_v => sample_error_v
       );
+   temp_trail_0 <= sample_out_matrix(0);
+   temp_trail_1 <= sample_out_matrix(1);
+   temp_trail_2 <= sample_out_matrix(2);
+   temp_trail_3 <= sample_out_matrix(3);
 
-   matrix_row_0 <= sample_out_matrix(0);
-   matrix_row_1 <= sample_out_matrix(1);
-   matrix_row_15 <= sample_out_matrix(15);
-   matrix_row_16 <= sample_out_matrix(16);
-   matrix_row_17 <= sample_out_matrix(17);
-   matrix_row_31 <= sample_out_matrix(31);
-   matrix_row_32 <= sample_out_matrix(32);
-   matrix_row_33 <= sample_out_matrix(33);
-   matrix_row_47 <= sample_out_matrix(47);
-   matrix_row_48 <= sample_out_matrix(48);
-   matrix_row_49 <= sample_out_matrix(49);
-   matrix_row_63 <= sample_out_matrix(63);
+   matrix_row_0 <= temp_trail_0(0);
+   matrix_row_1 <= temp_trail_0(1);
+   matrix_row_15 <= temp_trail_0(15);
+   matrix_row_16 <= temp_trail_1(0);
+   matrix_row_17 <= temp_trail_1(1);
+   matrix_row_31 <= temp_trail_1(15);
+   matrix_row_32 <= temp_trail_2(0);
+   matrix_row_33 <= temp_trail_2(1);
+   matrix_row_47 <= temp_trail_2(15);
+   matrix_row_48 <= temp_trail_3(0);
+   matrix_row_49 <= temp_trail_3(1);
+   matrix_row_63 <= temp_trail_3(15);
 
    -- counter for clk cykles
    clk_counter : process (clk)
