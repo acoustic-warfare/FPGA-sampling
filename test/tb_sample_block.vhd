@@ -17,6 +17,7 @@ architecture tb of tb_sample_block is
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
    signal ws : std_logic := '0';
+   signal sck_clk : std_logic := '0';
 
    signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
 
@@ -54,6 +55,13 @@ architecture tb of tb_sample_block is
 
 begin
 
+   clk_gen1 : entity work.clk_gen port map (
+      sck_clk <= sck_clk,
+      ws_puls <= ws,   
+      reset <= reset
+
+   );
+
    sample_block1 : entity work.sample_block port map (
       clk => clk,
       reset => reset,
@@ -90,7 +98,7 @@ begin
          sim_counter <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10) then
-         bit_stream_v <= "0000";
+         bit_stream_v <= "1111";
          sim_counter <= sim_counter + 1;
       end if;
 
@@ -114,8 +122,12 @@ begin
             reset <= '1';
             clk_wait(10);
             reset <= '0';
+            clk_wait(10);
+            ws <= '1';
+            clk_wait(5);
+            ws <= '0';
 
-            wait for 30000 ns;
+            wait for 90000 ns;
             check(1 = 1, "test_1");
          elsif run("tb_sample_block_2") then -- test 2, automatic checks after verius intervals
             check(1 = 1, "test_1");
