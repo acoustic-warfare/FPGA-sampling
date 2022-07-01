@@ -36,13 +36,13 @@ begin
          ws_error              => ws_error
       );
 
-   collectorn_1 : entity work.collectorn
+   collector_1 : entity work.collector
       port map(
          clk                       => clk,
          reset                     => reset,
          data_in                   => reg,
-         data_valid_collectorn_in  => data_valid_sample_out,
-         data_valid_collectorn_out => data_valid_out,
+         data_valid_collector_in  => data_valid_sample_out,
+         data_valid_collector_out => data_valid_out,
          data_matrix_16_24_out     => data_matrix_16_24_out
       );
 
