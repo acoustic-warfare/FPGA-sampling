@@ -19,7 +19,6 @@ for {set i 2} {$i < $nfacts} {incr i} {
       tb_full_sample.rd_enable_counter -
       tb_full_sample.reset -
       tb.tb.a* {
-         puts "$name"
          gtkwave::addSignalsFromList "$name"
       }
    }

@@ -14,29 +14,29 @@ entity tb_sample is
 end tb_sample;
 
 architecture tb of tb_sample is
-   constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
+   constant C_CLK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
 
-   signal clk : std_logic := '0';
-   signal reset : std_logic := '0';
-   signal ws : std_logic := '0';
+   signal clk        : std_logic := '0';
+   signal reset      : std_logic := '0';
+   signal ws         : std_logic := '0';
    signal bit_stream : std_logic := '0';
 
    signal data_valid_sample_out : std_logic;
-   signal ws_error : std_logic;
+   signal ws_error              : std_logic;
 
    signal sim_counter : integer := 0;
-   signal clk_count : integer := 0; -- counter for the number of clock cycles
+   signal clk_count   : integer := 0; -- counter for the number of clock cycles
 
 begin
 
    sample1 : entity work.sample
       port map(
-         bit_stream => bit_stream,
-         clk => clk,
-         reset => reset,
-         ws => ws,
+         bit_stream            => bit_stream,
+         clk                   => clk,
+         reset                 => reset,
+         ws                    => ws,
          data_valid_sample_out => data_valid_sample_out,
-         ws_error => ws_error
+         ws_error              => ws_error
       );
 
    -- counter for clk cykles
@@ -61,11 +61,11 @@ begin
    feed_data : process (clk)
    begin
       if (rising_edge(clk) and sim_counter < 5) then
-         bit_stream <= '0';
+         bit_stream  <= '0';
          sim_counter <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10) then
-         bit_stream <= '1';
+         bit_stream  <= '1';
          sim_counter <= sim_counter + 1;
       end if;
 
@@ -73,7 +73,8 @@ begin
          sim_counter <= 0;
       end if;
    end process;
-   clk <= not(clk) after clk_cykle/2;
+
+   clk <= not(clk) after C_CLK_CYKLE/2;
 
    main : process
    begin
@@ -82,7 +83,7 @@ begin
          if run("tb_sample_1") then
 
             reset <= '1';
-            wait for 4 * clk_cykle;
+            wait for 4 * C_CLK_CYKLE; -- TODO: make this in procedure
             reset <= '0';
 
             -- test 1 is so far only ment for gktwave

@@ -21,7 +21,6 @@ for {set i 0} {$i < $nfacts} {incr i} {
       tb_collectorn.data_test*    -
 
       tb_tb.a* {
-         puts "$name"
          gtkwave::addSignalsFromList "$name"
       }
    }
