@@ -11,8 +11,7 @@ end clk_gen;
 
 architecture Behavioral of clk_gen is
    signal ws_d : std_logic;
-   signal reset_div : std_logic;
-   signal ws_clk : std_logic := '0';
+   signal ws_clk : std_logic;
 begin
    clk_div512_p : entity work.clk_div
       generic map(
@@ -28,8 +27,8 @@ begin
    begin
       if (rising_edge(sck_clk)) then
          if (reset = '1') then
-            ws_clk <= '0';
             ws_d <= '0';
+            ws_pulse <= '0';
          else
             ws_d <= ws_clk;
             if (ws_clk = '1' and ws_d = '0') then
