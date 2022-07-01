@@ -15,13 +15,13 @@ end tb_clk_gen;
 architecture tb of tb_clk_gen is
    constant sck_cykle : time := 10 ns; -- set the duration of one clock cycle
 
-   signal sck_clk : std_logic := '0';
-   signal reset : std_logic;
-   signal ws_pulse : std_logic;
+   signal sck_clk     : std_logic := '0';
+   signal reset       : std_logic;
+   signal ws_pulse    : std_logic;
    signal sck_counter : integer := 0; -- counter for the number of fsck_clk cycles
-   signal ws_counter : integer := 0; -- counter for the number of fs_clk cykles
+   signal ws_counter  : integer := 0; -- counter for the number of fs_clk cykles
 
-   signal auto : std_logic := '0';
+   signal auto              : std_logic := '0';
    signal sck_counter_start : integer;
 
    procedure clk_wait (nr_of_cykles : in integer) is
@@ -34,9 +34,9 @@ architecture tb of tb_clk_gen is
 begin
    -- direct instantiation of: clk_gen
    clk_gen_1 : entity work.clk_gen port map(
-      sck_clk => sck_clk,
+      sck_clk  => sck_clk,
       ws_pulse => ws_pulse,
-      reset => reset
+      reset    => reset
       );
 
    -- counter for fs_clk cykles
@@ -69,7 +69,7 @@ begin
             if (ws_counter = 0) then
                sck_counter_start <= sck_counter;
             elsif (ws_counter = 1) then
-               assert (sck_counter - sck_counter_start) = 512 report integer'image(sck_counter) severity error; 
+               assert (sck_counter - sck_counter_start) = 512 report integer'image(sck_counter) severity error;
             end if;
          end if;
       end if;
@@ -89,7 +89,7 @@ begin
 
          elsif run("auto") then
 
-            auto <= '1';
+            auto  <= '1';
             reset <= '1';
             clk_wait(5);
             reset <= '0';

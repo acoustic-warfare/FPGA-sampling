@@ -1,6 +1,14 @@
 {
+    
+    "vhdl.formatter.align.all": true,
+    "vhdl.formatter.align.function": true,
+    "vhdl.formatter.align.generic": true,
+    "vhdl.formatter.align.mode": "Local",
+    "vhdl.formatter.align.port": true,
+    "vhdl.formatter.align.procedure": true,
     "vhdl.formatter.case.keyword": "LowerCase",
     "vhdl.formatter.case.typename": "LowerCase",
+
     
     // The number of spaces a tab is equal to. This setting is overridden
     // based on the file contents when `editor.detectIndentation` is true.
