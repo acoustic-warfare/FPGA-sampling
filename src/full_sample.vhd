@@ -3,58 +3,56 @@ use ieee.std_logic_1164.all;
 use work.matrix_type.all;
 
 entity full_sample is
+   ------------------------------------------------------------------------------------------------------------------------------------------------
+   --                                                  # port information #
+   -- CLK: system clock 125 MHZ
+   --
+   -- RESET: synchronous reset
+   --
+   -- ARRAY_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
+   -- 
+   -- DATA_VALID_IN_ARY: A array of 4 signals each coresponding that a chain has bean updated
+   --
+   -- ARRAY_MATRIX_DATA_OUT: A 3D matrix filled the data from all the mics of the 4 chains (4x16x24)
+   -- 
+   -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
+   ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
    );
-
    port (
-      clk                 : in std_logic;
-      reset               : in std_logic;
-      data_in_matrix_1    : in matrix_16_24_type;
-      data_in_matrix_2    : in matrix_16_24_type; -- TODO: use a array of arrays istead of 4 arrays
-      data_in_matrix_3    : in matrix_16_24_type;
-      data_in_matrix_4    : in matrix_16_24_type;
-      data_valid_in_array : in std_logic_vector(3 downto 0);
-      matrix_4_16_24_out  : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      data_valid_out      : out std_logic
+      clk                    : in std_logic;
+      reset                  : in std_logic;
+      array_matrix_data_in   : in matrix_4_16_24_type;
+      data_valid_in_ary      : in std_logic_vector(3 downto 0);
+      array_matrix_data_out  : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_valid_out : out std_logic
    );
 end full_sample;
 architecture rtl of full_sample is
-   signal rd_check : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
+   signal valid_check : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
 begin
-   fill_matrix_out_p : process (clk) -- TODO: replace the four if statments in this process with a for loop
+   fill_matrix_out_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         data_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
-         if (data_valid_in_array(0) = '1') then
-            rd_check(0)           <= '1';
-            matrix_4_16_24_out(0) <= data_in_matrix_1;
-         end if;
+         array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
-         if (data_valid_in_array(1) = '1') then
-            rd_check(1)           <= '1';
-            matrix_4_16_24_out(1) <= data_in_matrix_2;
-         end if;
+         for i in 0 to 3 loop
+            if data_valid_in_ary(i) = '1' then
+               valid_check(i)           <= '1';
+               array_matrix_data_out(i) <= array_matrix_data_in(i);
+            end if;
+         end loop;
 
-         if (data_valid_in_array(2) = '1') then
-            rd_check(2)           <= '1';
-            matrix_4_16_24_out(2) <= data_in_matrix_3;
-         end if;
-
-         if (data_valid_in_array(3) = '1') then
-            rd_check(3)           <= '1';
-            matrix_4_16_24_out(3) <= data_in_matrix_4;
-         end if;
-
-         if (rd_check = "1111") then -- checks that a new value has been added to each place in the array
-            data_valid_out <= '1';
-            rd_check       <= (others => '0');
+         if (valid_check = "1111") then -- checks that a new value has been added to each place in the array
+            array_matrix_valid_out <= '1';
+            valid_check            <= (others => '0');
          end if;
 
          if (reset = '1') then -- resets data_valid_out to low and 
-            data_valid_out <= '0';
-            rd_check       <= "0000";
+            array_matrix_valid_out <= '0';
+            valid_check            <= (others => '0');
          end if;
       end if;
    end process;

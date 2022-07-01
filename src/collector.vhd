@@ -11,7 +11,7 @@ entity collector is
    --
    -- MIC_SAMPLE_DATA_IN: Incomming array of data. One microphone sends 32 bits. 
    -- 
-   -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has ben updated
+   -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has bean updated
    -- 
    -- CHAIN_MATRIX_DATA_OUT: A matrix filled the data from all the mics of the chain (16x24)
    --
