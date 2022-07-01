@@ -5,17 +5,21 @@ puts "$nfacts"
 
 
 for {set i 2} {$i < $nfacts} {incr i} {
-    set name [gtkwave::getFacName $i]
-    puts "$name"
+   set name [gtkwave::getFacName $i]
+   puts "$name"
 
-    switch -glob -- $name {
-   
-         *ws_clk*    -
-         tb_tb.a* {
-            puts "$name"
-            gtkwave::addSignalsFromList "$name"
-         }
-     } 
+   switch -glob -- $name {
+
+      tb_clk_gen.reset -
+      tb_clk_gen.sck_clk -
+      tb_clk_gen.sck_count -
+      tb_clk_gen.ws_count -
+      tb_clk_gen.ws_pulse -
+      tb_tb.a* {
+         puts "$name"
+         gtkwave::addSignalsFromList "$name"
+      }
+   }
 }
 
 # zoom full

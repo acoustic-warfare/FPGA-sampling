@@ -15,7 +15,7 @@ end clk_div;
 architecture Behavioral of clk_div is
    signal rising_edge_counter : integer := (div / 2) - 1; -- the counter signal   '
 begin
-   div_p : process (clk_in, reset) -- divides clk in half
+   div_p : process (clk_in) -- divides clk in half
    begin
       if (rising_edge(clk_in)) then
          if (reset = '1') then

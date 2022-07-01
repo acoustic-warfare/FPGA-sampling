@@ -15,11 +15,14 @@ end tb_clk_gen;
 architecture tb of tb_clk_gen is
    constant sck_cykle : time := 10 ns; -- set the duration of one clock cycle
 
-   signal sck_clk : std_logic := '1';
+   signal sck_clk : std_logic := '0';
    signal reset : std_logic;
    signal ws_pulse : std_logic;
-   signal sck_count : integer := 0; -- counter for the number of fsck_clk cycles
-   signal ws_count : integer := 0; -- counter for the number of fs_clk cykles
+   signal sck_counter : integer := 0; -- counter for the number of fsck_clk cycles
+   signal ws_counter : integer := 0; -- counter for the number of fs_clk cykles
+
+   signal auto : std_logic := '0';
+   signal sck_counter_start : integer;
 
    procedure clk_wait (nr_of_cykles : in integer) is
    begin
@@ -39,16 +42,16 @@ begin
    -- counter for fs_clk cykles
    fsck_counter_p : process (sck_clk)
    begin
-      if (rising_edge(sck_clk)) then
-         sck_count <= sck_count + 1;
+      if (rising_edge(sck_clk) and reset = '0') then
+         sck_counter <= sck_counter + 1;
       end if;
    end process;
 
    -- counter for fs_clk cykles
    ws_counter_p : process (ws_pulse)
    begin
-      if (rising_edge(ws_pulse)) then
-         ws_count <= ws_count + 1;
+      if (rising_edge(ws_pulse) and reset = '0') then
+         ws_counter <= ws_counter + 1;
       end if;
    end process;
 
@@ -59,17 +62,24 @@ begin
       wait for sck_cykle/2;
    end process;
 
+   assert_p : process (ws_pulse)
+   begin
+      if (auto = '1') then
+         if (rising_edge(ws_pulse)) then
+            if (ws_counter = 0) then
+               sck_counter_start <= sck_counter;
+            elsif (ws_counter = 1) then
+               assert (sck_counter - sck_counter_start - 1 ) = 513 report "hej!" severity error; -- funkar inte rikgit än
+            end if;
+         end if;
+      end if;
+   end process;
+
    main_p : process
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_clk_gen_1") then
-
-            reset <= '1';
-            wait for 30 ns;
-            reset <= '0';
-
-            -- test 1 is so far only ment for gktwave
+         if run("gkw") then -- only for use in gktwave
 
             reset <= '1';
             clk_wait(5);
@@ -77,12 +87,14 @@ begin
 
             wait for 30000 ns; -- duration of test 1
 
-            check(1 = 1, "test_1");
-         elsif run("tb_clk_gen_2") then
+         elsif run("auto") then
 
-            check(1 = 1, "test_1");
+            auto <= '1';
+            reset <= '1';
+            clk_wait(5);
+            reset <= '0';
 
-            wait for 11 ns;
+            wait for 100 ns; -- duration of test 1
 
          end if;
       end loop;
