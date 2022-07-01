@@ -22,12 +22,12 @@ entity full_sample is
       G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
    );
    port (
-      clk                    : in std_logic;
-      reset                  : in std_logic;
-      array_matrix_data_in   : in matrix_4_16_24_type;
-      data_valid_in_ary      : in std_logic_vector(3 downto 0);
-      array_matrix_data_out  : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      array_matrix_valid_out : out std_logic
+      clk                     : in std_logic;
+      reset                   : in std_logic;
+      chain_x4_matrix_data_in : in matrix_4_16_24_type;
+      chain_matrix_valid_in   : in std_logic_vector(3 downto 0);
+      array_matrix_data_out   : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_valid_out  : out std_logic
    );
 end full_sample;
 architecture rtl of full_sample is
@@ -39,9 +39,9 @@ begin
          array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
          for i in 0 to 3 loop
-            if data_valid_in_ary(i) = '1' then
+            if chain_matrix_valid_in(i) = '1' then
                valid_check(i)           <= '1';
-               array_matrix_data_out(i) <= array_matrix_data_in(i);
+               array_matrix_data_out(i) <= chain_x4_matrix_data_in(i);
             end if;
          end loop;
 
