@@ -20,7 +20,7 @@ entity full_sample is
       data_valid_out     : out std_logic
    );
 end full_sample;
-architecture behavroal of full_sample is
+architecture rtl of full_sample is
    signal rd_check : std_logic_vector(3 downto 0);
 begin
    fill_matrix_out_p : process (clk)
@@ -51,12 +51,11 @@ begin
             data_valid_out <= '1';
             rd_check       <= (others => '0');
          end if;
-         
+
          if (reset = '1') then
             data_valid_out <= '0';
             rd_check       <= "0000";
          end if;
       end if;
    end process;
-
-end behavroal;
+end rtl;

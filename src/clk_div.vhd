@@ -12,7 +12,7 @@ entity clk_div is
    );
 end clk_div;
 
-architecture Behavioral of clk_div is
+architecture rtl of clk_div is
    signal rising_edge_counter : integer := (div / 2) - 1; -- the counter signal   '
 begin
    div_p : process (clk_in) -- divides clk in half
@@ -30,4 +30,4 @@ begin
          end if;
       end if;
    end process;
-end Behavioral;
+end rtl;

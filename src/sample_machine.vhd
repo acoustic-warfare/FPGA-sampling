@@ -44,4 +44,4 @@ begin
       data_matrix_16_24_out     => data_matrix_16_24_out
       );
 
-end architecture;
+end structual;

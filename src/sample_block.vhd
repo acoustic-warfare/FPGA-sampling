@@ -19,7 +19,7 @@ entity sample_block is
    );
 end entity;
 
-architecture rtl of sample_block is
+architecture structual of sample_block is
 
    signal data_valid_v                 : std_logic_vector(3 downto 0);
    signal data_internal_matrix_4_16_24 : matrix_4_16_24;
@@ -48,4 +48,4 @@ begin
       data_valid_in_v    => data_valid_v,
       data_valid_out     => data_valid_out
       );
-end architecture;
+end structual;

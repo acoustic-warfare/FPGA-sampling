@@ -18,7 +18,7 @@ entity collectorn is
       data_valid_collectorn_out : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end collectorn;
-architecture demo_behavroal of collectorn is
+architecture rtl of collectorn is
    -- signal tmp_vector : std_logic_vector(bits_mic - 1 downto 0); --An vector which stores one sample from a microphone temporarly
    signal counter_mic : integer := 0; --Counter for rows
 
@@ -44,4 +44,4 @@ begin
          end if;
       end if;
    end process;
-end demo_behavroal;
+end rtl;

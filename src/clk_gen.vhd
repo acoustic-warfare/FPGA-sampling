@@ -9,7 +9,7 @@ entity clk_gen is
    );
 end clk_gen;
 
-architecture Behavioral of clk_gen is
+architecture rtl of clk_gen is
    signal ws_d   : std_logic;
    signal ws_clk : std_logic;
 begin
@@ -38,4 +38,4 @@ begin
          end if;
       end if;
    end process;
-end Behavioral;
+end rtl;

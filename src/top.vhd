@@ -19,7 +19,7 @@ entity top is
    );
 end entity;
 
-architecture rtl of top is
+architecture structual of top is
    signal matrix_4_16_24_out : matrix_4_16_24;
 begin
    top_block : entity work.sample_block port map(
@@ -31,4 +31,4 @@ begin
       ws_error_v         => ws_error_v,
       data_valid_out     => data_valid_out
       );
-end architecture;
+end structual;
