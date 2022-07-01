@@ -14,7 +14,7 @@ entity collectorn is
       reset                     : in std_logic;                     --TO-DO # add a asynchrone reset and read_enable
       data_in                   : in std_logic_vector(23 downto 0); -- The a vector with one sample from one microphone
       data_valid_collectorn_in  : in std_logic;
-      data_matrix_16_24_out     : out matrix_16_24;    -- Our output Matrix with 1 sample from all microphones in the Matrix
+      data_matrix_16_24_out     : out matrix_16_24_type;    -- Our output Matrix with 1 sample from all microphones in the Matrix
       data_valid_collectorn_out : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end collectorn;

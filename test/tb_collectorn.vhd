@@ -19,7 +19,7 @@ architecture tb of tb_collectorn is
    signal reset                     : std_logic                     := '0';
    signal data_in                   : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal data_valid_collectorn_in  : std_logic;
-   signal data_matrix_16_24_out     : matrix_16_24;
+   signal data_matrix_16_24_out     : matrix_16_24_type;
    signal data_valid_collectorn_out : std_logic := '0';
 
    signal data_valid_in_counter  : integer := 0; --data_valid_out_counter

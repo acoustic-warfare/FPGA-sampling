@@ -21,7 +21,7 @@ architecture tb of tb_sample_block is
 
    signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
 
-   signal matrix_4_16_24_out : matrix_4_16_24;
+   signal matrix_4_16_24_out : matrix_4_16_24_type;
    signal data_valid_out     : std_logic;
    signal ws_error_v         : std_logic_vector (3 downto 0);
 
@@ -38,10 +38,10 @@ architecture tb of tb_sample_block is
    signal matrix_row_49 : std_logic_vector(23 downto 0); -- slinga 3, mic 1
    signal matrix_row_63 : std_logic_vector(23 downto 0); -- slinga 3, mic 15
 
-   signal temp_trail_0 : matrix_16_24; -- slinga 0, alla micar
-   signal temp_trail_1 : matrix_16_24; -- slinga 1, alla micar
-   signal temp_trail_2 : matrix_16_24; -- slinga 2, alla micar
-   signal temp_trail_3 : matrix_16_24; -- slinga 3, alla micar
+   signal temp_trail_0 : matrix_16_24_type; -- slinga 0, alla micar
+   signal temp_trail_1 : matrix_16_24_type; -- slinga 1, alla micar
+   signal temp_trail_2 : matrix_16_24_type; -- slinga 2, alla micar
+   signal temp_trail_3 : matrix_16_24_type; -- slinga 3, alla micar
 
    constant C_SCK_CYKLE : time    := 10 ns; -- set the duration of one clock cycle
    signal sim_counter : integer := 0;

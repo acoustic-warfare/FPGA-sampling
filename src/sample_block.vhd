@@ -13,7 +13,7 @@ entity sample_block is
       reset              : in std_logic;
       ws                 : in std_logic;
       bit_stream_v       : in std_logic_vector(3 downto 0);
-      matrix_4_16_24_out : out matrix_4_16_24;
+      matrix_4_16_24_out : out matrix_4_16_24_type;
       ws_error_v         : out std_logic_vector(3 downto 0);
       data_valid_out     : out std_logic --  A signal to tell the receiver to start reading the data_out_matrix
    );
@@ -22,7 +22,7 @@ end entity;
 architecture structual of sample_block is
 
    signal data_valid_v                 : std_logic_vector(3 downto 0);
-   signal data_internal_matrix_4_16_24 : matrix_4_16_24;
+   signal data_internal_matrix_4_16_24 : matrix_4_16_24_type;
 begin
    sample_machine_gen : for i in 0 to 3 generate
    begin

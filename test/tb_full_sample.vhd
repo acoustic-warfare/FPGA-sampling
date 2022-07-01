@@ -18,19 +18,19 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal data_in_matrix_1 : matrix_16_24                 := (others => (others => '0'));
-   signal data_in_matrix_2 : matrix_16_24                 := (others => (others => '0'));
-   signal data_in_matrix_3 : matrix_16_24                 := (others => (others => '0'));
-   signal data_in_matrix_4 : matrix_16_24                 := (others => (others => '0'));
+   signal data_in_matrix_1 : matrix_16_24_type            := (others => (others => '0'));
+   signal data_in_matrix_2 : matrix_16_24_type            := (others => (others => '0'));
+   signal data_in_matrix_3 : matrix_16_24_type            := (others => (others => '0'));
+   signal data_in_matrix_4 : matrix_16_24_type            := (others => (others => '0'));
    signal data_valid_in_v  : std_logic_vector(3 downto 0) := "0000";
 
    signal data_valid_out     : std_logic;
-   signal matrix_4_16_24_out : matrix_4_16_24;
+   signal matrix_4_16_24_out : matrix_4_16_24_type;
 
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
 
-   signal temp_matrix_16_24                                                                                                                                                                                     : matrix_16_24;
+   signal temp_matrix_16_24                                                                                                                                                                                     : matrix_16_24_type;
    signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
 begin
 

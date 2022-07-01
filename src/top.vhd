@@ -20,7 +20,7 @@ entity top is
 end entity;
 
 architecture structual of top is
-   signal matrix_4_16_24_out : matrix_4_16_24;
+   signal matrix_4_16_24_out : matrix_4_16_24_type;
 begin
    top_block : entity work.sample_block port map(
       clk                => clk,
