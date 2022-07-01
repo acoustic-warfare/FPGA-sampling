@@ -62,14 +62,14 @@ begin
       wait for sck_cykle/2;
    end process;
 
-   assert_p : process (ws_pulse)
+   assert_p : process (ws_pulse) -- TODO: more automatic test
    begin
       if (auto = '1') then
          if (rising_edge(ws_pulse)) then
             if (ws_counter = 0) then
                sck_counter_start <= sck_counter;
             elsif (ws_counter = 1) then
-               assert (sck_counter - sck_counter_start - 1 ) = 513 report "hej!" severity error; -- funkar inte rikgit än
+               assert (sck_counter - sck_counter_start) = 512 report integer'image(sck_counter) severity error; 
             end if;
          end if;
       end if;
@@ -94,7 +94,7 @@ begin
             clk_wait(5);
             reset <= '0';
 
-            wait for 100 ns; -- duration of test 1
+            wait for 30000 ns; -- duration of test 1
 
          end if;
       end loop;
