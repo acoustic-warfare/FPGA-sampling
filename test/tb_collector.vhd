@@ -6,21 +6,21 @@ context vunit_lib.vunit_context;
 
 use work.matrix_type.all;
 
-entity tb_collectorn is
+entity tb_collector is
    generic (
       runner_cfg : string
    );
-end tb_collectorn;
+end tb_collector;
 
-architecture tb of tb_collectorn is
+architecture tb of tb_collector is
    constant C_CLK_CYKLE : time := 10 ns;
 
    signal clk                       : std_logic                     := '0';
    signal reset                     : std_logic                     := '0';
    signal data_in                   : std_logic_vector(23 downto 0) := "000000000000000000000000";
-   signal data_valid_collectorn_in  : std_logic;
+   signal data_valid_collector_in  : std_logic;
    signal data_matrix_16_24_out     : matrix_16_24_type;
-   signal data_valid_collectorn_out : std_logic := '0';
+   signal data_valid_collector_out : std_logic := '0';
 
    signal data_valid_in_counter  : integer := 0; --data_valid_out_counter
    signal data_valid_out_counter : integer := 1;
@@ -32,13 +32,13 @@ architecture tb of tb_collectorn is
 
 begin
 
-   collectorn1 : entity work.collectorn port map(
+   collector1 : entity work.collector port map(
       clk                       => clk,
       reset                     => reset,
       data_in                   => data_in,
-      data_valid_collectorn_in  => data_valid_collectorn_in,
+      data_valid_collector_in  => data_valid_collector_in,
       data_matrix_16_24_out     => data_matrix_16_24_out,
-      data_valid_collectorn_out => data_valid_collectorn_out
+      data_valid_collector_out => data_valid_collector_out
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;
@@ -47,10 +47,10 @@ begin
    begin
       if (rising_edge(clk)) then
          if (data_valid_in_counter = 10) then
-            data_valid_collectorn_in <= '1';
+            data_valid_collector_in <= '1';
             data_valid_in_counter    <= 0;
          else
-            data_valid_collectorn_in <= '0';
+            data_valid_collector_in <= '0';
             data_valid_in_counter    <= data_valid_in_counter + 1;
          end if;
       end if;
@@ -59,7 +59,7 @@ begin
    bitgen_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         if (data_valid_collectorn_in = '1') then
+         if (data_valid_collector_in = '1') then
             if (data_valid_out_counter = 31) then
                data_valid_out_counter <= 0;
             else
@@ -97,23 +97,23 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_collectorn_1") then
+         if run("tb_collector_1") then
 
             wait for 8500 ns;
 
-         elsif run("tb_collectorn_2") then
+         elsif run("tb_collector_2") then
             -- old tests that need to be updated
             --wait for 3845.1 ns; -- first rise (3845 ns after start)
-            --check(data_valid_collectorn_out = '0', "fail!1 data_valid first rise");
+            --check(data_valid_collector_out = '0', "fail!1 data_valid first rise");
 
             --wait for 5 ns; -- back to zero after first rise (3850 ns after start)
-            --check(data_valid_collectorn_out = '0', "fail!2 data_valid back to zero after fist rise");
+            --check(data_valid_collector_out = '0', "fail!2 data_valid back to zero after fist rise");
 
             --wait for 3835 ns; -- second rise (7685 ns after start)
-            --check(data_valid_collectorn_out = '1', "fail!2 data_valid second rise");
+            --check(data_valid_collector_out = '1', "fail!2 data_valid second rise");
 
             --wait for 5 ns; -- back to zero after second rise (7690 ns after start)
-            --(data_valid_collectorn_out = '0', "fail!4 data_valid back to zero after second rise");
+            --(data_valid_collector_out = '0', "fail!4 data_valid back to zero after second rise");
 
          end if;
       end loop;
