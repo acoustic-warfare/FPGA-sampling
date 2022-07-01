@@ -1,4 +1,4 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample_block.tb_sample_block_1
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample_wrapper.gktw
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"

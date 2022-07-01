@@ -1,4 +1,4 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_clk_gen.tb_clk_gen_1
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_clk_gen.gtkw
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"

@@ -6,24 +6,24 @@ context vunit_lib.vunit_context;
 
 use work.matrix_type.all;
 
-entity tb_sample_block is
+entity tb_sample_wrapper is
    generic (
       runner_cfg : string
    );
 
-end tb_sample_block;
+end tb_sample_wrapper;
 
-architecture tb of tb_sample_block is
+architecture tb of tb_sample_wrapper is
    signal clk     : std_logic := '0';
    signal reset   : std_logic := '0';
    signal ws      : std_logic;
    signal sck_clk : std_logic := '0';
 
-   signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
+   signal bit_stream_ary : std_logic_vector(3 downto 0) := "0000";
 
-   signal matrix_4_16_24_out : matrix_4_16_24_type;
-   signal data_valid_out     : std_logic;
-   signal ws_error_v         : std_logic_vector (3 downto 0);
+   signal array_matrix_data_out  : matrix_4_16_24_type;
+   signal array_matrix_valid_out : std_logic;
+   signal ws_error_ary           : std_logic_vector (3 downto 0);
 
    signal matrix_row_0  : std_logic_vector(23 downto 0); -- slinga 0, mic 0
    signal matrix_row_1  : std_logic_vector(23 downto 0); -- slinga 0, mic 1
@@ -62,22 +62,20 @@ begin
       reset    => reset
       );
 
-   sample_block1 : entity work.sample_block port map (
-      clk   => clk,
-      reset => reset,
-      ws    => ws,
-
-      bit_stream_v => bit_stream_v,
-
-      matrix_4_16_24_out => matrix_4_16_24_out,
-      data_valid_out     => data_valid_out,
-      ws_error_v         => ws_error_v
+   sample_wrapper1 : entity work.sample_wrapper port map (
+      clk                    => clk,
+      reset                  => reset,
+      ws                     => ws,
+      bit_stream_ary         => bit_stream_ary,
+      array_matrix_data_out  => array_matrix_data_out,
+      array_matrix_valid_out => array_matrix_valid_out,
+      ws_error_ary           => ws_error_ary
       );
 
-   temp_trail_0 <= matrix_4_16_24_out(0);
-   temp_trail_1 <= matrix_4_16_24_out(1);
-   temp_trail_2 <= matrix_4_16_24_out(2);
-   temp_trail_3 <= matrix_4_16_24_out(3);
+   temp_trail_0 <= array_matrix_data_out(0);
+   temp_trail_1 <= array_matrix_data_out(1);
+   temp_trail_2 <= array_matrix_data_out(2);
+   temp_trail_3 <= array_matrix_data_out(3);
 
    matrix_row_0  <= temp_trail_0(0);
    matrix_row_1  <= temp_trail_0(1);
@@ -95,12 +93,12 @@ begin
    feed_data_p : process (clk)
    begin
       if (rising_edge(clk) and sim_counter < 5) then
-         bit_stream_v <= "0000";
-         sim_counter  <= sim_counter + 1;
+         bit_stream_ary <= "0000";
+         sim_counter    <= sim_counter + 1;
 
       elsif (rising_edge(clk) and sim_counter < 10) then
-         bit_stream_v <= "1111";
-         sim_counter  <= sim_counter + 1;
+         bit_stream_ary <= "1111";
+         sim_counter    <= sim_counter + 1;
       end if;
 
       if (sim_counter = 10) then

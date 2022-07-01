@@ -1,4 +1,4 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_collectorn.tb_collectorn_1
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_collectorn.gtkw
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"

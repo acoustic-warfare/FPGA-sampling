@@ -12,7 +12,7 @@ entity sample_wrapper is
       clk                    : in std_logic;
       reset                  : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       ws                     : in std_logic;
-      bit_stream_ary         : in std_logic;
+      bit_stream_ary         : in std_logic_vector(3 downto 0);
       ws_error_ary           : out std_logic_vector(3 downto 0) := "0000";
       array_matrix_data_out  : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out : out std_logic

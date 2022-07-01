@@ -21,8 +21,9 @@ architecture tb of tb_sample is
    signal ws         : std_logic := '0';
    signal bit_stream : std_logic := '0';
 
-   signal data_valid_sample_out : std_logic;
-   signal ws_error              : std_logic;
+   signal mic_sample_data_out  : std_logic_vector(23 downto 0);
+   signal mic_sample_valid_out : std_logic;
+   signal ws_error             : std_logic;
 
    signal sim_counter : integer := 0;
    signal clk_count   : integer := 0; -- counter for the number of clock cycles
@@ -31,12 +32,13 @@ begin
 
    sample1 : entity work.sample
       port map(
-         bit_stream            => bit_stream,
-         clk                   => clk,
-         reset                 => reset,
-         ws                    => ws,
-         data_valid_sample_out => data_valid_sample_out,
-         ws_error              => ws_error
+         clk                  => clk,
+         reset                => reset,
+         bit_stream           => bit_stream,
+         ws                   => ws,
+         mic_sample_data_out  => mic_sample_data_out,
+         mic_sample_valid_out => mic_sample_valid_out,
+         ws_error             => ws_error
       );
 
    -- counter for clk cykles
