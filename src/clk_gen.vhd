@@ -26,18 +26,16 @@ begin
    puls_p : process (sck_clk)
    begin
       if (rising_edge(sck_clk)) then
+         ws_d <= ws_clk;
+         if (ws_clk = '1' and ws_d = '0') then
+            ws_pulse <= '1';
+         else
+            ws_pulse <= '0';
+         end if;
          if (reset = '1') then
             ws_d     <= '0';
             ws_pulse <= '0';
-         else
-            ws_d <= ws_clk;
-            if (ws_clk = '1' and ws_d = '0') then
-               ws_pulse <= '1';
-            else
-               ws_pulse <= '0';
-            end if;
          end if;
       end if;
    end process;
-
 end Behavioral;

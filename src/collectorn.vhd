@@ -28,7 +28,6 @@ begin
 
       -- reg <= '1' & reg(23 downto 1);
       if (rising_edge(clk)) then
-
          if (data_valid_collectorn_in = '1') then -- IF-statement which takes input and fills up an 24 bit vector with a full sample from one microphone
             data_matrix_16_24_out <= data_matrix_16_24_out(14 downto 0) & data_in;
             counter_mic           <= counter_mic + 1;
@@ -43,7 +42,6 @@ begin
             data_valid_collectorn_out <= '0';
             counter_mic               <= 0;
          end if;
-
       end if;
    end process;
 end demo_behavroal;

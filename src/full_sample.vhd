@@ -51,6 +51,7 @@ begin
             data_valid_out <= '1';
             rd_check       <= (others => '0');
          end if;
+         
          if (reset = '1') then
             data_valid_out <= '0';
             rd_check       <= "0000";
