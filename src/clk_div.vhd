@@ -6,8 +6,8 @@ entity clk_div is
       div : integer := 2 -- set the number to divide clk by
    );
    port (
-      clk_in : in std_logic;
-      reset : in std_logic; -- Asynchronous reset that actevate on 1
+      clk_in  : in std_logic;
+      reset   : in std_logic; -- Asynchronous reset that actevate on 1
       clk_out : out std_logic := '0'
    );
 end clk_div;
@@ -19,13 +19,13 @@ begin
    begin
       if (rising_edge(clk_in)) then
          if (rising_edge_counter = (div / 2) - 1) then
-            clk_out <= not(clk_out);
+            clk_out             <= not(clk_out);
             rising_edge_counter <= 0; -- resets the counter after fs_clk reach an edge
          else
             rising_edge_counter <= rising_edge_counter + 1;
          end if;
          if (reset = '1') then
-            clk_out <= '0';
+            clk_out             <= '0';
             rising_edge_counter <= (div / 2) - 1;
          end if;
       end if;
