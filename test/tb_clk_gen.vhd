@@ -56,11 +56,7 @@ begin
    end process;
 
    -- generate clock pulses with a clock period of clk_cykle
-   clock_p : process
-   begin
-      sck_clk <= not(sck_clk);
-      wait for C_SCK_CYKLE/2;
-   end process;
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
    assert_p : process (ws_pulse) -- TODO: more automatic test
    begin

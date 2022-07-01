@@ -43,14 +43,14 @@ architecture tb of tb_sample_block is
    signal temp_trail_2 : matrix_16_24_type; -- slinga 2, alla micar
    signal temp_trail_3 : matrix_16_24_type; -- slinga 3, alla micar
 
-   constant C_SCK_CYKLE : time    := 10 ns; -- set the duration of one clock cycle
-   signal sim_counter : integer := 0;
-   signal sck_counter : integer := 0;
+   constant C_CLK_CYKLE : time    := 10 ns; -- set the duration of one clock cycle
+   signal sim_counter   : integer := 0;
+   signal sck_counter   : integer := 0;
 
    procedure clk_wait (nr_of_cykles : in integer) is
    begin
       for i in 0 to nr_of_cykles loop
-         wait for C_SCK_CYKLE;
+         wait for C_CLK_CYKLE;
       end loop;
    end procedure;
 
@@ -108,11 +108,7 @@ begin
       end if;
    end process;
 
-   clock_p : process
-   begin
-      wait for C_SCK_CYKLE/2;
-      clk <= not(clk);
-   end process;
+   clk <= not(clk) after C_CLK_CYKLE/2;
 
    sck_clock_p : process (clk)
    begin

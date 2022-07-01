@@ -13,7 +13,7 @@ entity tb_full_sample is
 end tb_full_sample;
 
 architecture tb of tb_full_sample is
-   constant C_SCK_CYKLE : time := 10 ns;
+   constant C_CLK_CYKLE : time := 10 ns;
 
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
@@ -46,11 +46,8 @@ begin
       data_valid_out     => data_valid_out
       );
 
-   clock : process
-   begin
-      wait for C_SCK_CYKLE/2;
-      clk <= not(clk);
-   end process;
+   clk <= not(clk) after C_CLK_CYKLE/2;
+
    rd_enable_p : process (clk)
    begin
       if (rising_edge(clk)) then

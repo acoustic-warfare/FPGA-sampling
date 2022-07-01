@@ -2,10 +2,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.matrix_type.all;
 
-entity top is
+entity aw_top is
    generic (
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+      G_BITS_MIC : integer := 24;   -- Defines the resulotion of a mic sample
+      G_NR_MICS  : integer := 64;   -- Number of microphones in the Matrix
+      G_WS       : integer := 48828 -- Sample frequency of mic array
    );
 
    port (
@@ -19,16 +20,17 @@ entity top is
    );
 end entity;
 
-architecture structual of top is
+architecture structual of aw_top is
    signal matrix_4_16_24_out : matrix_4_16_24_type;
 begin
-   top_block : entity work.sample_block port map(
-      clk                => clk,
-      bit_stream_v       => bit_stream_v,
-      reset              => reset,
-      ws                 => ws,
-      matrix_4_16_24_out => matrix_4_16_24_out,
-      ws_error_v         => ws_error_v,
-      data_valid_out     => data_valid_out
+   top_block : entity work.sample_block
+      port map(
+         clk                => clk,
+         bit_stream_v       => bit_stream_v,
+         reset              => reset,
+         ws                 => ws,
+         matrix_4_16_24_out => matrix_4_16_24_out,
+         ws_error_v         => ws_error_v,
+         data_valid_out     => data_valid_out
       );
 end structual;
