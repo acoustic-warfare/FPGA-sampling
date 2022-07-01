@@ -16,7 +16,6 @@ for {set i 2} {$i < $nfacts} {incr i} {
       tb_clk_gen.ws_count -
       tb_clk_gen.ws_pulse -
       tb_tb.a* {
-         puts "$name"
          gtkwave::addSignalsFromList "$name"
       }
    }
