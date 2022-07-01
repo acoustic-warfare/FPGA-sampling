@@ -27,9 +27,7 @@ begin
    main_state_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         if (reset = '1') then
-            state <= idle;
-         end if;
+
          case state is
             when idle => -- after a complete sample of all mics (only exit on ws high)
                if (ws = '1') then
@@ -38,6 +36,12 @@ begin
                end if;
 
             when run =>
+               ---------------------------------------------------------------
+               -- vad varje state gör, förklara
+               --
+               ---------------------------------------------------------------
+
+
                if (counter_samp = 4) then
                   if (counter_1s >= 2) then
                      reg <= '1' & reg(23 downto 1); -- shiftet
@@ -65,8 +69,11 @@ begin
 
             when others => -- should never get here
                report("error_1");
-               null;
+               state <= idle;
          end case;
+         if (reset = '1') then
+            state <= idle;
+         end if;
       end if;
    end process;
 

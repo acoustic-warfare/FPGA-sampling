@@ -27,34 +27,33 @@ begin
    begin
       if (rising_edge(clk)) then
          data_valid_out <= '0';
+         if (data_valid_in_v(0) = '1') then
+            rd_check(0) <= '1';
+            matrix_4_16_24_out(0) <= data_in_matrix_1;
+         end if;
+
+         if (data_valid_in_v(1) = '1') then
+            rd_check(1) <= '1';
+            matrix_4_16_24_out(1) <= data_in_matrix_2;
+         end if;
+
+         if (data_valid_in_v(2) = '1') then
+            rd_check(2) <= '1';
+            matrix_4_16_24_out(2) <= data_in_matrix_3;
+         end if;
+
+         if (data_valid_in_v(3) = '1') then
+            rd_check(3) <= '1';
+            matrix_4_16_24_out(3) <= data_in_matrix_4;
+         end if;
+
+         if (rd_check = "1111") then
+            data_valid_out <= '1';
+            rd_check <= (others => '0');
+         end if;
          if (reset = '1') then
             data_valid_out <= '0';
             rd_check <= "0000";
-         else
-            if (data_valid_in_v(0) = '1') then
-               rd_check(0) <= '1';
-               matrix_4_16_24_out(0) <= data_in_matrix_1;
-            end if;
-
-            if (data_valid_in_v(1) = '1') then
-               rd_check(1) <= '1';
-               matrix_4_16_24_out(1) <= data_in_matrix_2;
-            end if;
-
-            if (data_valid_in_v(2) = '1') then
-               rd_check(2) <= '1';
-               matrix_4_16_24_out(2) <= data_in_matrix_3;
-            end if;
-
-            if (data_valid_in_v(3) = '1') then
-               rd_check(3) <= '1';
-               matrix_4_16_24_out(3) <= data_in_matrix_4;
-            end if;
-
-            if (rd_check = "1111") then
-               data_valid_out <= '1';
-               rd_check <= (others => '0');
-            end if;
          end if;
       end if;
    end process;

@@ -29,13 +29,14 @@ architecture tb of tb_sample is
 
 begin
 
-   sample1 : entity work.sample port map (
-      bit_stream => bit_stream,
-      clk => clk,
-      reset => reset,
-      ws => ws,
-      data_valid_sample_out => data_valid_sample_out,
-      ws_error => ws_error
+   sample1 : entity work.sample
+      port map(
+         bit_stream => bit_stream,
+         clk => clk,
+         reset => reset,
+         ws => ws,
+         data_valid_sample_out => data_valid_sample_out,
+         ws_error => ws_error
       );
 
    -- counter for clk cykles
@@ -72,11 +73,7 @@ begin
          sim_counter <= 0;
       end if;
    end process;
-   clock : process
-   begin
-      wait for clk_cykle/2;
-      clk <= not(clk);
-   end process;
+   clk <= not(clk) after clk_cykle/2;
 
    main : process
    begin
