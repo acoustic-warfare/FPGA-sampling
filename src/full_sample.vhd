@@ -1,7 +1,6 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.NUMERIC_STD.all;
-use work.MATRIX_TYPE.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use work.matrix_type.all;
 
 entity full_sample is
    generic (
@@ -16,45 +15,44 @@ entity full_sample is
       data_in_matrix_2 : in matrix_16_24; -- TODO! use a array of arrays istead of 4 arrays
       data_in_matrix_3 : in matrix_16_24;
       data_in_matrix_4 : in matrix_16_24;
-      data_valid_v : in std_logic_vector(3 downto 0);
-
-      sample_out_matrix : out matrix_4_16_24; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      rd_enable : out std_logic
+      data_valid_in_v : in std_logic_vector(3 downto 0);
+      matrix_4_16_24_out : out matrix_4_16_24; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      data_valid_out : out std_logic
    );
 end full_sample;
 architecture behavroal of full_sample is
    signal rd_check : std_logic_vector(3 downto 0);
 begin
-   fill_sample_matrix_from_trail_1_p : process (clk)
+   fill_matrix_out_p : process (clk)
    begin
       if (rising_edge(clk)) then
-         rd_enable <= '0';
+         data_valid_out <= '0';
          if (reset = '1') then
-            rd_enable <= '0';
+            data_valid_out <= '0';
             rd_check <= "0000";
          else
-            if (data_valid_v(0) = '1') then
+            if (data_valid_in_v(0) = '1') then
                rd_check(0) <= '1';
-               sample_out_matrix(0) <= data_in_matrix_1;
+               matrix_4_16_24_out(0) <= data_in_matrix_1;
             end if;
 
-            if (data_valid_v(1) = '1') then
+            if (data_valid_in_v(1) = '1') then
                rd_check(1) <= '1';
-               sample_out_matrix(1) <= data_in_matrix_2;
+               matrix_4_16_24_out(1) <= data_in_matrix_2;
             end if;
 
-            if (data_valid_v(2) = '1') then
+            if (data_valid_in_v(2) = '1') then
                rd_check(2) <= '1';
-               sample_out_matrix(2) <= data_in_matrix_3;
+               matrix_4_16_24_out(2) <= data_in_matrix_3;
             end if;
 
-            if (data_valid_v(3) = '1') then
+            if (data_valid_in_v(3) = '1') then
                rd_check(3) <= '1';
-               sample_out_matrix(3) <= data_in_matrix_4;
+               matrix_4_16_24_out(3) <= data_in_matrix_4;
             end if;
 
             if (rd_check = "1111") then
-               rd_enable <= '1';
+               data_valid_out <= '1';
                rd_check <= (others => '0');
             end if;
          end if;

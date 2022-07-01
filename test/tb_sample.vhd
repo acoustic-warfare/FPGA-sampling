@@ -16,15 +16,15 @@ end tb_sample;
 architecture tb of tb_sample is
    constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
 
-   signal bit_stream : std_logic := '0';
    signal clk : std_logic := '0';
    signal reset : std_logic := '0';
    signal ws : std_logic := '0';
-   signal rd_enable : std_logic;
-   signal sample_error : std_logic;
+   signal bit_stream : std_logic := '0';
+
+   signal data_valid_sample_out : std_logic;
+   signal ws_error : std_logic;
 
    signal sim_counter : integer := 0;
-
    signal clk_count : integer := 0; -- counter for the number of clock cycles
 
 begin
@@ -34,8 +34,8 @@ begin
       clk => clk,
       reset => reset,
       ws => ws,
-      rd_enable => rd_enable,
-      sample_error => sample_error
+      data_valid_sample_out => data_valid_sample_out,
+      ws_error => ws_error
       );
 
    -- counter for clk cykles
@@ -84,9 +84,9 @@ begin
       while test_suite loop
          if run("tb_sample_1") then
 
-           reset <= '1';
-           wait for 4 * clk_cykle;
-           reset <= '0';
+            reset <= '1';
+            wait for 4 * clk_cykle;
+            reset <= '0';
 
             -- test 1 is so far only ment for gktwave
 

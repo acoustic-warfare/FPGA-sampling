@@ -1,5 +1,5 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 entity clk_div is
    generic (
@@ -7,15 +7,15 @@ entity clk_div is
    );
    port (
       clk_in : in std_logic;
-      clk_out : out std_logic := '0';
-      reset : in std_logic -- Asynchronous reset that actevate on 1
+      reset : in std_logic; -- Asynchronous reset that actevate on 1
+      clk_out : out std_logic := '0'
    );
 end clk_div;
 
 architecture Behavioral of clk_div is
    signal rising_edge_counter : integer := (div / 2) - 1; -- the counter signal   '
 begin
-   fsck_clk_gen : process (clk_in, reset) -- divides clk in half
+   div_p : process (clk_in, reset) -- divides clk in half
    begin
       if (rising_edge(clk_in)) then
          if (reset = '1') then

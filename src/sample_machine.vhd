@@ -1,7 +1,6 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-
-use work.MATRIX_TYPE.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use work.matrix_type.all;
 
 entity sample_machine is
    generic (
@@ -14,8 +13,7 @@ entity sample_machine is
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
       ws : in std_logic;
       bit_stream : in std_logic;
-
-      sample_error : out std_logic := '0';
+      ws_error : out std_logic := '0';
       data_matrix_16_24_out : out matrix_16_24; -- Our output Matrix with 1 sample from all microphones in the Matrix
       data_valid_out : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
    );
@@ -34,7 +32,7 @@ begin
       ws => ws,
       reg => reg,
       data_valid_sample_out => data_valid_sample_out,
-      sample_error => sample_error
+      ws_error => ws_error
       );
 
    collectorn_1 : entity work.collectorn port map(

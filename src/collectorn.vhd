@@ -1,7 +1,7 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
-use IEEE.NUMERIC_STD.all;
-use work.MATRIX_TYPE.all;
+library ieee;
+use ieee.std_logic_1164.all;
+--use ieee.NUMERIC_STD.all; -- behöv denna?
+use work.matrix_type.all;
 
 entity collectorn is
    generic (
@@ -10,9 +10,9 @@ entity collectorn is
    );
 
    port (
-      data_in : in std_logic_vector(23 downto 0); -- The a vector with one sample from one microphone
       clk : in std_logic;
       reset : in std_logic; --TO-DO # add a asynchrone reset and read_enable
+      data_in : in std_logic_vector(23 downto 0); -- The a vector with one sample from one microphone
       data_valid_collectorn_in : in std_logic;
       data_matrix_16_24_out : out matrix_16_24; -- Our output Matrix with 1 sample from all microphones in the Matrix
       data_valid_collectorn_out : out std_logic := '0' --  A signal to tell the receiver to start reading the data_out_matrix
@@ -23,7 +23,7 @@ architecture demo_behavroal of collectorn is
    signal counter_mic : integer := 0; --Counter for rows
 
 begin
-   collect : process (clk) -- Process which collects the input data and put it in the matrix
+   collect_p : process (clk) -- Process which collects the input data and put it in the matrix
    begin
 
       -- reg <= '1' & reg(23 downto 1);

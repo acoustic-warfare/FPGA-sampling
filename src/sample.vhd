@@ -1,15 +1,15 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 entity sample is
    port (
-      bit_stream : in std_logic;
       clk : in std_logic;
       reset : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
+      bit_stream : in std_logic;
       ws : in std_logic;
       reg : out std_logic_vector(23 downto 0);
       data_valid_sample_out : out std_logic := '0';
-      sample_error : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
+      ws_error : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
 end entity;
 
@@ -33,7 +33,7 @@ begin
          case state is
             when idle => -- after a complete sample of all mics (only exit on ws high)
                if (ws = '1') then
-                  sample_error <= '0';
+                  ws_error <= '0';
                   state <= run;
                end if;
 
@@ -53,7 +53,7 @@ begin
 
             when pause =>
                if (ws = '1') then
-                  sample_error <= '1';
+                  ws_error <= '1';
                end if;
 
                data_valid_sample_out <= '0';
@@ -70,7 +70,7 @@ begin
       end if;
    end process;
 
-   count : process (clk)
+   count_p : process (clk)
    begin
       if (rising_edge(clk)) then
          if (reset = '1' or ws = '1') then

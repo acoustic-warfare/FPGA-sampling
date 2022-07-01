@@ -1,10 +1,10 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-use work.MATRIX_TYPE.all;
+use work.matrix_type.all;
 
 entity tb_clk_gen is
    generic (
@@ -16,10 +16,8 @@ architecture tb of tb_clk_gen is
    constant sck_cykle : time := 10 ns; -- set the duration of one clock cycle
 
    signal sck_clk : std_logic := '1';
-   signal ws_clk : std_logic;
-   signal ws_out : std_logic;
    signal reset : std_logic;
-
+   signal ws_pulse : std_logic;
    signal sck_count : integer := 0; -- counter for the number of fsck_clk cycles
    signal ws_count : integer := 0; -- counter for the number of fs_clk cykles
 
@@ -32,36 +30,36 @@ architecture tb of tb_clk_gen is
 
 begin
    -- direct instantiation of: clk_gen
-   CLK_GEN1 : entity work.clk_gen port map(
+   clk_gen_1 : entity work.clk_gen port map(
       sck_clk => sck_clk,
-      ws_pulse => ws_out,
+      ws_pulse => ws_pulse,
       reset => reset
       );
 
    -- counter for fs_clk cykles
-   fsck_counter : process (sck_clk)
+   fsck_counter_p : process (sck_clk)
    begin
-      if (sck_clk = '1') then
+      if (rising_edge(sck_clk)) then
          sck_count <= sck_count + 1;
       end if;
    end process;
 
    -- counter for fs_clk cykles
-   fs_counter : process (ws_clk)
+   ws_counter_p : process (ws_pulse)
    begin
-      if (ws_clk = '1') then
+      if (rising_edge(ws_pulse)) then
          ws_count <= ws_count + 1;
       end if;
    end process;
 
    -- generate clock pulses with a clock period of clk_cykle
-   clock : process
+   clock_p : process
    begin
       sck_clk <= not(sck_clk);
       wait for sck_cykle/2;
    end process;
 
-   main : process
+   main_p : process
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop

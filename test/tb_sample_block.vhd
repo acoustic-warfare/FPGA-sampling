@@ -1,10 +1,10 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-use work.MATRIX_TYPE.all;
+use work.matrix_type.all;
 
 entity tb_sample_block is
    generic (
@@ -18,11 +18,12 @@ architecture tb of tb_sample_block is
    signal reset : std_logic := '0';
    signal ws : std_logic;
    signal sck_clk : std_logic := '0';
+
    signal bit_stream_v : std_logic_vector(3 downto 0) := "0000";
 
-   signal sample_out_matrix : matrix_4_16_24;
-   signal data_valid : std_logic;
-   signal sample_error_v : std_logic_vector (3 downto 0);
+   signal matrix_4_16_24_out : matrix_4_16_24;
+   signal data_valid_out : std_logic;
+   signal ws_error_v : std_logic_vector (3 downto 0);
 
    signal matrix_row_0 : std_logic_vector(23 downto 0); -- slinga 0, mic 0
    signal matrix_row_1 : std_logic_vector(23 downto 0); -- slinga 0, mic 1
@@ -68,14 +69,15 @@ begin
 
       bit_stream_v => bit_stream_v,
 
-      sample_out_matrix => sample_out_matrix,
-      data_valid => data_valid,
-      sample_error_v => sample_error_v
+      matrix_4_16_24_out => matrix_4_16_24_out,
+      data_valid_out => data_valid_out,
+      ws_error_v => ws_error_v
       );
-   temp_trail_0 <= sample_out_matrix(0);
-   temp_trail_1 <= sample_out_matrix(1);
-   temp_trail_2 <= sample_out_matrix(2);
-   temp_trail_3 <= sample_out_matrix(3);
+
+   temp_trail_0 <= matrix_4_16_24_out(0);
+   temp_trail_1 <= matrix_4_16_24_out(1);
+   temp_trail_2 <= matrix_4_16_24_out(2);
+   temp_trail_3 <= matrix_4_16_24_out(3);
 
    matrix_row_0 <= temp_trail_0(0);
    matrix_row_1 <= temp_trail_0(1);
@@ -90,7 +92,7 @@ begin
    matrix_row_49 <= temp_trail_3(1);
    matrix_row_63 <= temp_trail_3(15);
 
-   feed_data : process (clk)
+   feed_data_p : process (clk)
    begin
       if (rising_edge(clk) and sim_counter < 5) then
          bit_stream_v <= "0000";
@@ -106,13 +108,13 @@ begin
       end if;
    end process;
 
-   clock : process
+   clock_p : process
    begin
       wait for clk_cykle/2;
       clk <= not(clk);
    end process;
 
-   sck_clock : process (clk)
+   sck_clock_p : process (clk)
    begin
       if (sck_counter = 10) then
          sck_counter <= 0;
@@ -125,7 +127,8 @@ begin
          sck_counter <= sck_counter + 1;
       end if;
    end process;
-   main : process
+
+   main_p : process
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
