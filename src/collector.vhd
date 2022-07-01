@@ -5,29 +5,18 @@ use work.matrix_type.all;
 entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   --CLK: system clock 125 MHZ
+   -- CLK: system clock 125 MHZ
    --
-   --RESET: synchronous reset
+   -- RESET: synchronous reset
    --
-   -- MIC_SAMPLE_DATA_IN: 
+   -- MIC_SAMPLE_DATA_IN: Incomming array of data. One microphone sends 32 bits. 
    -- 
-   -- MIC_SAMPLE_VALID_IN 
+   -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has ben updated
    -- 
-   --CHAIN_MATRIX_DATA_OUT
+   -- CHAIN_MATRIX_DATA_OUT: A matrix filled the data from all the mics of the chain (16x24)
    --
-   -- CHAIN_MATRIX_VALID_OUT 
+   -- CHAIN_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in CHAIN_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
-
-   --BIT_STREAM: incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
-   --
-   --WS: The WS puls is sent out once every 2560 clk cycles,
-   -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain .
-   --
-   --MIC_SAMPLE_DATA_OUT: Every microphone in the array sends 32 bit in TDM-slots, but only 24 bit is actual data. Hence a vector of 24 bits is filled
-   -- each TDMS with data is sampled five times.
-   --
-   --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
-   --------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
