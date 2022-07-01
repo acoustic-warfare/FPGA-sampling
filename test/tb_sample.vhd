@@ -14,7 +14,7 @@ entity tb_sample is
 end tb_sample;
 
 architecture tb of tb_sample is
-   constant clk_cykle : time := 10 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
 
    signal clk        : std_logic := '0';
    signal reset      : std_logic := '0';
@@ -73,7 +73,7 @@ begin
          sim_counter <= 0;
       end if;
    end process;
-   clk <= not(clk) after clk_cykle/2;
+   clk <= not(clk) after C_SCK_CYKLE/2;
 
    main : process
    begin
@@ -82,7 +82,7 @@ begin
          if run("tb_sample_1") then
 
             reset <= '1';
-            wait for 4 * clk_cykle;
+            wait for 4 * C_SCK_CYKLE; -- TODO: make this in procedure
             reset <= '0';
 
             -- test 1 is so far only ment for gktwave

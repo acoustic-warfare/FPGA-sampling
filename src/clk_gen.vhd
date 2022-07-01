@@ -15,7 +15,7 @@ architecture rtl of clk_gen is
 begin
    clk_div512_p : entity work.clk_div
       generic map(
-         div => 512
+         G_DIV => 512
       )
       port map(
          clk_in  => sck_clk,

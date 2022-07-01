@@ -13,7 +13,7 @@ entity tb_collectorn is
 end tb_collectorn;
 
 architecture tb of tb_collectorn is
-   constant clk_cykle : time := 10 ns;
+   constant C_SCK_CYKLE : time := 10 ns;
 
    signal clk                       : std_logic                     := '0';
    signal reset                     : std_logic                     := '0';
@@ -42,7 +42,7 @@ begin
       );
    clock_p : process
    begin
-      wait for clk_cykle/2;
+      wait for C_SCK_CYKLE/2;
       clk <= not(clk);
    end process;
 

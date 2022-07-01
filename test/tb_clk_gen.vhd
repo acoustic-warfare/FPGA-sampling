@@ -13,7 +13,7 @@ entity tb_clk_gen is
 end tb_clk_gen;
 
 architecture tb of tb_clk_gen is
-   constant sck_cykle : time := 10 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
 
    signal sck_clk     : std_logic := '0';
    signal reset       : std_logic;
@@ -27,7 +27,7 @@ architecture tb of tb_clk_gen is
    procedure clk_wait (nr_of_cykles : in integer) is
    begin
       for i in 0 to nr_of_cykles loop
-         wait for sck_cykle;
+         wait for C_SCK_CYKLE;
       end loop;
    end procedure;
 
@@ -59,7 +59,7 @@ begin
    clock_p : process
    begin
       sck_clk <= not(sck_clk);
-      wait for sck_cykle/2;
+      wait for C_SCK_CYKLE/2;
    end process;
 
    assert_p : process (ws_pulse) -- TODO: more automatic test

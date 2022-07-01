@@ -4,8 +4,8 @@ use work.matrix_type.all;
 
 entity full_sample is
    generic (
-      bits_mic : integer := 24; -- Defines the resulotion of a mic sample
-      nr_mics  : integer := 64  -- Number of microphones in the Matrix
+      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
    );
 
    port (
