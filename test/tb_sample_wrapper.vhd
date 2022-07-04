@@ -101,7 +101,7 @@ begin
          sim_counter    <= sim_counter + 1;
       end if;
 
-      if (sim_counter = 10) then
+      if sim_counter = 10 then
          sim_counter <= 0;
       end if;
    end process;
@@ -110,12 +110,12 @@ begin
 
    sck_clock_p : process (clk)
    begin
-      if (sck_counter = 10) then
+      if sck_counter = 10 then
          sck_counter <= 0;
       else
-         if (sck_counter < 5) then
+         if sck_counter < 5 then
             sck_clk <= '1';
-         elsif (sck_counter >= 5) then
+         elsif sck_counter >= 5 then
             sck_clk <= '0';
          end if;
          sck_counter <= sck_counter + 1;

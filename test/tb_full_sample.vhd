@@ -45,8 +45,8 @@ begin
 
    rd_enable_p : process (clk)
    begin
-      if (rising_edge(clk)) then
-         if (data_valid_in_counter = 10) then
+      if rising_edge(clk) then
+         if data_valid_in_counter = 10 then
             chain_matrix_valid_in <= "1111";
             data_valid_in_counter <= 0;
          else
@@ -57,13 +57,13 @@ begin
    end process;
    bitgen_p : process (clk)
    begin
-      if (rising_edge(clk)) then
-         if (data_change_counter = 31) then
+      if rising_edge(clk) then
+         if data_change_counter = 31 then
             data_change_counter <= 0;
          else
-            if (data_change_counter < 15) then
+            if data_change_counter < 15 then
                chain_x4_matrix_data_in <= (others => (others => (others => '0')));
-            elsif (data_change_counter >= 16) then
+            elsif data_change_counter >= 16 then
                chain_x4_matrix_data_in <= (others => (others => (others => '1')));
             end if;
             data_change_counter <= data_change_counter + 1;

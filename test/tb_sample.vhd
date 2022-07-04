@@ -51,7 +51,7 @@ begin
 
    ws_activate : process (clk)
    begin
-      if (rising_edge(clk)) then
+      if rising_edge(clk) then
          if (clk_count > 9 and clk_count < 15) then
             ws <= '1';
          else
@@ -71,7 +71,7 @@ begin
          sim_counter <= sim_counter + 1;
       end if;
 
-      if (sim_counter = 10) then
+      if sim_counter = 10 then
          sim_counter <= 0;
       end if;
    end process;

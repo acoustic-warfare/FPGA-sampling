@@ -45,8 +45,8 @@ begin
 
    rd_enable_p : process (clk)
    begin
-      if (rising_edge(clk)) then
-         if (data_valid_in_counter = 10) then
+      if rising_edge(clk) then
+         if data_valid_in_counter = 10 then
             mic_sample_valid_in   <= '1';
             data_valid_in_counter <= 0;
          else
@@ -58,16 +58,16 @@ begin
 
    bitgen_p : process (clk)
    begin
-      if (rising_edge(clk)) then
-         if (mic_sample_valid_in = '1') then
-            if (data_valid_out_counter = 31) then
+      if rising_edge(clk) then
+         if mic_sample_valid_in = '1' then
+            if data_valid_out_counter = 31 then
                data_valid_out_counter <= 0;
             else
 
-               if (data_valid_out_counter < 15) then
+               if data_valid_out_counter < 15 then
                   mic_sample_data_in <= v0_24;
 
-               elsif (data_valid_out_counter >= 16) then
+               elsif data_valid_out_counter >= 16 then
                   mic_sample_data_in <= v1_24;
                end if;
                data_valid_out_counter <= data_valid_out_counter + 1;

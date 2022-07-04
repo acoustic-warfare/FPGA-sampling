@@ -35,7 +35,7 @@ architecture rtl of full_sample is
 begin
    fill_matrix_out_p : process (clk)
    begin
-      if (rising_edge(clk)) then
+      if rising_edge(clk) then
          array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
          for i in 0 to 3 loop
@@ -45,12 +45,12 @@ begin
             end if;
          end loop;
 
-         if (valid_check = "1111") then -- checks that a new value has been added to each place in the array
+         if valid_check = "1111" then -- checks that a new value has been added to each place in the array
             array_matrix_valid_out <= '1';
             valid_check            <= (others => '0');
          end if;
 
-         if (reset = '1') then -- resets data_valid_out to low and 
+         if reset = '1' then -- resets data_valid_out to low and 
             array_matrix_valid_out <= '0';
             valid_check            <= (others => '0');
          end if;

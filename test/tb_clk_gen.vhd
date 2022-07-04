@@ -42,7 +42,7 @@ begin
    -- counter for fs_clk cykles
    fsck_counter_p : process (sck_clk)
    begin
-      if (rising_edge(sck_clk) and reset = '0') then
+      if rising_edge(sck_clk) and reset = '0' then
          sck_counter <= sck_counter + 1;
       end if;
    end process;
@@ -50,7 +50,7 @@ begin
    -- counter for fs_clk cykles
    ws_counter_p : process (ws_pulse)
    begin
-      if (rising_edge(ws_pulse) and reset = '0') then
+      if rising_edge(ws_pulse) and reset = '0' then
          ws_counter <= ws_counter + 1;
       end if;
    end process;
@@ -60,11 +60,11 @@ begin
 
    assert_p : process (ws_pulse) -- TODO: more automatic test
    begin
-      if (auto = '1') then
-         if (rising_edge(ws_pulse)) then
-            if (ws_counter = 0) then
+      if auto = '1' then
+         if rising_edge(ws_pulse) then
+            if ws_counter = 0 then
                sck_counter_start <= sck_counter;
-            elsif (ws_counter = 1) then
+            elsif ws_counter = 1 then
                assert (sck_counter - sck_counter_start) = 512 report integer'image(sck_counter) severity error;
             end if;
          end if;

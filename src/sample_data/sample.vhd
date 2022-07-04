@@ -41,7 +41,7 @@ architecture rtl of sample is
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
    begin
-      if (rising_edge(clk)) then
+      if rising_edge(clk) then
 
          case state is
             when idle => -- after a complete sample of all mics (only exit on ws high)
@@ -51,7 +51,7 @@ begin
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
-               if (ws = '1') then
+               if ws = '1' then
                   ws_error <= '0';
                   state    <= run;
                end if;
@@ -73,14 +73,14 @@ begin
                -- When 24 bits have been sampled the machine change state to PAUSE.
                -----------------------------------------------------------------------------------------------------------
 
-               if (counter_samp = 4) then
-                  if (counter_1s >= 2) then
+               if counter_samp = 4 then
+                  if counter_1s >= 2 then
                      mic_sample_data_out <= '1' & mic_sample_data_out(23 downto 1);
                   else
                      mic_sample_data_out <= '0' & mic_sample_data_out(23 downto 1);
                   end if;
 
-                  if (counter_bit = 23) then
+                  if counter_bit = 23 then
                      mic_sample_valid_out <= '1';
                      state <= pause;
                   end if;
@@ -95,14 +95,14 @@ begin
             --
             -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
             -------------------------------------------------------------------------------------------------------------------
-               if (ws = '1') then
+               if ws = '1' then
                   ws_error <= '1';
                end if;
 
                mic_sample_valid_out <= '0';
-               if (counter_mic = 15 and counter_bit = 24) then
+               if counter_mic = 15 and counter_bit = 24 then
                   state <= idle;
-               elsif (counter_bit = 0) then
+               elsif counter_bit = 0 then
                   state <= run;
                end if;
 
@@ -110,7 +110,7 @@ begin
                report("error_1");
                state <= idle;
          end case;
-         if (reset = '1') then
+         if reset = '1' then
             state <= idle;
          end if;
       end if;
@@ -118,12 +118,12 @@ begin
 
    count_p : process (clk)
    begin
-      if (rising_edge(clk)) then
-         if (bit_stream = '1') then
+      if rising_edge(clk) then
+         if bit_stream = '1' then
             counter_1s <= counter_1s + 1;
          end if;
 
-         if (counter_samp = 4) then
+         if counter_samp = 4 then
             counter_bit  <= counter_bit + 1;
             counter_1s   <= 0;
             counter_samp <= 0;
@@ -131,16 +131,16 @@ begin
             counter_samp <= counter_samp + 1;
          end if;
 
-         if (counter_bit = 31) then
+         if counter_bit = 31 then
             counter_bit <= 0;
             counter_mic <= counter_mic + 1;
          end if;
 
-         if (counter_mic = 15 and counter_bit = 31) then
+         if counter_mic = 15 and counter_bit = 31 then
             counter_mic <= 0;
          end if;
 
-         if (reset = '1' or ws = '1') then
+         if reset = '1' or ws = '1' then
             counter_bit  <= 0;
             counter_samp <= 0;
             counter_mic  <= 0;
@@ -151,11 +151,11 @@ begin
 
    state_num : process (state) -- only for findig buggs
    begin
-      if (state = idle) then
+      if state = idle then
          state_1 <= 0;
-      elsif (state = run) then
+      elsif state = run then
          state_1 <= 1;
-      elsif (state = pause) then
+      elsif state = pause then
          state_1 <= 2;
       end if;
    end process;
