@@ -126,7 +126,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_block_1") then -- test 1, only for gktwave
+         if run("tb_sample_wrapper_1") then -- test 1, only for gktwave
 
             reset <= '1';
             clk_wait(10);
@@ -135,7 +135,7 @@ begin
 
             wait for 90000 ns;
             check(1 = 1, "test_1");
-         elsif run("tb_sample_block_2") then -- test 2, automatic checks after verius intervals
+         elsif run("tb_sample_wrapper_2") then -- test 2, automatic checks after verius intervals
             check(1 = 1, "test_1");
             wait for 11 ns;
 
