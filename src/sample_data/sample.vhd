@@ -19,24 +19,24 @@ entity sample is
    --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
    --------------------------------------------------------------------------------------------------------------------------------------------------
    port (
-      clk : in std_logic;
-      reset : in std_logic;
-      bit_stream : in std_logic;
-      ws : in std_logic;
-      mic_sample_data_out : out std_logic_vector(23 downto 0);
+      clk                  : in std_logic;
+      reset                : in std_logic;
+      bit_stream           : in std_logic;
+      ws                   : in std_logic;
+      mic_sample_data_out  : out std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0';
-      ws_error : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
+      ws_error             : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
 end entity;
 
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
-   signal state : state_type;
-   signal counter_bit : integer := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_samp : integer := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic : integer := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s : integer := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
-   signal state_1 : integer; -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
+   signal state        : state_type;
+   signal counter_bit  : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
+   signal counter_mic  : integer range 0 to 15 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_1s   : integer range 0 to 4  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
+   signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -82,19 +82,19 @@ begin
 
                   if counter_bit = 23 then
                      mic_sample_valid_out <= '1';
-                     state <= pause;
+                     state                <= pause;
                   end if;
                end if;
 
             when pause =>
-            -------------------------------------------------------------------------------------------------------------------
-            -- a Microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
-            -- This state is used to wait and let those 8 empty TDM-slots bits pass by.
-            --
-            -- After the 8 empty bits the machine returns to the RUN state to start to sample the next microphone in the chain
-            --
-            -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
-            -------------------------------------------------------------------------------------------------------------------
+               -------------------------------------------------------------------------------------------------------------------
+               -- a Microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
+               -- This state is used to wait and let those 8 empty TDM-slots bits pass by.
+               --
+               -- After the 8 empty bits the machine returns to the RUN state to start to sample the next microphone in the chain
+               --
+               -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
+               -------------------------------------------------------------------------------------------------------------------
                if ws = '1' then
                   ws_error <= '1';
                end if;
@@ -161,6 +161,3 @@ begin
    end process;
 
 end rtl;
-
-
-

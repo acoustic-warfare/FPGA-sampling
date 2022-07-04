@@ -13,7 +13,7 @@ entity clk_div is
 end clk_div;
 
 architecture rtl of clk_div is
-   signal rising_edge_counter : integer := (G_DIV / 2) - 1; -- the counter signal   '
+   signal rising_edge_counter : integer range 0 to (G_DIV / 2) := (G_DIV / 2) - 1; -- the counter signal 
 begin
    div_p : process (clk_in) -- divides clk in half
    begin
