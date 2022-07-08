@@ -13,7 +13,8 @@ entity aw_top is
       clk            : in std_logic;
       reset          : in std_logic;
       bit_stream_ary : in std_logic_vector(3 downto 0);
-      ws             : in std_logic;
+      sck_clk        : in std_logic;
+      ws             : out std_logic;
       and_out        : out std_logic; -- test signal to reduce io usage
       --array_matrix_valid_out : out data_out_matrix; -- removed matrix_4_16_24_out from the outputs becouse it use to many ios for implementation
       ws_error_ary           : out std_logic_vector(3 downto 0);
@@ -29,10 +30,11 @@ begin
          clk                    => clk,
          bit_stream_ary         => bit_stream_ary,
          reset                  => reset,
+         sck_clk                => sck_clk,
          ws                     => ws,
          ws_error_ary           => ws_error_ary,
          array_matrix_data_out  => array_matrix_data_out,
          array_matrix_valid_out => array_matrix_valid_out
       );
-   and_out <= array_matrix_data_out(0) and array_matrix_data_out(1) and array_matrix_data_out(2) and array_matrix_data_out(3);
+   --and_out <= array_matrix_data_out(0) and array_matrix_data_out(1) and array_matrix_data_out(2) and array_matrix_data_out(3);
 end structual;

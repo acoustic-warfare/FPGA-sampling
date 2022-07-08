@@ -65,6 +65,7 @@ begin
    sample_wrapper1 : entity work.sample_wrapper port map (
       clk                    => clk,
       reset                  => reset,
+      sck_clk                => sck_clk,
       ws                     => ws,
       bit_stream_ary         => bit_stream_ary,
       array_matrix_data_out  => array_matrix_data_out,
