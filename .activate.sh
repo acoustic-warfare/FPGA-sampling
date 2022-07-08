@@ -50,7 +50,7 @@ python --version
 #
 # Vivado
 #
-VIVADO_VERSION="2020.2"
+VIVADO_VERSION="2017.4"
 XILINX_PATH="$(locate -n1 "/Xilinx/Vivado/$VIVADO_VERSION" )"
 [ $? -eq 0 ] && . "$XILINX_PATH/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m" 
 echo "Vivado $VIVADO_VERSION"
