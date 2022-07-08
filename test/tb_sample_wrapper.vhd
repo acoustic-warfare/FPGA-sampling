@@ -56,10 +56,10 @@ architecture tb of tb_sample_wrapper is
 
 begin
 
-   clk_gen1 : entity work.clk_gen port map (
-      sck_clk  => sck_clk,
-      ws_pulse => ws,
-      reset    => reset
+   ws_pulse1 : entity work.ws_pulse port map (
+      sck_clk => sck_clk,
+      ws      => ws,
+      reset   => reset
       );
 
    sample_wrapper1 : entity work.sample_wrapper port map (
