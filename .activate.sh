@@ -88,7 +88,13 @@ alias clean="git clean -xdie $VENV_NAME"
 
 # NOTE: run test from anywere
 # TODO: create run.py and/or set path to correct location
-alias vunit='python $(git rev-parse --show-toplevel)/run.py'
+
+alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
+
+# NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
+alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
+
+# to make a alias for a single test
 
 
 #

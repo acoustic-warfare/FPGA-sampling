@@ -97,7 +97,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_collector_1") then
+         if run("gtkw") then
 
             wait for 8500 ns;
 
