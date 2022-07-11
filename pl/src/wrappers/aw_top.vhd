@@ -14,7 +14,7 @@ entity aw_top is
       reset          : in std_logic;
       bit_stream_ary : in std_logic_vector(3 downto 0);
       sck_clk        : in std_logic;
-      ws             : out std_logic;
+      ws             : inout std_logic;
       and_out        : out std_logic; -- test signal to reduce io usage
       --array_matrix_valid_out : out data_out_matrix; -- removed matrix_4_16_24_out from the outputs becouse it use to many ios for implementation
       ws_error_ary           : out std_logic_vector(3 downto 0);
@@ -25,7 +25,7 @@ end entity;
 architecture structual of aw_top is
    signal array_matrix_data_out : matrix_4_16_24_type;
 begin
-   top_block : entity work.sample_wrapper
+   sample_wrapper : entity work.sample_wrapper
       port map(
          clk                    => clk,
          bit_stream_ary         => bit_stream_ary,

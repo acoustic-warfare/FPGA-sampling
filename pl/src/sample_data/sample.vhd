@@ -23,7 +23,7 @@ entity sample is
       reset                : in std_logic;
       bit_stream           : in std_logic;
       ws                   : in std_logic;
-      mic_sample_data_out  : out std_logic_vector(23 downto 0);
+      mic_sample_data_out  : inout std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0';
       ws_error             : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );

@@ -96,6 +96,17 @@ alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
 # NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
 alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
 
+# NOTE: create Vivado porject by writing: create
+alias create='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/create.tcl'
+
+# NOTE: synthesise Vivado porject by writing: synth
+alias synth='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/synth.tcl'
+
+# NOTE: run implementation on Vivado porject by writing: implement
+alias implement='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/implement.tcl'
+
+
+#vivado -notrace -mode tcl -source creator.tcl   
 echo "\nWelcome to Acustic Warfare!"
 echo 'To run a test bench for a HDL-file write: vuinit "*HDL_file_name*"'
 echo 'To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave" \n'
