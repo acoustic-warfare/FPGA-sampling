@@ -97,11 +97,11 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("gtkw") then
+         if run("wave") then
 
             wait for 8500 ns;
 
-         elsif run("tb_collector_2") then
+         elsif run("auto") then
             -- old tests that need to be updated
             --wait for 3845.1 ns; -- first rise (3845 ns after start)
             --check(data_valid_collector_out = '0', "fail!1 data_valid first rise");

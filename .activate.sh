@@ -16,6 +16,7 @@ echo '
 '
 
 
+
 #
 # mlocate
 #
@@ -86,7 +87,8 @@ fi
 # NOTE: interavtive clean exclude venv folder
 alias clean="git clean -xdie $VENV_NAME"
 
-# NOTE: run test from anywere
+# NOTE: run test from anywe
+# to make a alias for a single testre
 # TODO: create run.py and/or set path to correct location
 
 alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
@@ -94,8 +96,9 @@ alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
 # NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
 alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
 
-# to make a alias for a single test
-
+echo "\nWelcome to Acustic Warfare!"
+echo 'To run a test bench for a HDL-file write: vuinit "*HDL_file_name*"'
+echo 'To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave" \n'
 
 #
 # Cleanup

@@ -10,10 +10,9 @@ for {set i 2} {$i < $nfacts} {incr i} {
 
    switch -glob -- $name {
 
-      tb_sample_block.bit_stream_v -
-      tb_sample_block.clk -
-      tb_sample_block.data_valid -
-      tb_sample_block.matrix_row_* -
+      tb_sample_wrapper.clk -
+      tb_sample_wrapper.array_matrix_valid_out -
+      tb_sample_wrapper.matrix_row_* -
       tb.tb.a* {
          gtkwave::addSignalsFromList "$name"
       }

@@ -82,7 +82,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_1") then
+         if run("wave") then
 
             reset <= '1';
             wait for 4 * C_CLK_CYKLE; -- TODO: make this in procedure
@@ -92,10 +92,7 @@ begin
 
             wait for 50000 ns; -- duration of test 1
 
-            check(1 = 1, "test_1");
-         elsif run("tb_sample_2") then
-
-            check(1 = 1, "test_1");
+         elsif run("auto") then
 
             wait for 11 ns;
 

@@ -34,8 +34,8 @@ architecture rtl of sample is
    signal state        : state_type;
    signal counter_bit  : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic  : integer range 0 to 15 := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s   : integer range 0 to 4  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
+   signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
 
 begin
