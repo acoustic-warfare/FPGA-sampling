@@ -88,7 +88,7 @@ alias clean="git clean -xdie $VENV_NAME"
 
 # NOTE: run test from anywere
 # TODO: create run.py and/or set path to correct location
-alias vunit='python $(git rev-parse --show-toplevel run.py)'
+alias vunit='python $(git rev-parse --show-toplevel)/run.py'
 
 
 #
