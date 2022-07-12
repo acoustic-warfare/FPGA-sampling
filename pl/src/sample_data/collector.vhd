@@ -26,7 +26,7 @@ entity collector is
       reset                  : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
-      chain_matrix_data_out  : out matrix_16_24_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
+      chain_matrix_data_out  : inout matrix_16_24_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
       chain_matrix_valid_out : out std_logic := '0'   --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end collector;

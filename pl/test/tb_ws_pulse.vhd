@@ -75,7 +75,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("gtkw") then -- only for use in gktwave
+         if run("wave") then -- only for use in gktwave
 
             reset <= '1';
             clk_wait(5);

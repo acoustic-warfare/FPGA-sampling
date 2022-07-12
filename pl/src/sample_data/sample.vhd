@@ -23,7 +23,7 @@ entity sample is
       reset                : in std_logic;
       bit_stream           : in std_logic;
       ws                   : in std_logic;
-      mic_sample_data_out  : out std_logic_vector(23 downto 0);
+      mic_sample_data_out  : inout std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0';
       ws_error             : out std_logic := '0' -- not yet implemented (ex. for implementation: if(counter_1s = 2 or 3) then sample_error = 1) becouse we have started to drift
    );
@@ -34,8 +34,8 @@ architecture rtl of sample is
    signal state        : state_type;
    signal counter_bit  : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic  : integer range 0 to 15 := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s   : integer range 0 to 4  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
+   signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
 
 begin

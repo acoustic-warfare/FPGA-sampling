@@ -16,6 +16,7 @@ echo '
 '
 
 
+
 #
 # mlocate
 #
@@ -86,10 +87,32 @@ fi
 # NOTE: interavtive clean exclude venv folder
 alias clean="git clean -xdie $VENV_NAME"
 
-# NOTE: run test from anywere
+# NOTE: run test from anywe
+# to make a alias for a single testre
 # TODO: create run.py and/or set path to correct location
-alias vunit='python $(git rev-parse --show-toplevel)/run.py'
 
+alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
+
+# NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
+alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
+
+# NOTE: create Vivado porject by writing: create
+alias create='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/create.tcl'
+
+# NOTE: synthesise Vivado porject by writing: synth
+alias synth='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/synth.tcl'
+
+# NOTE: run implementation on Vivado porject by writing: implement
+alias implement='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/implement.tcl'
+
+alias gen_all='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/gen_all.tcl'
+
+
+#vivado -notrace -mode tcl -source creator.tcl   
+echo "\nWelcome to Acustic Warfare!"
+echo 'To run a test bench for a HDL-file write: vuinit "*HDL_file_name*"'
+echo 'To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave"'
+echo "To create and lanch the Vivado project write: gen_all \n"
 
 #
 # Cleanup
