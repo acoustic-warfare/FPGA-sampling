@@ -111,7 +111,8 @@ alias gen_all='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel
 #vivado -notrace -mode tcl -source creator.tcl   
 echo "\nWelcome to Acustic Warfare!"
 echo 'To run a test bench for a HDL-file write: vuinit "*HDL_file_name*"'
-echo 'To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave" \n'
+echo 'To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave"'
+echo "To create and lanch the Vivado project write: gen_all \n"
 
 #
 # Cleanup
