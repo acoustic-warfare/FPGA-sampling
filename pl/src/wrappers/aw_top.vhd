@@ -10,14 +10,15 @@ entity aw_top is
    );
 
    port (
-      sys_clock : in std_logic;
-      --clk            : in std_logic;
+      sys_clock      : in std_logic;
       reset_rtl      : in std_logic;
       reset          : in std_logic;
       bit_stream_ary : in std_logic_vector(3 downto 0);
-      --sck_clk        : in std_logic;
-      ws      : inout std_logic;
-      and_out : out std_logic; -- test signal to reduce io usage
+      sck_clk_1      : out std_logic;
+      sck_clk_2      : out std_logic;
+      ws_1           : out std_logic;
+      ws_2           : out std_logic;
+      and_out        : out std_logic; -- test signal to reduce io usage
       --array_matrix_valid_out : out data_out_matrix; -- removed matrix_4_16_24_out from the outputs becouse it use to many ios for implementation
       ws_error_ary           : out std_logic_vector(3 downto 0);
       array_matrix_valid_out : out std_logic --  A signal to tell the receiver to start reading the data_out_matrix
@@ -26,9 +27,16 @@ end entity;
 
 architecture structual of aw_top is
    signal clk                   : std_logic;
+   signal ws                    : std_logic;
    signal sck_clk               : std_logic;
    signal array_matrix_data_out : matrix_4_16_24_type;
 begin
+
+   ws_1 <= ws;
+   ws_2 <= ws;
+
+   sck_clk_1 <= sck_clk;
+   sck_clk_2 <= sck_clk;
 
    clk_wiz_bd_wrapper : entity work.clk_wiz_bd_wrapper
       port map(
