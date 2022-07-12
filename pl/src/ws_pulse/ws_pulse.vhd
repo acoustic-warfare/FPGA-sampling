@@ -10,7 +10,7 @@ entity ws_pulse is
 end ws_pulse;
 
 architecture rtl of ws_pulse is
-   signal rising_edge_counter : integer range 0 to 513 := 511;
+   signal rising_edge_counter : integer range 0 to 513 := 0;
 begin
 
    ws_pulse_p : process (sck_clk)
@@ -26,7 +26,7 @@ begin
          end if;
          if (reset = '1') then
             ws                  <= '0';
-            rising_edge_counter <= 511;
+            rising_edge_counter <= 0;
          end if;
       end if;
    end process;
