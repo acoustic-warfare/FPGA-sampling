@@ -17,7 +17,8 @@ begin
    begin
       if (rising_edge(sck_clk)) then
          if (rising_edge_counter = 511) then
-            ws <= '1';
+            ws                  <= '1';
+            rising_edge_counter <= rising_edge_counter + 1;
          elsif (rising_edge_counter = 512) then
             rising_edge_counter <= 0;
          else
