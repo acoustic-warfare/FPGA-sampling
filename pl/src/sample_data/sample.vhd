@@ -52,8 +52,8 @@ begin
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
                if ws = '1' then
-                  ws_error <= '0';
-                  state    <= run;
+                  --ws_error <= '0';
+                  state <= run;
                end if;
 
             when run =>
@@ -74,6 +74,11 @@ begin
                -----------------------------------------------------------------------------------------------------------
 
                if counter_samp = 4 then
+
+                  if ws = '1' and counter_mic > 1 then
+                     ws_error <= '1';
+                  end if;
+
                   if counter_1s >= 2 then
                      mic_sample_data_out <= '1' & mic_sample_data_out(23 downto 1);
                   else
