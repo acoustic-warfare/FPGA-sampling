@@ -45,6 +45,7 @@ begin
          clk       => clk,
          sck_clk   => sck_clk
       );
+
    sample_wrapper : entity work.sample_wrapper
       port map(
          clk                    => clk,
