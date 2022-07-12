@@ -105,6 +105,8 @@ alias synth='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/
 # NOTE: run implementation on Vivado porject by writing: implement
 alias implement='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/implement.tcl'
 
+alias gen_all='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/gen_all.tcl'
+
 
 #vivado -notrace -mode tcl -source creator.tcl   
 echo "\nWelcome to Acustic Warfare!"
