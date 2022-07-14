@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use work.matrix_type.all;
 
-entity sample_wrapper is
+entity mic_0_sample_wrapper is
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
@@ -22,9 +22,9 @@ entity sample_wrapper is
       array_mic0_data_out  : out std_logic_vector(31 downto 0)
 
    );
-end sample_wrapper;
+end mic_0_sample_wrapper;
 
-architecture structual of sample_wrapper is
+architecture structual of mic_0_sample_wrapper is
 
    signal mic_sample_data_internal  : matrix_4_24_type;
    signal mic_sample_valid_internal : std_logic_vector(3 downto 0);
