@@ -57,5 +57,9 @@ begin
          array_matrix_data_out  => array_matrix_data_out,
          array_matrix_valid_out => array_matrix_valid_out
       );
-   --and_out <= array_matrix_data_out(0) and array_matrix_data_out(1) and array_matrix_data_out(2) and array_matrix_data_out(3);
+
+      
+
+
+
 end structual;
