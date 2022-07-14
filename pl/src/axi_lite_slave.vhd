@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity myip_v1_0_S00_AXI is
+entity axi_lite_slave is
 	generic (
 		-- Users to add parameters here
 
@@ -81,9 +81,9 @@ entity myip_v1_0_S00_AXI is
     		-- accept the read data and response information.
 		S_AXI_RREADY	: in std_logic
 	);
-end myip_v1_0_S00_AXI;
+end axi_lite_slave;
 
-architecture arch_imp of myip_v1_0_S00_AXI is
+architecture rtl of axi_lite_slave is
 
 	-- AXI4LITE signals
 	signal axi_awaddr	: std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
@@ -356,4 +356,4 @@ begin
 
 	-- User logic ends
 
-end arch_imp;
+end rtl;
