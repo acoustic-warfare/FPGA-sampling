@@ -9,3 +9,17 @@ venv
 vunit_out
 vivado_files
 led_switch.tcl
+.metadata/
+axi*/
+Axi*/
+ip_repo
+.project
+ZC702_hw_platform/ps7_init_gpl.c
+ZC702_hw_platform/ps7_init_gpl.h
+ZC702_hw_platform/ps7_init.c
+ZC702_hw_platform/ps7_init.h
+ZC702_hw_platform/ps7_init.html
+ZC702_hw_platform/ps7_init.tcl
+ZC702_hw_platform/system.hdf
+webtalk/sdk_webtalk.tcl
+webtalk/sdk_webtalk.wdm
