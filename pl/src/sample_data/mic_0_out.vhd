@@ -24,7 +24,7 @@ begin
          if (array_matrix_valid_in) then
             temp_matrix         <= array_matrix_data_in(0);
             array_mic0_data_out <= temp_matrix(0);
-            array_mic0_data_out <= '1';
+            array_mic0_valid_out <= '1';
          end if;
          if (reset = '0') then
             array_mic0_valid_out <= 0;
