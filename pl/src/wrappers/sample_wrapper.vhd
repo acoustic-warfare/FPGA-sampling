@@ -11,8 +11,9 @@ entity sample_wrapper is
    port (
       clk                    : in std_logic;
       reset                  : in std_logic; -- Asynchronous reset, just nu är den inte tajmad
-      ws                     : in std_logic;
+      sck_clk                : in std_logic;
       bit_stream_ary         : in std_logic_vector(3 downto 0);
+      ws                     : inout std_logic;
       ws_error_ary           : out std_logic_vector(3 downto 0) := "0000";
       array_matrix_data_out  : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out : out std_logic
@@ -28,6 +29,12 @@ architecture structual of sample_wrapper is
    signal chain_matrix_valid_internal   : std_logic_vector(3 downto 0);
 
 begin
+   ws_pulse : entity work.ws_pulse
+      port map(
+         sck_clk => sck_clk,
+         reset   => reset,
+         ws      => ws
+      );
    sample_gen : for i in 0 to 3 generate
    begin
       sample_machines : entity work.sample

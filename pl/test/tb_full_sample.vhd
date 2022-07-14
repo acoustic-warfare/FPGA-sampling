@@ -94,16 +94,14 @@ begin
 
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_full_sample_1") then
+         if run("wave") then
 
-            wait for 30000 ns;
+            wait for 3000 ns;
 
-            check(1 = 1, "test_1");
+         elsif run("auto") then
 
-         elsif run("tb_full_sample_2") then
             wait for 110 ns;
 
-            check(1 = 1, "test_1");
          end if;
       end loop;
 

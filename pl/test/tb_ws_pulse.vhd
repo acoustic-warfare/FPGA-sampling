@@ -6,18 +6,18 @@ context vunit_lib.vunit_context;
 
 use work.matrix_type.all;
 
-entity tb_clk_gen is
+entity tb_ws_pulse is
    generic (
       runner_cfg : string
    );
-end tb_clk_gen;
+end tb_ws_pulse;
 
-architecture tb of tb_clk_gen is
+architecture tb of tb_ws_pulse is
    constant C_SCK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
 
    signal sck_clk     : std_logic := '0';
    signal reset       : std_logic;
-   signal ws_pulse    : std_logic;
+   signal ws          : std_logic;
    signal sck_counter : integer := 0; -- counter for the number of fsck_clk cycles
    signal ws_counter  : integer := 0; -- counter for the number of fs_clk cykles
 
@@ -32,11 +32,11 @@ architecture tb of tb_clk_gen is
    end procedure;
 
 begin
-   -- direct instantiation of: clk_gen
-   clk_gen_1 : entity work.clk_gen port map(
-      sck_clk  => sck_clk,
-      ws_pulse => ws_pulse,
-      reset    => reset
+
+   ws_pulse_1 : entity work.ws_pulse port map(
+      sck_clk => sck_clk,
+      ws      => ws,
+      reset   => reset
       );
 
    -- counter for fs_clk cykles
@@ -48,9 +48,9 @@ begin
    end process;
 
    -- counter for fs_clk cykles
-   ws_counter_p : process (ws_pulse)
+   ws_counter_p : process (ws)
    begin
-      if rising_edge(ws_pulse) and reset = '0' then
+      if rising_edge(ws) and reset = '0' then
          ws_counter <= ws_counter + 1;
       end if;
    end process;
@@ -58,10 +58,10 @@ begin
    -- generate clock pulses with a clock period of clk_cykle
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
-   assert_p : process (ws_pulse) -- TODO: more automatic test
+   assert_p : process (ws) -- TODO: more automatic test
    begin
       if auto = '1' then
-         if rising_edge(ws_pulse) then
+         if rising_edge(ws) then
             if ws_counter = 0 then
                sck_counter_start <= sck_counter;
             elsif ws_counter = 1 then
@@ -75,7 +75,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("gtkw") then -- only for use in gktwave
+         if run("wave") then -- only for use in gktwave
 
             reset <= '1';
             clk_wait(5);

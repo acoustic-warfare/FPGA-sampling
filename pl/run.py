@@ -8,7 +8,8 @@ ROOT = Path(__file__).parent
 vu = VUnit.from_argv()
 
 lib = vu.add_library("lib")
-lib.add_source_files(ROOT.glob("*/*.vhd"))
+lib.add_source_files(ROOT.glob("test/**/*.vhd"))
+lib.add_source_files(ROOT.glob("src/**/*.vhd"))
 
 for l in lib.get_test_benches():
    wave = ROOT.joinpath("test", "wave", f"{l.name}.tcl")

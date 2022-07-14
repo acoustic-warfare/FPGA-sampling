@@ -1,4 +1,4 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_clk_gen.gtkw
+#python ../run.py --gtkwave-fmt vcd --gui lib.tb_full_sample.gtkw
 
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"
@@ -10,12 +10,12 @@ for {set i 2} {$i < $nfacts} {incr i} {
 
    switch -glob -- $name {
 
-      tb_clk_gen.reset -
-      tb_clk_gen.sck_clk -
-      tb_clk_gen.sck_count -
-      tb_clk_gen.ws_count -
-      tb_clk_gen.ws_pulse -
-      tb_tb.a* {
+      tb_full_sample.clk -
+      tb_full_sample.reset -
+      tb_full_sample.array_matrix_valid_out -
+      tb_full_sample.chain_matrix_valid_in* -
+      tb_full_sample.data_test* -
+      tb.tb.a* {
          gtkwave::addSignalsFromList "$name"
       }
    }

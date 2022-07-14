@@ -56,15 +56,16 @@ architecture tb of tb_sample_wrapper is
 
 begin
 
-   clk_gen1 : entity work.clk_gen port map (
-      sck_clk  => sck_clk,
-      ws_pulse => ws,
-      reset    => reset
+   ws_pulse1 : entity work.ws_pulse port map (
+      sck_clk => sck_clk,
+      ws      => ws,
+      reset   => reset
       );
 
    sample_wrapper1 : entity work.sample_wrapper port map (
       clk                    => clk,
       reset                  => reset,
+      sck_clk                => sck_clk,
       ws                     => ws,
       bit_stream_ary         => bit_stream_ary,
       array_matrix_data_out  => array_matrix_data_out,
@@ -126,7 +127,7 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_sample_wrapper_1") then -- test 1, only for gktwave
+         if run("wave") then -- test 1, only for gktwave
 
             reset <= '1';
             clk_wait(10);
@@ -134,9 +135,9 @@ begin
             clk_wait(10);
 
             wait for 90000 ns;
-            check(1 = 1, "test_1");
-         elsif run("tb_sample_wrapper_2") then -- test 2, automatic checks after verius intervals
-            check(1 = 1, "test_1");
+
+         elsif run("auto") then -- test 2, automatic checks after verius intervals
+
             wait for 11 ns;
 
          end if;

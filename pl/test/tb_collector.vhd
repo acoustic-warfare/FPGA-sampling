@@ -26,8 +26,9 @@ architecture tb of tb_collector is
    signal data_valid_out_counter : integer := 1;
 
    -- test bitstreams filled with ones and zeroes respectively
-   signal v0_24                                                                                                                                                                                                 : std_logic_vector(23 downto 0) := "000000000000000000000000";
-   signal v1_24                                                                                                                                                                                                 : std_logic_vector(23 downto 0) := "111111111111111111111111";
+   signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
+   signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
+
    signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
 
 begin
@@ -97,11 +98,11 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("tb_collector_1") then
+         if run("wave") then
 
             wait for 8500 ns;
 
-         elsif run("tb_collector_2") then
+         elsif run("auto") then
             -- old tests that need to be updated
             --wait for 3845.1 ns; -- first rise (3845 ns after start)
             --check(data_valid_collector_out = '0', "fail!1 data_valid first rise");
