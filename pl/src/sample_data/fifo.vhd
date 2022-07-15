@@ -29,7 +29,7 @@ end fifo;
 
 architecture rtl of fifo is
 
-type slv_2d is array (natural range <>) of std_logic_vector;
+type slv_2d is array (natural range <>) of std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 signal mic : slv_2d(0 to 63)(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => (others => '0'));
 
 -- FIFOs
