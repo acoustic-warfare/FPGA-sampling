@@ -15,6 +15,7 @@ end mic_0_out;
 
 architecture rtl of mic_0_out is
    signal temp_matrix : matrix_16_24_type;
+   signal zero : std_logic_vector( 31 downto 0) := (others => '0');
 begin
 
    process (clk)
@@ -23,7 +24,8 @@ begin
          array_mic0_data_out <= '0';
          if (array_matrix_valid_in) then
             temp_matrix         <= array_matrix_data_in(0);
-            array_mic0_data_out <= temp_matrix(0) & "00000000";
+            array_mic0_data_out(23 downto 0) <= temp_matrix(0);
+            array_mic0_data_out(31 downto 24) <= (others =>'0');
             array_mic0_valid_out <= '1';
          end if;
          if (reset = '0') then
