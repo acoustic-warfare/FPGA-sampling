@@ -23,3 +23,11 @@ ZC702_hw_platform/ps7_init.tcl
 ZC702_hw_platform/system.hdf
 webtalk/sdk_webtalk.tcl
 webtalk/sdk_webtalk.wdm
+project_1/project_1.xpr
+project_1/project_1.cache/wt/gui_handlers.wdf
+project_1/project_1.cache/wt/java_command_handlers.wdf
+project_1/project_1.cache/wt/project.wpc
+project_1/project_1.cache/wt/webtalk_pa.xml
+project_1/project_1.hw/project_1.lpr
+ps/client
+ps/server
