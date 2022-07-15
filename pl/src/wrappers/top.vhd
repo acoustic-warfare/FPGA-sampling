@@ -44,8 +44,9 @@ begin
 
    bd_zynq_wrapper : entity work.bd_zynq_wrapper
       port map(
-         clk                 => clk,
-         array_mic0_data_in  => array_mic0_data_out,
-         array_mic0_valid_in => array_mic0_valid_out
+         clk_0                 => clk,
+         reset_0               => reset
+         array_mic0_data_in_0  => array_mic0_data_out,
+         array_mic0_valid_in_0 => array_mic0_valid_out
       );
 end structual;
