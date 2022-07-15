@@ -96,15 +96,7 @@ alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
 # NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
 alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
 
-# NOTE: create Vivado porject by writing: create
-alias create='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/create.tcl'
-
-# NOTE: synthesise Vivado porject by writing: synth
-alias synth='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/synth.tcl'
-
-# NOTE: run implementation on Vivado porject by writing: implement
-alias implement='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/implement.tcl'
-
+# NOTE: creates and configs the vivado project, also runs synth and implementation
 alias gen_all='vivado -notrace -mode tcl -source $(git rev-parse --show-toplevel)/pl/scripts/gen_all.tcl'
 
 
