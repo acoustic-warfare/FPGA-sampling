@@ -16,7 +16,7 @@ entity axi_lite_slave is
    );
    port (
       -- Users to add ports here
-      mic0 : in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
+      mic0_in : in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
       -- User ports ends
       -- Do not modify the ports beyond this line
 
@@ -357,7 +357,7 @@ begin
    process (S_AXI_ACLK)
    begin
 
-      mic(0) <= mic0;
+      mic(0) <= mic0_in;
    end process;
    -- User logic ends
 
