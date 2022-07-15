@@ -18,15 +18,23 @@ set_property target_language VHDL [current_project]
 
 # Add sources to the project
 
-add_files [file join "$ROOT" src wrappers aw_top.vhd]
-add_files [file join "$ROOT" src wrappers sample_wrapper.vhd]
+#add_files [file join "$ROOT" src wrappers aw_top.vhd]
+#add_files [file join "$ROOT" src wrappers sample_wrapper.vhd]
+
+add_files [file join "$ROOT" src wrappers mic_0_top.vhd]
+add_files [file join "$ROOT" src wrappers mic_0_sample_wrapper.vhd]
+add_files [file join "$ROOT" src wrappers top.vhd]
+
 
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data full_sample.vhd]
 add_files [file join "$ROOT" src sample_data sample.vhd]
+add_files [file join "$ROOT" src sample_data fifo.vhd]
+add_files [file join "$ROOT" src sample_data mic_0_out.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
+add_files [file join "$ROOT" src axi_lite_slave.vhd]
 add_files [file join "$ROOT" src matrix_package.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
@@ -85,12 +93,15 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 
 update_compile_order -fileset sources_1
 
+
+
+
 # run synthesis
-launch_runs synth_1
-wait_on_run synth_1
+#launch_runs synth_1
+#wait_on_run synth_1
 
 # run implementation
-launch_runs impl_1 -to_step write_bitstream
-wait_on_run impl_1
+#launch_runs impl_1 -to_step write_bitstream
+#wait_on_run impl_1
 
 start_gui
