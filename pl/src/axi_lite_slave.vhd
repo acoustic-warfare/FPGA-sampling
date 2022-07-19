@@ -1,10 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+--use work.matrix_type.all;
 
 entity axi_lite_slave is
-	generic (
-		-- Users to add parameters here
+   generic (
+      -- Users to add parameters here
 
       -- User parameters ends
       -- Do not modify the parameters beyond this line
@@ -12,78 +13,72 @@ entity axi_lite_slave is
       -- Width of S_AXI data bus
       C_S_AXI_DATA_WIDTH : integer := 32;
       -- Width of S_AXI address bus
-      C_S_AXI_ADDR_WIDTH : integer := 9
+      C_S_AXI_ADDR_WIDTH : integer := 32
    );
    port (
-      -- Users to add ports here
-      mic0_in : in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
-      -- User ports ends
-      -- Do not modify the ports beyond this line
+      --mic_reg_in : in matrix_64_32_type;
 
-		-- User ports ends
-		-- Do not modify the ports beyond this line
-
-		-- Global Clock Signal
-		S_AXI_ACLK	: in std_logic;
-		-- Global Reset Signal. This Signal is Active LOW
-		S_AXI_ARESETN	: in std_logic;
-		-- Write address (issued by master, acceped by Slave)
-		S_AXI_AWADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-		-- Write channel Protection type. This signal indicates the
-    		-- privilege and security level of the transaction, and whether
-    		-- the transaction is a data access or an instruction access.
-		S_AXI_AWPROT	: in std_logic_vector(2 downto 0);
-		-- Write address valid. This signal indicates that the master signaling
-    		-- valid write address and control information.
-		S_AXI_AWVALID	: in std_logic;
-		-- Write address ready. This signal indicates that the slave is ready
-    		-- to accept an address and associated control signals.
-		S_AXI_AWREADY	: out std_logic;
-		-- Write data (issued by master, acceped by Slave) 
-		S_AXI_WDATA	: in std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-		-- Write strobes. This signal indicates which byte lanes hold
-    		-- valid data. There is one write strobe bit for each eight
-    		-- bits of the write data bus.    
-		S_AXI_WSTRB	: in std_logic_vector((C_S_AXI_DATA_WIDTH/8)-1 downto 0);
-		-- Write valid. This signal indicates that valid write
-    		-- data and strobes are available.
-		S_AXI_WVALID	: in std_logic;
-		-- Write ready. This signal indicates that the slave
-    		-- can accept the write data.
-		S_AXI_WREADY	: out std_logic;
-		-- Write response. This signal indicates the status
-    		-- of the write transaction.
-		S_AXI_BRESP	: out std_logic_vector(1 downto 0);
-		-- Write response valid. This signal indicates that the channel
-    		-- is signaling a valid write response.
-		S_AXI_BVALID	: out std_logic;
-		-- Response ready. This signal indicates that the master
-    		-- can accept a write response.
-		S_AXI_BREADY	: in std_logic;
-		-- Read address (issued by master, acceped by Slave)
-		S_AXI_ARADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-		-- Protection type. This signal indicates the privilege
-    		-- and security level of the transaction, and whether the
-    		-- transaction is a data access or an instruction access.
-		S_AXI_ARPROT	: in std_logic_vector(2 downto 0);
-		-- Read address valid. This signal indicates that the channel
-    		-- is signaling valid read address and control information.
-		S_AXI_ARVALID	: in std_logic;
-		-- Read address ready. This signal indicates that the slave is
-    		-- ready to accept an address and associated control signals.
-		S_AXI_ARREADY	: out std_logic;
-		-- Read data (issued by slave)
-		S_AXI_RDATA	: out std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-		-- Read response. This signal indicates the status of the
-    		-- read transfer.
-		S_AXI_RRESP	: out std_logic_vector(1 downto 0);
-		-- Read valid. This signal indicates that the channel is
-    		-- signaling the required read data.
-		S_AXI_RVALID	: out std_logic;
-		-- Read ready. This signal indicates that the master can
-    		-- accept the read data and response information.
-		S_AXI_RREADY	: in std_logic
-	);
+      -- Global Clock Signal
+      S_AXI_ACLK : in std_logic;
+      -- Global Reset Signal. This Signal is Active LOW
+      S_AXI_ARESETN : in std_logic;
+      -- Write address (issued by master, acceped by Slave)
+      S_AXI_AWADDR : in std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+      -- Write channel Protection type. This signal indicates the
+      -- privilege and security level of the transaction, and whether
+      -- the transaction is a data access or an instruction access.
+      S_AXI_AWPROT : in std_logic_vector(2 downto 0);
+      -- Write address valid. This signal indicates that the master signaling
+      -- valid write address and control information.
+      S_AXI_AWVALID : in std_logic;
+      -- Write address ready. This signal indicates that the slave is ready
+      -- to accept an address and associated control signals.
+      S_AXI_AWREADY : out std_logic;
+      -- Write data (issued by master, acceped by Slave) 
+      S_AXI_WDATA : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      -- Write strobes. This signal indicates which byte lanes hold
+      -- valid data. There is one write strobe bit for each eight
+      -- bits of the write data bus.    
+      S_AXI_WSTRB : in std_logic_vector((C_S_AXI_DATA_WIDTH/8) - 1 downto 0);
+      -- Write valid. This signal indicates that valid write
+      -- data and strobes are available.
+      S_AXI_WVALID : in std_logic;
+      -- Write ready. This signal indicates that the slave
+      -- can accept the write data.
+      S_AXI_WREADY : out std_logic;
+      -- Write response. This signal indicates the status
+      -- of the write transaction.
+      S_AXI_BRESP : out std_logic_vector(1 downto 0);
+      -- Write response valid. This signal indicates that the channel
+      -- is signaling a valid write response.
+      S_AXI_BVALID : out std_logic;
+      -- Response ready. This signal indicates that the master
+      -- can accept a write response.
+      S_AXI_BREADY : in std_logic;
+      -- Read address (issued by master, acceped by Slave)
+      S_AXI_ARADDR : in std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+      -- Protection type. This signal indicates the privilege
+      -- and security level of the transaction, and whether the
+      -- transaction is a data access or an instruction access.
+      S_AXI_ARPROT : in std_logic_vector(2 downto 0);
+      -- Read address valid. This signal indicates that the channel
+      -- is signaling valid read address and control information.
+      S_AXI_ARVALID : in std_logic;
+      -- Read address ready. This signal indicates that the slave is
+      -- ready to accept an address and associated control signals.
+      S_AXI_ARREADY : out std_logic;
+      -- Read data (issued by slave)
+      S_AXI_RDATA : out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      -- Read response. This signal indicates the status of the
+      -- read transfer.
+      S_AXI_RRESP : out std_logic_vector(1 downto 0);
+      -- Read valid. This signal indicates that the channel is
+      -- signaling the required read data.
+      S_AXI_RVALID : out std_logic;
+      -- Read ready. This signal indicates that the master can
+      -- accept the read data and response information.
+      S_AXI_RREADY : in std_logic
+   );
 end axi_lite_slave;
 
 architecture rtl of axi_lite_slave is
@@ -112,7 +107,7 @@ architecture rtl of axi_lite_slave is
    ---- Signals for user logic register space
    --------------------------------------------------
    type slv_2d is array (natural range <>) of std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
-   signal mic          : slv_2d(0 to 63) := (others => (others => '0'));
+   signal slv_reg      : slv_2d(0 to 63) := (others => (others => '0'));
    signal slv_reg_rden : std_logic;
    signal slv_reg_wren : std_logic;
    signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
@@ -210,33 +205,33 @@ begin
    -- and the slave is ready to accept the write address and write data.
    slv_reg_wren <= axi_wready and S_AXI_WVALID and axi_awready and S_AXI_AWVALID;
 
- ---  process (S_AXI_ACLK)
- ---     -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
- ---     variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
- ---  begin
- ---     if rising_edge(S_AXI_ACLK) then
- ---        if S_AXI_ARESETN = '0' then
- ---           mic <= (others => (others => '0'));
- ---        else
- ---           loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
----
- ---           if (slv_reg_wren = '1') then
- ---              case loc_addr is
- ---                 when 0 to 63 =>
- ---                    for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
- ---                       if (S_AXI_WSTRB(byte_index) = '1') then
- ---                          -- Respective byte enables are asserted as per write strobes
- ---                          -- slave registor 0
- ---                          mic(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
- ---                       end if;
- ---                    end loop;
- ---                 when others =>
- ---                    mic <= mic;
- ---              end case;
- ---           end if;
- ---        end if;
- ---     end if;
- ---  end process;
+   process (S_AXI_ACLK)
+      -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
+      variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
+   begin
+      if rising_edge(S_AXI_ACLK) then
+         if S_AXI_ARESETN = '0' then
+            slv_reg <= (others => (others => '0'));
+         else
+            loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+
+            if (slv_reg_wren = '1') then
+               case loc_addr is
+                  when 0 to 63 =>
+                     for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
+                        if (S_AXI_WSTRB(byte_index) = '1') then
+                           -- Respective byte enables are asserted as per write strobes
+                           -- slave registor 0
+                           slv_reg(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
+                        end if;
+                     end loop;
+                  when others =>
+                     slv_reg <= slv_reg;
+               end case;
+            end if;
+         end if;
+      end if;
+   end process;
 
    -- Implement write response logic generation
    -- The write response and response valid signals are asserted by the slave
@@ -328,7 +323,7 @@ begin
       loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
       case loc_addr is
          when 0 to 63 =>
-            reg_data_out <= mic(loc_addr);
+            reg_data_out <= slv_reg(loc_addr);
 
          when others             =>
             reg_data_out <= (others => '0');
@@ -352,13 +347,10 @@ begin
          end if;
       end if;
    end process;
-   -- Add user logic here
 
-   process (S_AXI_ACLK)
-   begin
-
-      mic(0) <= mic0_in;
-   end process;
-   -- User logic ends
+   --process (S_AXI_ACLK)
+   --begin
+   --   slv_reg <= mic_reg_in;
+   --end process;
 
 end rtl;
