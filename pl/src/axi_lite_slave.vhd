@@ -17,6 +17,7 @@ entity axi_lite_slave is
    port (
       -- Users to add ports here
       mic0_in : in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
+      rd_en    : out std_logic;
       -- User ports ends
       -- Do not modify the ports beyond this line
 
@@ -39,11 +40,11 @@ entity axi_lite_slave is
 		-- Write address ready. This signal indicates that the slave is ready
     		-- to accept an address and associated control signals.
 		S_AXI_AWREADY	: out std_logic;
-		-- Write data (issued by master, acceped by Slave) 
+		-- Write data (issued by master, acceped by Slave)
 		S_AXI_WDATA	: in std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
 		-- Write strobes. This signal indicates which byte lanes hold
     		-- valid data. There is one write strobe bit for each eight
-    		-- bits of the write data bus.    
+    		-- bits of the write data bus.
 		S_AXI_WSTRB	: in std_logic_vector((C_S_AXI_DATA_WIDTH/8)-1 downto 0);
 		-- Write valid. This signal indicates that valid write
     		-- data and strobes are available.
@@ -324,12 +325,13 @@ begin
       -- variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
       variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
    begin
-      -- Address decoding for reading registers
-      loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+      -- Address decoding for reading registers ----------------------------------------------------------------------------------------------------------------------------------
+      loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));   --- might be problems here later
+      rd_en <= (others => '0');
       case loc_addr is
          when 0 to 63 =>
             reg_data_out <= mic(loc_addr);
-
+            rd_en(loc_addr) <= 1;
          when others             =>
             reg_data_out <= (others => '0');
       end case;
