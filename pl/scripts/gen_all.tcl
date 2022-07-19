@@ -24,7 +24,7 @@ add_files [file join "$ROOT" src wrappers aw_top.vhd]
 #add_files [file join "$ROOT" src wrappers axi_zynq_wrapper.vhd]
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
 add_files [file join "$ROOT" src demo_count.vhd]
-add_files [file join "$ROOT" src rd_en.vhd]
+add_files [file join "$ROOT" src test_rd_en.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 
