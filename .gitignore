@@ -527,3 +527,14 @@ git_hub_fifo/git_hub_fifo.sim/sim_1/behav/xsim/xsim.dir/xil_defaultlib/module_fi
 git_hub_fifo/git_hub_fifo.sim/sim_1/behav/xsim/xsim.dir/xil_defaultlib/xil_defaultlib.rlx
 git_hub_fifo/git_hub_fifo.srcs/sim_1/new/module_fifo_regs_no_flags_tb.vhd
 git_hub_fifo/git_hub_fifo.srcs/sources_1/new/module_fifo_regs_no_flags.vhd
+fifo_gen/fifo_gen.runs/.jobs/vrs_config_4.xml
+fifo_gen/fifo_gen.runs/impl_1/.write_bitstream.begin.rst
+fifo_gen/fifo_gen.runs/impl_1/.write_bitstream.end.rst
+fifo_gen/fifo_gen.runs/impl_1/top.bit
+fifo_gen/fifo_gen.runs/impl_1/top.sysdef
+fifo_gen/fifo_gen.runs/impl_1/usage_statistics_webtalk.html
+fifo_gen/fifo_gen.runs/impl_1/usage_statistics_webtalk.xml
+fifo_gen/fifo_gen.runs/impl_1/write_bitstream.pb
+fifo_gen/fifo_gen.srcs/constrs_1/new/master.xdc
+fifo_gen/fifo_gen.srcs/sources_1/bd/design_2/design_2.bd
+fifo_gen/fifo_gen.srcs/sources_1/new/fifo_rtl.vhd
