@@ -17,6 +17,7 @@ entity axi_lite_slave is
    );
    port (
       --mic_reg_in : in matrix_64_32_type;
+      mic_reg_in : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 
       -- Global Clock Signal
       S_AXI_ACLK : in std_logic;
@@ -205,33 +206,33 @@ begin
    -- and the slave is ready to accept the write address and write data.
    slv_reg_wren <= axi_wready and S_AXI_WVALID and axi_awready and S_AXI_AWVALID;
 
-   process (S_AXI_ACLK)
-      -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
-      variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
-   begin
-      if rising_edge(S_AXI_ACLK) then
-         if S_AXI_ARESETN = '0' then
-            slv_reg <= (others => (others => '0'));
-         else
-            loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
-
-            if (slv_reg_wren = '1') then
-               case loc_addr is
-                  when 0 to 63 =>
-                     for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
-                        if (S_AXI_WSTRB(byte_index) = '1') then
-                           -- Respective byte enables are asserted as per write strobes
-                           -- slave registor 0
-                           slv_reg(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
-                        end if;
-                     end loop;
-                  when others =>
-                     slv_reg <= slv_reg;
-               end case;
-            end if;
-         end if;
-      end if;
-   end process;
+   --process (S_AXI_ACLK)
+   --   -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
+   --   variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
+   --begin
+   --   if rising_edge(S_AXI_ACLK) then
+   --      if S_AXI_ARESETN = '0' then
+   --         slv_reg <= (others => (others => '0'));
+   --      else
+   --         loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+   --
+   --         if (slv_reg_wren = '1') then
+   --            case loc_addr is
+   --               when 0 to 63 =>
+   --                  for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
+   --                     if (S_AXI_WSTRB(byte_index) = '1') then
+   --                        -- Respective byte enables are asserted as per write strobes
+   --                        -- slave registor 0
+   --                        slv_reg(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
+   --                     end if;
+   --                  end loop;
+   --               when others =>
+   --                  slv_reg <= slv_reg;
+   --            end case;
+   --         end if;
+   --      end if;
+   --   end if;
+   --end process;
 
    -- Implement write response logic generation
    -- The write response and response valid signals are asserted by the slave
@@ -317,10 +318,11 @@ begin
    process (S_AXI_ACLK, S_AXI_ARESETN, S_AXI_AWADDR, S_AXI_AWPROT, S_AXI_AWVALID, S_AXI_WDATA, S_AXI_WSTRB,
       S_AXI_WVALID, S_AXI_BREADY, S_AXI_ARADDR, S_AXI_ARPROT, S_AXI_ARVALID, S_AXI_RREADY)
       -- variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
+
       variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
    begin
       -- Address decoding for reading registers
-      loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+      loc_addr := to_integer(unsigned(axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
       case loc_addr is
          when 0 to 63 =>
             reg_data_out <= slv_reg(loc_addr);
@@ -348,9 +350,10 @@ begin
       end if;
    end process;
 
-   --process (S_AXI_ACLK)
-   --begin
-   --   slv_reg <= mic_reg_in;
-   --end process;
+   process (S_AXI_ACLK)
+   begin
+      slv_reg    <= (others => (others => '0'));
+      slv_reg(0) <= mic_reg_in;
+   end process;
 
 end rtl;
