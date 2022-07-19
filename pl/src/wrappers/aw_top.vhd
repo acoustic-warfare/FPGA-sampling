@@ -29,15 +29,15 @@ begin
          data  => data
       );
 
-   axi_zynq_wrapper : entity work.axi_zynq_wrapper
+   axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
-         clk_125_0 => clk,
-         clk_25_0  => sck_clk,
-         clk_axi_0 => clk_axi,
-         reset_rtl => reset_rtl,
-         rst_axi   => rst_axi,
-         sys_clock => sys_clock,
-         data      => data
+         clk_125_0    => clk,
+         clk_25_0     => sck_clk,
+         clk_axi_0    => clk_axi,
+         reset_rtl    => reset_rtl,
+         rst_axi      => rst_axi,
+         sys_clock    => sys_clock,
+         mic_reg_in_0 => data
       );
 
 end structual;
