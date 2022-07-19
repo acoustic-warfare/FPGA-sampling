@@ -30,7 +30,9 @@ entity axi_zynq_wrapper is
       reset_rtl         : in std_logic;
       rst_axi           : out std_logic_vector (0 to 0);
       sys_clock         : in std_logic;
-      data              : in std_logic_vector(31 downto 0)
+      data              : in std_logic_vector(31 downto 0);
+      rd_en : out STD_LOGIC_VECTOR ( 63 downto 0 )
+
    );
 end entity;
 
@@ -154,7 +156,7 @@ begin
       port map(
          -- Users to add ports here
          --mic0_in => mic0_in,
-         -- 
+         --
          mic_reg_in    => data,
          s_axi_aclk    => clk_axi_0,
          s_axi_aresetn => rst_axi(0),
