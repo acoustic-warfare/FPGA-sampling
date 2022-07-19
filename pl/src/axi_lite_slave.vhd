@@ -19,6 +19,9 @@ entity axi_lite_slave is
       --mic_reg_in : in matrix_64_32_type;
       mic_reg_in : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 
+      --read enable
+      rd_en      :  out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+
       -- Global Clock Signal
       S_AXI_ACLK : in std_logic;
       -- Global Reset Signal. This Signal is Active LOW
@@ -35,11 +38,11 @@ entity axi_lite_slave is
       -- Write address ready. This signal indicates that the slave is ready
       -- to accept an address and associated control signals.
       S_AXI_AWREADY : out std_logic;
-      -- Write data (issued by master, acceped by Slave) 
+      -- Write data (issued by master, acceped by Slave)
       S_AXI_WDATA : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
       -- Write strobes. This signal indicates which byte lanes hold
       -- valid data. There is one write strobe bit for each eight
-      -- bits of the write data bus.    
+      -- bits of the write data bus.
       S_AXI_WSTRB : in std_logic_vector((C_S_AXI_DATA_WIDTH/8) - 1 downto 0);
       -- Write valid. This signal indicates that valid write
       -- data and strobes are available.
@@ -323,10 +326,13 @@ begin
    begin
       -- Address decoding for reading registers
       loc_addr := to_integer(unsigned(axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+      rd_en <= (others => '0');
+
       case loc_addr is
          when 0 to 63 =>
-            reg_data_out <= slv_reg(loc_addr);
 
+            reg_data_out <= slv_reg(loc_addr);
+            rd_en(loc_addr) <= 1;
          when others             =>
             reg_data_out <= (others => '0');
       end case;
@@ -358,7 +364,7 @@ begin
       slv_reg(2) <= x"DEADBEEF";
       slv_reg(3) <= x"BEEFDEAD";
       slv_reg(4) <= x"BEEFBEEF";
-      slv_reg(5) <= x"DEADDEAD";      
+      slv_reg(5) <= x"DEADDEAD";
    end process;
 
 end rtl;
