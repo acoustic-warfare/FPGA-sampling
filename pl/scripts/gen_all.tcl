@@ -8,7 +8,7 @@ set ROOT [file normalize [file join [file dirname [info script]] .. ]]
 set outputdir [file join "$ROOT" vivado_files]
 file mkdir $outputdir
 
-set top_module [file join "$ROOT" src wrappers axi_zynq_wrapper.vhd]
+set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
 # create project and set project name
 create_project acoustic_warfare $outputdir -force
@@ -20,8 +20,10 @@ set_property board_part digilentinc.com:zybo-z7-10:part0:1.1 [current_project]
 set_property target_language VHDL [current_project]
 
 # Add sources to the project
-add_files [file join "$ROOT" src wrappers axi_zynq_wrapper.vhd]
+#add_files [file join "$ROOT" src wrappers axi_zynq_wrapper.vhd]
+add_files [file join "$ROOT" src wrappers aw_top.vhd]
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
+add_files [file join "$ROOT" src demo_count.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 
@@ -42,11 +44,11 @@ set_property top $top_module [current_fileset]
 update_compile_order -fileset sources_1
 
 # run synthesis
-launch_runs synth_1
-wait_on_run synth_1
+#launch_runs synth_1
+#wait_on_run synth_1
 
 # run implementation
-launch_runs impl_1 -to_step write_bitstream
-wait_on_run impl_1
+#launch_runs impl_1 -to_step write_bitstream
+#wait_on_run impl_1
 
 start_gui
