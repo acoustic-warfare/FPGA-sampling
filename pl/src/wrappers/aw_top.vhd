@@ -5,7 +5,12 @@ entity aw_top is
    port (
       sys_clock : in std_logic;
       reset_rtl : in std_logic;
-      reset     : in std_logic
+      reset     : in std_logic;
+     --
+      led1 : out std_logic;
+      led2 : out std_logic;
+      resetlamp1 : in std_logic;
+      resetlamp2 : in std_logic
       --bit_stream_ary : in std_logic_vector(3 downto 0);
       --sck_clk_1      : out std_logic;
       --sck_clk_2      : out std_logic;
@@ -15,12 +20,14 @@ entity aw_top is
    );
 end entity;
 
+
 architecture structual of aw_top is
    signal rst_axi : std_logic_vector (0 to 0);
    signal clk     : std_logic;
    signal sck_clk : std_logic;
    signal clk_axi : std_logic;
    signal data    : std_logic_vector(31 downto 0);
+   signal rd_en   : std_logic_vector(63 downto 0);
 begin
    demo_count : entity work.demo_count
       port map(
@@ -37,7 +44,18 @@ begin
          reset_rtl    => reset_rtl,
          rst_axi      => rst_axi,
          sys_clock    => sys_clock,
-         mic_reg_in_0 => data
+         mic_reg_in_0 => data,
+         rd_en_0 => rd_en
       );
+
+      rd_en_test : entity work.test_rd_en
+        port map(
+                 clk => clk,
+                 led1 => led1,
+                 led2 => led2,
+                 rd_en => rd_en,
+                 resetlamp1 => resetlamp1,
+                 resetlamp2 => resetlamp2
+                 );
 
 end structual;

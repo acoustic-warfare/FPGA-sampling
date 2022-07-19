@@ -20,7 +20,7 @@ entity axi_lite_slave is
       mic_reg_in : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
 
       --read enable
-      rd_en      :  out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      rd_en     :  out std_logic_vector(63 downto 0);
 
       -- Global Clock Signal
       S_AXI_ACLK : in std_logic;
@@ -332,7 +332,7 @@ begin
          when 0 to 63 =>
 
             reg_data_out <= slv_reg(loc_addr);
-            rd_en(loc_addr) <= 1;
+            rd_en(loc_addr) <= '1';
          when others             =>
             reg_data_out <= (others => '0');
       end case;
