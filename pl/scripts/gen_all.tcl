@@ -43,9 +43,8 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {Master "/processing_s
 
 startgroup
 make_bd_pins_external  [get_bd_pins axi_lite_slave_0/mic_reg_in]
+make_bd_pins_external  [get_bd_pins axi_lite_slave_0/rd_en]
 endgroup
-
-set_property file_type {VHDL 2008} [ get_files *axi_lite_slave.vhd]
 
 #make_wrapper -files [get_files {clk_wiz_bd.bd}] -top
 make_wrapper -inst_template [ get_files [get_bd_designs].bd ]
