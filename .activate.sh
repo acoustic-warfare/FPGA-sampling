@@ -93,7 +93,7 @@ alias clean="git clean -xdie $VENV_NAME"
 
 alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py'
 
-# NOTE: run gtkwave tests by writing: gtkwave "*tb_name.gtkw*"
+# NOTE: run gtkwave tests by writing: gtkwave "*tb_name.wave"
 alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
 
 # NOTE: creates and configs the vivado project, also runs synth and implementation

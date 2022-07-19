@@ -29,7 +29,8 @@ entity axi_zynq_wrapper is
       clk_axi_0         : out std_logic;
       reset_rtl         : in std_logic;
       rst_axi           : out std_logic_vector (0 to 0);
-      sys_clock         : in std_logic
+      sys_clock         : in std_logic;
+      data              : in std_logic_vector(31 downto 0)
    );
 end entity;
 
@@ -141,7 +142,7 @@ begin
          clk_25_0          => clk_25_0,
          clk_axi_0         => clk_axi_0,
          reset_rtl         => reset_rtl,
-         rst_axi           => rst_axi, -- kanske behöver vara intärn
+         rst_axi           => rst_axi,
          sys_clock         => sys_clock
       );
 
@@ -154,6 +155,7 @@ begin
          -- Users to add ports here
          --mic0_in => mic0_in,
          -- 
+         mic_reg_in    => data,
          s_axi_aclk    => clk_axi_0,
          s_axi_aresetn => rst_axi(0),
          s_axi_awaddr  => M00_AXI_0_awaddr,

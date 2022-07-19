@@ -354,6 +354,11 @@ begin
    begin
       slv_reg    <= (others => (others => '0'));
       slv_reg(0) <= mic_reg_in;
+      slv_reg(1) <= (others => '1');
+      slv_reg(2) <= x"DEADBEEF";
+      slv_reg(3) <= x"BEEFDEAD";
+      slv_reg(4) <= x"BEEFBEEF";
+      slv_reg(5) <= x"DEADDEAD";      
    end process;
 
 end rtl;
