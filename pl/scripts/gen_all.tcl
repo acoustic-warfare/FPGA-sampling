@@ -15,7 +15,7 @@ create_project acoustic_warfare $outputdir -force
 ##open_project [file join "$ROOT" vivado_files acoustic_warfare.xpr]
 
 # Change the board_part to your board
-set_property board_part digilentinc.com:zybo-z7-10:part0:1.1 [current_project]
+set_property board_part digilentinc.com:zybo-z7-20:part0:1.1 [current_project]
 
 set_property target_language VHDL [current_project]
 
@@ -24,6 +24,7 @@ set_property target_language VHDL [current_project]
 add_files [file join "$ROOT" src wrappers aw_top.vhd]
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
 add_files [file join "$ROOT" src demo_count.vhd]
+add_files [file join "$ROOT" src rd_en.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 
