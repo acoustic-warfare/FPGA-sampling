@@ -49,8 +49,8 @@ set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
 add_files [file join "$ROOT" src wrappers aw_top.vhd]
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
+add_files [file join "$ROOT" src rd_en_pulse.vhd]
 add_files [file join "$ROOT" src demo_count.vhd]
-add_files [file join "$ROOT" src test_rd_en.vhd]
 
 
 
