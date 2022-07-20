@@ -6,14 +6,13 @@ entity aw_top is
       sys_clock : in std_logic;
       reset_rtl : in std_logic;
       reset     : in std_logic;
-     --
-      led1 : out std_logic;
-      led2 : out std_logic;
-      resetlamp1 : in std_logic;
-      resetlamp2 : in std_logic;
-      rst_0      : in std_logic;
+
       full       : out std_logic;
-      empty       : out std_logic
+      empty       : out std_logic;
+      almost_full : out std_logic;
+      almost_empty : out std_logic
+
+
 
       --bit_stream_ary : in std_logic_vector(3 downto 0);
       --sck_clk_1      : out std_logic;
@@ -32,19 +31,36 @@ architecture structual of aw_top is
    signal clk_axi : std_logic;
    signal data    : std_logic_vector(31 downto 0);
    signal internal_rd_en   : std_logic_vector(63 downto 0);
+  -- signal almost_full : std_logic;
 
    signal wr_en : STD_LOGIC;      --------------------------for fifo
    --signal rst_0   : STD_LOGIC;
    signal rd_en_1 :  STD_LOGIC;
-   signal din_0   :  STD_LOGIC_VECTOR ( 31 downto 0 );
+   signal din_0   :  STD_LOGIC_VECTOR ( 31 downto 0 );  -- tmp for data from demo_count
 begin
    demo_count : entity work.demo_count
       port map(
          clk   => clk,
          reset => reset,
-         data  => data,
+         data  => din_0,
          wr_en => wr_en
       );
+
+    fifo_gen : entity work.fifo_bd_wrapper
+        port map(
+              FIFO_WRITE_full =>  full,
+              FIFO_READ_empty  => empty,
+              FIFO_WRITE_almost_full => almost_full,
+              FIFO_READ_almost_empty => almost_empty,
+              FIFO_WRITE_wr_data => din_0,      --data in
+              FIFO_WRITE_wr_en  => wr_en,
+              FIFO_READ_rd_en => --- from pulse
+              FIFO_READ_rd_data => data,           --data out
+              rd_clk => sck_clk,
+              wr_clk => clk
+              reset =>
+             );
+
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
@@ -56,14 +72,20 @@ begin
          sys_clock    => sys_clock,
          rd_en_0 => internal_rd_en,
          rd_en_1 => internal_rd_en(0),
-         ---------------------------fifo
-         wr_en_0 => wr_en,
-         din_0 => data,
-         full_0 => full,
-         empty_0 => empty,
-         rst_0 => rst_0
+         mic_reg_in => data
 
       );
+
+    axi_zynq_wrapper : entity work."pulse"
+            port map(
+
+
+
+
+            );
+
+
+
 
       rd_en_test : entity work.test_rd_en
         port map(
