@@ -53,7 +53,7 @@ begin
             bit_stream           => bit_stream_ary(i),
             mic_sample_data_out  => mic_sample_data_internal(i),
             mic_sample_valid_out => mic_sample_valid_internal(i),
-            ws_error             => ws_error_ary(i)
+           -- ws_error             => ws_error_ary(i)
          );
    end generate sample_gen;
 
