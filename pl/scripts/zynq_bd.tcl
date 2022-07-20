@@ -226,20 +226,20 @@ proc create_root_design { parentCell } {
   set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 
   # Create ports
-  set clk_125_0 [ create_bd_port -dir O -type clk clk_125_0 ]
-  set_property -dict [ list \
-   CONFIG.FREQ_HZ {125000000} \
- ] $clk_125_0
-  set clk_25_0 [ create_bd_port -dir O -type clk clk_25_0 ]
+  set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
   set_property -dict [ list \
    CONFIG.FREQ_HZ {25000000} \
- ] $clk_25_0
-  set clk_axi_0 [ create_bd_port -dir O -type clk clk_axi_0 ]
+ ] $clk_25
+  set clk_125 [ create_bd_port -dir O -type clk clk_125 ]
   set_property -dict [ list \
    CONFIG.FREQ_HZ {125000000} \
- ] $clk_axi_0
-  set mic_reg_in_0 [ create_bd_port -dir I -from 31 -to 0 mic_reg_in_0 ]
-  set rd_en_0 [ create_bd_port -dir O -from 63 -to 0 rd_en_0 ]
+ ] $clk_125
+  set clk_axi [ create_bd_port -dir O -type clk clk_axi ]
+  set_property -dict [ list \
+   CONFIG.FREQ_HZ {125000000} \
+ ] $clk_axi
+  set mic_reg_in [ create_bd_port -dir I -from 31 -to 0 mic_reg_in ]
+  set rd_en [ create_bd_port -dir O -from 63 -to 0 rd_en ]
   set reset_rtl [ create_bd_port -dir I -type rst reset_rtl ]
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_HIGH} \
@@ -784,11 +784,11 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins processing_system7_0/M_AXI_GP0]
 
   # Create port connections
-  connect_bd_net -net axi_lite_slave_0_rd_en [get_bd_ports rd_en_0] [get_bd_pins axi_lite_slave_0/rd_en]
-  connect_bd_net -net clk_wiz_0_clk_25 [get_bd_ports clk_25_0] [get_bd_pins clk_wiz_0/clk_25]
-  connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125_0] [get_bd_pins clk_wiz_0/clk_125]
-  connect_bd_net -net clk_wiz_0_clk_axi [get_bd_ports clk_axi_0] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_lite_slave_0/S_AXI_ACLK] [get_bd_pins clk_wiz_0/clk_axi] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins rst_clk_wiz_0_axi/slowest_sync_clk]
-  connect_bd_net -net mic_reg_in_0_1 [get_bd_ports mic_reg_in_0] [get_bd_pins axi_lite_slave_0/mic_reg_in]
+  connect_bd_net -net axi_lite_slave_0_rd_en [get_bd_ports rd_en] [get_bd_pins axi_lite_slave_0/rd_en]
+  connect_bd_net -net clk_wiz_0_clk_25 [get_bd_ports clk_25] [get_bd_pins clk_wiz_0/clk_25]
+  connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins clk_wiz_0/clk_125]
+  connect_bd_net -net clk_wiz_0_clk_axi [get_bd_ports clk_axi] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_lite_slave_0/S_AXI_ACLK] [get_bd_pins clk_wiz_0/clk_axi] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins rst_clk_wiz_0_axi/slowest_sync_clk]
+  connect_bd_net -net mic_reg_in_0_1 [get_bd_ports mic_reg_in] [get_bd_pins axi_lite_slave_0/mic_reg_in]
   connect_bd_net -net reset_rtl_1 [get_bd_ports reset_rtl] [get_bd_pins clk_wiz_0/reset] [get_bd_pins rst_clk_wiz_0_axi/ext_reset_in]
   connect_bd_net -net rst_clk_wiz_0_100M_interconnect_aresetn [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins rst_clk_wiz_0_axi/interconnect_aresetn]
   connect_bd_net -net rst_clk_wiz_0_axi_peripheral_aresetn [get_bd_ports rst_axi] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_lite_slave_0/S_AXI_ARESETN] [get_bd_pins rst_clk_wiz_0_axi/peripheral_aresetn]
