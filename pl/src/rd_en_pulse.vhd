@@ -21,6 +21,14 @@ begin
       if (rising_edge(clk_axi)) then
 
          for i in 0 to 63 loop
+            if (delay(i) = '0') then
+               rd_en_array_out(i) <= '0';
+            end if;
+
+            if (delay(i) = '1') then
+               delay(i) <= '0';
+            end if;
+
             if (rd_en_array_in(i) = '0') then
                active(i) <= '0';
             end if;
@@ -28,11 +36,7 @@ begin
             if (rd_en_array_in(i) = '1' and active(i) = '0') then
                active(i)          <= '1';
                rd_en_array_out(i) <= '1';
-               delay(i)           <= '0';
-            elsif (delay(i) = '0') then
-               delay(i) <= '1';
-            else
-               rd_en_array_out(i) <= '0';
+               delay(i)           <= '1';
             end if;
          end loop;
 
