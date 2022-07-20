@@ -15,8 +15,8 @@ architecture tb of tb_rd_en_pulse is
    signal clk_axi       : std_logic := '1';
    signal reset         : std_logic := '0';
 
-   signal rd_en_array_in  : std_logic_vector(63 downto 0) := (others => '0');
-   signal rd_en_array_out : std_logic_vector(63 downto 0);
+   signal rd_en_array_in  : std_logic;
+   signal rd_en_array_out : std_logic;
 
 begin
 
@@ -36,13 +36,13 @@ begin
          if run("wave") then -- only for use in gktwave
 
             wait for 50 ns;
-            rd_en_array_in <= (others => '1');
+            rd_en_array_in <= '1';
             wait for 100 ns;
-            rd_en_array_in <= (others => '0');
+            rd_en_array_in <= '0';
             wait for 200 ns;
-            rd_en_array_in <= (others => '1');
+            rd_en_array_in <= '1';
             wait for 100 ns;
-            rd_en_array_in <= (others => '0');
+            rd_en_array_in <= '0';
          elsif run("auto") then
 
             wait for 30000 ns; -- duration of test 1
