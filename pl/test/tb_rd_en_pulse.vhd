@@ -12,22 +12,22 @@ end tb_rd_en_pulse;
 
 architecture tb of tb_rd_en_pulse is
    constant C_CLK_CYKLE : time      := 10 ns;
-   signal clk           : std_logic := '1';
+   signal clk_axi       : std_logic := '1';
    signal reset         : std_logic := '0';
 
-   signal rd_en_array_in  : std_logic_vector(31 downto 0) := (others => '0');
-   signal rd_en_array_out : std_logic_vector(31 downto 0);
+   signal rd_en_array_in  : std_logic_vector(63 downto 0) := (others => '0');
+   signal rd_en_array_out : std_logic_vector(63 downto 0);
 
 begin
 
    rd_en_pulse : entity work.rd_en_pulse port map(
-      clk             => clk,
+      clk_axi         => clk_axi,
       reset           => reset,
       rd_en_array_in  => rd_en_array_in,
       rd_en_array_out => rd_en_array_out
       );
 
-   clk <= not(clk) after C_CLK_CYKLE/2;
+   clk_axi <= not(clk_axi) after C_CLK_CYKLE/2;
 
    main_p : process
    begin
@@ -35,8 +35,14 @@ begin
       while test_suite loop
          if run("wave") then -- only for use in gktwave
 
-            wait for 500 ns;
-
+            wait for 50 ns;
+            rd_en_array_in <= (others => '1');
+            wait for 100 ns;
+            rd_en_array_in <= (others => '0');
+            wait for 200 ns;
+            rd_en_array_in <= (others => '1');
+            wait for 100 ns;
+            rd_en_array_in <= (others => '0');
          elsif run("auto") then
 
             wait for 30000 ns; -- duration of test 1

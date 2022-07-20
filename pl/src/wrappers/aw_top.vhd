@@ -11,13 +11,6 @@ entity aw_top is
       empty        : out std_logic;
       almost_full  : out std_logic;
       almost_empty : out std_logic
-
-      --bit_stream_ary : in std_logic_vector(3 downto 0);
-      --sck_clk_1      : out std_logic;
-      --sck_clk_2      : out std_logic;
-      --ws_1           : out std_logic;
-      --ws_2           : out std_logic;
-      --ws_error_ary           : out std_logic_vector(3 downto 0);
    );
 end entity;
 architecture structual of aw_top is
@@ -29,10 +22,9 @@ architecture structual of aw_top is
    signal internal_rd_en : std_logic_vector(63 downto 0);
    signal pulse_rd_en    : std_logic_vector(63 downto 0);
 
-   signal wr_en : std_logic; --------------------------for fifo
-   --signal rst_0   : STD_LOGIC;
+   signal wr_en   : std_logic;
    signal rd_en_1 : std_logic;
-   signal din_0   : std_logic_vector (31 downto 0); -- tmp for data from demo_count
+   signal din_0   : std_logic_vector (31 downto 0);
 begin
    demo_count : entity work.demo_count
       port map(
@@ -50,9 +42,9 @@ begin
          FIFO_READ_almost_empty => almost_empty,
          FIFO_WRITE_wr_data     => din_0, --data in
          FIFO_WRITE_wr_en       => wr_en,
-         FIFO_READ_rd_en        => pulse_rd_en(0),        --- from pulse
-         FIFO_READ_rd_data      => data, --data out
-         rd_clk                 => sck_clk,
+         FIFO_READ_rd_en        => pulse_rd_en(0), --- from pulse
+         FIFO_READ_rd_data      => data,           --data out
+         rd_clk                 => clk_axi,
          wr_clk                 => clk,
          reset                  => reset
       );
@@ -69,14 +61,12 @@ begin
 
       );
 
-      pulse_gen  : entity work.rd_en_pulse
+   pulse_gen : entity work.rd_en_pulse
       port map(
-
-         clk             => clk,
+         clk_axi         => clk_axi,
          reset           => reset,
          rd_en_array_in  => internal_rd_en,
          rd_en_array_out => pulse_rd_en
-
       );
 
 end structual;
