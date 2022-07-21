@@ -51,6 +51,10 @@ add_files [file join "$ROOT" src wrappers aw_top.vhd]
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
 add_files [file join "$ROOT" src rd_en_pulse.vhd]
 add_files [file join "$ROOT" src demo_count.vhd]
+add_files [file join "$ROOT" src collector.vhd]
+add_files [file join "$ROOT" src sample_data sample.vhd]
+add_files [file join "$ROOT" src sample_data collector.vhd]
+add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
 
 

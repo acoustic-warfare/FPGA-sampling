@@ -7,6 +7,7 @@ entity aw_top is
       sys_clock : in std_logic;
       reset_rtl : in std_logic;
       reset     : in std_logic;
+       sck_clk  : out std_logic;
 
       full         : out std_logic;
       empty        : out std_logic;
@@ -20,7 +21,7 @@ end entity;
 architecture structual of aw_top is
    signal rst_axi        : std_logic_vector (0 to 0);
    signal clk            : std_logic;
-   signal sck_clk        : std_logic;
+
    signal clk_axi        : std_logic;
    signal data           : std_logic_vector(31 downto 0);
    signal internal_rd_en : std_logic_vector(63 downto 0);
@@ -51,7 +52,7 @@ begin
          FIFO_READ_empty        => empty,
          FIFO_WRITE_almost_full => almost_full,
          FIFO_READ_almost_empty => almost_empty,
-         FIFO_WRITE_wr_data     => din_0, --data in
+         FIFO_WRITE_wr_data     => chain_matrix_data_internal(1), --data in
          FIFO_WRITE_wr_en       => wr_en,
          FIFO_READ_rd_en        => pulse_rd_en, --- from pulse
          FIFO_READ_rd_data      => data,        --data out
