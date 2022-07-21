@@ -54,6 +54,8 @@ add_files [file join "$ROOT" src demo_count.vhd]
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
+add_files [file join "$ROOT" src matrix_package.vhd]
+
 
 
 
