@@ -37,14 +37,14 @@ architecture structual of aw_top is
    signal chain_matrix_valid_internal   : std_logic;
 begin
    ------------------------------------------------------------------------------------------------------
-   demo_count : entity work.demo_count
-      port map(
-         clk         => clk,
-         reset       => reset,
-         data        => din_0,
-         almost_full => almost_full,
-         wr_en       => wr_en
-      );
+  -- demo_count : entity work.demo_count
+   --   port map(
+   --      clk         => clk,
+     --    reset       => reset,
+     --    data        => din_0,
+      --   almost_full => almost_full,
+      --   wr_en       => wr_en
+     -- );
 
    fifo_gen : entity work.fifo_bd_wrapper
       port map(
