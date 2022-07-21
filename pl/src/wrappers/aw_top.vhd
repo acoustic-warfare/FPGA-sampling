@@ -32,6 +32,8 @@ architecture structual of aw_top is
    ----------------------------------------------------- newly added signals
    signal   mic_sample_data_out_internal  : std_logic_vector(23 downto 0);
    signal   mic_sample_valid_out_internal : std_logic := '0';
+   signal   chain_matrix_data_internal    : matrix_16_32_type;
+   signal   chain_matrix_valid_internal    : std_logic;
 begin
    ------------------------------------------------------------------------------------------------------
    demo_count : entity work.demo_count
@@ -100,10 +102,10 @@ begin
       port map(
          clk                    => clk,
          reset                  => reset,
-         mic_sample_data_in     => mic_sample_data_internal(i),
-         mic_sample_valid_in    => mic_sample_valid_internal(i),
-         chain_matrix_data_out  => chain_x4_matrix_data_internal(i),
-         chain_matrix_valid_out => chain_matrix_valid_internal(i)
+         mic_sample_data_in     => mic_sample_data__out_internal,
+         mic_sample_valid_in    => mic_sample_valid_out_internal,
+         chain_matrix_data_out  => chain_matrix_data_internal,
+         chain_matrix_valid_out => chain_matrix_valid_internal
       );
 
 end structual;
