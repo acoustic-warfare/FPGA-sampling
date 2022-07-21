@@ -103,7 +103,7 @@ begin
       port map(
          clk                    => clk,
          reset                  => reset,
-         mic_sample_data_in     => mic_sample_data__out_internal,
+         mic_sample_data_in     => mic_sample_data_out_internal,
          mic_sample_valid_in    => mic_sample_valid_out_internal,
          chain_matrix_data_out  => chain_matrix_data_internal,
          chain_matrix_valid_out => chain_matrix_valid_internal
