@@ -7,7 +7,7 @@ entity aw_top is
       sys_clock : in std_logic;
       reset_rtl : in std_logic;
       reset     : in std_logic;
-       sck_clk  : out std_logic;
+      sck_clk   : out std_logic;
 
       full         : out std_logic;
       empty        : out std_logic;
@@ -19,8 +19,8 @@ entity aw_top is
    );
 end entity;
 architecture structual of aw_top is
-   signal rst_axi        : std_logic_vector (0 to 0);
-   signal clk            : std_logic;
+   signal rst_axi : std_logic_vector (0 to 0);
+   signal clk     : std_logic;
 
    signal clk_axi        : std_logic;
    signal data           : std_logic_vector(31 downto 0);
@@ -31,10 +31,10 @@ architecture structual of aw_top is
    signal din_0          : std_logic_vector (31 downto 0);
 
    ----------------------------------------------------- newly added signals
-   signal   mic_sample_data_out_internal  : std_logic_vector(23 downto 0);
-   signal   mic_sample_valid_out_internal : std_logic := '0';
-   signal   chain_matrix_data_internal    : matrix_16_32_type;
-   signal   chain_matrix_valid_internal    : std_logic;
+   signal mic_sample_data_out_internal  : std_logic_vector(23 downto 0);
+   signal mic_sample_valid_out_internal : std_logic := '0';
+   signal chain_matrix_data_internal    : matrix_16_32_type;
+   signal chain_matrix_valid_internal   : std_logic;
 begin
    ------------------------------------------------------------------------------------------------------
    demo_count : entity work.demo_count
@@ -87,7 +87,7 @@ begin
          reset   => reset,
          ws      => ws
       );
-                           ---#################
+   ---#################
    sample_C : entity work.sample
       port map(
          clk                  => clk,
@@ -98,12 +98,12 @@ begin
          mic_sample_valid_out => mic_sample_valid_out_internal
 
       );
-  -------------------------------- continue here
+   -------------------------------- continue here
    collector_c : entity work.collector
       port map(
          clk                    => clk,
          reset                  => reset,
-         mic_sample_data_in     => mic_sample_data__out_internal,
+         mic_sample_data_in     => mic_sample_data_out_internal,
          mic_sample_valid_in    => mic_sample_valid_out_internal,
          chain_matrix_data_out  => chain_matrix_data_internal,
          chain_matrix_valid_out => chain_matrix_valid_internal
