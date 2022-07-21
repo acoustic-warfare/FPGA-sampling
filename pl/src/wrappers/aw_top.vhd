@@ -53,7 +53,7 @@ begin
          FIFO_WRITE_almost_full => almost_full,
          FIFO_READ_almost_empty => almost_empty,
          FIFO_WRITE_wr_data     => chain_matrix_data_internal(1), --data in
-         FIFO_WRITE_wr_en       => wr_en,
+         FIFO_WRITE_wr_en       => chain_matrix_valid_internal,
          FIFO_READ_rd_en        => pulse_rd_en, --- from pulse
          FIFO_READ_rd_data      => data,        --data out
          rd_clk                 => clk_axi,
