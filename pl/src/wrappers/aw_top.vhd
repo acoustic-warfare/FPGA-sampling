@@ -30,21 +30,20 @@ architecture structual of aw_top is
    signal rd_en_1        : std_logic;
    signal din_0          : std_logic_vector (31 downto 0);
 
-   ----------------------------------------------------- newly added signals
    signal mic_sample_data_out_internal  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out_internal : std_logic := '0';
    signal chain_matrix_data_internal    : matrix_16_32_type;
    signal chain_matrix_valid_internal   : std_logic;
 begin
    ------------------------------------------------------------------------------------------------------
-  -- demo_count : entity work.demo_count
+   -- demo_count : entity work.demo_count
    --   port map(
    --      clk         => clk,
-     --    reset       => reset,
-     --    data        => din_0,
-      --   almost_full => almost_full,
-      --   wr_en       => wr_en
-     -- );
+   --    reset       => reset,
+   --    data        => din_0,
+   --   almost_full => almost_full,
+   --   wr_en       => wr_en
+   -- );
 
    fifo_gen : entity work.fifo_bd_wrapper
       port map(
