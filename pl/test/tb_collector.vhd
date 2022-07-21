@@ -19,7 +19,7 @@ architecture tb of tb_collector is
    signal reset                  : std_logic                     := '0';
    signal mic_sample_data_in     : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal mic_sample_valid_in    : std_logic;
-   signal chain_matrix_data_out  : matrix_16_24_type;
+   signal chain_matrix_data_out  : matrix_16_32_type;
    signal chain_matrix_valid_out : std_logic := '0';
 
    signal data_valid_in_counter  : integer := 0; --data_valid_out_counter
@@ -29,7 +29,7 @@ architecture tb of tb_collector is
    signal v0_24 : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal v1_24 : std_logic_vector(23 downto 0) := "111111111111111111111111";
 
-   signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
+   signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(31 downto 0);
 
 begin
 
