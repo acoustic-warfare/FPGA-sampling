@@ -28,7 +28,7 @@ begin
                counter_data <= 0;
             end if;
 
-            if (counter_clk = 10000 and almost_full = '0') then
+            if (counter_clk = 80 and almost_full = '0') then
                counter_clk  <= 0;
                counter_data <= counter_data + 1;
                wr_en        <= '1';
