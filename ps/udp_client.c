@@ -21,7 +21,7 @@ int main()
 	
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(12345);
-	servaddr.sin_addr.s_addr = INADDR_ANY;
+	servaddr.sin_addr.s_addr = "192.168.1.10";
 	
 	int len = sendto(sockfd, (const char *)hello, strlen(hello),
 		0, (const struct sockaddr *)&servaddr, sizeof(servaddr));
