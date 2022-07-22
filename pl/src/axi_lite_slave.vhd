@@ -17,10 +17,79 @@ entity axi_lite_slave is
    );
    port (
       --mic_reg_in : in matrix_64_32_type;
-      mic_reg_in : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      reg_mic_0  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_1  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_2  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_3  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_4  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_5  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_6  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_7  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_8  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_9  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_10 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_11 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_12 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_13 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_14 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_15 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_16 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_17 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_18 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_19 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_20 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_21 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_22 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_23 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_24 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_25 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_26 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_27 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_28 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_29 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_30 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_31 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_32 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_33 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_34 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_35 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_36 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_37 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_38 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_39 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_40 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_41 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_42 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_43 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_44 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_45 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_46 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_47 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_48 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_49 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_50 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_51 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_52 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_53 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_54 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_55 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_56 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_57 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_58 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_59 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_60 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_61 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_62 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_63 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_64     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_65     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_66     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_67     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_68     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_69     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
 
-      --read enable
-      rd_en     :  out std_logic_vector(63 downto 0);
+      --read enable 
+      rd_en : out std_logic_vector(69 downto 0);
 
       -- Global Clock Signal
       S_AXI_ACLK : in std_logic;
@@ -105,13 +174,13 @@ architecture rtl of axi_lite_slave is
    -- ADDR_LSB = 2 for 32 bits (n downto 2)
    -- ADDR_LSB = 3 for 64 bits (n downto 3)
    constant ADDR_LSB          : integer := (C_S_AXI_DATA_WIDTH/32) + 1;
-   constant OPT_MEM_ADDR_BITS : integer := 6;
+   constant OPT_MEM_ADDR_BITS : integer := 10; --should only need to be 7
 
    ------------------------------------------------
    ---- Signals for user logic register space
    --------------------------------------------------
    type slv_2d is array (natural range <>) of std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
-   signal slv_reg      : slv_2d(0 to 63) := (others => (others => '0'));
+   signal slv_reg      : slv_2d(0 to 69) := (others => (others => '0'));
    signal slv_reg_rden : std_logic;
    signal slv_reg_wren : std_logic;
    signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
@@ -318,10 +387,8 @@ begin
    -- and the slave is ready to accept the read address.
    slv_reg_rden <= axi_arready and S_AXI_ARVALID and (not axi_rvalid);
 
-   process (S_AXI_ACLK, S_AXI_ARESETN, S_AXI_AWADDR, S_AXI_AWPROT, S_AXI_AWVALID, S_AXI_WDATA, S_AXI_WSTRB,
-      S_AXI_WVALID, S_AXI_BREADY, S_AXI_ARADDR, S_AXI_ARPROT, S_AXI_ARVALID, S_AXI_RREADY)
+   process (S_AXI_ACLK)
       -- variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
-
       variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
    begin
       -- Address decoding for reading registers
@@ -329,9 +396,8 @@ begin
       rd_en <= (others => '0');
 
       case loc_addr is
-         when 0 to 63 =>
-
-            reg_data_out <= slv_reg(loc_addr);
+         when 0 to 69 =>
+            reg_data_out    <= slv_reg(loc_addr);
             rd_en(loc_addr) <= '1';
          when others             =>
             reg_data_out <= (others => '0');
@@ -358,13 +424,78 @@ begin
 
    process (S_AXI_ACLK)
    begin
-      slv_reg    <= (others => (others => '0'));
-      slv_reg(0) <= mic_reg_in;
-      slv_reg(1) <= (others => '1');
-      slv_reg(2) <= x"DEADBEEF";
-      slv_reg(3) <= x"BEEFDEAD";
-      slv_reg(4) <= x"BEEFBEEF";
-      slv_reg(5) <= x"DEADDEAD";
+      slv_reg     <= (others => (others => '0'));
+      slv_reg(0)  <= reg_mic_0;
+      slv_reg(1)  <= reg_mic_1;
+      slv_reg(2)  <= reg_mic_2;
+      slv_reg(3)  <= reg_mic_3;
+      slv_reg(4)  <= reg_mic_4;
+      slv_reg(5)  <= reg_mic_5;
+      slv_reg(6)  <= reg_mic_6;
+      slv_reg(7)  <= reg_mic_7;
+      slv_reg(8)  <= reg_mic_8;
+      slv_reg(9)  <= reg_mic_9;
+      slv_reg(10) <= reg_mic_10;
+      slv_reg(11) <= reg_mic_11;
+      slv_reg(12) <= reg_mic_12;
+      slv_reg(13) <= reg_mic_13;
+      slv_reg(14) <= reg_mic_14;
+      slv_reg(15) <= reg_mic_15;
+      slv_reg(16) <= reg_mic_16;
+      slv_reg(17) <= reg_mic_17;
+      slv_reg(18) <= reg_mic_18;
+      slv_reg(19) <= reg_mic_19;
+      slv_reg(20) <= reg_mic_20;
+      slv_reg(21) <= reg_mic_21;
+      slv_reg(22) <= reg_mic_22;
+      slv_reg(23) <= reg_mic_23;
+      slv_reg(24) <= reg_mic_24;
+      slv_reg(25) <= reg_mic_25;
+      slv_reg(26) <= reg_mic_26;
+      slv_reg(27) <= reg_mic_27;
+      slv_reg(28) <= reg_mic_28;
+      slv_reg(29) <= reg_mic_29;
+      slv_reg(30) <= reg_mic_30;
+      slv_reg(31) <= reg_mic_31;
+      slv_reg(32) <= reg_mic_32;
+      slv_reg(33) <= reg_mic_33;
+      slv_reg(34) <= reg_mic_34;
+      slv_reg(35) <= reg_mic_35;
+      slv_reg(36) <= reg_mic_36;
+      slv_reg(37) <= reg_mic_37;
+      slv_reg(38) <= reg_mic_38;
+      slv_reg(39) <= reg_mic_39;
+      slv_reg(40) <= reg_mic_40;
+      slv_reg(41) <= reg_mic_41;
+      slv_reg(42) <= reg_mic_42;
+      slv_reg(43) <= reg_mic_43;
+      slv_reg(44) <= reg_mic_44;
+      slv_reg(45) <= reg_mic_45;
+      slv_reg(46) <= reg_mic_46;
+      slv_reg(47) <= reg_mic_47;
+      slv_reg(48) <= reg_mic_48;
+      slv_reg(49) <= reg_mic_49;
+      slv_reg(50) <= reg_mic_50;
+      slv_reg(51) <= reg_mic_51;
+      slv_reg(52) <= reg_mic_52;
+      slv_reg(53) <= reg_mic_53;
+      slv_reg(54) <= reg_mic_54;
+      slv_reg(55) <= reg_mic_55;
+      slv_reg(56) <= reg_mic_56;
+      slv_reg(57) <= reg_mic_57;
+      slv_reg(58) <= reg_mic_58;
+      slv_reg(59) <= reg_mic_59;
+      slv_reg(60) <= reg_mic_60;
+      slv_reg(61) <= reg_mic_61;
+      slv_reg(62) <= reg_mic_62;
+      slv_reg(63) <= reg_mic_63;
+
+      slv_reg(64) <= reg_64;
+      slv_reg(65) <= reg_65;
+      --slv_reg(66) <= reg_mic_;
+      --slv_reg(67) <= reg_mic_;
+      --slv_reg(68) <= reg_mic_;
+      --slv_reg(69) <= reg_mic_;
    end process;
 
 end rtl;

@@ -22,7 +22,7 @@ create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { sy
 set_property -dict { PACKAGE_PIN K18   IOSTANDARD LVCMOS33 } [get_ports { reset }]; #IO_L12N_T1_MRCC_35 Sch=btn[0]
 set_property -dict { PACKAGE_PIN P16   IOSTANDARD LVCMOS33 } [get_ports { reset_rtl }]; #IO_L24N_T3_34 Sch=btn[1]
 #set_property -dict { PACKAGE_PIN K19   IOSTANDARD LVCMOS33 } [get_ports { resetlamp1 }]; #IO_L10P_T1_AD11P_35 Sch=btn[2]
-#set_property -dict { PACKAGE_PIN Y16   IOSTANDARD LVCMOS33 } [get_ports { resetlamp2 }]; #IO_L7P_T1_34 Sch=btn[3]
+set_property -dict { PACKAGE_PIN Y16   IOSTANDARD LVCMOS33 } [get_ports { pause }]; #IO_L7P_T1_34 Sch=btn[3]
 
 
 ##LEDs
@@ -103,11 +103,11 @@ set_property -dict { PACKAGE_PIN D18   IOSTANDARD LVCMOS33 } [get_ports { empty 
  
 
 ##Pmod Header JA (XADC)
-set_property -dict { PACKAGE_PIN N15   IOSTANDARD LVCMOS33 } [get_ports { sck_clk }]; #IO_L21P_T3_DQS_AD14P_35 Sch=JA1_R_p		   
-set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { ws }]; #IO_L22P_T3_AD7P_35 Sch=JA2_R_P             
-set_property -dict { PACKAGE_PIN K16   IOSTANDARD LVCMOS33 } [get_ports { sck_clk }]; #IO_L24P_T3_AD15P_35 Sch=JA3_R_P            
-set_property -dict { PACKAGE_PIN K14   IOSTANDARD LVCMOS33 } [get_ports { ws }]; #IO_L20P_T3_AD6P_35 Sch=JA4_R_P             
-set_property -dict { PACKAGE_PIN N16   IOSTANDARD LVCMOS33 } [get_ports { bit_stream }]; #IO_L21N_T3_DQS_AD14N_35 Sch=JA1_R_N        
+#set_property -dict { PACKAGE_PIN N15   IOSTANDARD LVCMOS33 } [get_ports { sck_clk }]; #IO_L21P_T3_DQS_AD14P_35 Sch=JA1_R_p		   
+#set_property -dict { PACKAGE_PIN L14   IOSTANDARD LVCMOS33 } [get_ports { ws }]; #IO_L22P_T3_AD7P_35 Sch=JA2_R_P             
+#set_property -dict { PACKAGE_PIN K16   IOSTANDARD LVCMOS33 } [get_ports { sck_clk }]; #IO_L24P_T3_AD15P_35 Sch=JA3_R_P            
+#set_property -dict { PACKAGE_PIN K14   IOSTANDARD LVCMOS33 } [get_ports { ws }]; #IO_L20P_T3_AD6P_35 Sch=JA4_R_P             
+#set_property -dict { PACKAGE_PIN N16   IOSTANDARD LVCMOS33 } [get_ports { bit_stream }]; #IO_L21N_T3_DQS_AD14N_35 Sch=JA1_R_N        
 #set_property -dict { PACKAGE_PIN L15   IOSTANDARD LVCMOS33 } [get_ports { bit_stream_ary[1] }]; #IO_L22N_T3_AD7N_35 Sch=JA2_R_N             
 #set_property -dict { PACKAGE_PIN J16   IOSTANDARD LVCMOS33 } [get_ports { bit_stream_ary[2] }]; #IO_L24N_T3_AD15N_35 Sch=JA3_R_N            
 #set_property -dict { PACKAGE_PIN J14   IOSTANDARD LVCMOS33 } [get_ports { bit_stream_ary[3] }]; #IO_L20N_T3_AD6N_35 Sch=JA4_R_N             
