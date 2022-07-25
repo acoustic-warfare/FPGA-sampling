@@ -16,6 +16,9 @@
 #define AD0 0x40000000
 #define AD1 0x40000004
 
+#define AD64 0x40000100
+#define AD65 0x40000104
+
 /* defined by each RAW mode application */
 void print_app_header();
 int start_application();
@@ -69,8 +72,8 @@ int main() {
 	int counter=0;
 	//u32 numbers[10]={0x00000000,0x00000001,0x00000002,0x00000003,0x00000004,0x00000005,0x00000006,0x00000007,0x00000008,0x00000009};
 	u32 read_reg0;
-
-
+   u32 read_reg64;
+   u32 read_reg65;
 
 
 
@@ -99,7 +102,7 @@ int main() {
 	//IP4_ADDR(&Remotenetmask, 255, 255, 255,  0);
 	//IP4_ADDR(&Remotegw,      10, 0,   0,  1);
 
-	print_app_header();
+
 
 	/* Initialize the lwip for UDP */
 	lwip_init();
@@ -152,37 +155,40 @@ int main() {
 		/* Receive packets */
 		xemacif_input(echo_netif);
 
+      read_reg64 = Xil_In32(AD64);
+		read_reg65 = Xil_In32(AD65);
 
-		///////////////////////////////////////////////////////////////////// my test code
-		read_reg0 = Xil_In32(AD0);
-		array[counter] = read_reg0;
+         if (read_reg64 == 0 && read_reg65 == 0) {
+         ///////////////////////////////////////////////////////////////////// my test code
+         read_reg0 = Xil_In32(AD0);
+         array[counter] = read_reg0;
 
-		read_reg0 = Xil_In32(AD1);
+         read_reg0 = Xil_In32(AD1);
 
-		counter=counter +1;
+         counter=counter +1;
 
-//SendResults == 1 &&
-		/* Send results back from time to time */
-		if (counter == 50) {
+   //SendResults == 1 &&
+         /* Send results back from time to time */
+         if (counter == 50) {
 
-			counter = 0;
-			SendResults = 0;
-			// Read the results from the FPGA
-			//Centroid = "DEEDBEEF";
+            counter = 0;
+            SendResults = 0;
+            // Read the results from the FPGA
+            //Centroid = "DEEDBEEF";
 
-			// Send out the centroid result over UDP
-			psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);
-			psnd->payload = &array;
-			udpsenderr = udp_sendto(&send_pcb, psnd, &RemoteAddr, RemotePort);
-			xil_printf(".");
-			if (udpsenderr != ERR_OK) {
-				xil_printf("UDP Send failed with Error %d\n\r", udpsenderr);
-				goto ErrorOrDone;
-			}
-			pbuf_free(psnd);
-		}
-	}
-
+            // Send out the centroid result over UDP
+            psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);
+            psnd->payload = &array;
+            udpsenderr = udp_sendto(&send_pcb, psnd, &RemoteAddr, RemotePort);
+            xil_printf(".");
+            if (udpsenderr != ERR_OK) {
+               xil_printf("UDP Send failed with Error %d\n\r", udpsenderr);
+               goto ErrorOrDone;
+            }
+            pbuf_free(psnd);
+         }
+      }
+   }
 	// Jump point for failure
 	ErrorOrDone: xil_printf(
 			"Catastrophic Error! Shutting down and exiting...\n\r");
