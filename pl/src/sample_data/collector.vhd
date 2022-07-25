@@ -42,10 +42,10 @@ begin
          chain_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
          if mic_sample_valid_in = '1' then -- Data from a new mic is valid and the shift register puts it at the first place
-            if (mic_sample_data_in(0) = '0') then
-               tmp_holder <= "00000000" & mic_sample_data_in;
+            if (mic_sample_data_in(23) = '0') then
+               tmp_holder <= mic_sample_data_in & "00000000";
             else
-               tmp_holder <= "11111111" & mic_sample_data_in;
+               tmp_holder <= mic_sample_data_in & "11111111";
             end if;
             chain_matrix_data_out <= chain_matrix_data_out(14 downto 0) & tmp_holder;
             counter_mic           <= counter_mic + 1;

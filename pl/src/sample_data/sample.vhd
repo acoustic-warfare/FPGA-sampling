@@ -80,9 +80,16 @@ begin
                   end if;
 
                   if counter_1s >= 2 then
-                     mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
+                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
+                     
+                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
+                     mic_sample_data_out(0) <= '1';
+
                   else
-                     mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
+                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
+
+                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
+                     mic_sample_data_out(0) <= '0';
                   end if;
 
                   if counter_bit = 23 then
