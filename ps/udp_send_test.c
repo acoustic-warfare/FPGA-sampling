@@ -65,11 +65,11 @@ void print_ip_settings(struct ip_addr *ip, struct ip_addr *mask,
 
 int main() {
 
-	u32 array[200];
+	u32 array[50];
 	int counter=0;
 	//u32 numbers[10]={0x00000000,0x00000001,0x00000002,0x00000003,0x00000004,0x00000005,0x00000006,0x00000007,0x00000008,0x00000009};
 	u32 read_reg0;
-	char hello[50] = "hello from client";
+
 
 
 
@@ -161,14 +161,14 @@ int main() {
 
 		counter=counter +1;
 
-
+//SendResults == 1 &&
 		/* Send results back from time to time */
-		if (SendResults == 1 && counter == 200) {
+		if (counter == 50) {
 
 			counter = 0;
 			SendResults = 0;
 			// Read the results from the FPGA
-			Centroid = "DEEDBEEF";
+			//Centroid = "DEEDBEEF";
 
 			// Send out the centroid result over UDP
 			psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);

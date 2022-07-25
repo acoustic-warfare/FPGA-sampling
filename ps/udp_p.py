@@ -17,21 +17,32 @@ print("Socket: "+str(sock.getsockname()))
 print("test 4")
 
 
-
-
+i=0
+counter = 0
 while 1:
 
    data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
 
-   b_data = data
-   str_data = b_data.decode('UTF_16')
+      
+   #str_data = data.decode('UTF_16')
 
-   with open('data.txt','wb') as f:
-     # udp_data = ['udp.txt',data]
-      f.write(data)
-   
-   
-   
-   print(data) 
-   print(addr)
+  # with open("data.txt",'wb') as binary_file:
+      # udp_data = ['udp.txt',data]
+     # binary_file.write(data)
+      
+      
+   counter = counter +1
+
+   print(counter)
+  # print(data) 
+   #print(addr)
    sys.stdout.flush()
+
+  # binary_file.close()
+
+   #print("opening file....")
+
+   #with open("data.txt", "rb") as binary_file:
+    #  data_out = binary_file.read()
+    #  print(data_out)
+  # i = i +1
