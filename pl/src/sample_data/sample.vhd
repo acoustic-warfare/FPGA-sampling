@@ -31,12 +31,14 @@ end entity;
 
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
-   signal state        : state_type;
-   signal counter_bit  : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
-   signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
+   signal state         : state_type;
+   signal counter_bit   : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_samp  : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
+   signal counter_mic   : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_1s    : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
+   signal counter_delay : integer               := 0;
+   signal delay         : std_logic             := '0';
+   signal state_1       : integer range 0 to 2; -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -80,16 +82,16 @@ begin
                   end if;
 
                   if counter_1s >= 2 then
-                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
-                     
+                     -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
+
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0) <= '1';
+                     mic_sample_data_out(0)           <= '1';
 
                   else
-                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
+                     -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
 
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0) <= '0';
+                     mic_sample_data_out(0)           <= '0';
                   end if;
 
                   if counter_bit = 23 then
@@ -131,15 +133,22 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         if bit_stream = '1' then
+         if counter_delay = 10 then
+            delay <= '0';
+         else
+            counter_delay <= counter_delay + 1;
+            delay <= '1';
+         end if;
+
+         if bit_stream = '1' and delay = '0' then
             counter_1s <= counter_1s + 1;
          end if;
 
-         if counter_samp = 4 then
+         if counter_samp = 4 and delay = '0' then
             counter_bit  <= counter_bit + 1;
             counter_1s   <= 0;
             counter_samp <= 0;
-         else
+         elsif delay = '0' then
             counter_samp <= counter_samp + 1;
          end if;
 
@@ -153,10 +162,11 @@ begin
          end if;
 
          if reset = '1' or ws = '1' then
-            counter_bit  <= 0;
-            counter_samp <= 0;
-            counter_mic  <= 0;
-            counter_1s   <= 0;
+            counter_delay <= 0;
+            counter_bit   <= 0;
+            counter_samp  <= 0;
+            counter_mic   <= 0;
+            counter_1s    <= 0;
          end if;
       end if;
    end process;
