@@ -4,29 +4,29 @@ library vunit_lib;
 context vunit_lib.vunit_context;
 use work.matrix_type.all;
 
-entity tb_demo_count is
+entity tb_demo_twos_count is
    generic (
       runner_cfg : string
    );
-end tb_demo_count;
+end tb_demo_twos_count;
 
-architecture tb of tb_demo_count is
+architecture tb of tb_demo_twos_count is
    constant C_CLK_CYKLE : time := 10 ns;
 
    signal clk         : std_logic := '0';
    signal reset       : std_logic := '0';
    signal data        : std_logic_vector (31 downto 0);
-   signal almost_full : std_logic;
-   signal pause       : std_logic;
+   signal almost_full : std_logic := '0';
+   signal pause       : std_logic := '0';
 
 begin
 
-   demo_count1 : entity work.demo_count port map(
+   demo_twos_count1 : entity work.demo_twos_count port map(
       clk         => clk,
       almost_full => almost_full,
-      pause       => pause,
       reset       => reset,
-      data        => data
+      data        => data,
+      pause       => pause
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;
