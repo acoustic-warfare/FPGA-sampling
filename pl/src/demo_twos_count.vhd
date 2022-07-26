@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity demo_count is
+entity demo_twos_count is
    port (
       clk         : in std_logic;
       reset       : in std_logic;
@@ -11,9 +11,9 @@ entity demo_count is
       data        : out std_logic_vector(31 downto 0) := (others => '0');
       wr_en       : out std_logic
    );
-end demo_count;
+end demo_twos_count;
 
-architecture rtl of demo_count is
+architecture rtl of demo_twos_count is
    signal counter_clk     : integer   := 0;
    signal counter_data    : integer   := 0;
    signal twos_complemetn : std_logic := '0';
@@ -30,7 +30,15 @@ begin
             end if;
 
             if (counter_clk = 2560 and almost_full = '0') then
-               data         <= std_logic_vector(to_unsigned(counter_data, data'length));
+               data <= std_logic_vector(to_unsigned(counter_data, data'length));
+               if (twos_complemetn = '1') then
+                  data(31)        <= '1';
+                  twos_complemetn <= '0';
+               else
+                  data(31)        <= '0';
+                  twos_complemetn <= '1';
+               end if;
+
                counter_clk  <= 0;
                counter_data <= counter_data + 1;
                wr_en        <= '1';

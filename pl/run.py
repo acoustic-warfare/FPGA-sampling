@@ -14,6 +14,8 @@ lib.add_source_files(ROOT.glob("src/ws_pulse/*.vhd"))
 lib.add_source_files(ROOT.glob("src/demo_count.vhd"))
 lib.add_source_files(ROOT.glob("src/rd_en_pulse.vhd"))
 lib.add_source_files(ROOT.glob("src/matrix_package.vhd"))
+lib.add_source_files(ROOT.glob("src/demo_twos_count.vhd"))
+
 
 for l in lib.get_test_benches():
    wave = ROOT.joinpath("test", "wave", f"{l.name}.tcl")
