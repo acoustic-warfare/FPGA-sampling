@@ -174,7 +174,7 @@ int main() {
 			psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);
 			psnd->payload = &array;
 			udpsenderr = udp_sendto(&send_pcb, psnd, &RemoteAddr, RemotePort);
-			xil_printf(".");
+			//xil_printf(".");
 			if (udpsenderr != ERR_OK) {
 				xil_printf("UDP Send failed with Error %d\n\r", udpsenderr);
 				goto ErrorOrDone;
