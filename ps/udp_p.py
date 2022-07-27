@@ -32,10 +32,10 @@ while 1:
     data, addr = sock.recvfrom(1024)  # buffer size is 1024 bytes
 
     for i in range(10):
-        bits00 = "{0:b}".format(data[i])
-        bits01 = "{0:b}".format(data[i+1])
-        bits02 = "{0:b}".format(data[i+2])
-        bits03 = "{0:b}".format(data[i+3])
+        bits00 = "{0:b}".format(data[i*4])
+        bits01 = "{0:b}".format(data[i*4+1])
+        bits02 = "{0:b}".format(data[i*4+2])
+        bits03 = "{0:b}".format(data[i*4+3])
 
         samp00 = bits00.zfill(8)
         samp01 = bits01.zfill(8)
@@ -51,7 +51,7 @@ while 1:
 
         out_str0 = str(out0)
 
-        #with open("data.txt", "a") as f:
+        # with open("data.txt", "a") as f:
         #    f.write(out_str0)
         #    f.write("\n")
 
