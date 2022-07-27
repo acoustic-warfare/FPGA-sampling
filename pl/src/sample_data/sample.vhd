@@ -136,15 +136,22 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         if bit_stream = '1' then
+         if counter_delay = 10 then
+            delay <= '0';
+         else
+            counter_delay <= counter_delay + 1;
+            delay <= '1';
+         end if;
+
+         if bit_stream = '1' and delay = '0' then
             counter_1s <= counter_1s + 1;
          end if;
 
-         if counter_samp = 4 then
+         if counter_samp = 4 and delay = '0' then
             counter_bit  <= counter_bit + 1;
             counter_1s   <= 0;
             counter_samp <= 0;
-         else
+         elsif delay = '0' then
             counter_samp <= counter_samp + 1;
          end if;
 
@@ -158,10 +165,11 @@ begin
          end if;
 
          if reset = '1' or ws = '1' then
-            counter_bit  <= 0;
-            counter_samp <= 0;
-            counter_mic  <= 0;
-            counter_1s   <= 0;
+            counter_delay <= 0;
+            counter_bit   <= 0;
+            counter_samp  <= 0;
+            counter_mic   <= 0;
+            counter_1s    <= 0;
          end if;
       end if;
    end process;

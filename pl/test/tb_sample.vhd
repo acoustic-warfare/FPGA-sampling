@@ -52,7 +52,7 @@ begin
    ws_activate : process (clk)
    begin
       if rising_edge(clk) then
-         if (clk_count > 9 and clk_count < 15) then
+         if (clk_count > 9 and clk_count < 19) or (clk_count > 2999 and clk_count < 3009) then
             ws <= '1';
          else
             ws <= '0';
@@ -90,7 +90,7 @@ begin
 
             -- test 1 is so far only ment for gktwave
 
-            wait for 50000 ns; -- duration of test 1
+            wait for 100000 ns; -- duration of test 1
 
          elsif run("auto") then
 
