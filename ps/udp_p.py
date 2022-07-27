@@ -5,7 +5,6 @@ from io import BytesIO
 import tempfile
 import struct
 import numpy 
-from bitstring import BitArray
 from pkg_resources import to_filename
 
 print("START")
@@ -41,14 +40,14 @@ while 1:
 
 
     test00 = test0.zfill(8)
-    test11 = test1.zfill(8)
+    test11 = test1.zfill(8) 
     test22 = test2.zfill(8)
     test33 = test3.zfill(8)
 
 
 
     test_full = test33 + test22 + test11 + test00
-    test_full2 =test22 + test11 + test00
+    #test_full2 =test22 + test11 + test00
 
     #print("test_full: ", test_full)
     #print("           test_full2: ", test_full2)
