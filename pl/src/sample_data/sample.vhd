@@ -37,6 +37,7 @@ architecture rtl of sample is
    signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
    signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
+   signal idle_counter : integer range 0 to 10 := 0;
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -52,8 +53,12 @@ begin
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
                if ws = '1' then
-                  --ws_error <= '0';
-                  state <= run;
+                  idle_counter <= idle_counter + 1;
+                  if (idle_counter = 6) then
+
+                     idle_counter <= 0;
+                     state        <= run;
+                  end if;
                end if;
 
             when run =>
@@ -80,16 +85,16 @@ begin
                   end if;
 
                   if counter_1s >= 2 then
-                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
-                     
+                     -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
+
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0) <= '1';
+                     mic_sample_data_out(0)           <= '1';
 
                   else
-                    -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
+                     -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '0';
 
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0) <= '0';
+                     mic_sample_data_out(0)           <= '0';
                   end if;
 
                   if counter_bit = 23 then
