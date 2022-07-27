@@ -37,7 +37,10 @@ architecture rtl of sample is
    signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
    signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
-   signal idle_counter : integer range 0 to 10 := 0;
+   signal idle_counter : integer   := 0;
+   signal idle_start   : std_logic := '0';
+
+   signal runner : std_logic := '0';
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -52,13 +55,19 @@ begin
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
-               if ws = '1' then
-                  idle_counter <= idle_counter + 1;
-                  if (idle_counter = 6) then
+               runner <= '0';
 
-                     idle_counter <= 0;
-                     state        <= run;
-                  end if;
+               if ws = '1' then
+                  idle_start <= '1';
+               end if;
+
+               if (idle_start = '1' and idle_counter = 20) then
+                  idle_counter <= 0;
+                  idle_start   <= '0';
+                  state        <= run;
+                  runner       <= '1';
+               elsif (idle_start = '1') then
+                  idle_counter <= idle_counter + 1;
                end if;
 
             when run =>
@@ -136,36 +145,30 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         --if counter_delay = 1 then
-         --   delay <= '0';
-         --else
-         --   counter_delay <= counter_delay + 1;
-         --   delay <= '1';
-         --end if;
+         if (runner = '1') then
+            if bit_stream = '1' then
+               counter_1s <= counter_1s + 1;
+            end if;
 
-         --and delay = '0'
-         if bit_stream = '1' then
-            counter_1s <= counter_1s + 1;
-         end if;
+            --and delay = '0'
+            if counter_samp = 4 then
+               counter_bit  <= counter_bit + 1;
+               counter_1s   <= 0;
+               counter_samp <= 0;
 
-         --and delay = '0'
-         if counter_samp = 4 then
-            counter_bit  <= counter_bit + 1;
-            counter_1s   <= 0;
-            counter_samp <= 0;
+               --elsif delay = '0' then
+            else
+               counter_samp <= counter_samp + 1;
+            end if;
 
-            --elsif delay = '0' then
-         else
-            counter_samp <= counter_samp + 1;
-         end if;
+            if counter_bit = 31 then
+               counter_bit <= 0;
+               counter_mic <= counter_mic + 1;
+            end if;
 
-         if counter_bit = 31 then
-            counter_bit <= 0;
-            counter_mic <= counter_mic + 1;
-         end if;
-
-         if counter_mic = 15 and counter_bit = 31 then
-            counter_mic <= 0;
+            if counter_mic = 15 and counter_bit = 31 then
+               counter_mic <= 0;
+            end if;
          end if;
 
          if reset = '1' or ws = '1' then
