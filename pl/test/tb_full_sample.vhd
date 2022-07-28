@@ -18,18 +18,17 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal chain_x4_matrix_data_in : matrix_4_16_24_type          := (others => (others => (others => '0')));
+   signal chain_x4_matrix_data_in : matrix_4_16_32_type          := (others => (others => (others => '0')));
    signal chain_matrix_valid_in   : std_logic_vector(3 downto 0) := "0000";
 
    signal array_matrix_valid_out : std_logic;
-   signal array_matrix_data_out  : matrix_4_16_24_type;
+   signal array_matrix_data_out  : matrix_64_32_type;
 
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
 
-   signal temp_matrix_16_24 : matrix_16_24_type;
+   signal temp_matrix_16_24 : matrix_16_32_type;
 
-   signal data_test1, data_test2, data_test3, data_test4, data_test5, data_test6, data_test7, data_test8, data_test9, data_test10, data_test11, data_test12, data_test13, data_test14, data_test15, data_test16 : std_logic_vector(23 downto 0);
 begin
 
    full_sample_1 : entity work.full_sample port map(
@@ -70,24 +69,6 @@ begin
          end if;
       end if;
    end process;
-
-   temp_matrix_16_24 <= array_matrix_data_out(0);
-   data_test1        <= temp_matrix_16_24(0);
-   data_test2        <= temp_matrix_16_24(1);
-   data_test3        <= temp_matrix_16_24(2);
-   data_test4        <= temp_matrix_16_24(3);
-   data_test5        <= temp_matrix_16_24(4);
-   data_test6        <= temp_matrix_16_24(5);
-   data_test7        <= temp_matrix_16_24(6);
-   data_test8        <= temp_matrix_16_24(7);
-   data_test9        <= temp_matrix_16_24(8);
-   data_test10       <= temp_matrix_16_24(9);
-   data_test11       <= temp_matrix_16_24(10);
-   data_test12       <= temp_matrix_16_24(11);
-   data_test13       <= temp_matrix_16_24(12);
-   data_test14       <= temp_matrix_16_24(13);
-   data_test15       <= temp_matrix_16_24(14);
-   data_test16       <= temp_matrix_16_24(15);
 
    main : process
    begin
