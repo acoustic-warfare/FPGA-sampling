@@ -61,7 +61,7 @@ begin
                   idle_start <= '1';
                end if;
 
-               if (idle_start = '1' and idle_counter = 20) then
+               if (idle_start = '1' and idle_counter = 6) then
                   idle_counter <= 0;
                   idle_start   <= '0';
                   state        <= run;
