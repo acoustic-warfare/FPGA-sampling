@@ -89,11 +89,11 @@ begin
 
                if counter_samp = 4 then
 
-                  if ws = '1' and counter_mic > 1 then
+                  if ws = '1' and counter_mic > 2 then
                      ws_error <= '1';
                   end if;
 
-                  if counter_1s >= 2 then
+                  if counter_1s > 1 then
                      -- mic_sample_data_out <= mic_sample_data_out(23 downto 1) & '1';
 
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
@@ -145,34 +145,30 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         if (runner = '1') then
-            if bit_stream = '1' then
-               counter_1s <= counter_1s + 1;
-            end if;
-
-            --and delay = '0'
-            if counter_samp = 4 then
-               counter_bit  <= counter_bit + 1;
-               counter_1s   <= 0;
-               counter_samp <= 0;
-
-               --elsif delay = '0' then
-            else
-               counter_samp <= counter_samp + 1;
-            end if;
-
-            if counter_bit = 31 then
-               counter_bit <= 0;
-               counter_mic <= counter_mic + 1;
-            end if;
-
-            if counter_mic = 15 and counter_bit = 31 then
-               counter_mic <= 0;
-            end if;
+         -- if (runner = '1') then
+         if bit_stream = '1' and (counter_samp = 1 or counter_samp = 2 or counter_samp = 3) then
+            counter_1s <= counter_1s + 1;
          end if;
 
+         if counter_samp = 4 then
+            counter_bit  <= counter_bit + 1;
+            counter_1s   <= 0;
+            counter_samp <= 0;
+         else
+            counter_samp <= counter_samp + 1;
+         end if;
+
+         if counter_bit = 31 then
+            counter_bit <= 0;
+            counter_mic <= counter_mic + 1;
+         end if;
+
+         if counter_mic = 15 and counter_bit = 31 then
+            counter_mic <= 0;
+         end if;
+         -- end if;
+
          if reset = '1' or ws = '1' then
-            --counter_delay <= 0;
             counter_bit  <= 0;
             counter_samp <= 0;
             counter_mic  <= 0;
