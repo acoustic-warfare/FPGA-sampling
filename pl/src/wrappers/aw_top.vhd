@@ -67,7 +67,7 @@ begin
          FIFO_READ_empty        => empty_array(0),
          FIFO_WRITE_almost_full => almost_full_array(0),
          FIFO_READ_almost_empty => almost_empty_array(0),
-         FIFO_WRITE_wr_data     => data_collector(1), --data in
+         FIFO_WRITE_wr_data     => data_collector(4), --data in
          FIFO_WRITE_wr_en       => wr_en_array(0),
          FIFO_READ_rd_en        => rd_en_pulse_array(0), --- from pulse
          FIFO_READ_rd_data      => data(0),              --data out

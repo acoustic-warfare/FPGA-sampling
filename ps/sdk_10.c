@@ -69,8 +69,9 @@ int main() {
 
 	u32 zeros = 0x0;
 	u32 ones = 0Xffffffff;
-	u32 array[64];
+	u32 array[15];
 	int counter = 0;
+   
 	//u32 numbers[10]={0x00000000,0x00000001,0x00000002,0x00000003,0x00000004,0x00000005,0x00000006,0x00000007,0x00000008,0x00000009};
 	u32 read_reg0;
 	u32 read_reg64;
@@ -102,20 +103,20 @@ int main() {
 	lwip_init();
 
 	/* Add network interface to the netif_list, and set it as default */
-	if (!xemac_add(echo_netif, &ipaddr, &netmask, &gw, mac_ethernet_address,
+	if (!xemac_add(echo_netif, &ipaddr, &netmask, &gw, mac_ethernet_address, /////////////////////////////////////////////////////////////////
 	PLATFORM_EMAC_BASEADDR)) {
 		xil_printf("Error adding N/W interface\n\r");
 		return -1;
 	}
-	netif_set_default(echo_netif);
+	netif_set_default(echo_netif);   ////////////////////////////////////////////////////////////////////////
 
 	/* now enable interrupts */
 	platform_enable_interrupts();
 
 	/* specify that the network if is up */
-	netif_set_up(echo_netif);
+	netif_set_up(echo_netif);  ////////////////////////////////////////////////////////////////////////////////////
 
-	xil_printf("Zyboboard IP settings: \r\n");
+	xil_printf("Zyboboard IP settings: \r\n");  
 	print_ip_settings(&ipaddr, &netmask, &gw);
 	xil_printf("Remote IP settings: \r\n");
 	//print_ip_settings(&RemoteAddr, &Remotenetmask, &Remotegw);
@@ -132,13 +133,13 @@ int main() {
 	while (Error == 0) {
 
 		if (TcpFastTmrFlag) {
-			tcp_fasttmr();
+			tcp_fasttmr();  ///////////////////////////////////////////////
 			TcpFastTmrFlag = 0;
 			//SendResults = 1;
 			//xil_printf("*");
 		}
 		if (TcpSlowTmrFlag) {
-			tcp_slowtmr();
+			tcp_slowtmr();    /////////////////////////////////////////////////
 			TcpSlowTmrFlag = 0;
 			SendResults = 1;
 		}
@@ -146,7 +147,7 @@ int main() {
 		//transfer_data();
 
 		/* Receive packets */
-		xemacif_input(echo_netif);
+		xemacif_input(echo_netif);  ////////////////////////////////////////
 
 		read_reg64 = Xil_In32(AD64);
 		read_reg65 = Xil_In32(AD65);
@@ -154,19 +155,20 @@ int main() {
 		if (read_reg64 == 0 && read_reg65 == 0) {
 			///////////////////////////////////////////////////////////////////// my test code
 
-			if (counter == 0){
-				read_reg0 = Xil_In32(AD0);
+			read_reg0 = Xil_In32(AD0);
+			Xil_In32(AD1);
 			array[counter] = read_reg0;
-			}
-			else {
-				array[counter] = ones;
-			}
+
+			//else {
+			//	array[counter] = ones;
+			//}
 
 			counter = counter + 1;
+         
 
 			//SendResults == 1 &&
 			/* Send results back from time to time */
-			if (counter == 64) {
+			if (counter == 10) {
 
 				counter = 0;
 				SendResults = 0;

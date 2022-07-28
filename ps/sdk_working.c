@@ -69,7 +69,7 @@ int main() {
 
 	u32 zeros = 0x0;
 	u32 ones = 0Xffffffff;
-	u32 array[64];
+	u32 array[15];
 	int counter = 0;
 	//u32 numbers[10]={0x00000000,0x00000001,0x00000002,0x00000003,0x00000004,0x00000005,0x00000006,0x00000007,0x00000008,0x00000009};
 	u32 read_reg0;
@@ -158,15 +158,15 @@ int main() {
 				read_reg0 = Xil_In32(AD0);
 			array[counter] = read_reg0;
 			}
-			else {
-				array[counter] = ones;
-			}
+			//else {
+			//	array[counter] = ones;
+			//}
 
 			counter = counter + 1;
 
 			//SendResults == 1 &&
 			/* Send results back from time to time */
-			if (counter == 64) {
+			if (counter == 10) {
 
 				counter = 0;
 				SendResults = 0;

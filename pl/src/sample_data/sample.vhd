@@ -61,7 +61,7 @@ begin
                   idle_start <= '1';
                end if;
 
-               if (idle_start = '1' and idle_counter = 6) then
+               if (idle_start = '1' and idle_counter = 52) then
                   idle_counter <= 0;
                   idle_start   <= '0';
                   state        <= run;
@@ -145,7 +145,7 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         -- if (runner = '1') then
+        if (runner = '1') then
          if bit_stream = '1' and (counter_samp = 1 or counter_samp = 2 or counter_samp = 3) then
             counter_1s <= counter_1s + 1;
          end if;
@@ -166,7 +166,7 @@ begin
          if counter_mic = 15 and counter_bit = 31 then
             counter_mic <= 0;
          end if;
-         -- end if;
+         end if;
 
          if reset = '1' or ws = '1' then
             counter_bit  <= 0;
