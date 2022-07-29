@@ -5,7 +5,7 @@ package require cmdline
 
 set options {
    {gui "1"               "Launch in gui."                      }
-   {board.arg "20"        "Select part (z7-10|z7-20). Default:" }
+   {board.arg "10"        "Select part (z7-10|z7-20). Default:" }
    {synth "1"             "Run step synth."                     }
    {impl "1"              "Run step impl."                      }
 }
@@ -48,13 +48,18 @@ set_property target_language VHDL  [current_project]
 set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
 add_files [file join "$ROOT" src wrappers aw_top.vhd]
+add_files [file join "$ROOT" src wrappers zynq_bd_wrapper.vhd]
+
 add_files [file join "$ROOT" src axi_lite_slave.vhd]
 add_files [file join "$ROOT" src rd_en_pulse.vhd]
 #add_files [file join "$ROOT" src demo_count.vhd]
-add_files [file join "$ROOT" src wrappers zynq_bd_wrapper.vhd]
+
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
+add_files [file join "$ROOT" src sample_data full_sample.vhd]
+
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
+
 add_files [file join "$ROOT" src matrix_package.vhd]
 
 

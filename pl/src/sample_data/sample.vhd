@@ -32,7 +32,7 @@ end entity;
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state        : state_type;
-   signal counter_bit  : integer range 0 to 31 := 0; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_bit  : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
    signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
    signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
@@ -146,7 +146,7 @@ begin
    begin
       if rising_edge(clk) then
         if (runner = '1') then
-         if bit_stream = '1' and (counter_samp = 1 or counter_samp = 2 or counter_samp = 3) then
+         if bit_stream = '1' then
             counter_1s <= counter_1s + 1;
          end if;
 
@@ -158,7 +158,7 @@ begin
             counter_samp <= counter_samp + 1;
          end if;
 
-         if counter_bit = 31 then
+         if counter_bit = 31 and counter_samp = 4 then
             counter_bit <= 0;
             counter_mic <= counter_mic + 1;
          end if;
