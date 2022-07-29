@@ -33,6 +33,68 @@ extern volatile int TcpSlowTmrFlag;
 
 #define AD0 0x40000000
 #define AD1 0x40000004
+#define AD2 0x40000008
+#define AD3 0x4000000C
+#define AD4 0x40000010
+#define AD5 0x40000014
+#define AD6 0x40000018
+#define AD7 0x4000001C
+#define AD8 0x40000020
+#define AD9 0x40000024
+#define AD10 0x40000028
+#define AD11 0x4000002C
+#define AD12 0x40000030
+#define AD13 0x40000034
+#define AD14 0x40000038
+#define AD15 0x4000003C
+#define AD16 0x40000040
+#define AD17 0x40000044
+#define AD18 0x40000048
+#define AD19 0x4000004C
+#define AD20 0x40000050
+#define AD21 0x40000054
+#define AD22 0x40000058
+#define AD23 0x4000005C
+#define AD24 0x40000060
+#define AD25 0x40000064
+#define AD26 0x40000068
+#define AD27 0x4000006C
+#define AD28 0x40000070
+#define AD29 0x40000074
+#define AD30 0x40000078
+#define AD31 0x4000007C
+#define AD32 0x40000080
+#define AD33 0x40000084
+#define AD34 0x40000088
+#define AD35 0x4000008C
+#define AD36 0x40000090
+#define AD37 0x40000094
+#define AD38 0x40000098
+#define AD39 0x4000009C
+#define AD40 0x400000A0
+#define AD41 0x400000A4
+#define AD42 0x400000A8
+#define AD43 0x400000AC
+#define AD44 0x400000B0
+#define AD45 0x400000B4
+#define AD46 0x400000B8
+#define AD47 0x400000BC
+#define AD48 0x400000C0
+#define AD49 0x400000C4
+#define AD50 0x400000C8
+#define AD51 0x400000CC
+#define AD52 0x400000D0
+#define AD53 0x400000D4
+#define AD54 0x400000D8
+#define AD55 0x400000DC
+#define AD56 0x400000E0
+#define AD57 0x400000E4
+#define AD58 0x400000E8
+#define AD59 0x400000EC
+#define AD60 0x400000F0
+#define AD61 0x400000F4
+#define AD62 0x400000F8
+#define AD63 0x400000FC
 
 #define AD64 0x40000100
 #define AD65 0x40000104
@@ -221,7 +283,7 @@ int main() {
 
 			u32 read_reg0;
 
-			read_reg0 = Xil_In32(AD0);
+			read_reg0 = Xil_In32(AD14);
 			data[0] = read_reg0;
 
 			xemacif_input(netif);
