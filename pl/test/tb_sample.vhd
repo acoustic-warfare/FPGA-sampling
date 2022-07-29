@@ -90,7 +90,7 @@ begin
 
             -- test 1 is so far only ment for gktwave
 
-            wait for 100000 ns; -- duration of test 1
+            wait for 500000 ns; -- duration of test 1
 
          elsif run("auto") then
 
