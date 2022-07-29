@@ -43,7 +43,11 @@ int main()
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("nanana.txt", "w");
+   FILE *fp = fopen("test.txt", "w");
+
+   
+   
+   
    while (1)
    {
       int len, n;
@@ -55,11 +59,13 @@ int main()
                    &len);
       buffer[n] = '\0';
 
+
+
       for (int i = 0; i < 63; i++)
       {
-         fprintf(fp, "%d, ", buffer[i]);
+         fprintf(fp, "%9d, ", buffer[i]);
       }
-      fprintf(fp, "%d\n", buffer[63]);
+      fprintf(fp, "%9d\n", buffer[63]);
    }
    return 0;
 }
