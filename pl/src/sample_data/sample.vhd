@@ -39,6 +39,7 @@ architecture rtl of sample is
    signal state_1      : integer range 0 to 2;       -- only for buggfixing -- 0 is IDLE, 1 is RUN, 2 is PAUSE
    signal idle_counter : integer   := 0;
    signal idle_start   : std_logic := '0';
+   signal active       : std_logic := '0';
 
    --signal runner : std_logic := '0';
 
@@ -149,7 +150,6 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         --if (runner = '1') then
          if bit_stream = '1' then
             counter_1s <= counter_1s + 1;
          end if;
@@ -170,15 +170,19 @@ begin
          if counter_mic = 15 and counter_bit = 31 then
             counter_mic <= 0;
          end if;
-      end if;
 
-      if reset = '1' or ws = '1' then
-         counter_bit  <= 0;
-         counter_samp <= 0;
-         counter_mic  <= 0;
-         counter_1s   <= 0;
+         if ws = '0' then
+            active <= '0';
+         end if;
+
+         if reset = '1' or (ws = '1' and active = '0') then
+            active       <= '1';
+            counter_bit  <= 0;
+            counter_samp <= 0;
+            counter_mic  <= 0;
+            counter_1s   <= 0;
+         end if;
       end if;
-      --end if;
    end process;
 
    state_num : process (state) -- only for findig buggs
