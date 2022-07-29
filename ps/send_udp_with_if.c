@@ -65,16 +65,20 @@ void print_ip_settings(struct ip_addr *ip, struct ip_addr *mask,
 
 /* print_app_header: function to print a header at start time */
 
+
 int main() {
 
-	u32 zeros = 0x0;
-	u32 ones = 0Xffffffff;
-	u32 array[64];
-	int counter = 0;
+	u32 array[50];
+	int counter=0;
 	//u32 numbers[10]={0x00000000,0x00000001,0x00000002,0x00000003,0x00000004,0x00000005,0x00000006,0x00000007,0x00000008,0x00000009};
 	u32 read_reg0;
-	u32 read_reg64;
-	u32 read_reg65;
+   u32 read_reg64;
+   u32 read_reg65;
+
+
+
+
+
 
 	////////////////////////////////////////////////////////////////////////////////// BELOW IS UDP CODE
 	struct ip_addr ipaddr, netmask, gw /*, Remotenetmask, Remotegw*/;
@@ -97,6 +101,8 @@ int main() {
 	IP4_ADDR(&RemoteAddr, 192, 168, 1, 2);
 	//IP4_ADDR(&Remotenetmask, 255, 255, 255,  0);
 	//IP4_ADDR(&Remotegw,      10, 0,   0,  1);
+
+
 
 	/* Initialize the lwip for UDP */
 	lwip_init();
@@ -131,6 +137,7 @@ int main() {
 	/* receive and process packets */
 	while (Error == 0) {
 
+
 		if (TcpFastTmrFlag) {
 			tcp_fasttmr();
 			TcpFastTmrFlag = 0;
@@ -148,45 +155,40 @@ int main() {
 		/* Receive packets */
 		xemacif_input(echo_netif);
 
-		read_reg64 = Xil_In32(AD64);
+      read_reg64 = Xil_In32(AD64);
 		read_reg65 = Xil_In32(AD65);
 
-		if (read_reg64 == 0 && read_reg65 == 0) {
-			///////////////////////////////////////////////////////////////////// my test code
+         if (read_reg64 == 0 && read_reg65 == 0) {
+         ///////////////////////////////////////////////////////////////////// my test code
+         read_reg0 = Xil_In32(AD0);
+         array[counter] = read_reg0;
 
-			if (counter == 0){
-				read_reg0 = Xil_In32(AD0);
-			array[counter] = read_reg0;
-			}
-			else {
-				array[counter] = ones;
-			}
+         read_reg0 = Xil_In32(AD1);
 
-			counter = counter + 1;
+         counter=counter +1;
 
-			//SendResults == 1 &&
-			/* Send results back from time to time */
-			if (counter == 64) {
+   //SendResults == 1 &&
+         /* Send results back from time to time */
+         if (counter == 50) {
 
-				counter = 0;
-				SendResults = 0;
-				// Read the results from the FPGA
-				//Centroid = "DEEDBEEF";
+            counter = 0;
+            SendResults = 0;
+            // Read the results from the FPGA
+            //Centroid = "DEEDBEEF";
 
-				// Send out the centroid result over UDP
-				psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);
-				psnd->payload = &array;
-				udpsenderr = udp_sendto(&send_pcb, psnd, &RemoteAddr,
-						RemotePort);
-				//xil_printf(" %d \n", array[0] );
-				if (udpsenderr != ERR_OK) {
-					xil_printf("UDP Send failed with Error %d\n\r", udpsenderr);
-					goto ErrorOrDone;
-				}
-				pbuf_free(psnd);
-			}
-		}
-	}
+            // Send out the centroid result over UDP
+            psnd = pbuf_alloc(PBUF_TRANSPORT, sizeof(array), PBUF_REF);
+            psnd->payload = &array;
+            udpsenderr = udp_sendto(&send_pcb, psnd, &RemoteAddr, RemotePort);
+            xil_printf(".");
+            if (udpsenderr != ERR_OK) {
+               xil_printf("UDP Send failed with Error %d\n\r", udpsenderr);
+               goto ErrorOrDone;
+            }
+            pbuf_free(psnd);
+         }
+      }
+   }
 	// Jump point for failure
 	ErrorOrDone: xil_printf(
 			"Catastrophic Error! Shutting down and exiting...\n\r");
