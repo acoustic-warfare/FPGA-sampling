@@ -59,13 +59,7 @@ void print_ip_settings(struct ip_addr *ip, struct ip_addr *mask,
 }
 
 void PayloadID(u32 data[]) {
-	u32 read_reg0;
 
-	for (int i = 0; i < 10; i++) {
-		read_reg0 = Xil_In32(AD0);
-		data[i] = read_reg0;
-		read_reg0 = Xil_In32(AD1);
-	}
 }
 
 int main() {
@@ -225,6 +219,11 @@ int main() {
 		read_reg65 = Xil_In32(AD65);
 		if (read_reg64 == 0 && read_reg65 == 0) {
 
+			u32 read_reg0;
+
+			read_reg0 = Xil_In32(AD0);
+			data[0] = read_reg0;
+
 			xemacif_input(netif);
 
 			p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
@@ -234,7 +233,7 @@ int main() {
 				return ERR_MEM;
 			}
 
-			PayloadID(data);
+			//PayloadID(data);
 
 			memcpy(p->payload, data, buflen);
 
