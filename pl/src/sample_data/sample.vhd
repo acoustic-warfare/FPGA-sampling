@@ -40,7 +40,7 @@ architecture rtl of sample is
    signal idle_counter : integer   := 0;
    signal idle_start   : std_logic := '0';
 
-   signal runner : std_logic := '0';
+   --signal runner : std_logic := '0';
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -55,20 +55,24 @@ begin
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
-               runner <= '0';
+               -- runner <= '0';
+
+               --if ws = '1' then
+               --    idle_start <= '1';
+               -- end if;
 
                if ws = '1' then
-                  idle_start <= '1';
+                  state <= run;
                end if;
 
-               if (idle_start = '1' and idle_counter = 52) then
-                  idle_counter <= 0;
-                  idle_start   <= '0';
-                  state        <= run;
-                  runner       <= '1';
-               elsif (idle_start = '1') then
-                  idle_counter <= idle_counter + 1;
-               end if;
+               -- if (idle_start = '1' and idle_counter = 36) then
+               --    idle_counter <= 0;
+               --   idle_start   <= '0';
+               --    state        <= run;
+               --    runner       <= '1';
+               -- elsif (idle_start = '1') then
+               --    idle_counter <= idle_counter + 1;
+               --  end if;
 
             when run =>
                ---------------------------------------------------------------------------------------------------------
@@ -145,7 +149,7 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-        if (runner = '1') then
+         --if (runner = '1') then
          if bit_stream = '1' then
             counter_1s <= counter_1s + 1;
          end if;
@@ -166,15 +170,15 @@ begin
          if counter_mic = 15 and counter_bit = 31 then
             counter_mic <= 0;
          end if;
-         end if;
-
-         if reset = '1' or ws = '1' then
-            counter_bit  <= 0;
-            counter_samp <= 0;
-            counter_mic  <= 0;
-            counter_1s   <= 0;
-         end if;
       end if;
+
+      if reset = '1' or ws = '1' then
+         counter_bit  <= 0;
+         counter_samp <= 0;
+         counter_mic  <= 0;
+         counter_1s   <= 0;
+      end if;
+      --end if;
    end process;
 
    state_num : process (state) -- only for findig buggs

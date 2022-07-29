@@ -65,16 +65,16 @@ int main() {
          }
       }*/
       //printf(" %d \n", buffer[0]); 
-      fprintf(fp, "%d \n", buffer[0]);
-      fprintf(fp, "%d \n", buffer[1]);
-      fprintf(fp, "%d \n", buffer[2]);
-      fprintf(fp, "%d \n", buffer[3]);
-      fprintf(fp, "%d \n", buffer[4]);
-      fprintf(fp, "%d \n", buffer[5]);
-      fprintf(fp, "%d \n", buffer[6]);
-      fprintf(fp, "%d \n", buffer[7]);
-      fprintf(fp, "%d \n", buffer[8]);
-      fprintf(fp, "%d \n", buffer[9]);
+      fprintf(fp, "%d \n", buffer[50]);
+      //fprintf(fp, "%d \n", buffer[1]);
+      //fprintf(fp, "%d \n", buffer[2]);
+      //fprintf(fp, "%d \n", buffer[3]);
+      //fprintf(fp, "%d \n", buffer[4]);
+      //fprintf(fp, "%d \n", buffer[5]);
+      //fprintf(fp, "%d \n", buffer[6]);
+      //fprintf(fp, "%d \n", buffer[7]);
+      //fprintf(fp, "%d \n", buffer[8]);
+      //fprintf(fp, "%d \n", buffer[9]);
       
 
       
