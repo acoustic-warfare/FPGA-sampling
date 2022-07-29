@@ -60,10 +60,12 @@ void print_ip_settings(struct ip_addr *ip, struct ip_addr *mask,
 
 void PayloadID(u32 data[]) {
 	u32 read_reg0;
-	read_reg0 = Xil_In32(AD0);
-	data[0] = read_reg0;
-	read_reg0 = Xil_In32(AD1);
 
+	for (int i = 0; i < 10; i++) {
+		read_reg0 = Xil_In32(AD0);
+		data[i] = read_reg0;
+		read_reg0 = Xil_In32(AD1);
+	}
 }
 
 int main() {
