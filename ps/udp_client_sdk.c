@@ -61,6 +61,19 @@ void PayloadID(u32 data[]) {
 }
 
 int main() {
+	// set number of arrays used
+	u32 nr_arrays = 2;
+
+	// set number of 32bit slots in payload_header
+	u32 payload_header_size = 4;
+
+	u32 array_id = 1;
+	u32 protocol_ver = 1;
+	u32 samp_frequency = 15625;
+
+	u32 data[payload_header_size + nr_arrays * 64];
+
+	u32 start_addr = AD0;
 
 	u32 read_reg64;
 	u32 read_reg65;
@@ -86,8 +99,6 @@ int main() {
 			{ 0x00, 0x00, 0x00, 0x01, 0x00, 0x00 };
 
 	// before sending to network
-
-	u32 data[124];
 
 	int len = 0;
 
@@ -187,8 +198,7 @@ int main() {
 
 	xil_printf("Setup Done");
 
-   // change this to ip of pc
-	IP4_ADDR(&ip_remote, 192, 168, 1, 3); 
+	IP4_ADDR(&ip_remote, 192, 168, 1, 3); // windows pc
 
 	udp_1 = udp_new();
 
@@ -214,13 +224,19 @@ int main() {
 
 	while (1) {
 
-		read_reg64 = Xil_In32(AD64);
-		read_reg65 = Xil_In32(AD65);
+		read_reg64 = Xil_In32(start_addr + nr_arrays * 64 * 4 + 4);
+		read_reg65 = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);
 		if (read_reg64 == 0 && read_reg65 == 0) {
 
-			u32 start_addr = AD0;
-			for (int i = 0; i < 64; i++) {
-				data[i] = Xil_In32(start_addr + 4 * i);
+			// add payload_headder
+			data[0] = array_id;
+			data[1] = protocol_ver;
+			data[2] = samp_frequency;
+			data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12); //TODO: Change this address when we implemented the counter
+
+			// add payload_data
+			for (int i = 0; i < nr_arrays * 64; i++) {
+				data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
 			}
 
 			xemacif_input(netif);
