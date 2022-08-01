@@ -1,10 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+--use work.matrix_type.all;
 
 entity axi_lite_slave is
-	generic (
-		-- Users to add parameters here
+   generic (
+      -- Users to add parameters here
 
       -- User parameters ends
       -- Do not modify the parameters beyond this line
@@ -12,79 +13,145 @@ entity axi_lite_slave is
       -- Width of S_AXI data bus
       C_S_AXI_DATA_WIDTH : integer := 32;
       -- Width of S_AXI address bus
-      C_S_AXI_ADDR_WIDTH : integer := 9
+      C_S_AXI_ADDR_WIDTH : integer := 32
    );
    port (
-      -- Users to add ports here
-      mic0_in : in std_logic_vector (C_S_AXI_DATA_WIDTH-1 downto 0);
-      rd_en    : out std_logic;
-      -- User ports ends
-      -- Do not modify the ports beyond this line
+      --mic_reg_in : in matrix_64_32_type;
+      reg_mic_0  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_1  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_2  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_3  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_4  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_5  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_6  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_7  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_8  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_9  : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_10 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_11 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_12 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_13 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_14 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_15 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_16 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_17 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_18 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_19 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_20 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_21 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_22 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_23 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_24 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_25 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_26 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_27 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_28 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_29 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_30 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_31 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_32 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_33 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_34 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_35 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_36 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_37 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_38 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_39 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_40 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_41 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_42 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_43 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_44 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_45 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_46 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_47 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_48 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_49 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_50 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_51 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_52 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_53 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_54 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_55 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_56 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_57 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_58 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_59 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_60 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_61 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_62 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_mic_63 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_64     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_65     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_66     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_67     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_68     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
+      reg_69     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
 
-		-- User ports ends
-		-- Do not modify the ports beyond this line
+      --read enable 
+      rd_en : out std_logic_vector(69 downto 0);
 
-		-- Global Clock Signal
-		S_AXI_ACLK	: in std_logic;
-		-- Global Reset Signal. This Signal is Active LOW
-		S_AXI_ARESETN	: in std_logic;
-		-- Write address (issued by master, acceped by Slave)
-		S_AXI_AWADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-		-- Write channel Protection type. This signal indicates the
-    		-- privilege and security level of the transaction, and whether
-    		-- the transaction is a data access or an instruction access.
-		S_AXI_AWPROT	: in std_logic_vector(2 downto 0);
-		-- Write address valid. This signal indicates that the master signaling
-    		-- valid write address and control information.
-		S_AXI_AWVALID	: in std_logic;
-		-- Write address ready. This signal indicates that the slave is ready
-    		-- to accept an address and associated control signals.
-		S_AXI_AWREADY	: out std_logic;
-		-- Write data (issued by master, acceped by Slave)
-		S_AXI_WDATA	: in std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-		-- Write strobes. This signal indicates which byte lanes hold
-    		-- valid data. There is one write strobe bit for each eight
-    		-- bits of the write data bus.
-		S_AXI_WSTRB	: in std_logic_vector((C_S_AXI_DATA_WIDTH/8)-1 downto 0);
-		-- Write valid. This signal indicates that valid write
-    		-- data and strobes are available.
-		S_AXI_WVALID	: in std_logic;
-		-- Write ready. This signal indicates that the slave
-    		-- can accept the write data.
-		S_AXI_WREADY	: out std_logic;
-		-- Write response. This signal indicates the status
-    		-- of the write transaction.
-		S_AXI_BRESP	: out std_logic_vector(1 downto 0);
-		-- Write response valid. This signal indicates that the channel
-    		-- is signaling a valid write response.
-		S_AXI_BVALID	: out std_logic;
-		-- Response ready. This signal indicates that the master
-    		-- can accept a write response.
-		S_AXI_BREADY	: in std_logic;
-		-- Read address (issued by master, acceped by Slave)
-		S_AXI_ARADDR	: in std_logic_vector(C_S_AXI_ADDR_WIDTH-1 downto 0);
-		-- Protection type. This signal indicates the privilege
-    		-- and security level of the transaction, and whether the
-    		-- transaction is a data access or an instruction access.
-		S_AXI_ARPROT	: in std_logic_vector(2 downto 0);
-		-- Read address valid. This signal indicates that the channel
-    		-- is signaling valid read address and control information.
-		S_AXI_ARVALID	: in std_logic;
-		-- Read address ready. This signal indicates that the slave is
-    		-- ready to accept an address and associated control signals.
-		S_AXI_ARREADY	: out std_logic;
-		-- Read data (issued by slave)
-		S_AXI_RDATA	: out std_logic_vector(C_S_AXI_DATA_WIDTH-1 downto 0);
-		-- Read response. This signal indicates the status of the
-    		-- read transfer.
-		S_AXI_RRESP	: out std_logic_vector(1 downto 0);
-		-- Read valid. This signal indicates that the channel is
-    		-- signaling the required read data.
-		S_AXI_RVALID	: out std_logic;
-		-- Read ready. This signal indicates that the master can
-    		-- accept the read data and response information.
-		S_AXI_RREADY	: in std_logic
-	);
+      -- Global Clock Signal
+      S_AXI_ACLK : in std_logic;
+      -- Global Reset Signal. This Signal is Active LOW
+      S_AXI_ARESETN : in std_logic;
+      -- Write address (issued by master, acceped by Slave)
+      S_AXI_AWADDR : in std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+      -- Write channel Protection type. This signal indicates the
+      -- privilege and security level of the transaction, and whether
+      -- the transaction is a data access or an instruction access.
+      S_AXI_AWPROT : in std_logic_vector(2 downto 0);
+      -- Write address valid. This signal indicates that the master signaling
+      -- valid write address and control information.
+      S_AXI_AWVALID : in std_logic;
+      -- Write address ready. This signal indicates that the slave is ready
+      -- to accept an address and associated control signals.
+      S_AXI_AWREADY : out std_logic;
+      -- Write data (issued by master, acceped by Slave)
+      S_AXI_WDATA : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      -- Write strobes. This signal indicates which byte lanes hold
+      -- valid data. There is one write strobe bit for each eight
+      -- bits of the write data bus.
+      S_AXI_WSTRB : in std_logic_vector((C_S_AXI_DATA_WIDTH/8) - 1 downto 0);
+      -- Write valid. This signal indicates that valid write
+      -- data and strobes are available.
+      S_AXI_WVALID : in std_logic;
+      -- Write ready. This signal indicates that the slave
+      -- can accept the write data.
+      S_AXI_WREADY : out std_logic;
+      -- Write response. This signal indicates the status
+      -- of the write transaction.
+      S_AXI_BRESP : out std_logic_vector(1 downto 0);
+      -- Write response valid. This signal indicates that the channel
+      -- is signaling a valid write response.
+      S_AXI_BVALID : out std_logic;
+      -- Response ready. This signal indicates that the master
+      -- can accept a write response.
+      S_AXI_BREADY : in std_logic;
+      -- Read address (issued by master, acceped by Slave)
+      S_AXI_ARADDR : in std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
+      -- Protection type. This signal indicates the privilege
+      -- and security level of the transaction, and whether the
+      -- transaction is a data access or an instruction access.
+      S_AXI_ARPROT : in std_logic_vector(2 downto 0);
+      -- Read address valid. This signal indicates that the channel
+      -- is signaling valid read address and control information.
+      S_AXI_ARVALID : in std_logic;
+      -- Read address ready. This signal indicates that the slave is
+      -- ready to accept an address and associated control signals.
+      S_AXI_ARREADY : out std_logic;
+      -- Read data (issued by slave)
+      S_AXI_RDATA : out std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
+      -- Read response. This signal indicates the status of the
+      -- read transfer.
+      S_AXI_RRESP : out std_logic_vector(1 downto 0);
+      -- Read valid. This signal indicates that the channel is
+      -- signaling the required read data.
+      S_AXI_RVALID : out std_logic;
+      -- Read ready. This signal indicates that the master can
+      -- accept the read data and response information.
+      S_AXI_RREADY : in std_logic
+   );
 end axi_lite_slave;
 
 architecture rtl of axi_lite_slave is
@@ -107,13 +174,13 @@ architecture rtl of axi_lite_slave is
    -- ADDR_LSB = 2 for 32 bits (n downto 2)
    -- ADDR_LSB = 3 for 64 bits (n downto 3)
    constant ADDR_LSB          : integer := (C_S_AXI_DATA_WIDTH/32) + 1;
-   constant OPT_MEM_ADDR_BITS : integer := 6;
+   constant OPT_MEM_ADDR_BITS : integer := 10; --should only need to be 7
 
    ------------------------------------------------
    ---- Signals for user logic register space
    --------------------------------------------------
    type slv_2d is array (natural range <>) of std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
-   signal mic          : slv_2d(0 to 63) := (others => (others => '0'));
+   signal slv_reg      : slv_2d(0 to 69) := (others => (others => '0'));
    signal slv_reg_rden : std_logic;
    signal slv_reg_wren : std_logic;
    signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
@@ -211,33 +278,33 @@ begin
    -- and the slave is ready to accept the write address and write data.
    slv_reg_wren <= axi_wready and S_AXI_WVALID and axi_awready and S_AXI_AWVALID;
 
- ---  process (S_AXI_ACLK)
- ---     -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
- ---     variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
- ---  begin
- ---     if rising_edge(S_AXI_ACLK) then
- ---        if S_AXI_ARESETN = '0' then
- ---           mic <= (others => (others => '0'));
- ---        else
- ---           loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
----
- ---           if (slv_reg_wren = '1') then
- ---              case loc_addr is
- ---                 when 0 to 63 =>
- ---                    for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
- ---                       if (S_AXI_WSTRB(byte_index) = '1') then
- ---                          -- Respective byte enables are asserted as per write strobes
- ---                          -- slave registor 0
- ---                          mic(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
- ---                       end if;
- ---                    end loop;
- ---                 when others =>
- ---                    mic <= mic;
- ---              end case;
- ---           end if;
- ---        end if;
- ---     end if;
- ---  end process;
+   --process (S_AXI_ACLK)
+   --   -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
+   --   variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
+   --begin
+   --   if rising_edge(S_AXI_ACLK) then
+   --      if S_AXI_ARESETN = '0' then
+   --         slv_reg <= (others => (others => '0'));
+   --      else
+   --         loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
+   --
+   --         if (slv_reg_wren = '1') then
+   --            case loc_addr is
+   --               when 0 to 63 =>
+   --                  for byte_index in 0 to (C_S_AXI_DATA_WIDTH/8 - 1) loop
+   --                     if (S_AXI_WSTRB(byte_index) = '1') then
+   --                        -- Respective byte enables are asserted as per write strobes
+   --                        -- slave registor 0
+   --                        slv_reg(loc_addr)(byte_index * 8 + 7 downto byte_index * 8) <= S_AXI_WDATA(byte_index * 8 + 7 downto byte_index * 8);
+   --                     end if;
+   --                  end loop;
+   --               when others =>
+   --                  slv_reg <= slv_reg;
+   --            end case;
+   --         end if;
+   --      end if;
+   --   end if;
+   --end process;
 
    -- Implement write response logic generation
    -- The write response and response valid signals are asserted by the slave
@@ -320,18 +387,18 @@ begin
    -- and the slave is ready to accept the read address.
    slv_reg_rden <= axi_arready and S_AXI_ARVALID and (not axi_rvalid);
 
-   process (S_AXI_ACLK, S_AXI_ARESETN, S_AXI_AWADDR, S_AXI_AWPROT, S_AXI_AWVALID, S_AXI_WDATA, S_AXI_WSTRB,
-      S_AXI_WVALID, S_AXI_BREADY, S_AXI_ARADDR, S_AXI_ARPROT, S_AXI_ARVALID, S_AXI_RREADY)
+   process (S_AXI_ACLK)
       -- variable loc_addr :std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
       variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
    begin
-      -- Address decoding for reading registers ----------------------------------------------------------------------------------------------------------------------------------
-      loc_addr := to_integer(unsigned(axi_awaddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));   --- might be problems here later
+      -- Address decoding for reading registers
+      loc_addr := to_integer(unsigned(axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB)));
       rd_en <= (others => '0');
+
       case loc_addr is
-         when 0 to 63 =>
-            reg_data_out <= mic(loc_addr);
-            rd_en(loc_addr) <= 1;
+         when 0 to 69 =>
+            reg_data_out    <= slv_reg(loc_addr);
+            rd_en(loc_addr) <= '1';
          when others             =>
             reg_data_out <= (others => '0');
       end case;
@@ -354,13 +421,81 @@ begin
          end if;
       end if;
    end process;
-   -- Add user logic here
 
    process (S_AXI_ACLK)
    begin
+      slv_reg     <= (others => (others => '0'));
+      slv_reg(0)  <= reg_mic_0;
+      slv_reg(1)  <= reg_mic_1;
+      slv_reg(2)  <= reg_mic_2;
+      slv_reg(3)  <= reg_mic_3;
+      slv_reg(4)  <= reg_mic_4;
+      slv_reg(5)  <= reg_mic_5;
+      slv_reg(6)  <= reg_mic_6;
+      slv_reg(7)  <= reg_mic_7;
+      slv_reg(8)  <= reg_mic_8;
+      slv_reg(9)  <= reg_mic_9;
+      slv_reg(10) <= reg_mic_10;
+      slv_reg(11) <= reg_mic_11;
+      slv_reg(12) <= reg_mic_12;
+      slv_reg(13) <= reg_mic_13;
+      slv_reg(14) <= reg_mic_14;
+      slv_reg(15) <= reg_mic_15;
+      slv_reg(16) <= reg_mic_16;
+      slv_reg(17) <= reg_mic_17;
+      slv_reg(18) <= reg_mic_18;
+      slv_reg(19) <= reg_mic_19;
+      slv_reg(20) <= reg_mic_20;
+      slv_reg(21) <= reg_mic_21;
+      slv_reg(22) <= reg_mic_22;
+      slv_reg(23) <= reg_mic_23;
+      slv_reg(24) <= reg_mic_24;
+      slv_reg(25) <= reg_mic_25;
+      slv_reg(26) <= reg_mic_26;
+      slv_reg(27) <= reg_mic_27;
+      slv_reg(28) <= reg_mic_28;
+      slv_reg(29) <= reg_mic_29;
+      slv_reg(30) <= reg_mic_30;
+      slv_reg(31) <= reg_mic_31;
+      slv_reg(32) <= reg_mic_32;
+      slv_reg(33) <= reg_mic_33;
+      slv_reg(34) <= reg_mic_34;
+      slv_reg(35) <= reg_mic_35;
+      slv_reg(36) <= reg_mic_36;
+      slv_reg(37) <= reg_mic_37;
+      slv_reg(38) <= reg_mic_38;
+      slv_reg(39) <= reg_mic_39;
+      slv_reg(40) <= reg_mic_40;
+      slv_reg(41) <= reg_mic_41;
+      slv_reg(42) <= reg_mic_42;
+      slv_reg(43) <= reg_mic_43;
+      slv_reg(44) <= reg_mic_44;
+      slv_reg(45) <= reg_mic_45;
+      slv_reg(46) <= reg_mic_46;
+      slv_reg(47) <= reg_mic_47;
+      slv_reg(48) <= reg_mic_48;
+      slv_reg(49) <= reg_mic_49;
+      slv_reg(50) <= reg_mic_50;
+      slv_reg(51) <= reg_mic_51;
+      slv_reg(52) <= reg_mic_52;
+      slv_reg(53) <= reg_mic_53;
+      slv_reg(54) <= reg_mic_54;
+      slv_reg(55) <= reg_mic_55;
+      slv_reg(56) <= reg_mic_56;
+      slv_reg(57) <= reg_mic_57;
+      slv_reg(58) <= reg_mic_58;
+      slv_reg(59) <= reg_mic_59;
+      slv_reg(60) <= reg_mic_60;
+      slv_reg(61) <= reg_mic_61;
+      slv_reg(62) <= reg_mic_62;
+      slv_reg(63) <= reg_mic_63;
 
-      mic(0) <= mic0_in;
+      slv_reg(64) <= reg_64;
+      slv_reg(65) <= reg_65;
+      --slv_reg(66) <= reg_mic_;
+      --slv_reg(67) <= reg_mic_;
+      --slv_reg(68) <= reg_mic_;
+      --slv_reg(69) <= reg_mic_;
    end process;
-   -- User logic ends
 
 end rtl;

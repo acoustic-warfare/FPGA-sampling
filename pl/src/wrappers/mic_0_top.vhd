@@ -32,6 +32,7 @@ end entity;
 architecture structual of mic_0_aw_top is
    signal ws      : std_logic;
    signal sck_clk : std_logic;
+   --signal clk : std_logic;
 
 begin
 
@@ -60,5 +61,8 @@ begin
          array_mic0_data_out  => array_mic0_data_out,
          array_mic0_valid_out => array_mic0_valid_out
       );
+   
+   
+
 
 end structual;

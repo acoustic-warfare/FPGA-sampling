@@ -24,14 +24,15 @@ entity full_sample is
    port (
       clk                     : in std_logic;
       reset                   : in std_logic;
-      chain_x4_matrix_data_in : in matrix_4_16_24_type;
+      chain_x4_matrix_data_in : in matrix_4_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(3 downto 0);
-      array_matrix_data_out   : out matrix_4_16_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_data_out   : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out  : out std_logic
    );
 end full_sample;
 architecture rtl of full_sample is
-   signal valid_check : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
+   signal valid_check       : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
+   signal temp_chain_matrix : matrix_16_32_type;
 begin
    fill_matrix_out_p : process (clk)
    begin
@@ -40,8 +41,11 @@ begin
 
          for i in 0 to 3 loop
             if chain_matrix_valid_in(i) = '1' then
-               valid_check(i)           <= '1';
-               array_matrix_data_out(i) <= chain_x4_matrix_data_in(i);
+               valid_check(i)    <= '1';
+               temp_chain_matrix <= chain_x4_matrix_data_in(i);
+               for a in 0 to 15 loop
+                  array_matrix_data_out((i * 16) + a) <= temp_chain_matrix(a);
+               end loop;
             end if;
          end loop;
 

@@ -19,7 +19,7 @@ entity top is
       ws_1           : out std_logic;
       ws_2           : out std_logic
    );
-end entity;
+end entity; ---comment
 
 architecture structual of top is
    signal array_mic0_data_out  : std_logic_vector(31 downto 0);
