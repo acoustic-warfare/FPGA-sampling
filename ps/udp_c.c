@@ -12,8 +12,7 @@
 #define MAXLINE 1024
 
 // Driver code
-int main()
-{
+int main(){
 
    int sockfd;
    int buffer[MAXLINE];
@@ -43,7 +42,7 @@ int main()
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("test.txt", "w");
+   FILE *fp = fopen("sample_data/new_sample_data.txt", "w");
 
    
    
