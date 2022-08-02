@@ -4,15 +4,12 @@
 *.zip
 *.debug
 .Xil
-ethernet_test
 venv
 vunit_out
 vivado_files
-led_switch.tcl
 .metadata/
 ip_repo
 .project
-sample_data
 ps/server
 ps/sample_data/new_sample_data.txt
 bat/*

@@ -42,7 +42,7 @@ int main(){
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("sample_data/new_sample_data.txt", "w");
+   FILE *fp = fopen("mic_data/new_sample_data.txt", "w");
 
    
    
