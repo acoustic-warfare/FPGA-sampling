@@ -5,7 +5,7 @@ package require cmdline
 
 set options {
    {gui "1"               "Launch in gui."                      }
-   {board.arg "10"        "Select part (z7-10|z7-20). Default:" }
+   {board.arg "20"        "Select part (z7-10|z7-20). Default:" }
    {synth "1"             "Run step synth."                     }
    {impl "1"              "Run step impl."                      }
 }

@@ -14,5 +14,4 @@ ip_repo
 .project
 sample_data
 ps/server
-ps/sample_data/new_sample_data.txt
 bat/*

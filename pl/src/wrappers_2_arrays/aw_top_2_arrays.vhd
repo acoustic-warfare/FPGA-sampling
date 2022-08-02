@@ -34,15 +34,13 @@ architecture structual of aw_top_2_arrays is
    signal mic_sample_valid_out_internal : std_logic_vector(7 downto 0);
 
    --signal data_collector : matrix_4_16_32_type;
-   signal data : matrix_64_32_type;
+   signal data : matrix_124_32_type;
 
-   signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
+   signal chain_matrix_valid_array : std_logic_vector(7 downto 0);
    signal chain_matrix_data_x2     : matrix_8_16_32_type;
-   signal chain_matrix_data_1      : matrix_4_16_32_type;
-   signal chain_matrix_data_2      : matrix_4_16_32_type;
 
    signal array_matrix_valid : std_logic;
-   signal array_matrix_data  : matrix_64_32_type;
+   signal array_matrix_data  : matrix_124_32_type;
 
    signal rd_en_array       : std_logic_vector(134 downto 0); -- rd_en from axi_lite
    signal rd_en_pulse_array : std_logic_vector(134 downto 0);
@@ -153,29 +151,17 @@ begin
          );
    end generate collector_gen;
 
-   chain_matrix_data_1 <= chain_matrix_data_x2(3 downto 0);
-   chain_matrix_data_2 <= chain_matrix_data_x2(7 downto 4);
-
-   full_sample_c1 : entity work.full_sample
+   full_sample_c1 : entity work.full_sample_2_arrays
       port map(
          clk                     => clk,
          reset                   => reset,
-         chain_x4_matrix_data_in => chain_matrix_data_1,
+         chain_x4_matrix_data_in => chain_matrix_data_x2,
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
          array_matrix_valid_out  => array_matrix_valid,
          sample_counter_array    => sample_counter(15 downto 0)
       );
 
-   full_sample_c2 : entity work.full_sample
-      port map(
-         clk                     => clk,
-         reset                   => reset,
-         chain_x4_matrix_data_in => chain_matrix_data_2,
-         chain_matrix_valid_in   => chain_matrix_valid_array,
-         array_matrix_data_out   => array_matrix_data,
-         array_matrix_valid_out  => array_matrix_valid
-      );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
@@ -316,8 +302,16 @@ begin
          reg_mic_126_0 => data(126),
          reg_mic_127_0 => data(127),
 
-         reg_128 => empty_array(31 downto 0), -- for fifo empty_flag
-         reg_129 => sample_counter_out        -- for sample_counter
+         reg_128_0 => empty_array(31 downto 0), -- for fifo empty_flag
+         reg_129_0 => sample_counter_out,        -- for sample_counter
+
+         reg_130_0 => (others => '0'),
+         reg_131_0 => (others => '0'),
+         reg_132_0 => (others => '0'),
+         reg_133_0 => (others => '0'),
+         reg_134_0 => (others => '0')
+
+
       );
 
 end structual;
