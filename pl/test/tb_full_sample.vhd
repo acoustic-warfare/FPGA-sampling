@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
@@ -29,6 +30,8 @@ architecture tb of tb_full_sample is
 
    signal temp_matrix_16_24 : matrix_16_32_type;
 
+   signal sample_counter_array : std_logic_vector(15 downto 0);
+
 begin
 
    full_sample_1 : entity work.full_sample port map(
@@ -37,7 +40,8 @@ begin
       chain_x4_matrix_data_in => chain_x4_matrix_data_in,
       chain_matrix_valid_in   => chain_matrix_valid_in,
       array_matrix_data_out   => array_matrix_data_out,
-      array_matrix_valid_out  => array_matrix_valid_out
+      array_matrix_valid_out  => array_matrix_valid_out,
+      sample_counter_array    => sample_counter_array
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;
@@ -77,7 +81,7 @@ begin
       while test_suite loop
          if run("wave") then
 
-            wait for 3000 ns;
+            wait for 10000000 ns;
 
          elsif run("auto") then
 
@@ -89,5 +93,5 @@ begin
       test_runner_cleanup(runner);
    end process;
 
-   test_runner_watchdog(runner, 100 ms);
+   test_runner_watchdog(runner, 10000 ms);
 end architecture;

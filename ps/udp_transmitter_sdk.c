@@ -62,10 +62,10 @@ void PayloadID(u32 data[]) {
 
 int main() {
 	// set number of arrays used
-	u32 nr_arrays = 2;
+	u32 nr_arrays = 1;
 
 	// set number of 32bit slots in payload_header
-	u32 payload_header_size = 4;
+	u32 payload_header_size = 0;
 
 	u32 array_id = 1;
 	u32 protocol_ver = 1;
@@ -229,10 +229,10 @@ int main() {
 		if (read_reg64 == 0 && read_reg65 == 0) {
 
 			// add payload_headder
-			data[0] = array_id;
-			data[1] = protocol_ver;
-			data[2] = samp_frequency;
-			data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12); //TODO: Change this address when we implemented the counter
+			//data[0] = array_id;
+			//data[1] = protocol_ver;
+			//data[2] = samp_frequency;
+			//data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12); //TODO: Change this address when we implemented the counter
 
 			// add payload_data
 			for (int i = 0; i < nr_arrays * 64; i++) {

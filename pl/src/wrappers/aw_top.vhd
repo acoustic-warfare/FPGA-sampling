@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.matrix_type.all;
 
 entity aw_top is
@@ -38,15 +39,18 @@ architecture structual of aw_top is
    signal array_matrix_data  : matrix_64_32_type;
 
    signal rd_en_array       : std_logic_vector(69 downto 0); -- rd_en from axi_lite
-   signal rd_en_pulse_array : std_logic_vector(63 downto 0);
+   signal rd_en_pulse_array : std_logic_vector(69 downto 0);
 
-   signal almost_empty_array : std_logic_vector(63 downto 0) := (others => '0');
-   signal almost_full_array  : std_logic_vector(63 downto 0) := (others => '0');
-   signal empty_array        : std_logic_vector(63 downto 0) := (others => '0');
-   signal full_array         : std_logic_vector(63 downto 0) := (others => '0');
+   signal almost_empty_array : std_logic_vector(64 downto 0) := (others => '0');
+   signal almost_full_array  : std_logic_vector(64 downto 0) := (others => '0');
+   signal empty_array        : std_logic_vector(64 downto 0) := (others => '0');
+   signal full_array         : std_logic_vector(64 downto 0) := (others => '0');
 
    signal ws_internal      : std_logic;
    signal sck_clk_internal : std_logic;
+
+   signal sample_counter : std_logic_vector(31 downto 0) := (others => '0');
+   signal sample_counter_out : std_logic_vector(31 downto 0);
 
 begin
 
@@ -91,7 +95,22 @@ begin
          );
    end generate fifo_bd_wrapper_gen;
 
-   rd_en_pulse_gen : for i in 0 to 63 generate
+   fifo_sample_counter : entity work.fifo_bd_wrapper
+      port map(
+         FIFO_WRITE_full        => full_array(66),
+         FIFO_READ_empty        => empty_array(66),
+         FIFO_WRITE_almost_full => almost_full_array(66),
+         FIFO_READ_almost_empty => almost_empty_array(66),
+         FIFO_WRITE_wr_data     => sample_counter, --data in
+         FIFO_WRITE_wr_en       => array_matrix_valid,
+         FIFO_READ_rd_en        => rd_en_pulse_array(66), --- from pulse
+         FIFO_READ_rd_data      => sample_counter_out,    --data out
+         rd_clk                 => clk_axi,
+         wr_clk                 => clk,
+         reset                  => reset
+      );
+
+   rd_en_pulse_gen : for i in 0 to 69 generate
    begin
       rd_en_pulse : entity work.rd_en_pulse
          port map(
@@ -143,7 +162,8 @@ begin
          chain_x4_matrix_data_in => chain_matrix_data,
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
-         array_matrix_valid_out  => array_matrix_valid
+         array_matrix_valid_out  => array_matrix_valid,
+         sample_counter          => sample_counter(15 downto 0)
       );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
@@ -220,7 +240,8 @@ begin
          reg_mic_62_0 => data(62),
          reg_mic_63_0 => data(63),
          reg_64_0     => empty_array(31 downto 0),
-         reg_65_0     => empty_array(63 downto 32)
+         reg_65_0     => empty_array(63 downto 32),
+         reg_66_0     => sample_counter_out
       );
 
 end structual;
