@@ -81,7 +81,7 @@ begin
       while test_suite loop
          if run("wave") then
 
-            wait for 10000000 ns;
+            wait for 100000 ns;
 
          elsif run("auto") then
 
