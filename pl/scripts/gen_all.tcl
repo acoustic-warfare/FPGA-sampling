@@ -47,12 +47,11 @@ set_property target_language VHDL  [current_project]
 # Set the file that will be top module
 set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
-add_files [file join "$ROOT" src wrappers aw_top.vhd]
-add_files [file join "$ROOT" src wrappers zynq_bd_wrapper.vhd]
+add_files [file join "$ROOT" src wrappers_1_array aw_top.vhd]
+add_files [file join "$ROOT" src wrappers_1_array zynq_bd_wrapper.vhd]
 
-add_files [file join "$ROOT" src axi_lite_slave.vhd]
-add_files [file join "$ROOT" src rd_en_pulse.vhd]
-#add_files [file join "$ROOT" src demo_count.vhd]
+add_files [file join "$ROOT" src axi_lite axi_lite_slave.vhd]
+add_files [file join "$ROOT" src axi_lite rd_en_pulse.vhd]
 
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
