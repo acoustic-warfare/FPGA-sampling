@@ -219,8 +219,8 @@ begin
          reg_mic_61_0 => data(61),
          reg_mic_62_0 => data(62),
          reg_mic_63_0 => data(63),
-         reg_64_0     => almost_empty_array(31 downto 0),
-         reg_65_0     => almost_empty_array(63 downto 32)
+         reg_64_0     => empty_array(31 downto 0),
+         reg_65_0     => empty_array(63 downto 32)
       );
 
 end structual;
