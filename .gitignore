@@ -11,4 +11,5 @@ vivado_files
 ip_repo
 .project
 ps/server
+ps/mic_data
 bat/*
