@@ -35,7 +35,7 @@ if $params(gui) {
 # ------------------------------------------------------------------------------------
 # Create project
 # ------------------------------------------------------------------------------------
-set ROOT [file normalize [file join [file dirname [info script]] .. ]]
+set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 set outputdir [file join "$ROOT" vivado_files]
 file mkdir $outputdir
 create_project acoustic_warfare $outputdir -force
@@ -62,8 +62,6 @@ add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 add_files [file join "$ROOT" src matrix_package.vhd]
 
 
-
-
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 
 import_files -force
@@ -74,8 +72,8 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 set_property file_type {VHDL} [ get_files *axi_lite_slave.vhd]
 # Import Block Designs
-source [ file normalize [ file join $ROOT scripts zynq_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts fifo_bd.tcl ] ]
+source [ file normalize [ file join $ROOT scripts build_1_array zynq_bd.tcl ] ]
+source [ file normalize [ file join $ROOT scripts build_1_array fifo_bd.tcl ] ]
 
 # Make wrapper fifo
 make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
