@@ -31,7 +31,7 @@ while 1:
 
     data, addr = sock.recvfrom(1024)  # buffer size is 1024 bytes
     counter = counter +1
-    for i in range(0, 1):
+    for i in range(6, 7):
         bits00 = "{0:b}".format(data[i*4])
         bits01 = "{0:b}".format(data[i*4+1])
         bits02 = "{0:b}".format(data[i*4+2])

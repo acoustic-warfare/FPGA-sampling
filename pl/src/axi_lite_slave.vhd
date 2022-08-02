@@ -88,7 +88,7 @@ entity axi_lite_slave is
       reg_68     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
       reg_69     : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
 
-      --read enable 
+      --read enable
       rd_en : out std_logic_vector(69 downto 0);
 
       -- Global Clock Signal
@@ -492,7 +492,8 @@ begin
 
       slv_reg(64) <= reg_64;
       slv_reg(65) <= reg_65;
-      --slv_reg(66) <= reg_mic_;
+
+      slv_reg(66) <= reg_66;
       --slv_reg(67) <= reg_mic_;
       --slv_reg(68) <= reg_mic_;
       --slv_reg(69) <= reg_mic_;

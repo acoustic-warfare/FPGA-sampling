@@ -41,15 +41,15 @@ architecture structual of aw_top is
    signal rd_en_array       : std_logic_vector(69 downto 0); -- rd_en from axi_lite
    signal rd_en_pulse_array : std_logic_vector(69 downto 0);
 
-   signal almost_empty_array : std_logic_vector(64 downto 0) := (others => '0');
-   signal almost_full_array  : std_logic_vector(64 downto 0) := (others => '0');
-   signal empty_array        : std_logic_vector(64 downto 0) := (others => '0');
-   signal full_array         : std_logic_vector(64 downto 0) := (others => '0');
+   signal almost_empty_array : std_logic_vector(69 downto 0) := (others => '0');
+   signal almost_full_array  : std_logic_vector(69 downto 0) := (others => '0');
+   signal empty_array        : std_logic_vector(69 downto 0) := (others => '0');
+   signal full_array         : std_logic_vector(69 downto 0) := (others => '0');
 
    signal ws_internal      : std_logic;
    signal sck_clk_internal : std_logic;
 
-   signal sample_counter : std_logic_vector(31 downto 0) := (others => '0');
+   signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
    signal sample_counter_out : std_logic_vector(31 downto 0);
 
 begin
@@ -163,7 +163,7 @@ begin
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
          array_matrix_valid_out  => array_matrix_valid,
-         sample_counter          => sample_counter(15 downto 0)
+         sample_counter_array    => sample_counter(15 downto 0)
       );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper

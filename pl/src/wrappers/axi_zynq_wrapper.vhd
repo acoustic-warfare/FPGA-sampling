@@ -31,7 +31,7 @@ entity axi_zynq_wrapper is
       rst_axi           : out std_logic_vector (0 to 0);
       sys_clock         : in std_logic;
       data              : in std_logic_vector(31 downto 0);
-      rd_en : out STD_LOGIC_VECTOR ( 63 downto 0 )
+      rd_en             : out std_logic_vector (69 downto 0)
 
    );
 end entity;
