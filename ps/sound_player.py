@@ -5,8 +5,8 @@ import os
 
 ROOT = os.getcwd()
 
-filename = (ROOT + "/ps/sample_data/new_sample_data.txt")
-mic = 30
+filename = (ROOT + "/ps/mic_data/new_sample_data.txt")
+mic = 100
 fs = 15625
 data = np.loadtxt(open(filename, 'rb').readlines()[:-1], delimiter=',')
 
