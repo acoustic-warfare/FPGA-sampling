@@ -73,7 +73,7 @@ begin
    temp_in_arrays16 <= temp_in_chain1(0);
 
    temp_arrays0  <= array_matrix_data_out(0);
-   temp_arrays16 <= array_matrix_data_out(17);
+   temp_arrays16 <= array_matrix_data_out(16);
    bitgen_p : process (clk)
    begin
       if rising_edge(clk) then

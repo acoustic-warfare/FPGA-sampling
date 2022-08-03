@@ -32,28 +32,18 @@ entity full_sample is
    );
 end full_sample;
 architecture rtl of full_sample is
-   signal valid_check       : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
-   signal temp_chain_matrix : matrix_16_32_type;
-
-   signal temp_0 : std_logic_vector(31 downto 0);
-   signal temp_16 : std_logic_vector(31 downto 0);
+   signal valid_check         : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
    signal temp_chain_matrix_0 : matrix_16_32_type;
-   signal temp_chain_matrix_16 : matrix_16_32_type;
-   --signal temp_chain_matrix_3 : matrix_16_32_type;
-
-   signal sample_counter : unsigned(15 downto 0) := (others => '0');
+   signal temp_chain_matrix_1 : matrix_16_32_type;
+   signal temp_chain_matrix_2 : matrix_16_32_type;
+   signal temp_chain_matrix_3 : matrix_16_32_type;
+   signal sample_counter      : unsigned(15 downto 0) := (others => '0');
 
 begin
-   temp_chain_matrix_0 <= chain_x4_matrix_data_in(0);
-   temp_0 <= temp_chain_matrix_0(0);
-   temp_chain_matrix_16 <= chain_x4_matrix_data_in(3);
-   temp_16 <= temp_chain_matrix_16(0);
 
    fill_matrix_out_p : process (clk)
    begin
       if rising_edge(clk) then
-         array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
-
          for i in 0 to 3 loop
             if chain_matrix_valid_in(i) = '1' then
                valid_check(i) <= '1';
@@ -61,19 +51,24 @@ begin
          end loop;
 
          if valid_check = "1111" then -- checks that a new value has been added to each place in the array
+            temp_chain_matrix_0 <= chain_x4_matrix_data_in(0);
+            temp_chain_matrix_1 <= chain_x4_matrix_data_in(1);
+            temp_chain_matrix_2 <= chain_x4_matrix_data_in(2);
+            temp_chain_matrix_3 <= chain_x4_matrix_data_in(3);
 
-            for i in 0 to 3 loop
-               temp_chain_matrix <= chain_x4_matrix_data_in(i);
-
-               for a in 0 to 15 loop
-                  array_matrix_data_out(i * 16 + a) <= temp_chain_matrix(a);
-               end loop;
+            for i in 0 to 15 loop
+               array_matrix_data_out(i)      <= temp_chain_matrix_0(i);
+               array_matrix_data_out(i + 16) <= temp_chain_matrix_1(i);
+               array_matrix_data_out(i + 32) <= temp_chain_matrix_2(i);
+               array_matrix_data_out(i + 48) <= temp_chain_matrix_3(i);
             end loop;
 
             array_matrix_valid_out <= '1';
             valid_check            <= (others => '0');
             sample_counter         <= sample_counter + 1;
             sample_counter_array   <= std_logic_vector(sample_counter);
+         else
+            array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
          end if;
 
          if reset = '1' then -- resets data_valid_out to low and
