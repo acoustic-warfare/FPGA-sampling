@@ -32,7 +32,7 @@ entity full_sample_2_arrays is
    );
 end full_sample_2_arrays;
 architecture rtl of full_sample_2_arrays is
-   signal valid_check       : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
+   signal valid_check       : std_logic_vector(7 downto 0); -- TODO: change namr of rd_check to somthing more describing
    signal temp_chain_matrix : matrix_16_32_type;
    signal sample_counter    : unsigned(15 downto 0) := (others => '0');
 begin

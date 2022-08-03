@@ -33,7 +33,6 @@ architecture structual of aw_top_2_arrays is
    signal mic_sample_data_out_internal  : matrix_8_24_type;
    signal mic_sample_valid_out_internal : std_logic_vector(7 downto 0);
 
-   --signal data_collector : matrix_4_16_32_type;
    signal data : matrix_128_32_type;
 
    signal chain_matrix_valid_array : std_logic_vector(7 downto 0);
