@@ -24,7 +24,7 @@ entity full_sample_2_arrays is
    port (
       clk                     : in std_logic;
       reset                   : in std_logic;
-      chain_x4_matrix_data_in : in matrix_8_16_32_type;
+      chain_x4_matrix_data_in : in matrix_128_32_type;
       chain_matrix_valid_in   : in std_logic_vector(7 downto 0);
       array_matrix_data_out   : out matrix_128_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out  : out std_logic;
@@ -43,15 +43,12 @@ begin
 
          for i in 0 to 7 loop
             if chain_matrix_valid_in(i) = '1' then
-               valid_check(i)    <= '1';
-               temp_chain_matrix <= chain_x4_matrix_data_in(i);
-               for a in 0 to 15 loop
-                  array_matrix_data_out((i * 16) + a) <= temp_chain_matrix(a);
-               end loop;
+               valid_check(i) <= '1';
             end if;
          end loop;
 
          if valid_check = "11111111" then -- checks that a new value has been added to each place in the array
+            array_matrix_data_out  <= chain_x4_matrix_data_in;
             array_matrix_valid_out <= '1';
             valid_check            <= (others => '0');
             sample_counter         <= sample_counter + 1;
