@@ -26,7 +26,7 @@ entity full_sample_2_arrays is
       reset                   : in std_logic;
       chain_x4_matrix_data_in : in matrix_8_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(7 downto 0);
-      array_matrix_data_out   : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_data_out   : out matrix_128_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out  : out std_logic;
       sample_counter_array    : out std_logic_vector(15 downto 0)
    );

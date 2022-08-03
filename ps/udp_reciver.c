@@ -20,8 +20,7 @@ int main(){
    struct sockaddr_in servaddr, cliaddr;
 
    // Creating socket file descriptor
-   if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-   {
+   if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
       perror("socket creation failed");
       exit(EXIT_FAILURE);
    }
@@ -35,20 +34,14 @@ int main(){
    servaddr.sin_port = htons(PORT);
 
    // Bind the socket with the server address
-   if (bind(sockfd, (const struct sockaddr *)&servaddr,
-            sizeof(servaddr)) < 0)
-   {
+   if (bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0){
       perror("bind failed");
       exit(EXIT_FAILURE);
    }
 
    FILE *fp = fopen("mic_data/new_sample_data.txt", "w");
-
    
-   
-   
-   while (1)
-   {
+   while (1){
       int len, n;
 
       len = sizeof(cliaddr); // len is value/result
@@ -58,13 +51,11 @@ int main(){
                    &len);
       buffer[n] = '\0';
 
-
-
-      for (int i = 0; i < 63; i++)
-      {
+      // write data in txt file
+      for (int i = 0; i < 67; i++){
          fprintf(fp, "%9d, ", buffer[i]);
       }
-      fprintf(fp, "%9d\n", buffer[63]);
+      fprintf(fp, "%9d\n", buffer[67]);
    }
    return 0;
 }

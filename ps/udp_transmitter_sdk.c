@@ -75,8 +75,7 @@ int main() {
 
 	u32 start_addr = AD0;
 
-	u32 read_reg64;
-	u32 read_reg65;
+	u32 empty;
 
 	struct netif *netif, server_netif;  // Network structure define
 	struct ip_addr ipaddr, netmask, gw; // DHCP Settings
@@ -224,15 +223,14 @@ int main() {
 
 	while (1) {
 
-		read_reg64 = Xil_In32(start_addr + nr_arrays * 64 * 4 + 4);
-		read_reg65 = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);
-		if (read_reg64 == 0 && read_reg65 == 0) {
+		empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
+		if (empty == 0) {
 
 			// add payload_headder
 			data[0] = array_id;
 			data[1] = protocol_ver;
 			data[2] = samp_frequency;
-			data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12); //TODO: Change this address when we implemented the counter
+			data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);
 
 			// add payload_data
 			for (int i = 0; i < nr_arrays * 64; i++) {

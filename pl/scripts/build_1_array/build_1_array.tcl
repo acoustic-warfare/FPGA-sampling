@@ -48,7 +48,6 @@ set_property target_language VHDL  [current_project]
 set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
 add_files [file join "$ROOT" src wrappers_1_array aw_top.vhd]
-add_files [file join "$ROOT" src wrappers_1_array zynq_bd_wrapper.vhd]
 
 add_files [file join "$ROOT" src axi_lite axi_lite_slave.vhd]
 add_files [file join "$ROOT" src axi_lite rd_en_pulse.vhd]
@@ -80,8 +79,8 @@ make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
 add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd fifo_bd hdl fifo_bd_wrapper.vhd]
 
 # Make wrapper zynq
-#make_wrapper -inst_template [ get_files {zynq_bd.bd} ]
-#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd zynq_bd hdl zynq_bd_wrapper.vhd]
+make_wrapper -inst_template [ get_files {zynq_bd.bd} ]
+add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd zynq_bd hdl zynq_bd_wrapper.vhd]
 
 update_compile_order -fileset sources_1
 
@@ -89,18 +88,16 @@ set_property top $top_module [current_fileset]
 
 update_compile_order -fileset sources_1
 
-
-#if $params(synth) {
-#   # run synthesis
-#   launch_runs synth_1
-#   wait_on_run synth_1
-#}
-
-#if $params(impl) {
-#   # run implementation
-#   launch_runs impl_1 -to_step write_bitstream
-#   wait_on_run impl_1
-#}
+if $params(synth) {
+   # run synthesis
+   launch_runs synth_1
+   wait_on_run synth_1
+}
+if $params(impl) {
+   # run implementation
+   launch_runs impl_1 -to_step write_bitstream
+   wait_on_run impl_1
+}
 
 start_gui
 

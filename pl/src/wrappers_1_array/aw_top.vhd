@@ -10,10 +10,10 @@ entity aw_top is
       reset        : in std_logic;
       pause        : in std_logic;
       bit_stream   : in std_logic_vector(3 downto 0);
+      ws0          : out std_logic;
       ws1          : out std_logic;
-      ws2          : out std_logic;
+      sck_clk0     : out std_logic;
       sck_clk1     : out std_logic;
-      sck_clk2     : out std_logic;
       full         : out std_logic;
       empty        : out std_logic;
       almost_full  : out std_logic;
@@ -54,10 +54,10 @@ architecture structual of aw_top is
 
 begin
 
+   ws0      <= ws_internal;
    ws1      <= ws_internal;
-   ws2      <= ws_internal;
+   sck_clk0 <= sck_clk_internal;
    sck_clk1 <= sck_clk_internal;
-   sck_clk2 <= sck_clk_internal;
 
    almost_empty <= almost_empty_array(0);
    almost_full  <= almost_full_array(0);
@@ -241,7 +241,10 @@ begin
          reg_mic_63_0 => data(63),
          reg_64_0     => empty_array(31 downto 0),
          reg_65_0     => empty_array(63 downto 32),
-         reg_66_0     => sample_counter_out
+         reg_66_0     => sample_counter_out,
+         reg_67_0 => (others => '0'),
+         reg_68_0 => (others => '0'),
+         reg_69_0 => (others => '0')
       );
 
 end structual;
