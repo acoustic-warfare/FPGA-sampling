@@ -19,7 +19,7 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal chain_x4_matrix_data_in : matrix_64_32_type            := (others => (others => '0'));
+   signal chain_x4_matrix_data_in : matrix_4_16_32_type          := (others => (others => (others => '0')));
    signal chain_matrix_valid_in   : std_logic_vector(3 downto 0) := "0000";
 
    signal array_matrix_valid_out : std_logic;
@@ -32,10 +32,10 @@ architecture tb of tb_full_sample is
 
    signal sample_counter_array : std_logic_vector(15 downto 0);
 
-   signal temp_arrays0  : std_logic_vector(31 downto 0);
-   signal temp_arrays16 : std_logic_vector(31 downto 0);
-   -- signal temp_in_chain0   : matrix_16_32_type;
-   -- signal temp_in_chain1   : matrix_16_32_type;
+   signal temp_arrays0     : std_logic_vector(31 downto 0);
+   signal temp_arrays16    : std_logic_vector(31 downto 0);
+   signal temp_in_chain0   : matrix_16_32_type;
+   signal temp_in_chain1   : matrix_16_32_type;
    signal temp_in_arrays0  : std_logic_vector(31 downto 0);
    signal temp_in_arrays16 : std_logic_vector(31 downto 0);
 
@@ -66,11 +66,11 @@ begin
       end if;
    end process;
 
-   --temp_in_chain0 <= chain_x4_matrix_data_in(0);
-   -- temp_in_chain1 <= chain_x4_matrix_data_in(1);
+   temp_in_chain0 <= chain_x4_matrix_data_in(0);
+   temp_in_chain1 <= chain_x4_matrix_data_in(1);
 
-   temp_in_arrays0  <= chain_x4_matrix_data_in(0);
-   temp_in_arrays16 <= chain_x4_matrix_data_in(17);
+   temp_in_arrays0  <= temp_in_chain0(0);
+   temp_in_arrays16 <= temp_in_chain1(0);
 
    temp_arrays0  <= array_matrix_data_out(0);
    temp_arrays16 <= array_matrix_data_out(17);
@@ -81,25 +81,25 @@ begin
             data_change_counter <= 0;
          else
             if data_change_counter < 15 then
-               chain_x4_matrix_data_in    <= (others => (others => '1'));
-               chain_x4_matrix_data_in(0) <= (others => '0');
-               chain_x4_matrix_data_in(1) <= (others => '0');
-               chain_x4_matrix_data_in(2) <= (others => '0');
-               chain_x4_matrix_data_in(3) <= (others => '0');
-               chain_x4_matrix_data_in(4) <= (others => '0');
-               chain_x4_matrix_data_in(5) <= (others => '0');
-               chain_x4_matrix_data_in(6) <= (others => '0');
-               chain_x4_matrix_data_in(7) <= (others => '0');
+               chain_x4_matrix_data_in    <= (others => (others => (others => '1')));
+               chain_x4_matrix_data_in(0) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(1) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(2) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(3) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(4) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(5) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(6) <= (others => (others => '0'));
+               --   chain_x4_matrix_data_in(7) <= (others => (others => '0'));
             elsif data_change_counter >= 16 then
-               chain_x4_matrix_data_in    <= (others => (others => '0'));
-               chain_x4_matrix_data_in(0) <= (others => '1');
-               chain_x4_matrix_data_in(1) <= (others => '1');
-               chain_x4_matrix_data_in(2) <= (others => '1');
-               chain_x4_matrix_data_in(3) <= (others => '1');
-               chain_x4_matrix_data_in(4) <= (others => '1');
-               chain_x4_matrix_data_in(5) <= (others => '1');
-               chain_x4_matrix_data_in(6) <= (others => '1');
-               chain_x4_matrix_data_in(7) <= (others => '1');
+               chain_x4_matrix_data_in    <= (others => (others => (others => '0')));
+               chain_x4_matrix_data_in(0) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(1) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(2) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(3) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(4) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(5) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(6) <= (others => (others => '1'));
+               --   chain_x4_matrix_data_in(7) <= (others => (others => '1'));
             end if;
             data_change_counter <= data_change_counter + 1;
          end if;

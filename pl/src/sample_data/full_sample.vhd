@@ -10,11 +10,11 @@ entity full_sample is
    -- RESET: synchronous reset
    --
    -- ARRAY_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
-   -- 
+   --
    -- DATA_VALID_IN_ARY: A array of 4 signals each coresponding that a chain has bean updated
    --
    -- ARRAY_MATRIX_DATA_OUT: A 3D matrix filled the data from all the mics of the 4 chains (4x16x24)
-   -- 
+   --
    -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
@@ -24,7 +24,7 @@ entity full_sample is
    port (
       clk                     : in std_logic;
       reset                   : in std_logic;
-      chain_x4_matrix_data_in : in matrix_64_32_type;
+      chain_x4_matrix_data_in : in matrix_4_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(3 downto 0);
       array_matrix_data_out   : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out  : out std_logic;
@@ -34,8 +34,21 @@ end full_sample;
 architecture rtl of full_sample is
    signal valid_check       : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
    signal temp_chain_matrix : matrix_16_32_type;
-   signal sample_counter    : unsigned(15 downto 0) := (others => '0');
+
+   signal temp_0 : std_logic_vector(31 downto 0);
+   signal temp_16 : std_logic_vector(31 downto 0);
+   signal temp_chain_matrix_0 : matrix_16_32_type;
+   signal temp_chain_matrix_16 : matrix_16_32_type;
+   --signal temp_chain_matrix_3 : matrix_16_32_type;
+
+   signal sample_counter : unsigned(15 downto 0) := (others => '0');
+
 begin
+   temp_chain_matrix_0 <= chain_x4_matrix_data_in(0);
+   temp_0 <= temp_chain_matrix_0(0);
+   temp_chain_matrix_16 <= chain_x4_matrix_data_in(3);
+   temp_16 <= temp_chain_matrix_16(0);
+
    fill_matrix_out_p : process (clk)
    begin
       if rising_edge(clk) then
@@ -48,14 +61,22 @@ begin
          end loop;
 
          if valid_check = "1111" then -- checks that a new value has been added to each place in the array
-            array_matrix_data_out  <= chain_x4_matrix_data_in;
+
+            for i in 0 to 3 loop
+               temp_chain_matrix <= chain_x4_matrix_data_in(i);
+
+               for a in 0 to 15 loop
+                  array_matrix_data_out(i * 16 + a) <= temp_chain_matrix(a);
+               end loop;
+            end loop;
+
             array_matrix_valid_out <= '1';
             valid_check            <= (others => '0');
             sample_counter         <= sample_counter + 1;
             sample_counter_array   <= std_logic_vector(sample_counter);
          end if;
 
-         if reset = '1' then -- resets data_valid_out to low and 
+         if reset = '1' then -- resets data_valid_out to low and
             array_matrix_valid_out <= '0';
             valid_check            <= (others => '0');
          end if;
