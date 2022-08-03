@@ -34,13 +34,13 @@ architecture structual of aw_top_2_arrays is
    signal mic_sample_valid_out_internal : std_logic_vector(7 downto 0);
 
    --signal data_collector : matrix_4_16_32_type;
-   signal data : matrix_124_32_type;
+   signal data : matrix_128_32_type;
 
    signal chain_matrix_valid_array : std_logic_vector(7 downto 0);
    signal chain_matrix_data_x2     : matrix_8_16_32_type;
 
    signal array_matrix_valid : std_logic;
-   signal array_matrix_data  : matrix_124_32_type;
+   signal array_matrix_data  : matrix_128_32_type;
 
    signal rd_en_array       : std_logic_vector(134 downto 0); -- rd_en from axi_lite
    signal rd_en_pulse_array : std_logic_vector(134 downto 0);
@@ -151,7 +151,7 @@ begin
          );
    end generate collector_gen;
 
-   full_sample_c1 : entity work.full_sample_2_arrays
+   full_sample_2_arrays_c1 : entity work.full_sample_2_arrays
       port map(
          clk                     => clk,
          reset                   => reset,
