@@ -4,18 +4,20 @@
 package require cmdline
 
 set options {
-   {gui "1"               "Launch in gui."                      }
-   {board.arg "20"        "Select part (z7-10|z7-20). Default:" }
-   {synth "1"             "Run step synth."                     }
-   {impl "1"              "Run step impl."                      }
+   {gui.arg   "1"             "Launch in gui (1 to lanch gui | 0 not lanch gui)" }
+   {board.arg "20"            "Select part (10 for Zybo z7-10|20 for Zybo z7-20)"}
+   {synth.arg "1"             "Run synth (1 to run synth | 0 not run synth)"     }
+   {impl.arg  "1"             "Run impl (1 to run impl | 0 not run impl)"        }
+   {sdk.arg   "1"             "Launch SDK (1 to launch SDK | 0 not launch SDK)"  }
 }
 # TODO: update usage to be better
-#set usage ": build \ [-gui] [-board ARG] [-synth] [-impl]\noptions:"
+#set usage ": build \ [-gui] [-board] [-synth] [-impl]\noptions:"
 array set params [::cmdline::getoptions argv $options]
 
 # Print for sanity
 parray params
 
+#TODO: make the auto install of boards work :)
 # Make sure boards are installed
 #xhub::install [xhub::get_xitems $board ]
 #xhub::update  [xhub::get_xitems $board ]
@@ -25,10 +27,6 @@ switch $params(board) {
    10 { set board digilentinc.com:zybo-z7-10:part0:1.1 }
    20 { set board digilentinc.com:zybo-z7-20:part0:1.1 }
    default { send_msg "BuildScript-0" "ERROR" "not a suported board" }
-}
-
-if $params(gui) {
-   start_gui
 }
 
 
@@ -84,18 +82,30 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 
 update_compile_order -fileset sources_1
 
-#if $params(synth) {
-#   # run synthesis
-#   launch_runs synth_1
-#   wait_on_run synth_1
-#}
+## run synthesis
+switch $params(gui) {
+   1 { start_gui }
+   0 { puts "gui not started" }
+   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+}
 
-#if $params(impl) {
-#   # run implementation
-#   launch_runs impl_1 -to_step write_bitstream
-#   wait_on_run impl_1
-#}
+## run implementation
+switch $params(synth) {
+   1 { launch_runs synth_1 -jobs 4
+       wait_on_run synth_1 }
+   0 { puts "synth not started" }
+   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+}
 
-start_gui
+update_compile_order -fileset sources_1
 
+## launch SDK
+switch $params(sdk) {
+   1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
+       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
+
+       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
+   0 { puts "SDK not launched" }
+   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+}
 
