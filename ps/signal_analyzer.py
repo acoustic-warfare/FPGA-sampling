@@ -24,7 +24,7 @@ def load_data_FPGA(filename):
     #   FUNCTION TO LOAD DATA FROM .TXT FILE INTO NUMPY ARRAY 
     #   (RECORDED BY FPGA)
     ROOT = os.getcwd()
-    path = Path(ROOT + "/ps/mic_data/one_source_music_sweep_last_test.txt")
+    path = Path(ROOT + "/ps/mic_data/sinus_raport.txt")
 
     # Load recorded data from file
     data = np.loadtxt(open(path,'rb').readlines()[:-1],delimiter=',')

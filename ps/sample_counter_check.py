@@ -1,11 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import sounddevice
 import os
 
 ROOT = os.getcwd()
-
-filename = (ROOT + "/ps/sample_data/new_sample_data.txt")
+filename = (ROOT + "/ps/mic_data/new_sample_data.txt")
 mic = 3
 data = np.loadtxt(open(filename, 'rb').readlines()[:-1], delimiter=',')
 

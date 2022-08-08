@@ -1,0 +1,10 @@
+{signal: [
+  {name: 'clk',              wave: 'p.....|...|.|......'},
+  {name: 'ws',               wave: '0.1..0|...|.|......'},
+  {name: 'bit_stream',       wave: 'x..3..|.x.|3|...x..', data: ['TMD' ,'TDM','TDM' ]},
+  {},
+  {name: 'state',            wave: '4..5..|.7.|5|...74.', data: ['idle','run','pause','run','pause','idle','run']},
+  {},
+  {name: 'data_out',         wave: 'x.....|.3x|.|...3x.', data: ['data','data']},
+  {name: 'sample_valid', wave: '0.....|.10|.|...10.'}
+]}

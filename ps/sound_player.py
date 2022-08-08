@@ -10,7 +10,7 @@ def Average(l):
 
 ROOT = os.getcwd()
 
-filename = (ROOT + "/ps/mic_data/one_source_music_sweep_last_test.txt")
+filename = (ROOT + "/ps/mic_data/sinus_raport.txt")
 mic = 46
 
 data = np.loadtxt(open(filename, 'rb').readlines()[:-1], delimiter=',') # load data from txt file to np array
