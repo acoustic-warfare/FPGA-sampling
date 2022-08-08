@@ -1,3 +1,9 @@
+Welcome to the Acoutic warfare FPGA-samling github
+
+Information about the project and user guid on how to build and run the project is found under the [Project Wiki](../../wiki)
+
+
+
 to install drivers for xc7z020clg400-1 follow this link:     https://digilent.com/reference/programmable-logic/guides/install-cable-drivers     #dokumentera sen//
 
 guide to make Xsim work with ubuntu

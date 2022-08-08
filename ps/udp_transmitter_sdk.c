@@ -67,6 +67,7 @@ int main() {
 	// set number of 32bit slots in payload_header
 	u32 payload_header_size = 4;
 
+   // constants that will be sent in payload_header
 	u32 array_id = 1;
 	u32 protocol_ver = 1;
 	u32 samp_frequency = 15625;
@@ -197,7 +198,8 @@ int main() {
 
 	xil_printf("Setup Done");
 
-	IP4_ADDR(&ip_remote, 192, 168, 1, 3); // ip of reciving pc
+   // ip of reciving pc
+	IP4_ADDR(&ip_remote, 192, 168, 1, 3); 
 
 	udp_1 = udp_new();
 
