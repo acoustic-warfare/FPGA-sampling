@@ -39,7 +39,7 @@ int main(){
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("mic_data/new_sample_data.txt", "w");
+   FILE *fp = fopen("mic_data/one_source_music_sweep_last_test.txt", "w");
    
    while (1){
       int len, n;
