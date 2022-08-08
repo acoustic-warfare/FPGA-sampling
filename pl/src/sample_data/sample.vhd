@@ -41,7 +41,7 @@ architecture rtl of sample is
    signal idle_start   : std_logic := '0';
    signal active       : std_logic := '0';
 
-   --signal runner : std_logic := '0';
+   signal runner : std_logic := '0';
 
 begin
    main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
@@ -56,24 +56,24 @@ begin
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
-               -- runner <= '0';
-
-               --if ws = '1' then
-               --    idle_start <= '1';
-               -- end if;
+               runner <= '0';
 
                if ws = '1' then
-                  state <= run;
+                  idle_start <= '1';
                end if;
 
-               -- if (idle_start = '1' and idle_counter = 36) then
-               --    idle_counter <= 0;
-               --   idle_start   <= '0';
-               --    state        <= run;
-               --    runner       <= '1';
-               -- elsif (idle_start = '1') then
-               --    idle_counter <= idle_counter + 1;
-               --  end if;
+               --if ws = '1' then
+               --   state <= run;
+               --end if;
+
+               if (idle_start = '1' and idle_counter = 2) then
+                  idle_counter <= 0;
+                  idle_start   <= '0';
+                  state        <= run;
+                  runner       <= '1';
+               elsif (idle_start = '1') then
+                  idle_counter <= idle_counter + 1;
+               end if;
 
             when run =>
                ---------------------------------------------------------------------------------------------------------
@@ -150,31 +150,32 @@ begin
    count_p : process (clk)
    begin
       if rising_edge(clk) then
-         if bit_stream = '1' then
-            counter_1s <= counter_1s + 1;
-         end if;
+         if (runner = '1') then
+            if bit_stream = '1' then
+               counter_1s <= counter_1s + 1;
+            end if;
 
-         if counter_samp = 4 then
-            counter_bit  <= counter_bit + 1;
-            counter_1s   <= 0;
-            counter_samp <= 0;
-         else
-            counter_samp <= counter_samp + 1;
-         end if;
+            if counter_samp = 4 then
+               counter_bit  <= counter_bit + 1;
+               counter_1s   <= 0;
+               counter_samp <= 0;
+            else
+               counter_samp <= counter_samp + 1;
+            end if;
 
-         if counter_bit = 31 and counter_samp = 4 then
-            counter_bit <= 0;
-            counter_mic <= counter_mic + 1;
-         end if;
+            if counter_bit = 31 and counter_samp = 4 then
+               counter_bit <= 0;
+               counter_mic <= counter_mic + 1;
+            end if;
 
-         if counter_mic = 15 and counter_bit = 31 then
-            counter_mic <= 0;
-         end if;
+            if counter_mic = 15 and counter_bit = 31 then
+               counter_mic <= 0;
+            end if;
 
-         if ws = '0' then
-            active <= '0';
+            if ws = '0' then
+               active <= '0';
+            end if;
          end if;
-
          if reset = '1' or (ws = '1' and active = '0') then
             active       <= '1';
             counter_bit  <= 0;
