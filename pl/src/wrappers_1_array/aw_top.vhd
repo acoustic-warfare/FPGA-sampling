@@ -8,7 +8,6 @@ entity aw_top is
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
       reset        : in std_logic;
-      pause        : in std_logic;
       bit_stream   : in std_logic_vector(3 downto 0);
       ws0          : out std_logic;
       ws1          : out std_logic;
@@ -63,19 +62,6 @@ begin
    almost_full  <= almost_full_array(0);
    empty        <= empty_array(0);
    full         <= full_array(0);
-
-   --demo_count_gen : for i in 0 to 63 generate
-   --begin
-   --  demo_twos_count : entity work.demo_twos_count
-   --  port map(
-   --     clk         => clk,
-   --     reset       => reset,
-   --     data        => data_collector(0),
-   --     almost_full => almost_full_array(0),
-   --     wr_en       => wr_en_array(0),
-   --     pause       => pause
-   --  );
-   --  end generate demo_count_gen;
 
    fifo_bd_wrapper_gen : for i in 0 to 63 generate
    begin
