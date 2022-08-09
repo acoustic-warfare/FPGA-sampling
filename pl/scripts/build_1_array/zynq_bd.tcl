@@ -50,8 +50,8 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-   create_project project_1 myproj -part xc7z010clg400-1
-   set_property BOARD_PART digilentinc.com:zybo-z7-10:part0:1.1 [current_project]
+   create_project project_1 myproj -part xc7z020clg400-1
+   set_property BOARD_PART digilentinc.com:zybo-z7-20:part0:1.1 [current_project]
 }
 
 
@@ -228,11 +228,11 @@ proc create_root_design { parentCell } {
   # Create ports
   set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {8000000} \
+   CONFIG.FREQ_HZ {25000000} \
  ] $clk_25
   set clk_125 [ create_bd_port -dir O -type clk clk_125 ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {40000000} \
+   CONFIG.FREQ_HZ {125000000} \
  ] $clk_125
   set clk_axi [ create_bd_port -dir O -type clk clk_axi ]
   set_property -dict [ list \
@@ -338,10 +338,8 @@ proc create_root_design { parentCell } {
    }
   
   set_property -dict [ list \
-   CONFIG.SUPPORTS_NARROW_BURST {0} \
    CONFIG.NUM_READ_OUTSTANDING {1} \
    CONFIG.NUM_WRITE_OUTSTANDING {1} \
-   CONFIG.MAX_BURST_LENGTH {1} \
  ] [get_bd_intf_pins /axi_lite_slave_0/S_AXI]
 
   # Create instance: clk_wiz_0, and set properties
@@ -349,21 +347,21 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.CLKOUT1_JITTER {119.348} \
    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {125.000} \
-   CONFIG.CLKOUT2_JITTER {206.401} \
+   CONFIG.CLKOUT2_JITTER {165.419} \
    CONFIG.CLKOUT2_PHASE_ERROR {96.948} \
-   CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {8} \
+   CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {25} \
    CONFIG.CLKOUT2_USED {true} \
-   CONFIG.CLKOUT3_JITTER {150.675} \
+   CONFIG.CLKOUT3_JITTER {119.348} \
    CONFIG.CLKOUT3_PHASE_ERROR {96.948} \
-   CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {40} \
+   CONFIG.CLKOUT3_REQUESTED_OUT_FREQ {125} \
    CONFIG.CLKOUT3_USED {true} \
    CONFIG.CLK_IN1_BOARD_INTERFACE {sys_clock} \
    CONFIG.CLK_OUT1_PORT {clk_axi} \
    CONFIG.CLK_OUT2_PORT {clk_25} \
    CONFIG.CLK_OUT3_PORT {clk_125} \
    CONFIG.MMCM_CLKOUT0_DIVIDE_F {8.000} \
-   CONFIG.MMCM_CLKOUT1_DIVIDE {125} \
-   CONFIG.MMCM_CLKOUT2_DIVIDE {25} \
+   CONFIG.MMCM_CLKOUT1_DIVIDE {40} \
+   CONFIG.MMCM_CLKOUT2_DIVIDE {8} \
    CONFIG.MMCM_DIVCLK_DIVIDE {1} \
    CONFIG.NUM_OUT_CLKS {3} \
    CONFIG.USE_BOARD_FLOW {true} \

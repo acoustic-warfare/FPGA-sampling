@@ -24,11 +24,11 @@ def load_data_FPGA(filename):
     #   FUNCTION TO LOAD DATA FROM .TXT FILE INTO NUMPY ARRAY 
     #   (RECORDED BY FPGA)
     ROOT = os.getcwd()
-    path = Path(ROOT + "/ps/mic_data/sinus_raport.txt")
+    path = Path(ROOT + "/ps/mic_data/delay_48k_9_rapport.txt")
 
     # Load recorded data from file
     data = np.loadtxt(open(path,'rb').readlines()[:-1],delimiter=',')
-    f_sampling = data[0,2]  # get sampling frequency
+    f_sampling = 48828 # get sampling frequency
     data = data[:,4:]       # take out data from microphones only
 
     # Order of microphones, to make it compatible with beamforming algoritms
@@ -70,7 +70,7 @@ def main():
 
     # Plot options
     plot_period = 1     # periods to plot
-    f0 = 1100           # frequency of recorded sinus signal
+    f0 = 440           # frequency of recorded sinus signal
     normalized = 1      # if normalized = 1, the signals will be normalized according to the maximum value recorded
 
     # Load data from .txt file

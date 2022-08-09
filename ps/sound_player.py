@@ -10,11 +10,11 @@ def Average(l):
 
 ROOT = os.getcwd()
 
-filename = (ROOT + "/ps/mic_data/sinus_raport.txt")
-mic = 46
+filename = (ROOT + "/ps/mic_data/delay_.txt")
+mic = 14
 
 data = np.loadtxt(open(filename, 'rb').readlines()[:-1], delimiter=',') # load data from txt file to np array
-fs = data[0,2]  # sampling frequency
+fs = 48828  # sampling frequency
 data = data[:,4:]    # take out mic data
 total=0
 mic_data=data[:,mic] 
@@ -27,6 +27,7 @@ mic_data=data[:,mic]
 
 
 #total = total/56615
+
 
 #rms = math.sqrt(total) 
 
