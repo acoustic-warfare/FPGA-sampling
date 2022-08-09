@@ -66,7 +66,7 @@ begin
                --   state <= run;
                --end if;
 
-               if (idle_start = '1' and idle_counter = 2) then
+               if (idle_start = '1' and idle_counter = 8) then
                   idle_counter <= 0;
                   idle_start   <= '0';
                   state        <= run;

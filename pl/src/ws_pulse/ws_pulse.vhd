@@ -16,10 +16,12 @@ begin
    ws_pulse_p : process (sck_clk)
    begin
       if (falling_edge(sck_clk)) then
-         if (rising_edge_counter = 511) then
+         if (rising_edge_counter = 509) then
             ws                  <= '1';
             rising_edge_counter <= rising_edge_counter + 1;
-         elsif (rising_edge_counter = 512) then
+         elsif (rising_edge_counter = 510) then
+             rising_edge_counter <= rising_edge_counter + 1;
+         elsif (rising_edge_counter = 511) then
             rising_edge_counter <= 0;
          else
             ws                  <= '0';
