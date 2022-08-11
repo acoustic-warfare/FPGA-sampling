@@ -62,6 +62,8 @@ begin
                --   state <= run;
                --end if;
 
+
+               -- tweek the idle_counter for optimal delay
                if (idle_start = '1' and idle_counter = 9) then
                   idle_counter <= 0;
                   idle_start   <= '0';
