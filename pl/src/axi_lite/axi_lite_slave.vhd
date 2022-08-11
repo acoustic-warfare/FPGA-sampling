@@ -5,11 +5,6 @@ use ieee.numeric_std.all;
 
 entity axi_lite_slave is
    generic (
-      -- Users to add parameters here
-
-      -- User parameters ends
-      -- Do not modify the parameters beyond this line
-
       -- Width of S_AXI data bus
       C_S_AXI_DATA_WIDTH : integer := 32;
       -- Width of S_AXI address bus

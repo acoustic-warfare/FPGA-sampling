@@ -5,10 +5,6 @@ use work.matrix_type.all;
 entity full_sample is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   -- CLK: system clock 125 MHZ
-   --
-   -- RESET: synchronous reset
-   --
    -- ARRAY_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
    --
    -- DATA_VALID_IN_ARY: A array of 4 signals each coresponding that a chain has bean updated
@@ -18,8 +14,9 @@ entity full_sample is
    -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+      -- TODO: implement generics
+      --G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      --G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
    );
    port (
       clk                     : in std_logic;

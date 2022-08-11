@@ -4,10 +4,6 @@ use ieee.std_logic_1164.all;
 entity sample is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   --CLK: system clock 125 MHZ
-   --
-   --RESET: synchronous reset
-   --
    --BIT_STREAM: incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
    --
    --WS: The WS puls is sent out once every 2560 clk cycles,

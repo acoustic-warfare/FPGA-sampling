@@ -5,10 +5,6 @@ use work.matrix_type.all;
 entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   -- CLK: system clock 125 MHZ
-   --
-   -- RESET: synchronous reset
-   --
    -- MIC_SAMPLE_DATA_IN: Incomming array of data. One microphone sends 32 bits.
    --
    -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has bean updated
@@ -18,8 +14,9 @@ entity collector is
    -- CHAIN_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in CHAIN_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
+      -- TODO: implement generics   
+      --G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      --G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
    );
    port (
       clk                    : in std_logic;

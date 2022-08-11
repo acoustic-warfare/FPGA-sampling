@@ -8,7 +8,6 @@ entity aw_top_2_arrays is
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
       reset        : in std_logic;
-      pause        : in std_logic;
       bit_stream   : in std_logic_vector(7 downto 0);
       ws0          : out std_logic;
       ws1          : out std_logic;

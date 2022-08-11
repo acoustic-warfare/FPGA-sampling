@@ -5,11 +5,6 @@ use ieee.numeric_std.all;
 
 entity axi_lite_slave_2_arrays is
    generic (
-      -- Users to add parameters here
-
-      -- User parameters ends
-      -- Do not modify the parameters beyond this line
-
       -- Width of S_AXI data bus
       C_S_AXI_DATA_WIDTH : integer := 32;
       -- Width of S_AXI address bus
@@ -153,7 +148,7 @@ entity axi_lite_slave_2_arrays is
       reg_132 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
       reg_133 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
       reg_134 : in std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0) := (others => '0');
-      --read enable
+
       rd_en : out std_logic_vector(134 downto 0);
 
       -- Global Clock Signal
