@@ -7,4 +7,4 @@ A more comprehencive discription of all the diffrent components of the project c
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
 
 
-![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/array_instructions.png)
+![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/array_instruction.png)
