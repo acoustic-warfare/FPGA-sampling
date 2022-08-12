@@ -5,13 +5,15 @@ use work.matrix_type.all;
 entity full_sample is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   -- ARRAY_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
+   -- CHAIN_4X_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
    --
-   -- DATA_VALID_IN_ARY: A array of 4 signals each coresponding that a chain has bean updated
+   -- CHAIN_MATRIX_VALID_IN: A array of 4 signals each coresponding that a chain has bean updated
    --
-   -- ARRAY_MATRIX_DATA_OUT: A 3D matrix filled the data from all the mics of the 4 chains (4x16x24)
+   -- ARRAY_MATRIX_DATA_OUT: A matrix filled the data from all the mics of the 4 chains (64x32)
    --
    -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
+   --
+   -- SAMPLE_COUNTER_ARRAY: Counter for how many samples that gone through the component, 16 bit 
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       -- TODO: implement generics
@@ -38,32 +40,32 @@ architecture rtl of full_sample is
 
 begin
 
-   fill_matrix_out_p : process (clk)
+   fill_matrix_out_p : process (clk) -- This proccess fills an matrix with samples from all four collectors
    begin
       if rising_edge(clk) then
          for i in 0 to 3 loop
-            if chain_matrix_valid_in(i) = '1' then
+            if chain_matrix_valid_in(i) = '1' then -- checks if valid signals from all collectors is HIGH
                valid_check(i) <= '1';
             end if;
          end loop;
 
-         if valid_check = "1111" then -- checks that a new value has been added to each place in the array
-            temp_chain_matrix_0 <= chain_x4_matrix_data_in(0);
-            temp_chain_matrix_1 <= chain_x4_matrix_data_in(1);
-            temp_chain_matrix_2 <= chain_x4_matrix_data_in(2);
-            temp_chain_matrix_3 <= chain_x4_matrix_data_in(3);
+         if valid_check = "1111" then                       -- If all valid signal was High, then store each chain in a temporary holder
+            temp_chain_matrix_0 <= chain_x4_matrix_data_in(0); --chain 1 
+            temp_chain_matrix_1 <= chain_x4_matrix_data_in(1); --chain 2 
+            temp_chain_matrix_2 <= chain_x4_matrix_data_in(2); --chain 3 
+            temp_chain_matrix_3 <= chain_x4_matrix_data_in(3); --chain 4 
 
-            for i in 0 to 15 loop
+            for i in 0 to 15 loop -- take samples from all four chains and store it in a matrix with the dimension of 64x32
                array_matrix_data_out(i)      <= temp_chain_matrix_0(i);
                array_matrix_data_out(i + 16) <= temp_chain_matrix_1(i);
                array_matrix_data_out(i + 32) <= temp_chain_matrix_2(i);
                array_matrix_data_out(i + 48) <= temp_chain_matrix_3(i);
             end loop;
 
-            array_matrix_valid_out <= '1';
-            valid_check            <= (others => '0');
-            sample_counter         <= sample_counter + 1;
-            sample_counter_array   <= std_logic_vector(sample_counter);
+            array_matrix_valid_out <= '1';                              -- Set the valid signal to High, so the next component can read the samples
+            valid_check            <= (others => '0');                  -- Reset the valid signals from the Collectors
+            sample_counter         <= sample_counter + 1;               --increment the sample counter
+            sample_counter_array   <= std_logic_vector(sample_counter); -- convert INT to a vector
          else
             array_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
          end if;
