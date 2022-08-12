@@ -4,4 +4,7 @@ Information about the project and user guid on how to build and run the project 
 
 A more comprehencive discription of all the diffrent components of the project can be found in the [Project Report](/doc/acoustic_warfare_fpga_sampling.pdf).
 
-![alt text](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
+![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
+
+
+![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/array_instructions.png)
