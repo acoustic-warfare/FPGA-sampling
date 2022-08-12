@@ -4,7 +4,10 @@ Information about the project and user guid on how to build and run the project 
 
 A more comprehencive discription of all the diffrent components of the project can be found in the [Project Report](/doc/acoustic_warfare_fpga_sampling.pdf).
 
+
+The following block diagram showcase a simplification of the flow from the microphone array to a receiving CPU
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
 
 
+Order of how how microphones is received on a CPU and their physical position on the array
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/array_instruction.png)
