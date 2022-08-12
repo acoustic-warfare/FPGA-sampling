@@ -9,5 +9,5 @@ The following block diagram showcase a simplification of the flow from the micro
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
 
 
-Order of how how microphones is received on a CPU and their physical position on the array
+Order of how how microphones is received on a CPU and their actual position on the array
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/array_instruction.png)
