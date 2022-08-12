@@ -12,15 +12,15 @@ entity rd_en_pulse is
 end rd_en_pulse;
 
 architecture rtl of rd_en_pulse is
-   signal active : std_logic := '0';
+   signal active : std_logic := '0'; -- prevents rd_en_out to be longer than one clk-cykle long pulse
 begin
 
    process (clk_axi)
    begin
       if (rising_edge(clk_axi)) then
-         rd_en_out <= '0';
+         rd_en_out <= '0'; -- set defalt value
          if (rd_en_in = '1' and active = '0') then
-            rd_en_out <= '1';
+            rd_en_out <= '1'; -- set to one for one clk-cykle
             active    <= '1';
          end if;
 
