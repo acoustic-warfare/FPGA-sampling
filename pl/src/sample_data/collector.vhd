@@ -9,12 +9,12 @@ entity collector is
    --
    -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has bean updated
    --
-   -- CHAIN_MATRIX_DATA_OUT: A matrix filled the data from all the mics of the chain (16x24)
+   -- CHAIN_MATRIX_DATA_OUT: A matrix filled the data from all the mics of the chain (16x32)
    --
    -- CHAIN_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in CHAIN_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
-      -- TODO: implement generics   
+      -- TODO: implement generics
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
    );
