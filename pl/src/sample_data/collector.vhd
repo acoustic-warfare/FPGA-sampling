@@ -40,17 +40,17 @@ begin
 
          if mic_sample_valid_in = '1' then -- Data from a new mic is valid and the shift register puts it at the first place
             if (mic_sample_data_in(23) = '0') then
-               tmp_holder(23 downto 0) <= mic_sample_data_in;
-               tmp_holder(31 downto 24) <=  "00000000";
+               tmp_holder(23 downto 0)  <= mic_sample_data_in;
+               tmp_holder(31 downto 24) <= "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
             else
-               tmp_holder(23 downto 0) <= mic_sample_data_in;
-               tmp_holder(31 downto 24) <= "11111111";
+               tmp_holder(23 downto 0)  <= mic_sample_data_in;
+               tmp_holder(31 downto 24) <= "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
             end if;
             chain_matrix_data_out <= chain_matrix_data_out(14 downto 0) & tmp_holder;
             counter_mic           <= counter_mic + 1;
          elsif counter_mic = G_NR_MICS then -- When all Vectors is full in the matrix set the data_valid_out to HIGH
             chain_matrix_valid_out <= '1';
-            counter_mic            <= 0;
+            counter_mic            <= 0; -- Resets the microphone counter, to prepare collect the chain again
          end if;
 
          if reset = '1' then -- When reset is HIGH data_valid_out and counter_mic are reset back to LOW and zero
