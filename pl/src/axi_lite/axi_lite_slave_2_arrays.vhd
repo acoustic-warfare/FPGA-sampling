@@ -290,7 +290,6 @@ begin
    -- Implement axi_awaddr latching
    -- This process is used to latch the address when both
    -- S_AXI_AWVALID and S_AXI_WVALID are valid.
-
    process (S_AXI_ACLK)
    begin
       if rising_edge(S_AXI_ACLK) then
@@ -309,7 +308,6 @@ begin
    -- axi_wready is asserted for one S_AXI_ACLK clock cycle when both
    -- S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_wready is
    -- de-asserted when reset is low.
-
    process (S_AXI_ACLK)
    begin
       if rising_edge(S_AXI_ACLK) then
@@ -338,6 +336,7 @@ begin
    -- and the slave is ready to accept the write address and write data.
    slv_reg_wren <= axi_wready and S_AXI_WVALID and axi_awready and S_AXI_AWVALID;
 
+   -- This process is only needed to send data from PS to PL
    --process (S_AXI_ACLK)
    --   -- variable loc_addr : std_logic_vector(OPT_MEM_ADDR_BITS downto 0);
    --   variable loc_addr : integer range 0 to (OPT_MEM_ADDR_BITS ** 2 - 1);
@@ -371,7 +370,6 @@ begin
    -- when axi_wready, S_AXI_WVALID, axi_wready and S_AXI_WVALID are asserted.
    -- This marks the acceptance of address and indicates the status of
    -- write transaction.
-
    process (S_AXI_ACLK)
    begin
       if rising_edge(S_AXI_ACLK) then
@@ -395,7 +393,6 @@ begin
    -- de-asserted when reset (active low) is asserted.
    -- The read address is also latched when S_AXI_ARVALID is
    -- asserted. axi_araddr is reset to zero on reset assertion.
-
    process (S_AXI_ACLK)
    begin
       if rising_edge(S_AXI_ACLK) then
@@ -482,6 +479,7 @@ begin
       end if;
    end process;
 
+   -- Puts data in slav_registers from input_regs
    process (S_AXI_ACLK)
    begin
       slv_reg     <= (others => (others => '0'));
