@@ -10,7 +10,7 @@
 
 #define PORT 21844
 #define MAXLINE 1024
-
+#define MAX_SAMPLES 100000
 // Driver code
 int main(){
 
@@ -42,12 +42,12 @@ int main(){
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("mic_data/new_sample_data.txt", "w");
+   FILE *fp = fopen("mic_data/new_sample_data_new.txt", "w");
 
    
    
-   
-   while (1)
+   int sample_cnt = 0;
+   while (sample_cnt < MAX_SAMPLES)
    {
       int len, n;
 
@@ -60,11 +60,12 @@ int main(){
 
 
 //131
-      for (int i = 0; i < 131; i++)
+      for (int i = 0; i < 63+4; i++)
       {
          fprintf(fp, "%9d, ", buffer[i]);
       }
-      fprintf(fp, "%9d\n", buffer[131]);
+      fprintf(fp, "%9d\n", buffer[63+4]);
+      sample_cnt = sample_cnt +1;
    }
    return 0;
 }

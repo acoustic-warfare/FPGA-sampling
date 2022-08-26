@@ -24,7 +24,7 @@ def load_data_FPGA(filename):
     #   FUNCTION TO LOAD DATA FROM .TXT FILE INTO NUMPY ARRAY 
     #   (RECORDED BY FPGA)
     ROOT = os.getcwd()
-    path = Path(ROOT + "/ps/mic_data/delay_48k_9_rapport.txt")
+    path = Path(ROOT + "/mic_data/new_sample_data_new.txt")
 
     # Load recorded data from file
     data = np.loadtxt(open(path,'rb').readlines()[:-1],delimiter=',')
@@ -60,9 +60,9 @@ def write_to_file(write, filename, values):
 
 def main():
     recording_device = 'FPGA' # choose between 'FPGA' and 'BB' (BeagelBone) 
-    filename = 'new_sample_data'
+    filename = 'new_sample_data_new'
 
-    initial_samples = 501000                 # initial samples, at startup phase of Beaglebone recording
+    initial_samples = 10000                 # initial samples, at startup phase of Beaglebone recording
 
     # Choose the mic signals that should be set to zero
     mics_to_delete = [8, 38]

@@ -5,7 +5,7 @@ package require cmdline
 
 set options {
    {gui.arg   "1"             "Launch in gui (1 to lanch gui | 0 not lanch gui)" }
-   {board.arg "20"            "Select part (10 for Zybo z7-10|20 for Zybo z7-20)"}
+   {board.arg "10"            "Select part (10 for Zybo z7-10|20 for Zybo z7-20)"}
    {synth.arg "1"             "Run synth (1 to run synth | 0 not run synth)"     }
    {impl.arg  "1"             "Run impl (1 to run impl | 0 not run impl)"        }
    {sdk.arg   "1"             "Launch SDK (1 to launch SDK | 0 not launch SDK)"  }

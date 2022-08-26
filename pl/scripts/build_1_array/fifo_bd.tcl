@@ -201,17 +201,22 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.Almost_Empty_Flag {true} \
    CONFIG.Almost_Full_Flag {true} \
+   CONFIG.Data_Count_Width {7} \
    CONFIG.Enable_Reset_Synchronization {true} \
-   CONFIG.Enable_Safety_Circuit {false} \
+   CONFIG.Enable_Safety_Circuit {true} \
    CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
    CONFIG.Full_Flags_Reset_Value {1} \
-   CONFIG.Full_Threshold_Assert_Value {1021} \
-   CONFIG.Full_Threshold_Negate_Value {1020} \
+   CONFIG.Full_Threshold_Assert_Value {125} \
+   CONFIG.Full_Threshold_Negate_Value {124} \
    CONFIG.Input_Data_Width {32} \
+   CONFIG.Input_Depth {128} \
    CONFIG.Output_Data_Width {32} \
+   CONFIG.Output_Depth {128} \
+   CONFIG.Read_Data_Count_Width {7} \
    CONFIG.Reset_Pin {true} \
    CONFIG.Reset_Type {Asynchronous_Reset} \
    CONFIG.Use_Dout_Reset {true} \
+   CONFIG.Write_Data_Count_Width {7} \
  ] $fifo_generator_0
 
   # Create interface connections
@@ -240,6 +245,4 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
-
-common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
