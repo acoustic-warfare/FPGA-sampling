@@ -50,6 +50,8 @@ architecture structual of aw_top is
 
    signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
    signal sample_counter_out : std_logic_vector(31 downto 0);
+   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns, 
+   signal rst_int : std_logic := '1';
 
 begin
 
@@ -62,6 +64,24 @@ begin
    almost_full  <= almost_full_array(0);
    empty        <= empty_array(0);
    full         <= full_array(0);
+
+      process(sys_clock, reset_rtl)
+    begin
+        if reset_rtl = '1' then
+            rst_cnt  <= (others => '0');       
+            rst_int <= '1';
+        elsif sys_clock'event and sys_clock = '1' then
+      
+        if rst_cnt =  x"01ffffff" then --about 3 sec
+      --  if rst_cnt =  x"00000fff" then
+           rst_int <= '0';
+         else
+              rst_cnt <= rst_cnt +1;
+         end if;
+          
+        end if;
+    end process;
+
 
    fifo_bd_wrapper_gen : for i in 0 to 63 generate
    begin
@@ -157,7 +177,7 @@ begin
          clk_125      => clk,
          clk_25       => sck_clk_internal,
          clk_axi      => clk_axi,
-         reset_rtl    => reset_rtl,
+         reset_rtl    => rst_int,
          rst_axi      => rst_axi,
          sys_clock    => sys_clock,
          rd_en        => rd_en_array,
