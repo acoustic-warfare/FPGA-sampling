@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
+-- test if fork worked. will be removed
 
 use work.matrix_type.all;
 
