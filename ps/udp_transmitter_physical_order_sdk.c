@@ -236,58 +236,9 @@ int main() {
 			data[2] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);
 			data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);
 
-			// add payload_data
-			// mic 57-63
-			for(int i = 0; i < 7; i++){
-				data[payload_header_size + i] = Xil_In32(start_addr + 4 * 54 - 4 * i);
-			}
-
-			// mic 64
-			data[payload_header_size + 7] = Xil_In32(start_addr + 4 * 63);
-
-			// mic 56-49
-			for(int i = 0; i < 8; i++){
-				data[payload_header_size + 8 + i] = Xil_In32(start_addr + 4 * 55 + 4 * i);
-			}
-
-			// mic 41-47
-			for(int i = 0; i < 7; i++){
-				data[payload_header_size + 16 + i] = Xil_In32(start_addr + 4 * 38 - 4 * i);
-			}
-
-			// mic 48
-			data[payload_header_size + 23] = Xil_In32(start_addr + 4 * 47);
-
-			// mic 40-33
-			for(int i = 0; i < 8; i++){
-				data[payload_header_size + 24 + i] = Xil_In32(start_addr + 4 * 39 + 4 * i);
-			}
-
-			// mic 25-31
-			for(int i = 0; i < 7; i++){
-				data[payload_header_size + 32 + i] = Xil_In32(start_addr + 4 * 22 - 4 * i);
-			}
-
-			// mic 32
-			data[payload_header_size + 39] = Xil_In32(start_addr + 4 * 31);
-
-			// mic 25-17
-			for(int i = 0; i < 8; i++){
-				data[payload_header_size + 40 + i] = Xil_In32(start_addr + 4 * 23 + 4 * i);
-			}
-
-			// mic 9-15
-			for(int i = 0; i < 7; i++){
-				data[payload_header_size + 48 + i] = Xil_In32(start_addr + 4 * 6 - 4 * i);
-			}
-
-			// mic 16
-			data[payload_header_size + 55] = Xil_In32(start_addr + 4 * 31);
-
-			// mic 8-1
-			for(int i = 0; i < 8; i++){
-				data[payload_header_size + 56 + i] = Xil_In32(start_addr + 4 * 7 + 4 * i);
-			}
+         for(int i=0; i<64;i++){
+            data[payload_header_size +i] = Xil_In32(start_addr + 4*i);
+         }
 
 
 			xemacif_input(netif);
