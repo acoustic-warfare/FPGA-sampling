@@ -50,7 +50,7 @@ architecture structual of aw_top is
 
    signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
    signal sample_counter_out : std_logic_vector(31 downto 0);
-   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns, 
+   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic := '1';
 
 begin
@@ -68,17 +68,17 @@ begin
       process(sys_clock, reset_rtl)
     begin
         if reset_rtl = '1' then
-            rst_cnt  <= (others => '0');       
+            rst_cnt  <= (others => '0');
             rst_int <= '1';
         elsif sys_clock'event and sys_clock = '1' then
-      
+
         if rst_cnt =  x"01ffffff" then --about 3 sec
       --  if rst_cnt =  x"00000fff" then
            rst_int <= '0';
          else
               rst_cnt <= rst_cnt +1;
          end if;
-          
+
         end if;
     end process;
 
@@ -169,7 +169,7 @@ begin
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
          array_matrix_valid_out  => array_matrix_valid,
-         sample_counter_array    => sample_counter(15 downto 0)
+         sample_counter_array    => sample_counter(31 downto 0)
       );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper

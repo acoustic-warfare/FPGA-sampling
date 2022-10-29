@@ -199,7 +199,7 @@ int main() {
 	xil_printf("Setup Done");
 
    // ip of reciving pc
-	IP4_ADDR(&ip_remote, 192, 168, 1, 3); 
+	IP4_ADDR(&ip_remote, 192, 168, 1, 2); 
 
 	udp_1 = udp_new();
 
