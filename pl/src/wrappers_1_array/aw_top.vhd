@@ -52,6 +52,9 @@ architecture structual of aw_top is
    signal sample_counter_out : std_logic_vector(31 downto 0);
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic := '1';
+   signal ws_value : std_logic_vector(31 downto 0) := "00000000000000001011111010111100";
+   signal ws_value_out : std_logic_vector(31 downto 0);
+
 
 begin
 
@@ -115,7 +118,22 @@ begin
          wr_clk                 => clk,
          reset                  => reset
       );
-
+-------------------------------------------------------------------------------------------------------
+      fifo_frequency : entity work.fifo_bd_wrapper
+      port map(
+         FIFO_WRITE_full        => full_array(67),
+         FIFO_READ_empty        => empty_array(67),
+         FIFO_WRITE_almost_full => almost_full_array(67),
+         FIFO_READ_almost_empty => almost_empty_array(67),
+         FIFO_WRITE_wr_data     => ws_value, --data in
+         FIFO_WRITE_wr_en       => array_matrix_valid,
+         FIFO_READ_rd_en        => rd_en_pulse_array(67), --- from pulse
+         FIFO_READ_rd_data      => ws_value_out,    --data out
+         rd_clk                 => clk_axi,
+         wr_clk                 => clk,
+         reset                  => reset
+      );
+------------------------------------------------------------------------------------------
    rd_en_pulse_gen : for i in 0 to 69 generate
    begin
       rd_en_pulse : entity work.rd_en_pulse
@@ -248,7 +266,7 @@ begin
          reg_64_0     => empty_array(31 downto 0),
          reg_65_0     => empty_array(63 downto 32),
          reg_66_0     => sample_counter_out,
-         reg_67_0 => (others => '0'),
+         reg_67_0 => ws_value_out,
          reg_68_0 => (others => '0'),
          reg_69_0 => (others => '0')
       );
