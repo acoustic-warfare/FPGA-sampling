@@ -53,6 +53,7 @@ architecture structual of aw_top is
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic := '1';
    signal ws_value : std_logic_vector(31 downto 0) := "00000000000000001011111010111100";
+   --signal ws_value : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(48825,32));    this is a much better solution, untested atm
    signal ws_value_out : std_logic_vector(31 downto 0);
 
 
