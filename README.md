@@ -4,6 +4,10 @@ Information about the project and user guid on how to build and run the project 
 
 A more comprehencive discription of all the diffrent components of the project can be found in the [Project Report](/doc/acoustic_warfare_fpga_sampling.pdf).
 
+See usermanual at https://github.com/IvarNilsson/FPGA-sampling/wiki/User-Manual
+
+Test manual will be uploaded soon
+
 All test and results were done on PCB-A2 version one (the version without buffers).
 
 The following block diagram showcase a simplification of the flow from the microphone array to a receiving CPU
