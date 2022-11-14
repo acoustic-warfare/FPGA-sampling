@@ -227,7 +227,7 @@ def print_analysis(fileChooser,microphones,source_audio,recordtime):
       arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
       tmp=0                         # empty list that should hold legends for plot
 
-      N=10000  
+      N=N=len(ok_data[:,0]) 
       phase_diff_collection = ["" for x in range(len(arr_mics_FFT))]
       first_mic = np.fft.fft(ok_data[0:N,int(arr_mics_FFT[0])])
       index=np.round(int(source_audio)*N/fs)

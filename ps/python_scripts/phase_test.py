@@ -125,7 +125,7 @@ def collect_samples(filename,recordTime):
    f.close
    sys.stdout.flush()
 
-def print_analysis(fileChooser,microphones,source_audio):
+def print_analysis(fileChooser,microphones,source_audio,recordTime):
 
 
    def load_data_FPGA(filename):
@@ -148,7 +148,11 @@ def print_analysis(fileChooser,microphones,source_audio):
       ## Data2D[n][3] = array sample counter
       ## Data2D[n][4] to  Data2D[n][67] = is microphone 1 to 64
 
-      
+      #### Check the sample counter to see if theres samples missing ####
+      for i in range(len(data2D[:,3])):
+         if(i>0):
+            if((data2D[i-1,3]+1)!=data2D[i,3]):
+               print("missing samples... jumpes from "+str(data2D[i-1,3])+ " to "+str(data2D[i,3]))
 
       micData = data2D[:,4:] #An array with only mic data. i.e removes (Array id, protocol version, freq and counter)
       f_sampling = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
@@ -216,13 +220,17 @@ def print_analysis(fileChooser,microphones,source_audio):
 
       print('sample frequency: '+ str(int(fs)))
 
-
+   
+      #### EXPECTED PHASE DIFF ####
+      t_diff = 0.02/340
+      expected_phase_diff = 360*t_diff*int(source_audio)
+      
       #### CALCULATE THE PHASE ####
       mics_FFT = microphones
       arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
       tmp=0                         # empty list that should hold legends for plot
 
-      N=1000
+      N=len(ok_data[:,0]) ## takes out how many individual samples there is to one mic. is basically an integer of fs*record_time 
       phase_diff_collection = ["" for x in range(len(arr_mics_FFT))]
 
       for i in range(len(arr_mics_FFT)):
@@ -236,7 +244,7 @@ def print_analysis(fileChooser,microphones,source_audio):
            phase_diff = (phase_diff*180)/np.pi
            phase_diff=round(phase_diff,2)
            mic_nr = str(arr_mics_FFT[i-1]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
-           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0"
+           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected("+str(np.round(expected_phase_diff,2))+")."
         tmp=y
             
             # --- PLOT 3---
@@ -364,6 +372,7 @@ while(True):
             microphones=[15,2,31,18,47,34,63,50]
             break
          elif(v=="l8"):
+            
             microphones=[16,1,32,17,48,33,64,49]
             break
          else:
@@ -379,5 +388,5 @@ input("press ENTER to start")
 
 while(1):
    collect_samples(fileChooser,recordTime)
-   print_analysis(fileChooser,microphones,source_audio)
+   print_analysis(fileChooser,microphones,source_audio,recordTime)
      
