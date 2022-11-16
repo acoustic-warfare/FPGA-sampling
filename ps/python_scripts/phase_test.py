@@ -288,16 +288,16 @@ while(True):
    microphones=[0,0,0,0,0,0,0,0]
    if(choise=='h'):
       while(True):
-         print("pick a horizontal line[L1, L2, L3, L4, L5, L6, L7, L8]")
+         print("pick a horizontal line[Lx]")
          print("_____________________________________ ")
-         print("L1: | 9,10,11,12,13,14,15,16")
-         print("L2: | 8, 7, 6, 5, 4, 3, 2, 1 ")
-         print("L3: | 25,26,27,28,29,30,31,32")
-         print("L4: | 24,23,22,21,20,19,18,17")
-         print("L5: | 41,42,43,44,45,46,47,48")
-         print("L6: | 40,39,38,37,36,35,34,33")
-         print("L7: | 57,58,59,69,61,62,63,64")
-         print("L8: | 56,55,54,53,52,51,50,49")
+         print("L1: | 8, 7, 6, 5, 4, 3, 2, 1")
+         print("L2: | 9,10,11,12,13,14,15,16 ")
+         print("L3: | 24,23,22,21,20,19,18,17")
+         print("L4: | 25,26,27,28,29,30,31,32")
+         print("L5: | 40,39,38,37,36,35,34,33")
+         print("L6: | 41,42,43,44,45,46,47,48")
+         print("L7: | 56,55,54,53,52,51,50,49")
+         print("L8: | 57,58,59,69,61,62,63,64")
          print("\n")
          print("write [Lx], where x is a number from 1-8")
          print("choice: ")
@@ -305,75 +305,83 @@ while(True):
          l = l.lower()
 
          if(l=="l1"):
-            microphones=[9,10,11,12,13,14,15,16]
-            break
-         elif(l=="l2"):
+            #8, 7, 6, 5, 4, 3, 2, 1
+            #9,10,11,12,13,14,15,16
+            #24,23,22,21,20,19,18,17
+            #25,26,27,28,29,30,31,32
+            #40,39,38,37,36,35,34,33
+            #56,55,54,53,52,51,50,49
+            #57,58,59,69,61,62,63,64
             microphones=[8, 7, 6, 5, 4, 3, 2, 1]
             break
-         elif(l=="l3"):
-            microphones=[25,26,27,28,29,30,31,32]
+         elif(l=="l2"):
+            microphones=[9,10,11,12,13,14,15,16]
             break
-         elif(l=="l4"):
+         elif(l=="l3"):
             microphones=[24,23,22,21,20,19,18,17]
             break
-         elif(l=="l5"):
-            microphones=[41,42,43,44,45,46,47,48]
+         elif(l=="l4"):
+            microphones=[25,26,27,28,29,30,31,32]
             break
-         elif(l=="l6"):
+         elif(l=="l5"):
             microphones=[40,39,38,37,36,35,34,33]
             break
+         elif(l=="l6"):
+            microphones=[41,42,43,44,45,46,47,48]
+            break
          elif(l=="l7"):
-            microphones=[57,58,59,69,61,62,63,64]
+            microphones=[56,55,54,53,52,51,50,49]
             break
          elif(l=="l8"):
-            microphones=[56,55,54,53,52,51,50,49]
+            microphones=[57,58,59,69,61,62,63,64]
             break
          else:
             print("invalid input. write [Lx], where x is a number from 1-8")
       break
-
+############################################################################# fixa
    elif(choise=="v"):
       while(True):
-         print("pick a vertical Line[L1, L2, L3, L4, L5, L6, L7, L8]")
+         print("pick a vertical Line[Lx]")
          print("L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 |")
          print("---------------------------------------")
+         print("8  | 7  | 6  | 5  | 4  | 3  | 2  | 1  |")
          print("9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 |")
-         print("8  | 7  | 6  | 5  | 4  | 3  | 2  | 1  |")	
-         print("25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 |")
          print("24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 |")
-         print("41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 |")
+         print("25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 |")
          print("40 | 39 | 38 | 37 | 36 | 35 | 34 | 33 |")
-         print("57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 |")
+         print("41 | 42 | 43 | 44 | 45 | 46 | 47 | 48 |")
          print("56 | 55 | 54 | 53 | 52 | 51 | 50 | 49 |")
+         print("57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 |")
          print("\n")
          print("write [Lx], where x is a number from 1-8")
          print("choice: ")
          v = input()
          v = v.lower()
          if(v=="l1"):
-            microphones=[9,8,25,24,41,40,57,56]
+            microphones=[8,9,24,25,40,41,56,57]
             break
          elif(v=="l2"):
-            microphones=[10,7,26,23,42,39,58,55]
+            microphones=[7,10,23,26,39,42,55,58]
             break
          elif(v=="l3"):
-            microphones=[11,6,27,22,43,38,59,54]
+            microphones=[6,11,22,27,38,43,54,59]
             break
          elif(v=="l4"):
-            microphones=[12,5,28,21,44,37,60,53]
+            microphones=[5,12,21,28,37,44,53,60]
             break
          elif(v=="l5"):
-            microphones=[13,4,29,20,45,36,61,52]
+            microphones=[4,13,20,29,36,45,52,61]
             break
          elif(v=="l6"):
-            microphones=[14,3,30,19,46,35,62,51]
+            microphones=[3,14,19,30,35,46,51,62]
             break
          elif(v=="l7"):
-            microphones=[15,2,31,18,47,34,63,50]
+            #15,2,31,18,47,34,
+            microphones=[2,15,18,31,34,47,50,63]
             break
          elif(v=="l8"):
             
-            microphones=[16,1,32,17,48,33,64,49]
+            microphones=[1,16,17,32,33,48,49,64]
             break
          else:
             print("invalid input. write [Lx], where x is a number from 1-8")
