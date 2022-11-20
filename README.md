@@ -6,7 +6,7 @@ A more comprehencive discription of all the diffrent components of the project c
 
 See usermanual at https://github.com/IvarNilsson/FPGA-sampling/wiki/User-Manual
 
-How to test the arrays, see the [Test Manual](/doc/Testing_the_arrays.pdf). Download the Test Manual to see the included links.
+How to test the arrays, see the [Test Manual](/doc/Testing_the_arrays_version_1.pdf). Download the Test Manual to see the included links at page 2.
 
 All test and results were done on PCB-A1 version one (the version without buffers).
 
