@@ -6,9 +6,9 @@ A more comprehencive discription of all the diffrent components of the project c
 
 See usermanual at https://github.com/IvarNilsson/FPGA-sampling/wiki/User-Manual
 
-Test manual will be uploaded soon
+How to test the arrays, see the [Test Manual](/doc/Testing_the_arrays.pdf)
 
-All test and results were done on PCB-A2 version one (the version without buffers).
+All test and results were done on PCB-A1 version one (the version without buffers).
 
 The following block diagram showcase a simplification of the flow from the microphone array to a receiving CPU
 ![](https://github.com/IvarNilsson/FPGA-sampling/blob/main/doc/pictures/flowchart.png)
