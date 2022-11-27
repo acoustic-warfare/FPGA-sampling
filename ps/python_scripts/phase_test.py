@@ -297,7 +297,7 @@ while(True):
          print("L5: | 40,39,38,37,36,35,34,33")
          print("L6: | 41,42,43,44,45,46,47,48")
          print("L7: | 56,55,54,53,52,51,50,49")
-         print("L8: | 57,58,59,69,61,62,63,64")
+         print("L8: | 57,58,59,60,61,62,63,64")
          print("\n")
          print("write [Lx], where x is a number from 1-8")
          print("choice: ")
@@ -333,7 +333,7 @@ while(True):
             microphones=[56,55,54,53,52,51,50,49]
             break
          elif(l=="l8"):
-            microphones=[57,58,59,69,61,62,63,64]
+            microphones=[57,58,59,60,61,62,63,64]
             break
          else:
             print("invalid input. write [Lx], where x is a number from 1-8")

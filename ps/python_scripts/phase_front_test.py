@@ -125,7 +125,7 @@ def collect_samples(filename,recordTime):
    f.close
    sys.stdout.flush()
 
-def print_analysis(fileChooser,microphones,source_audio,recordtime):
+def print_analysis(fileChooser,microphones,source_audio,recordTime):
 
 
    def load_data_FPGA(filename):
@@ -148,7 +148,11 @@ def print_analysis(fileChooser,microphones,source_audio,recordtime):
       ## Data2D[n][3] = array sample counter
       ## Data2D[n][4] to  Data2D[n][67] = is microphone 1 to 64
 
-      
+      #### Check the sample counter to see if theres samples missing ####
+      for i in range(len(data2D[:,3])):
+         if(i>0):
+            if((data2D[i-1,3]+1)!=data2D[i,3]):
+               print("missing samples... jumpes from "+str(data2D[i-1,3])+ " to "+str(data2D[i,3]))
 
       micData = data2D[:,4:] #An array with only mic data. i.e removes (Array id, protocol version, freq and counter)
       f_sampling = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
@@ -215,37 +219,38 @@ def print_analysis(fileChooser,microphones,source_audio,recordtime):
       max_value_ok = np.max(np.max(ok_data[0:4000,],axis=0)) # maximum value of data, to use for axis scaling in plots
 
       print('sample frequency: '+ str(int(fs)))
-      
-      
+
+   
       #### EXPECTED PHASE DIFF ####
       t_diff = 0.02/340
       expected_phase_diff = 360*t_diff*int(source_audio)
-      #expected_phase_diff = np.round(expected_phase_diff,2)
-
-      #### CALCULATE THE REAL PHASE DIFF ####
-      mics_FFT = microphones
+      
+      #### CALCULATE THE PHASE ####
+      mics_FFT = microphones ###########
       arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
       tmp=0                         # empty list that should hold legends for plot
 
-      N=N=len(ok_data[:,0]) 
+      N=len(ok_data[:,0]) ## takes out how many individual samples there is to one mic. is basically an integer of fs*record_time 
       phase_diff_collection = ["" for x in range(len(arr_mics_FFT))]
-      first_mic = np.fft.fft(ok_data[0:N,int(arr_mics_FFT[0])])
-      index=np.round(int(source_audio)*N/fs)
-      first_mic_fft = first_mic[int(index)]
+
+      mic1=np.fft.fft(ok_data[0:N,int(arr_mics_FFT[0])])
+      index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
+      ref=mic1[int(index)]
 
       for i in range(len(arr_mics_FFT)):
         micdata=np.fft.fft(ok_data[0:N,int(arr_mics_FFT[i])])
         
-        #index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
+        
+        index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
         y=micdata[int(index)]
 
-        if(i>=0):
-           phase_diff = np.angle(first_mic_fft/y)
+        if(i>0):
+           phase_diff = np.angle(ref/y)
            phase_diff = (phase_diff*180)/np.pi
            phase_diff=round(phase_diff,2)
-           mic_nr = str(arr_mics_FFT[0]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
-           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected ("+str(np.round(expected_phase_diff*i,2))+"\u00b0)"
-        #tmp=y
+           mic_nr = str(arr_mics_FFT[i-1]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
+           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected("+str(np.round(expected_phase_diff,2))+")."
+        ##tmp=y
             
             # --- PLOT 3---
       #   of selected microphones
@@ -276,14 +281,14 @@ def print_analysis(fileChooser,microphones,source_audio,recordtime):
    main()
 #################################################################################################
 print("Enter a filename to samples: ")
-fileChooser = input()
+fileChooser = "test"
 print("Enter time to record (seconds): ")
-recordTime=input()
+recordTime=4
 print("Enter the frequency of the audio source (Hz): ")
-source_audio=input()
+source_audio=880
 while(True):
    print("view data for a Horizontal line or vertical line. Enter [H/V]")
-   choise=input()
+   choise="h"
    choise=choise.lower()
    microphones=[0,0,0,0,0,0,0,0]
    if(choise=='h'):
@@ -311,29 +316,29 @@ while(True):
             #25,26,27,28,29,30,31,32
             #40,39,38,37,36,35,34,33
             #56,55,54,53,52,51,50,49
-            #57,58,59,60,61,62,63,64
-            microphones=[8, 7, 6, 5, 4, 3, 2, 1]
+            #57,58,59,69,61,62,63,64
+            microphones=[1,8, 7, 6, 5, 4, 3, 2, 1]
             break
          elif(l=="l2"):
-            microphones=[9,10,11,12,13,14,15,16]
+            microphones=[1,9,10,11,12,13,14,15,16]
             break
          elif(l=="l3"):
-            microphones=[24,23,22,21,20,19,18,17]
+            microphones=[1,24,23,22,21,20,19,18,17]
             break
          elif(l=="l4"):
-            microphones=[25,26,27,28,29,30,31,32]
+            microphones=[1,25,26,27,28,29,30,31,32]
             break
          elif(l=="l5"):
-            microphones=[40,39,38,37,36,35,34,33]
+            microphones=[1,40,39,38,37,36,35,34,33]
             break
          elif(l=="l6"):
-            microphones=[41,42,43,44,45,46,47,48]
+            microphones=[1,41,42,43,44,45,46,47,48]
             break
          elif(l=="l7"):
-            microphones=[56,55,54,53,52,51,50,49]
+            microphones=[1,56,55,54,53,52,51,50,49]
             break
          elif(l=="l8"):
-            microphones=[57,58,59,60,61,62,63,64]
+            microphones=[1,57,58,59,60,61,62,63,64]
             break
          else:
             print("invalid input. write [Lx], where x is a number from 1-8")
