@@ -248,8 +248,10 @@ def print_analysis(fileChooser,microphones,source_audio,recordTime):
            phase_diff = np.angle(ref/y)
            phase_diff = (phase_diff*180)/np.pi
            phase_diff=round(phase_diff,2)
-           mic_nr = str(arr_mics_FFT[i-1]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
+           mic_nr = str(arr_mics_FFT[0]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
            phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected("+str(np.round(expected_phase_diff,2))+")."
+
+           print(phase_diff_collection[i])
         ##tmp=y
             
             # --- PLOT 3---
@@ -306,18 +308,49 @@ while(True):
          print("\n")
          print("write [Lx], where x is a number from 1-8")
          print("choice: ")
-         l = input()
-         l = l.lower()
+         ##l = input()
+         ##l = l.lower()
+         l="lc"
 
-         if(l=="l1"):
+         if(l=="lc"):
+            #10,8,7,6,9,10,11,24,23,22 --
+            #12,6,5,4,11,12,13,22,21,20 --
+            #14,4,3,2,13,14,15,20,19,18 ---
+            #15,3,2,1,14,15,16,19,18,17 --
+            #26,24,23,22,25,26,27,40,39,38 --
+            #28,22,21,20,27,28,29,38,37,36 --
+            #30,20,19,18,29,30,31,36,35,34 --
+            #31,19,18,17,30,31,32,35,34,33
+            #42,40,39,38,41,42,43,56,55,54
+            #44,38,37,36,43,44,45,54,53,52
+            #46,36,35,34,45,46,47,52,51,50
+            #47,35,34,33,46,47,48,51,50,49
+            #55,41,42,43,56,55,54,57,58,59
+            #53,43,44,45,54,53,52,59,60,61
+            #51,45,46,47,52,51,50,61,62,63
+            #50,46,47,48,51,50,49,62,63,64
+            microphones=[31,19,18,17,30,31,32,35,34,33]
+            break
+         if(l=="la"):
             #8, 7, 6, 5, 4, 3, 2, 1
             #9,10,11,12,13,14,15,16
             #24,23,22,21,20,19,18,17
             #25,26,27,28,29,30,31,32
             #40,39,38,37,36,35,34,33
             #56,55,54,53,52,51,50,49
-            #57,58,59,69,61,62,63,64
-            microphones=[1,8, 7, 6, 5, 4, 3, 2, 1]
+            #57,58,59,60,61,62,63,64
+            ##microphones=[1,8, 7, 6, 5, 4, 3, 2, 1]
+            microphones=[1,8, 7, 6, 5, 4, 3, 2, 1,
+                        9,10,11,12,13,14,15,16,
+                        24,23,22,21,20,19,18,17,
+                        25,26,27,28,29,30,31,32,
+                        40,39,38,37,36,35,34,33,
+                        41,42,43,44,45,46,47,48,
+                        56,55,54,53,52,51,50,49,
+                        57,58,59,60,61,62,63,64]
+            break
+         elif(l=="l1"):
+            microphones=[1,8, 7, 6, 5, 4, 3, 2, 1,]
             break
          elif(l=="l2"):
             microphones=[1,9,10,11,12,13,14,15,16]
@@ -363,30 +396,30 @@ while(True):
          v = input()
          v = v.lower()
          if(v=="l1"):
-            microphones=[8,9,24,25,40,41,56,57]
+            microphones=[1,8,9,24,25,40,41,56,57]
             break
          elif(v=="l2"):
-            microphones=[7,10,23,26,39,42,55,58]
+            microphones=[1,7,10,23,26,39,42,55,58]
             break
          elif(v=="l3"):
-            microphones=[6,11,22,27,38,43,54,59]
+            microphones=[1,6,11,22,27,38,43,54,59]
             break
          elif(v=="l4"):
-            microphones=[5,12,21,28,37,44,53,60]
+            microphones=[1,5,12,21,28,37,44,53,60]
             break
          elif(v=="l5"):
-            microphones=[4,13,20,29,36,45,52,61]
+            microphones=[1,4,13,20,29,36,45,52,61]
             break
          elif(v=="l6"):
-            microphones=[3,14,19,30,35,46,51,62]
+            microphones=[1,3,14,19,30,35,46,51,62]
             break
          elif(v=="l7"):
             #15,2,31,18,47,34,
-            microphones=[2,15,18,31,34,47,50,63]
+            microphones=[1,2,15,18,31,34,47,50,63]
             break
          elif(v=="l8"):
             
-            microphones=[1,16,17,32,33,48,49,64]
+            microphones=[1,1,16,17,32,33,48,49,64]
             break
          else:
             print("invalid input. write [Lx], where x is a number from 1-8")
