@@ -27,7 +27,7 @@ def generate_chirp(start_f,stop_f,T,fs):
     
    #  _______________________________Mark method_1_____________________________________ 
         # sine lin
-   chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
+   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
         # sine log       
    #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )   
         
@@ -58,8 +58,8 @@ def generate_chirp(start_f,stop_f,T,fs):
    
          #Modified Farina sweep   works ________________________________
    #L is used for the modified farina sweep
-   #L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
-   #chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
    #_________________________________________________________________________________________________________
    #creates curve at the end of signal.
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
@@ -146,11 +146,14 @@ def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to av
 def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
    
-
+   #Generate Noise 
+   mean = 0    #center value
+   std = 10     #standard deviation
+   samples = np.random.normal(mean, std, N)
 
    #fake_IR = 0.8*chirp                                       # creates a fake Imulse respons
-   fake_IR =0.8
-   output = np.convolve(chirp_signal,fake_IR)           # Convolve with the generated chirp
+   fake_IR =0.8                         #change the left value for simulating an impulse response
+   output = np.convolve(chirp_signal,samples,mode='same')           # simulates the output of a microphone
 
    time_output = np.linspace(0,T,N,endpoint=False)
 
@@ -158,7 +161,7 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    plt.plot(time_output,output)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
-   plt.title("output after convolution with sim IR")
+   plt.title("Microphine recording (sim)")
 
 
    #convolution of chirp and the inverse filter
@@ -168,27 +171,40 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    plt.plot(time_output,impulse_of_chirp_and_filter)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
-   plt.title("impulse respone of filter")
+   plt.title("Inverse filter response of pure chirp")
+
+   system_IR_h= np.convolve(output,inverse_filter,mode='same')
+
+   plt.subplot(3,1,3)
+   plt.plot(time_output,system_IR_h)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR if the system (recording * filter)")
 
    # Calculate the frequency response of the convoluted output
-   output_fft = np.fft.fft(output)
-   chirp_fft = np.fft.fft(chirp_signal)
-
-   #do the division explained in work of angelo Farina 2000.
-   systems_frecuency_respons = np.abs(output_fft) / np.abs(chirp_fft)
-
-   systems_frecuency_respons=np.fft.ifft(systems_frecuency_respons)
-   t_space= 1/fs
-
-   #Convert to frecuency domain
-   freq = np.fft.fftfreq(len(chirp_signal), t_space)
+   #output_fft = np.fft.fft(output)
+   #chirp_fft = np.fft.fft(chirp_signal)
+#
+   #do the division explained in work of angelo Farina 2000. __________________________________________________ #Not very useful atm
+   #systems_frecuency_respons = np.abs(output_fft) / np.abs(chirp_fft)
+#
+   #systems_frecuency_respons=np.fft.ifft(systems_frecuency_respons)
+   #t_space= 1/fs
+#
+   ##Convert to frecuency domain
+   #freq = np.fft.fftfreq(len(chirp_signal), t_space)
+   #
+   ## Plot Amplitude of FFT
+   #plt.subplot(3,1,3)                                                                  #needs to be changed in order to plot
+   #plt.plot(freq[0:N//2], np.abs(systems_frecuency_respons)[0:N//2])
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('Amplitude')
+   #plt.title('Frequency output after convolution')
+   #__________________________________________________________________________________________________________
    
-   # Plot Amplitude of FFT
-   plt.subplot(3,1,3)
-   plt.plot(freq[0:N//2], np.abs(systems_frecuency_respons)[0:N//2])
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Amplitude')
-   plt.title('Frequency output after convolution')
+   
+   
+   
    plt.tight_layout()
    plt.show()
     ############ MAIN #############
