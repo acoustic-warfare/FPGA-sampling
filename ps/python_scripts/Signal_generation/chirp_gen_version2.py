@@ -105,20 +105,19 @@ def generate_chirp(start_f,stop_f,T,fs):
 
   
    # Plot power spectrum of FFT  ---- Needs to be updated
-   #plt.subplot(4,1,3)
-   #plt.figure()
-   #plt.psd(chirp_signal, Fs=fs, NFFT=N, scale_by_freq=False)
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('Power')
-   #plt.title('Power spectrum')
+   plt.subplot(4,1,4)
+   plt.psd(chirp_signal, Fs=fs, NFFT=N, scale_by_freq=False)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Power')
+   plt.title('Power spectrum')
 
    # plot phase of signal 
-   phase = np.unwrap(np.angle(fft_chirp))
-   plt.subplot(4,1,4)
-   #plt.figure()
-   plt.plot(t,phase)
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Phase')
+   #phase = np.unwrap(np.angle(fft_chirp))
+   #plt.subplot(4,1,4)
+   ##plt.figure()
+   #plt.plot(t,phase)
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('Phase')
    plt.tight_layout()
    plt.show()
 
@@ -148,16 +147,16 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
    #Generate Noise 
    mean = 0    #center value
-   std = 10     #standard deviation
-   samples = np.random.normal(mean, std, N)
+   std = 0.1     #standard deviation
+   noise = np.random.normal(mean, std, N)
 
    #fake_IR = 0.8*chirp                                       # creates a fake Imulse respons
    fake_IR =0.8                         #change the left value for simulating an impulse response
-   output = np.convolve(chirp_signal,samples,mode='same')           # simulates the output of a microphone
+   output = np.convolve(chirp_signal,noise,mode='same')           # simulates the output of a microphone
 
    time_output = np.linspace(0,T,N,endpoint=False)
 
-   plt.subplot(3,1,1)
+   plt.subplot(4,1,1)
    plt.plot(time_output,output)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
@@ -167,15 +166,28 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    #convolution of chirp and the inverse filter
    impulse_of_chirp_and_filter= np.convolve(chirp_signal,inverse_filter,mode='same')
 
-   plt.subplot(3,1,2)
+   plt.subplot(4,1,2)
    plt.plot(time_output,impulse_of_chirp_and_filter)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
    plt.title("Inverse filter response of pure chirp")
 
+
+   t_space = 1/fs
+   fft_chirp_and_filter = np.fft.fft(impulse_of_chirp_and_filter)
+   freq_chirp_and_filter = np.fft.fftfreq(len(chirp_signal), t_space)
+   
+   
+
+   plt.subplot(4,1,3)
+   plt.plot(freq_chirp_and_filter[0:N//2],np.abs(fft_chirp_and_filter)[0:N//2])
+   plt.xlabel("f (Hz)")
+   plt.ylabel("amplitude")
+   plt.title("Inverse filter respons of chirp (frequence spectrum)")
+
    system_IR_h= np.convolve(output,inverse_filter,mode='same')
 
-   plt.subplot(3,1,3)
+   plt.subplot(4,1,4)
    plt.plot(time_output,system_IR_h)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
