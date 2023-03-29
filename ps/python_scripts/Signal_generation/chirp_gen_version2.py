@@ -15,14 +15,16 @@ def generate_chirp(start_f,stop_f,T,fs):
    stop_f=stop_f         #Stop frequency   
    T=T                   #Time interval
    fs=fs                 #sample rate assume 4*highest frecuency is enough
-   N = fs*T              # total amount of sample points
+   N = int(fs*T)         # total amount of sample points
    t = np.linspace(0, T, int(T * fs), endpoint=False)
    t_space = 1/fs
 
+   #L is used for the modified farina sweep
+   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
     #Below: sine and cos only represents the signals start phase.  try and use differen "chirp_signal"
 
     
-   #  _______________________________Mark method_____________________________________ 
+   #  _______________________________Mark method_1_____________________________________ 
         # sine lin
    chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
         # sine log       
@@ -36,17 +38,26 @@ def generate_chirp(start_f,stop_f,T,fs):
    
    
    
-   #_______________________________linspace method__________________________________    
+   #_______________________________linspace method_2__________________________________    
         #Linear sine chirp 
    #chirp_signal = np.sin(2 * np.pi * np.linspace(start_f, stop_f, N) * (t**2/2))   # according to farina
-   #chirp_signal = np.sin(2 * np.pi * np.linspace(start_f, stop_f, N) * t**2)   # acording to random stackoverflow
-   
+   #chirp_signal = np.sin(2 * np.pi * np.linspace(start_f, stop_f, N) * t**2)   # acording to random stackoverflow                                                                      
         #logaritmic sine chirp
    #chirp_signal = np.sin(2 * np.pi * np.logspace(np.log10(start_f), np.log10(stop_f), N))
-   
    #________________________________________________________________________________
    
 
+   #_________________________________Farina formula_________________________________ 
+         #Linear   BAD IN CURRENT STATE
+   #chirp_signal = np.sin(start_f*t + ((stop_f-start_f)/2)*((t**2)/2))
+
+         #logarithmic  BAD IN CURRENT STATE
+   #chirp_signal = np.sin(((np.pi*2*start_f*T)/(np.log(stop_f/start_f)))* (np.exp((t*np.log(stop_f/start_f))/T) -1 ))
+   # Create the frequency vector
+   
+         #Modified Farina sweep   works
+   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+   #_________________________________________________________________________________________________________
    #creates curve at the end of signal.
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
    chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)
@@ -55,7 +66,7 @@ def generate_chirp(start_f,stop_f,T,fs):
    chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
    # Plot time domain
-   plt.subplot(3,1,1)
+   plt.subplot(4,1,1)
    plt.plot(t, chirp_signal)
    plt.title("Time domain - pure Chirp")
    plt.xlabel('t (sec)')
@@ -65,7 +76,7 @@ def generate_chirp(start_f,stop_f,T,fs):
    freq = np.fft.fftfreq(len(chirp_signal), t_space)
    
    # Plot Amplitude of FFT
-   plt.subplot(3,1,2)
+   plt.subplot(4,1,2)
    plt.plot(freq[0:N//2], np.abs(fft)[0:N//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Amplitude')
@@ -73,12 +84,18 @@ def generate_chirp(start_f,stop_f,T,fs):
 
   
    # Plot power spectrum of FFT  ---- Needs to be updated
-   plt.subplot(3,1,3)
+   plt.subplot(4,1,3)
    plt.psd(chirp_signal, Fs=fs, NFFT=N, scale_by_freq=False)
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Power')
    plt.title('Power spectrum')
 
+   # plot phase of signal 
+   phase = np.unwrap(np.angle(fft))
+   plt.subplot(4,1,4)
+   plt.plot(t,phase)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Phase')
    plt.show()
  
    
@@ -104,7 +121,7 @@ def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to av
 
 def convolve_with_sim_IR(chirp_signal,T,N,fs):
    
-   IR = 0.8                                        # creates a fake Imulse respons
+   IR = 0.8                                       # creates a fake Imulse respons
    output = np.convolve(chirp_signal,IR)           # Convolve with the generated chirp
 
    
@@ -151,6 +168,6 @@ if __name__ == '__main__':
    create_sound_file(chirp_signal,fs)
 
    convolve_with_sim_IR(chirp_signal,T,N,fs)
-
+   
    
    
