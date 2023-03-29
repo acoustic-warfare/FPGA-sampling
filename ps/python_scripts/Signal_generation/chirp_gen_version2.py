@@ -19,8 +19,9 @@ def generate_chirp(start_f,stop_f,T,fs):
    t = np.linspace(0, T, int(T * fs), endpoint=False)
    t_space = 1/fs
 
-   #L is used for the modified farina sweep
-   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   
+
+   #normalisation factor used for inverse filter/matched filter
     #Below: sine and cos only represents the signals start phase.  try and use differen "chirp_signal"
 
     
@@ -55,52 +56,77 @@ def generate_chirp(start_f,stop_f,T,fs):
    #chirp_signal = np.sin(((np.pi*2*start_f*T)/(np.log(stop_f/start_f)))* (np.exp((t*np.log(stop_f/start_f))/T) -1 ))
    # Create the frequency vector
    
-         #Modified Farina sweep   works
-   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+         #Modified Farina sweep   works ________________________________
+   #L is used for the modified farina sweep
+   #L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   #chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
    #_________________________________________________________________________________________________________
    #creates curve at the end of signal.
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
    chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)
+
    
    #converts to int16
    chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
+   #create the inverse filter version
+   R = np.log(stop_f/start_f)
+   k = np.exp(t*R/T)
+   inverse_filter =  chirp_signal[::-1]/k
+
+
    # Plot time domain
    plt.subplot(4,1,1)
+   #plt.figure()
    plt.plot(t, chirp_signal)
    plt.title("Time domain - pure Chirp")
    plt.xlabel('t (sec)')
+
+
+   #plot inverse filter
+   plt.subplot(4,1,2)
+   #plt.figure()
+   plt.plot(t, inverse_filter)
+   plt.title("Time domain - inversed filter")
+   plt.xlabel('t (sec)')
    
    #Convert to frecuency domain
-   fft = np.fft.fft(chirp_signal)
+   fft_chirp = np.fft.fft(chirp_signal)
    freq = np.fft.fftfreq(len(chirp_signal), t_space)
    
+   
    # Plot Amplitude of FFT
-   plt.subplot(4,1,2)
-   plt.plot(freq[0:N//2], np.abs(fft)[0:N//2])
+   plt.subplot(4,1,3)
+   #plt.figure()
+   plt.plot(freq[0:N//2],np.abs(fft_chirp)[0:N//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Amplitude')
    plt.title('Frequency Domain - pure chirp')
 
   
    # Plot power spectrum of FFT  ---- Needs to be updated
-   plt.subplot(4,1,3)
-   plt.psd(chirp_signal, Fs=fs, NFFT=N, scale_by_freq=False)
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Power')
-   plt.title('Power spectrum')
+   #plt.subplot(4,1,3)
+   #plt.figure()
+   #plt.psd(chirp_signal, Fs=fs, NFFT=N, scale_by_freq=False)
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('Power')
+   #plt.title('Power spectrum')
 
    # plot phase of signal 
-   phase = np.unwrap(np.angle(fft))
+   phase = np.unwrap(np.angle(fft_chirp))
    plt.subplot(4,1,4)
+   #plt.figure()
    plt.plot(t,phase)
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Phase')
+   plt.tight_layout()
    plt.show()
- 
+
    
 
-   return chirp_signal
+   
+
+   return chirp_signal,inverse_filter
 
 def create_sound_file(normalized_tone,fs):
 
@@ -117,22 +143,32 @@ def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to av
     return v
 
 
-
-
-def convolve_with_sim_IR(chirp_signal,T,N,fs):
+def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
-   IR = 0.8                                       # creates a fake Imulse respons
-   output = np.convolve(chirp_signal,IR)           # Convolve with the generated chirp
-
    
+
+
+   #fake_IR = 0.8*chirp                                       # creates a fake Imulse respons
+   fake_IR =0.8
+   output = np.convolve(chirp_signal,fake_IR)           # Convolve with the generated chirp
+
    time_output = np.linspace(0,T,N,endpoint=False)
 
-   plt.subplot(2,1,1)
+   plt.subplot(3,1,1)
    plt.plot(time_output,output)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
    plt.title("output after convolution with sim IR")
-   
+
+
+   #convolution of chirp and the inverse filter
+   impulse_of_chirp_and_filter= np.convolve(chirp_signal,inverse_filter,mode='same')
+
+   plt.subplot(3,1,2)
+   plt.plot(time_output,impulse_of_chirp_and_filter)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("impulse respone of filter")
 
    # Calculate the frequency response of the convoluted output
    output_fft = np.fft.fft(output)
@@ -141,17 +177,19 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs):
    #do the division explained in work of angelo Farina 2000.
    systems_frecuency_respons = np.abs(output_fft) / np.abs(chirp_fft)
 
+   systems_frecuency_respons=np.fft.ifft(systems_frecuency_respons)
    t_space= 1/fs
 
    #Convert to frecuency domain
    freq = np.fft.fftfreq(len(chirp_signal), t_space)
    
    # Plot Amplitude of FFT
-   plt.subplot(2,1,2)
+   plt.subplot(3,1,3)
    plt.plot(freq[0:N//2], np.abs(systems_frecuency_respons)[0:N//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Amplitude')
    plt.title('Frequency output after convolution')
+   plt.tight_layout()
    plt.show()
     ############ MAIN #############
 if __name__ == '__main__':
@@ -163,11 +201,11 @@ if __name__ == '__main__':
    N = fs*T
    
 
-   chirp_signal = generate_chirp(start_f,stop_f,T,fs)
+   chirp_signal,inverse_filter = generate_chirp(start_f,stop_f,T,fs)
    
    create_sound_file(chirp_signal,fs)
 
-   convolve_with_sim_IR(chirp_signal,T,N,fs)
+   convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter)
    
    
    
