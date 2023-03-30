@@ -1,9 +1,10 @@
 import numpy as np
 
-from scipy.signal import chirp, spectrogram
+from scipy.signal import chirp, spectrogram,butter
 from scipy.io.wavfile import write
 from scipy.fft import fft, fftfreq
 
+import scipy.signal
 import matplotlib.pyplot as plt
 
 
@@ -67,7 +68,7 @@ def generate_chirp(start_f,stop_f,T,fs):
 
    
    #converts to int16
-   chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
    #create the inverse filter version
    R = np.log(stop_f/start_f)
@@ -127,10 +128,12 @@ def generate_chirp(start_f,stop_f,T,fs):
 
    return chirp_signal,inverse_filter
 
-def create_sound_file(normalized_tone,fs):
+def create_sound_file(signal,fs,name):
 
+   #converts to int16
+   signal = np.int16((signal / signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
 
-   write("example.wav",fs , normalized_tone)
+   write(name,fs , signal)
 
 def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to avoid side lobes 
     if len(v) < 2*size:
@@ -145,14 +148,28 @@ def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to av
 def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
    
-   #Generate Noise 
-   mean = 0    #center value
-   std = 0.1     #standard deviation
-   noise = np.random.normal(mean, std, N)
-
+   #Generate Noise  
+   noise = np.random.normal(loc=0, scale=0.5, size=len(chirp_signal))
+   chirp_with_noise = noise + chirp_signal
+   output = chirp_with_noise
    #fake_IR = 0.8*chirp                                       # creates a fake Imulse respons
-   fake_IR =0.8                         #change the left value for simulating an impulse response
-   output = np.convolve(chirp_signal,noise,mode='same')           # simulates the output of a microphone
+   #fake_IR =0.8                         #change the left value for simulating an impulse response
+   #output = np.convolve(chirp_signal,noise,mode='same')           # simulates the output of a microphone
+
+
+   #Apply a lowpass filter to simulate a varying frequency response the mic
+   f_low = 100  # Lower frequency of the passband (Hz)
+   f_high = 10000  # Upper frequency of the passband (Hz)
+   nyquist = fs / 2  # Nyquist frequency (Hz)
+   order = 4  # Order of the filter
+
+   # Compute the filter coefficients
+   b, a = scipy.signal.butter(order, [f_low / nyquist, f_high / nyquist], btype='bandpass')
+
+   # Apply the filter to the signal
+   output = scipy.signal.lfilter(b, a, chirp_with_noise)
+
+
 
    time_output = np.linspace(0,T,N,endpoint=False)
 
@@ -191,7 +208,7 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    plt.plot(time_output,system_IR_h)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
-   plt.title("The IR if the system (recording * filter)")
+   plt.title("The IR if the system (recording * inverse-filter)")
 
    # Calculate the frequency response of the convoluted output
    #output_fft = np.fft.fft(output)
@@ -215,10 +232,11 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    #__________________________________________________________________________________________________________
    
    
-   
-   
+
    plt.tight_layout()
    plt.show()
+
+   return output
     ############ MAIN #############
 if __name__ == '__main__':
    
@@ -228,12 +246,15 @@ if __name__ == '__main__':
    fs=44100          #sample rate assume 4*highest frecuency is enough
    N = fs*T
    
+   filename_pure_chip = "chirp.wav"
+   file_name_sim_recording = "recording_sim.wav"
 
    chirp_signal,inverse_filter = generate_chirp(start_f,stop_f,T,fs)
    
-   create_sound_file(chirp_signal,fs)
+   create_sound_file(chirp_signal,fs,filename_pure_chip)
 
-   convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter)
+   output_mic=convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter)
    
-   
+
+   create_sound_file(output_mic,fs,file_name_sim_recording)
    
