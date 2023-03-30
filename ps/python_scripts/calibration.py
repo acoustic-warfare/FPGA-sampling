@@ -14,6 +14,7 @@ from pathlib import Path
 from ctypes import Structure, c_byte, c_int32, sizeof
 #import config
 import os
+from scipy.io.wavfile import write
 
 
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
@@ -188,18 +189,213 @@ def print_analysis(fileChooser,microphone):
       recording=ok_data[:,int(microphone)]
 
       return recording
-
-
+   
    main()
+
+def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to avoid side lobes 
+    if len(v) < 2*size:
+        raise ValueError ("Tukey window size too big for array")
+    tuk = 0.5 * (1.0 - np.cos (np.pi * np.arange(size) / size))
+    #v[0:size] *= tuk   # ADD his line for curve at the beginning aswell
+    v[-size:] *= tuk[::-1]
+    
+    return v
+
+def generate_chirp(start_f,stop_f,T,fs):
+   start_f=start_f         #Start frequency
+   stop_f=stop_f      #Stop frequency   
+   T=T               #Time interval
+   fs=fs          #sample rate assume 4*highest frecuency is enough
+   N = fs*T
+
+   t = np.linspace(0, T, int(T * fs), endpoint=False)
+   t_space = 1/fs
+
+   
+
+   #normalisation factor used for inverse filter/matched filter
+    #Below: sine and cos only represents the signals start phase.  try and use differen "chirp_signal"
+
+    
+   #  _______________________________Mark method_1_____________________________________ 
+        # sine lin
+   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
+        # sine log       
+   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )   
+        
+        # cos lin
+   #chirp_signal= chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear', phi=0, vertex_zero=True) 
+        # cos log         
+   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )  
+   #_________________________________________________________________________________
+   
+   
+   
+   #_______________________________linspace method_2__________________________________    
+        #Linear sine chirp 
+   #chirp_signal = np.sin(2 * np.pi * np.linspace(start_f, stop_f, N) * (t**2/2))   # according to farina
+   #chirp_signal = np.sin(2 * np.pi * np.linspace(start_f, stop_f, N) * t**2)   # acording to random stackoverflow                                                                      
+        #logaritmic sine chirp
+   #chirp_signal = np.sin(2 * np.pi * np.logspace(np.log10(start_f), np.log10(stop_f), N))
+   #________________________________________________________________________________
+   
+
+   #_________________________________Farina formula_________________________________ 
+         #Linear   BAD IN CURRENT STATE
+   #chirp_signal = np.sin(start_f*t + ((stop_f-start_f)/2)*((t**2)/2))
+
+         #logarithmic  BAD IN CURRENT STATE
+   #chirp_signal = np.sin(((np.pi*2*start_f*T)/(np.log(stop_f/start_f)))* (np.exp((t*np.log(stop_f/start_f))/T) -1 ))
+   # Create the frequency vector
+   
+         #Modified Farina sweep   works ________________________________
+   #L is used for the modified farina sweep
+   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+   #_________________________________________________________________________________________________________
+   
+   
+   
+   
+   #creates curve at the end of signal.
+   TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
+   #chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
+
+   
+   #converts to int16
+   #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   
+   #create the inverse filter version
+   R = np.log(stop_f/start_f)
+   k = np.exp(t*R/T)
+   inverse_filter =  chirp_signal[::-1]/k
+
+   chirp_signal_dirac=np.convolve(chirp_signal,inverse_filter,mode='same')  
+
+   chirp_signal_dirac = chirp_signal_dirac/np.max(np.abs(chirp_signal_dirac))  # Normalized to have the same amplitude as the generated chirp
+   return chirp_signal,inverse_filter
+
+def create_sound_file(signal,fs,name):
+
+   #converts to int16
+   signal = np.int16((signal / signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+
+   write(name,fs , signal)
+
+def calculate_IR(recording,T,N,fs,inverse_filter):
+   
+   
+   time_output = np.linspace(0,T,N,endpoint=False)
+
+   #plot time domain of recorded signal(sim)
+   plt.subplot(4,1,1)
+   plt.plot(time_output,recording)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("Microphine recording (sim)")
+
+   #plot magnitude spectrum of recorded signal(sim)
+   output_fft=np.fft.fft(recording)
+   t_space = 1/fs
+   output_fft_freq = np.fft.fftfreq(len(recording), t_space)
+   plt.subplot(4,1,2)
+   plt.plot(output_fft_freq[0:N//2],np.abs(output_fft)[0:N//2])
+   plt.xlabel("f (Hz)")
+   plt.ylabel("amplitude")
+   plt.title("Magnitude spectrum of recorded(sim)")
+
+
+   #_____________________________#RECIEVE IMPULSE RESPONS METHOD 1. FARINA h(t)=y(t)*x(t)_________________________________________________________
+   system_IR_Farina= np.convolve(recording,inverse_filter,mode='same')
+
+   system_IR_Farina = system_IR_Farina/(np.max(np.abs(system_IR_Farina)))
+
+   system_IR_fft_Farina = np.fft.fft(system_IR_Farina)
+   freq = np.fft.fftfreq(len(system_IR_Farina), t_space)
+
+   # plot time-domain IR
+   plt.subplot(4,1,3)
+   plt.plot(time_output,system_IR_Farina)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of the system (recording * inverse-filter)  NORMALIZED"  )
+
+
+   ## Plot Amplitude of FFT
+   plt.subplot(4,1,4)                                                                  #needs to be changed in order to plot
+   plt.plot(freq[0:N//2], np.abs(system_IR_fft_Farina)[0:N//2])
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Amplitude')
+   plt.title('The FR of the system (recording * inverse-filter)')
+   #_____________________________________________________________________________________________________________________________________________
+   
+   
+   #____________________________#RECIEVE IMPULSE RESPONS METHOD 2. division in frequency domain______________________________________________
+   #output_fft = np.fft.fft(output)
+   #chirp_fft = np.fft.fft(chirp_signal)
+##
+   ##do the division explained in work of angelo Farina 2000. __________________________________________________ #Not very useful atm
+   #division_IR_fft = output_fft / chirp_fft
+##
+   #division_IR_time=np.fft.ifft(division_IR_fft)
+   #freq = np.fft.fftfreq(len(output), t_space)
+   #
+   ## plot time-domain IR
+   #plt.subplot(4,1,3)
+   #plt.plot(time_output,division_IR_time)
+   #plt.xlabel("time (s)")
+   #plt.ylabel("amplitude")
+   #plt.title("The IR if the system (recording * inverse-filter)")
+   #
+   ##t_space= 1/fs
+##
+   ###Convert to frecuency domain
+   ##freq = np.fft.fftfreq(len(chirp_signal), t_space)
+   ##
+   ### Plot Amplitude of FFT
+   #plt.subplot(4,1,4)                                                                  #needs to be changed in order to plot
+   #plt.plot(freq[0:N//2], np.abs(division_IR_fft)[0:N//2])
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('Amplitude')
+   #plt.title('Frequency spectrum of IR')
+   ##__________________________________________________________________________________________________________
+   
+
+   plt.tight_layout()
+   plt.show()
+
+   return recording
+
+
 #################################################################################################
+
+### values used for generating the chirp
+start_f=1         #Start frequency
+stop_f=22000      #Stop frequency   
+T=2               #Time interval
+fs=44100          #sample rate assume 4*highest frecuency is enough  44100 is normal for audio recording, maybe match our SR?
+N = fs*T
+
+#names for the audio files
+filename_pure_chip = "chirp.wav"
+file_name_recording = "recording_sim.wav"
+
+chirp_signal,inverse_filter = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding inverse filter
+create_sound_file(chirp_signal,fs,filename_pure_chip)
+
+#normalize to be able to create a audio file. same values is used here
+chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+
 print("Enter a filename to samples: ")
 fileChooser = input()
-print("Enter time to record (seconds): ")
-recordTime=input()
 print("enter microphone id")
 microphone=input()
 
 #print("press ENTER to start")
 input("press ENTER to start")
-collect_samples(fileChooser,recordTime)
+collect_samples(fileChooser,T)
 recording = print_analysis(fileChooser,microphone)    #enter microphone to record
+create_sound_file(recording,fs,file_name_recording)
+
+calculate_IR(recording,T,N,fs,inverse_filter)
+
