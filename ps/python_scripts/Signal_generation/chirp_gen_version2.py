@@ -28,7 +28,7 @@ def generate_chirp(start_f,stop_f,T,fs):
     
    #  _______________________________Mark method_1_____________________________________ 
         # sine lin
-   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
+   chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
         # sine log       
    #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )   
         
@@ -59,8 +59,8 @@ def generate_chirp(start_f,stop_f,T,fs):
    
          #Modified Farina sweep   works ________________________________
    #L is used for the modified farina sweep
-   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
-   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+   #L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   #chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
    #_________________________________________________________________________________________________________
    #creates curve at the end of signal.
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
@@ -149,39 +149,53 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
    
    #Generate Noise  
-   noise = np.random.normal(loc=0, scale=0.5, size=len(chirp_signal))
+   noise = np.random.normal(loc=0, scale=0.05, size=len(chirp_signal))
    chirp_with_noise = noise + chirp_signal
    output = chirp_with_noise
    #fake_IR = 0.8*chirp                                       # creates a fake Imulse respons
    #fake_IR =0.8                         #change the left value for simulating an impulse response
    #output = np.convolve(chirp_signal,noise,mode='same')           # simulates the output of a microphone
 
+   # create the amplitude sweep          #Fully optional, remove if necessary
+   amplitude_start = 0.1
+   amplitude_end = 5
+   a_t = np.linspace(amplitude_start, amplitude_end, N,endpoint=False)
+   output = a_t*output
 
-   #Apply a lowpass filter to simulate a varying frequency response the mic
+   #Apply a bandpass filter to simulate a varying frequency response the mic
    f_low = 100  # Lower frequency of the passband (Hz)
-   f_high = 10000  # Upper frequency of the passband (Hz)
+   f_high = 4000  # Upper frequency of the passband (Hz)
    nyquist = fs / 2  # Nyquist frequency (Hz)
-   order = 4  # Order of the filter
+   order = 1  # Order of the filter
 
    # Compute the filter coefficients
    b, a = scipy.signal.butter(order, [f_low / nyquist, f_high / nyquist], btype='bandpass')
 
    # Apply the filter to the signal
-   output = scipy.signal.lfilter(b, a, chirp_with_noise)
+   #output = scipy.signal.lfilter(b, a, chirp_with_noise)                     #this line applies the filter
 
 
 
    time_output = np.linspace(0,T,N,endpoint=False)
 
-   plt.subplot(3,1,1)
+   #plot time domain of recorded signal(sim)
+   plt.subplot(4,1,1)
    plt.plot(time_output,output)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
    plt.title("Microphine recording (sim)")
 
-
+   #plot magnitude spectrum of recorded signal(sim)
+   output_fft=np.fft.fft(output)
+   t_space = 1/fs
+   output_fft_freq = np.fft.fftfreq(len(output), t_space)
+   plt.subplot(4,1,2)
+   plt.plot(output_fft_freq[0:N//2],np.abs(output_fft)[0:N//2])
+   plt.xlabel("f (Hz)")
+   plt.ylabel("amplitude")
+   plt.title("Magnitude spectrum of recorded(sim)")
    #convolution of chirp and the inverse filter
-   impulse_of_chirp_and_filter= np.convolve(chirp_signal,inverse_filter,mode='same')
+   #impulse_of_chirp_and_filter= np.convolve(chirp_signal,inverse_filter,mode='same')
 
    #plt.subplot(3,1,2)
    #plt.plot(time_output,impulse_of_chirp_and_filter)
@@ -191,7 +205,7 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
 
 
    t_space = 1/fs
-   fft_chirp_and_filter = np.fft.fft(impulse_of_chirp_and_filter)
+   #fft_chirp_and_filter = np.fft.fft(impulse_of_chirp_and_filter)
    freq_chirp_and_filter = np.fft.fftfreq(len(chirp_signal), t_space)
    
    
@@ -208,19 +222,19 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    freq = np.fft.fftfreq(len(system_IR_Farina), t_space)
 
    # plot time-domain IR
-   plt.subplot(3,1,2)
+   plt.subplot(4,1,3)
    plt.plot(time_output,system_IR_Farina)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
-   plt.title("The IR if the system (recording * inverse-filter)")
+   plt.title("The IR of the system (recording * inverse-filter)")
 
 
    ## Plot Amplitude of FFT
-   plt.subplot(3,1,3)                                                                  #needs to be changed in order to plot
+   plt.subplot(4,1,4)                                                                  #needs to be changed in order to plot
    plt.plot(freq[0:N//2], np.abs(system_IR_fft_Farina)[0:N//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Amplitude')
-   plt.title('Frequency spectrum of IR')
+   plt.title('The FR of the system (recording * inverse-filter)')
    #_____________________________________________________________________________________________________________________________________________
    
    
@@ -229,13 +243,13 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    #chirp_fft = np.fft.fft(chirp_signal)
 ##
    ##do the division explained in work of angelo Farina 2000. __________________________________________________ #Not very useful atm
-   #division_IR_fft = np.abs(output_fft) / np.abs(chirp_fft)
+   #division_IR_fft = output_fft / chirp_fft
 ##
    #division_IR_time=np.fft.ifft(division_IR_fft)
    #freq = np.fft.fftfreq(len(output), t_space)
    #
    ## plot time-domain IR
-   #plt.subplot(3,1,2)
+   #plt.subplot(4,1,3)
    #plt.plot(time_output,division_IR_time)
    #plt.xlabel("time (s)")
    #plt.ylabel("amplitude")
@@ -247,12 +261,12 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    ##freq = np.fft.fftfreq(len(chirp_signal), t_space)
    ##
    ### Plot Amplitude of FFT
-   #plt.subplot(3,1,3)                                                                  #needs to be changed in order to plot
+   #plt.subplot(4,1,4)                                                                  #needs to be changed in order to plot
    #plt.plot(freq[0:N//2], np.abs(division_IR_fft)[0:N//2])
    #plt.xlabel('Frequency (Hz)')
    #plt.ylabel('Amplitude')
    #plt.title('Frequency spectrum of IR')
-   #__________________________________________________________________________________________________________
+   ##__________________________________________________________________________________________________________
    
    
 
