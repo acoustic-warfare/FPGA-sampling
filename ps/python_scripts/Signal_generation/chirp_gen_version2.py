@@ -173,7 +173,7 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
 
    time_output = np.linspace(0,T,N,endpoint=False)
 
-   plt.subplot(4,1,1)
+   plt.subplot(3,1,1)
    plt.plot(time_output,output)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
@@ -183,11 +183,11 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    #convolution of chirp and the inverse filter
    impulse_of_chirp_and_filter= np.convolve(chirp_signal,inverse_filter,mode='same')
 
-   plt.subplot(4,1,2)
-   plt.plot(time_output,impulse_of_chirp_and_filter)
-   plt.xlabel("time (s)")
-   plt.ylabel("amplitude")
-   plt.title("Inverse filter response of pure chirp")
+   #plt.subplot(3,1,2)
+   #plt.plot(time_output,impulse_of_chirp_and_filter)
+   #plt.xlabel("time (s)")
+   #plt.ylabel("amplitude")
+   #plt.title("Inverse filter response of pure chirp")
 
 
    t_space = 1/fs
@@ -196,39 +196,62 @@ def convolve_with_sim_IR(chirp_signal,T,N,fs,inverse_filter):
    
    
 
-   plt.subplot(4,1,3)
-   plt.plot(freq_chirp_and_filter[0:N//2],np.abs(fft_chirp_and_filter)[0:N//2])
-   plt.xlabel("f (Hz)")
-   plt.ylabel("amplitude")
-   plt.title("Inverse filter respons of chirp (frequence spectrum)")
+   #plt.subplot(4,1,3)
+   #plt.plot(freq_chirp_and_filter[0:N//2],np.abs(fft_chirp_and_filter)[0:N//2])
+   #plt.xlabel("f (Hz)")
+   #plt.ylabel("amplitude")
+   #plt.title("Inverse filter respons of chirp (frequence spectrum)")
 
-   system_IR_h= np.convolve(output,inverse_filter,mode='same')
+   #_____________________________#RECIEVE IMPULSE RESPONS METHOD 1. FARINA h(t)=y(t)*x(t)_________________________________________________________
+   system_IR_Farina= np.convolve(output,inverse_filter,mode='same')
+   system_IR_fft_Farina = np.fft.fft(system_IR_Farina)
+   freq = np.fft.fftfreq(len(system_IR_Farina), t_space)
 
-   plt.subplot(4,1,4)
-   plt.plot(time_output,system_IR_h)
+   # plot time-domain IR
+   plt.subplot(3,1,2)
+   plt.plot(time_output,system_IR_Farina)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
    plt.title("The IR if the system (recording * inverse-filter)")
 
-   # Calculate the frequency response of the convoluted output
+
+   ## Plot Amplitude of FFT
+   plt.subplot(3,1,3)                                                                  #needs to be changed in order to plot
+   plt.plot(freq[0:N//2], np.abs(system_IR_fft_Farina)[0:N//2])
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Amplitude')
+   plt.title('Frequency spectrum of IR')
+   #_____________________________________________________________________________________________________________________________________________
+   
+   
+   #____________________________#RECIEVE IMPULSE RESPONS METHOD 2. division in frequency domain______________________________________________
    #output_fft = np.fft.fft(output)
    #chirp_fft = np.fft.fft(chirp_signal)
-#
-   #do the division explained in work of angelo Farina 2000. __________________________________________________ #Not very useful atm
-   #systems_frecuency_respons = np.abs(output_fft) / np.abs(chirp_fft)
-#
-   #systems_frecuency_respons=np.fft.ifft(systems_frecuency_respons)
-   #t_space= 1/fs
-#
-   ##Convert to frecuency domain
-   #freq = np.fft.fftfreq(len(chirp_signal), t_space)
+##
+   ##do the division explained in work of angelo Farina 2000. __________________________________________________ #Not very useful atm
+   #division_IR_fft = np.abs(output_fft) / np.abs(chirp_fft)
+##
+   #division_IR_time=np.fft.ifft(division_IR_fft)
+   #freq = np.fft.fftfreq(len(output), t_space)
    #
-   ## Plot Amplitude of FFT
+   ## plot time-domain IR
+   #plt.subplot(3,1,2)
+   #plt.plot(time_output,division_IR_time)
+   #plt.xlabel("time (s)")
+   #plt.ylabel("amplitude")
+   #plt.title("The IR if the system (recording * inverse-filter)")
+   #
+   ##t_space= 1/fs
+##
+   ###Convert to frecuency domain
+   ##freq = np.fft.fftfreq(len(chirp_signal), t_space)
+   ##
+   ### Plot Amplitude of FFT
    #plt.subplot(3,1,3)                                                                  #needs to be changed in order to plot
-   #plt.plot(freq[0:N//2], np.abs(systems_frecuency_respons)[0:N//2])
+   #plt.plot(freq[0:N//2], np.abs(division_IR_fft)[0:N//2])
    #plt.xlabel('Frequency (Hz)')
    #plt.ylabel('Amplitude')
-   #plt.title('Frequency output after convolution')
+   #plt.title('Frequency spectrum of IR')
    #__________________________________________________________________________________________________________
    
    
