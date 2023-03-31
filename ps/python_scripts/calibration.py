@@ -15,8 +15,8 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 #import config
 import os
 from scipy.io.wavfile import write
-
-
+import threading
+import multiprocessing
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -168,7 +168,7 @@ def print_analysis(fileChooser,microphone):
       #total_samples = len(data[:,0])          # Total number of samples
       #initial_data = data[0:initial_samples,] # takes out initial samples of signals 
 
-      #new_lab_data = 0
+      new_lab_data = 0
       for i in range(0,64):
          new_lab_data = np.add(new_lab_data,data[:,i])
 
@@ -185,9 +185,18 @@ def print_analysis(fileChooser,microphone):
 
       #samples = len(ok_data[:,0])         #total number of samples per microphone
 
+      microphones=[1,2,4,6,7,8,9,10,11,12,13,14,15,16,
+                   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+                   33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+                   49,50,51,52,54,55,57,58,59,60,61,62,63,64]  
+      microphones = np.array(microphones)-1
+      # This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
+      #arr_plot_mics = np.array(microphones)-1   # convert plot_mics to numpy array with correct index
+      #for i in range(len(arr_plot_mics)):
+      #  multiple_microphones= (ok_data[:,int(arr_plot_mics[i])])
       
-      recording=ok_data[:,int(microphone)]
-
+      recording=ok_data[:,microphones]  #change this to "microphones" to get all mics
+      reference_microphone = ok_data[:,microphones] 
       return recording
    
    main()
@@ -368,34 +377,70 @@ def calculate_IR(recording,T,N,fs,inverse_filter):
 
 
 #################################################################################################
+if __name__ == '__main__':
+   ### values used for generating the chirp
+   start_f=1         #Start frequency
+   stop_f=22000      #Stop frequency   
+   T=2               #Time interval
+   fs=44100          #sample rate assume 4*highest frecuency is enough  44100 is normal for audio recording, maybe match our SR?
+   N = fs*T
 
-### values used for generating the chirp
-start_f=1         #Start frequency
-stop_f=22000      #Stop frequency   
-T=2               #Time interval
-fs=44100          #sample rate assume 4*highest frecuency is enough  44100 is normal for audio recording, maybe match our SR?
-N = fs*T
+   #names for the audio files
+   filename_pure_chip = "chirp.wav"
+   file_name_recording = "recording_sim.wav"
 
-#names for the audio files
-filename_pure_chip = "chirp.wav"
-file_name_recording = "recording_sim.wav"
+   chirp_signal,inverse_filter = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding inverse filter
+   create_sound_file(chirp_signal,fs,filename_pure_chip)
 
-chirp_signal,inverse_filter = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding inverse filter
-create_sound_file(chirp_signal,fs,filename_pure_chip)
+   #normalize to be able to create a audio file. same values is used here
+   chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
 
-#normalize to be able to create a audio file. same values is used here
-chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   print("Enter a filename for the recording: ")
+   fileChooser = input()
+   print("enter reference microphone microphone id")
+   microphone=input()
 
-print("Enter a filename to samples: ")
-fileChooser = input()
-print("enter microphone id")
-microphone=input()
+   #print("press ENTER to start")
+   input("press ENTER to start")
+   collect_samples(fileChooser,T)
 
-#print("press ENTER to start")
-input("press ENTER to start")
-collect_samples(fileChooser,T)
-recording = print_analysis(fileChooser,microphone)    #enter microphone to record
-create_sound_file(recording,fs,file_name_recording)
+   recording = print_analysis(fileChooser,microphone)    #enter microphone to record
+   #create_sound_file(recording,fs,file_name_recording)
 
-calculate_IR(recording,T,N,fs,inverse_filter)
+   calculate_IR(recording,T,N,fs,inverse_filter)
 
+
+
+
+
+   #___________________ plotta spl db____________________________
+   # Apply the FFT to the signal
+   #fft = np.fft.fft(signal)
+   #
+   ## Compute the magnitude spectrum in decibels (dB)
+   #magnitude = np.abs(fft)
+   #magnitude_db = 20 * np.log10(magnitude)
+   #
+   ## Compute the frequency axis
+   #freq_axis = np.fft.fftfreq(len(signal), d=1/sample_rate)
+   #
+   ## Plot the magnitude spectrum
+   #plt.plot(freq_axis, magnitude_db)
+
+   # Generate some example data
+   #t = np.linspace(0, 10, 1000)
+   #f = np.linspace(0, 1000, 100)
+   #power = np.random.rand(len(t), len(f))
+   #
+   ## Create the plot
+   #fig, ax = plt.subplots()
+   #im = ax.imshow(power, cmap='hot', aspect='auto', extent=[t[0], t[-1], f[0], f[-1]])
+   #ax.set_xlabel('Time')
+   #ax.set_ylabel('Frequency')
+   #ax.set_title('Power Heatmap')
+   #
+   ## Add a colorbar
+   #cbar = ax.figure.colorbar(im, ax=ax)
+   #cbar.ax.set_ylabel('Power', rotation=-90, va='bottom')
+   #
+   #plt.show()
