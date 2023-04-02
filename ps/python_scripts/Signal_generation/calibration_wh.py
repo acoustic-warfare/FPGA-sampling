@@ -15,8 +15,7 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 #import config
 import os
 from scipy.io.wavfile import write
-import threading
-import multiprocessing
+from scipy import signal
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -407,6 +406,18 @@ if __name__ == '__main__':
    recording,reference_microphone = print_analysis(fileChooser,microphone)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
    #create_sound_file(recording,fs,file_name_recording)
    
+    # Compute spectrogram
+   #f, t, Sxx = signal.spectrogram(reference_microphone, fs=fs)
+
+   # Plot heatmap
+   #fig, ax = plt.subplots()
+   #im = ax.pcolormesh(t, f, 10 * np.log10(Sxx), cmap='inferno', shading='auto')
+   #ax.set_xlabel('Time (s)')
+   #ax.set_ylabel('Frequency (Hz)')
+   #cbar = fig.colorbar(im)
+   #cbar.set_label('Power (dB)')
+   #splt.show()
+   #calibrate(output_mic,T,N)
 
    #Dirac-pulse from reference microphone
    reference_IR= np.convolve(reference_microphone,inverse_filter,mode='same')
@@ -444,20 +455,4 @@ if __name__ == '__main__':
    ## Plot the magnitude spectrum
    #plt.plot(freq_axis, magnitude_db)
 
-   # Generate some example data
-   #t = np.linspace(0, 10, 1000)
-   #f = np.linspace(0, 1000, 100)
-   #power = np.random.rand(len(t), len(f))
-   #
-   ## Create the plot
-   #fig, ax = plt.subplots()
-   #im = ax.imshow(power, cmap='hot', aspect='auto', extent=[t[0], t[-1], f[0], f[-1]])
-   #ax.set_xlabel('Time')
-   #ax.set_ylabel('Frequency')
-   #ax.set_title('Power Heatmap')
-   #
-   ## Add a colorbar
-   #cbar = ax.figure.colorbar(im, ax=ax)
-   #cbar.ax.set_ylabel('Power', rotation=-90, va='bottom')
-   #
-   #plt.show()
+  
