@@ -357,5 +357,19 @@ if __name__ == '__main__':
    
    create_sound_file(output_mic,fs,file_name_sim_recording)
 
+     #Heatmap, hopfully works with the recording
+  # Compute spectrogram
+   f, t, Sxx = signal.spectrogram(output_mic, fs=fs)
+
+   #Plot heatmap
+   fig, ax = plt.subplots()
+   im = ax.pcolormesh(t, f, 10 * np.log10(Sxx), cmap='inferno', shading='auto')
+   ax.set_xlabel('Time (s)')
+   ax.set_ylabel('Frequency (Hz)')
+   cbar = fig.colorbar(im)
+   cbar.set_label('Power (dB)')
+   plt.show()
+   
+
    #calibrate(output_mic,T,N)
    
