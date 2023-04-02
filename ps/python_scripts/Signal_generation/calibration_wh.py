@@ -406,19 +406,7 @@ if __name__ == '__main__':
    recording,reference_microphone = print_analysis(fileChooser,microphone)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
    #create_sound_file(recording,fs,file_name_recording)
    
-    # Compute spectrogram
-   #f, t, Sxx = signal.spectrogram(reference_microphone, fs=fs)
-
-   # Plot heatmap
-   #fig, ax = plt.subplots()
-   #im = ax.pcolormesh(t, f, 10 * np.log10(Sxx), cmap='inferno', shading='auto')
-   #ax.set_xlabel('Time (s)')
-   #ax.set_ylabel('Frequency (Hz)')
-   #cbar = fig.colorbar(im)
-   #cbar.set_label('Power (dB)')
-   #splt.show()
-   #calibrate(output_mic,T,N)
-
+   
    #Dirac-pulse from reference microphone
    reference_IR= np.convolve(reference_microphone,inverse_filter,mode='same')
    reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
@@ -439,20 +427,17 @@ if __name__ == '__main__':
 
     ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
 
+   #HeatMap
+    # Compute spectrogram
+   f, t, Sxx = signal.spectrogram(reference_microphone, fs=fs)
 
-
-   #___________________ plotta spl db____________________________
-   # Apply the FFT to the signal
-   #fft = np.fft.fft(signal)
-   #
-   ## Compute the magnitude spectrum in decibels (dB)
-   #magnitude = np.abs(fft)
-   #magnitude_db = 20 * np.log10(magnitude)
-   #
-   ## Compute the frequency axis
-   #freq_axis = np.fft.fftfreq(len(signal), d=1/sample_rate)
-   #
-   ## Plot the magnitude spectrum
-   #plt.plot(freq_axis, magnitude_db)
+   #Plot heatmap
+   fig, ax = plt.subplots()
+   im = ax.pcolormesh(t, f, 10 * np.log10(Sxx), cmap='inferno', shading='auto')
+   ax.set_xlabel('Time (s)')
+   ax.set_ylabel('Frequency (Hz)')
+   cbar = fig.colorbar(im)
+   cbar.set_label('Power (dB)')
+   plt.show()
 
   
