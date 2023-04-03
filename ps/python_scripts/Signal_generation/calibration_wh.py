@@ -164,14 +164,8 @@ def print_analysis(fileChooser):
       #total_samples = len(data[:,0])          # Total number of samples
       #initial_data = data[0:initial_samples,] # takes out initial samples of signals 
 
-      new_lab_data = 0
-      for i in range(0,64):
-         new_lab_data = np.add(new_lab_data,data[:,i])
-
-      new_lab_data = new_lab_data/64
       print("################# ANALYSE OF "+ fileChooser+" #################")
       print("\n")
-      print("total nr samples in file: "+str(len(new_lab_data)))
       print('sample frequency: '+ str(int(fs)))
 
       staring_point = 1000                #default = 1000
@@ -377,7 +371,7 @@ if __name__ == '__main__':
    start_f=1         #Start frequency
    stop_f=22000      #Stop frequency   
    T=2               #Time interval
-   fs=44100          #sample rate assume 4*highest frecuency is enough  44100 is normal for audio recording, maybe match our SR?
+   fs=48828          #sample rate assume 4*highest frecuency is enough  44100 is normal for audio recording, maybe match our SR?
    N = fs*T
 
    #names for the audio files
@@ -397,7 +391,7 @@ if __name__ == '__main__':
    microphone=int(microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
-   collect_samples(fileChooser,T)
+   #collect_samples(fileChooser,T)    #if you wish do use a pre-recorde file, uncomment this line
 
    recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
    #create_sound_file(recording,fs,file_name_recording)
@@ -406,27 +400,43 @@ if __name__ == '__main__':
    #This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
    
    ref_mic=recording[:,int(microphone)]
-   print(len(ref_mic))
+   print("number of samples in reference mic",len(ref_mic))
 
-   #Dirac-pulse from reference microphone
-   reference_IR= np.convolve(ref_mic,inverse_filter,mode='same')
-   reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
+   #Dirac-pulse from reference microphone in time domian
+   #reference_IR= np.convolve(ref_mic,inverse_filter,mode='same')
+   #Dirac-pulse from reference microphone in frequency domain
+   reference_IR = np.fft.ifft(np.fft.fft(ref_mic[0:N-5000])*np.fft.fft(inverse_filter[0:N-5000]))
 
+   #reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
+
+
+   # find the index with the highest amplutide of the dirac
+   reference_IR_amp_index = np.argmax(np.abs(reference_IR))
+   # collect the value of the amplitude
+   reference_IR_amp = np.abs(reference_IR[reference_IR_amp_index])
    
+  
+
    #collecting scaling factor for each mic
-   #for i in range(0,64):
-   #  #Dirac from each microphone
-   #  mics_IR= np.convolve(recording[:,i],inverse_filter,mode='same')
-   #  mics_IR = mics_IR/(np.max(np.abs(mics_IR)))
-   #   
-   #   #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
-   #  scaling_factors = reference_IR / mics_IR
-      
-
-   #print(scaling_factors)  
+   scaling_factors = []
+   for i in range(0,64):
+     #Dirac from each microphone in time domain
+     #mics_IR= np.convolve(recording[:,i],inverse_filter,mode='same')
+     
+     #Dirac-pulse from reference microphone in frequency domain
+     mics_IR = np.fft.ifft(np.fft.fft(recording[:,i][0:N-5000])*np.fft.fft(inverse_filter[0:N-5000]))
+     #mics_IR = mics_IR/(np.max(np.abs(mics_IR)))
+     
+     # find the index with the highest amplutide of the dirac
+     mics_IR_amp_index = np.argmax(np.abs(mics_IR))
+     # collect the value of the amplitude
+     mics_IR_amp = np.abs(mics_IR[mics_IR_amp_index])
+      #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
+     scaling_factors.append(reference_IR_amp/ mics_IR_amp)
+     
+   print(scaling_factors)  
    #calculate_IR(recording,T,N,fs,inverse_filter)
-
-    ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
+   ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
 
    #HeatMap
     # Compute spectrogram
@@ -439,6 +449,18 @@ if __name__ == '__main__':
    ax.set_ylabel('Frequency (Hz)')
    cbar = fig.colorbar(im)
    cbar.set_label('Power (dB)')
+   plt.show()
+
+   time_recording = np.linspace(0,T,len(reference_IR),endpoint=False)
+
+   # plot time-domain IR
+   
+   plt.plot(time_recording,reference_IR)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of the system (recording * inverse-filter)  NORMALIZED"  )
+
+
    plt.show()
 
   
