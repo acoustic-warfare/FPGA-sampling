@@ -389,6 +389,9 @@ if __name__ == '__main__':
    print("enter reference microphone microphone id")
    microphone=input()
    microphone=int(microphone)-1
+   print("enter mic to calibrate according to the reference mic")
+   other_microphone=input()
+   other_microphone=int(other_microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
    #collect_samples(fileChooser,T)    #if you wish do use a pre-recorde file, uncomment this line
@@ -400,6 +403,7 @@ if __name__ == '__main__':
    #This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
    
    ref_mic=recording[:,int(microphone)]
+   mic_to_be_cal=recording[:,int(other_microphone)]
    print("number of samples in reference mic",len(ref_mic))
 
    #Dirac-pulse from reference microphone in time domian
@@ -408,7 +412,7 @@ if __name__ == '__main__':
    reference_IR = np.fft.ifft(np.fft.fft(ref_mic[0:N-5000])*np.fft.fft(inverse_filter[0:N-5000]))
 
    #reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
-
+   
 
    # find the index with the highest amplutide of the dirac
    reference_IR_amp_index = np.argmax(np.abs(reference_IR))
@@ -434,10 +438,12 @@ if __name__ == '__main__':
       #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
      scaling_factors.append(reference_IR_amp/ mics_IR_amp)
      
-   print(scaling_factors)  
+   print("Scaling factor for mic (",microphone+1,"/",other_microphone+1,") =",scaling_factors[other_microphone])  
    #calculate_IR(recording,T,N,fs,inverse_filter)
    ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
 
+
+   # plotting 
    #HeatMap
     # Compute spectrogram
    f, t, Sxx = signal.spectrogram(ref_mic, fs=fs)
@@ -453,14 +459,55 @@ if __name__ == '__main__':
 
    time_recording = np.linspace(0,T,len(reference_IR),endpoint=False)
 
-   # plot time-domain IR
+
+   #___________________ plotta spl db____________________________
+   # Apply the FFT to the signal
+   ref_mic_fft = np.fft.fft(ref_mic)
+   # Compute the magnitude spectrum in decibels (dB)
+   magnitude = np.abs(ref_mic_fft)
+   magnitude_db = 20 * np.log10(magnitude)
    
-   plt.plot(time_recording,reference_IR)
-   plt.xlabel("time (s)")
-   plt.ylabel("amplitude")
-   plt.title("The IR of the system (recording * inverse-filter)  NORMALIZED"  )
+   # Compute the frequency axis
+   freq_axis = np.fft.fftfreq(len(ref_mic), d=1/fs)
+   
+   # Plot the magnitude spectrum of reference mic
+   plt.subplot(3,1,1)
+   plt.plot(freq_axis[:len(freq_axis)//2], magnitude[:len(freq_axis)//2])
+   plt.ylabel("SPl (dB)")
+   plt.xlabel(" f (Hz)")
+   plt.title("referens mic")
 
+   mic_to_be_cal_fft =np.fft.fft(mic_to_be_cal)
+   # Compute the magnitude spectrum in decibels (dB)
+   mics_magnitude = np.abs(mic_to_be_cal_fft)
+   mics_magnitude_db = 20 * np.log10(mics_magnitude)
+   
+   # Compute the frequency axis
+   mics_freq_axis = np.fft.fftfreq(len(mic_to_be_cal), d=1/fs)
+   
+   # Plot the magnitude spectrum
+   plt.subplot(3,1,2)
+   plt.plot(mics_freq_axis[:len(freq_axis)//2], mics_magnitude[:len(freq_axis)//2])
+   plt.ylabel("SPl (dB)")
+   plt.xlabel(" f (Hz)")
+   plt.title("other mic before calibration")
 
+   calebrated_mic = mic_to_be_cal * scaling_factors[other_microphone]
+   calebrated_mic_fft = np.fft.fft(calebrated_mic)
+   # Compute the magnitude spectrum in decibels (dB)
+   calebrated_magnitude = np.abs(calebrated_mic_fft)
+   calebrated_magnitude_db = 20 * np.log10(calebrated_magnitude)
+   
+   # Compute the frequency axis
+   freq_axis = np.fft.fftfreq(len(calebrated_mic), d=1/fs)
+
+   
+   # Plot the magnitude spectrum
+   plt.subplot(3,1,3)
+   plt.plot(freq_axis[:len(freq_axis)//2], calebrated_magnitude[:len(freq_axis)//2])
+   plt.ylabel("SPl (dB)")
+   plt.xlabel(" f (Hz)")
+   plt.title("other mic, after calibration")
+   plt.tight_layout()
    plt.show()
-
   
