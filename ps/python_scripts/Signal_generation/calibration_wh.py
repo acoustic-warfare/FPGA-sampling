@@ -394,7 +394,7 @@ if __name__ == '__main__':
    fileChooser = input()
    print("enter reference microphone microphone id")
    microphone=input()
-   microphone=int(microphone-1)
+   microphone=int(microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
    collect_samples(fileChooser,T)
@@ -414,16 +414,16 @@ if __name__ == '__main__':
 
    
    #collecting scaling factor for each mic
-   for i in range(0,64):
-     #Dirac from each microphone
-     mics_IR= np.convolve(recording[:,i],inverse_filter,mode='same')
-     mics_IR = mics_IR/(np.max(np.abs(mics_IR)))
-      
-      #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
-     scaling_factors = reference_IR / mics_IR
+   #for i in range(0,64):
+   #  #Dirac from each microphone
+   #  mics_IR= np.convolve(recording[:,i],inverse_filter,mode='same')
+   #  mics_IR = mics_IR/(np.max(np.abs(mics_IR)))
+   #   
+   #   #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
+   #  scaling_factors = reference_IR / mics_IR
       
 
-   print(scaling_factors)  
+   #print(scaling_factors)  
    #calculate_IR(recording,T,N,fs,inverse_filter)
 
     ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
