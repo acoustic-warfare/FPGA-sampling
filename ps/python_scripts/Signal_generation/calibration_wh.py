@@ -125,7 +125,7 @@ def collect_samples(filename,recordTime):
    f.close
    sys.stdout.flush()
 
-def print_analysis(fileChooser,microphone):
+def print_analysis(fileChooser):
 
 
    def load_data_FPGA():
@@ -157,10 +157,7 @@ def print_analysis(fileChooser,microphone):
 
    def main():
       recording_device = 'FPGA' # choose between 'FPGA' and 'BB' (BeagelBone) 
-      filename = 'new_sample_data_new'
-
-      initial_samples = 10000                 # initial samples, at startup phase of Beaglebone recording
-
+      
       # Load data from .BIN
       if recording_device == 'FPGA':
          data,fs,fileChooser = load_data_FPGA()
@@ -184,21 +181,20 @@ def print_analysis(fileChooser,microphone):
 
       #samples = len(ok_data[:,0])         #total number of samples per microphone
 
-      microphones=[1,2,4,6,7,8,9,10,11,12,13,14,15,16,
-                   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
-                   33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
-                   49,50,51,52,54,55,57,58,59,60,61,62,63,64]  
-      microphones = np.array(microphones)-1
-      # This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
-      #arr_plot_mics = np.array(microphones)-1   # convert plot_mics to numpy array with correct index
-      #for i in range(len(arr_plot_mics)):
-      #  multiple_microphones= (ok_data[:,int(arr_plot_mics[i])])
+      #microphones=[1,2,4,6,7,8,9,10,11,12,13,14,15,16,
+      #             17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+      #             33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+      #             49,50,51,52,54,55,57,58,59,60,61,62,63,64]  
+      ## This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
+      #arr_mics = np.array(microphones)-1   # convert plot_mics to numpy array with correct index
+      #for i in range(len(arr_mics)):
+      #   recording= (ok_data[:,int(arr_mics[i])])
       
-      recording=ok_data[:,microphones]  #change this to "microphones" to get all mics
-      reference_microphone = ok_data[:,microphone] 
-      return recording,reference_microphone
+      #recording=ok_data[:,microphones]  #change this to "microphones" to get all mics
+      return ok_data
    
-   main()
+   ok_data = main()
+   return ok_data
 
 def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to avoid side lobes 
     if len(v) < 2*size:
@@ -398,17 +394,22 @@ if __name__ == '__main__':
    fileChooser = input()
    print("enter reference microphone microphone id")
    microphone=input()
-
+   microphone=int(microphone-1)
    #print("press ENTER to start")
    input("press ENTER to start")
    collect_samples(fileChooser,T)
 
-   recording,reference_microphone = print_analysis(fileChooser,microphone)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
+   recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
    #create_sound_file(recording,fs,file_name_recording)
+
+  
+   #This takes out recordings of multiple microphones, the varieble "microphones" represent the id of mics to record with.                     
    
-   
+   ref_mic=recording[:,int(microphone)]
+   print(len(ref_mic))
+
    #Dirac-pulse from reference microphone
-   reference_IR= np.convolve(reference_microphone,inverse_filter,mode='same')
+   reference_IR= np.convolve(ref_mic,inverse_filter,mode='same')
    reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
 
    
@@ -429,7 +430,7 @@ if __name__ == '__main__':
 
    #HeatMap
     # Compute spectrogram
-   f, t, Sxx = signal.spectrogram(reference_microphone, fs=fs)
+   f, t, Sxx = signal.spectrogram(ref_mic, fs=fs)
 
    #Plot heatmap
    fig, ax = plt.subplots()
