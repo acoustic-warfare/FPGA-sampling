@@ -394,7 +394,7 @@ if __name__ == '__main__':
    other_microphone=int(other_microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
-   #collect_samples(fileChooser,T)    #if you wish do use a pre-recorde file, uncomment this line
+   #collect_samples(fileChooser,T)    #if you wish do use a pre-recorde file, have this line as a comment
 
    recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
    #create_sound_file(recording,fs,file_name_recording)
@@ -412,7 +412,9 @@ if __name__ == '__main__':
    reference_IR = np.fft.ifft(np.fft.fft(ref_mic[0:N-5000])*np.fft.fft(inverse_filter[0:N-5000]))
 
    #reference_IR = reference_IR/(np.max(np.abs(reference_IR)))
-   
+
+   #RMS method
+   #reference_IR = np.sqrt(np.mean(np.square(reference_IR)))
 
    # find the index with the highest amplutide of the dirac
    reference_IR_amp_index = np.argmax(np.abs(reference_IR))
@@ -431,6 +433,9 @@ if __name__ == '__main__':
      mics_IR = np.fft.ifft(np.fft.fft(recording[:,i][0:N-5000])*np.fft.fft(inverse_filter[0:N-5000]))
      #mics_IR = mics_IR/(np.max(np.abs(mics_IR)))
      
+     #RMS method
+     #mics_IR = np.sqrt(np.mean(np.square(mics_IR)))
+
      # find the index with the highest amplutide of the dirac
      mics_IR_amp_index = np.argmax(np.abs(mics_IR))
      # collect the value of the amplitude
@@ -443,8 +448,7 @@ if __name__ == '__main__':
    ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
 
 
-   # plotting 
-   #HeatMap
+   # _____________plotting HeatMap_________________________-
     # Compute spectrogram
    f, t, Sxx = signal.spectrogram(ref_mic, fs=fs)
 
@@ -457,7 +461,32 @@ if __name__ == '__main__':
    cbar.set_label('Power (dB)')
    plt.show()
 
-   time_recording = np.linspace(0,T,len(reference_IR),endpoint=False)
+   time_recording = np.linspace(0,T,len(recording),endpoint=False)
+
+
+   #____Plot IR of ref mic and other mic_______
+   
+   time_output = np.linspace(0,T,N-5000,endpoint=False)
+   
+
+   
+
+   # plot time-domain IR of ref mic
+   plt.subplot(2,1,1)
+   plt.plot(time_output,reference_IR)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of the ref mic and filter")
+
+   # plot time-domain IR of other mic
+   plt.subplot(2,1,2)
+   plt.plot(time_output,mics_IR)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of the other mic and filter")
+   plt.tight_layout()
+   plt.show()
+
 
 
    #___________________ plotta spl db____________________________
