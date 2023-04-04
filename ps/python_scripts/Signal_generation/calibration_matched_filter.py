@@ -15,8 +15,8 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 #import config
 import os
 from scipy.io.wavfile import write
-from scipy import signal
-from scipy.signal import butter, filtfilt,correlate
+from scipy import signal 
+from scipy.signal import butter, filtfilt,correlate,chirp
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -206,9 +206,9 @@ def generate_chirp(start_f,stop_f,T,fs):
     
    #  _______________________________Mark method_1_____________________________________ 
         # sine lin
-   #chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
+   chirp_signal = chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear',phi=-90, vertex_zero=True ) 
         # sine log       
-   chirp_signal = signal.chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )   
+   #chirp_signal = signal.chirp(t, f0=start_f, t1=T, f1=stop_f, method='logarithmic',phi=-90, vertex_zero=True )   
         
         # cos lin
    #chirp_signal= chirp(t, f0=start_f, t1=T, f1=stop_f, method='linear', phi=0, vertex_zero=True) 
@@ -237,8 +237,8 @@ def generate_chirp(start_f,stop_f,T,fs):
    
          #Modified Farina sweep   works ________________________________
    #L is used for the modified farina sweep
-   #L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
-   #chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
+   L= (1/start_f)*((T*start_f)/(np.log(stop_f/start_f)))
+   chirp_signal = np.sin(2*np.pi*start_f*L *(np.exp(t/L)-1))
    #_________________________________________________________________________________________________________
    
    
@@ -359,9 +359,9 @@ if __name__ == '__main__':
    #names for the audio files
    #filename_pure_chip = "chirp.wav"
    file_name_recording = "recording_sim.wav"
-
+   filename_pure_chip = "farina_log_chirp.wav"
    chirp_signal = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding matched filter
-   #create_sound_file(chirp_signal,fs,filename_pure_chip)
+   create_sound_file(chirp_signal,fs,filename_pure_chip)
 
 
 
@@ -393,10 +393,15 @@ if __name__ == '__main__':
    #ref_mic = bandpass_filter(ref_mic,fs,start_f,stop_f)   #optional
    
    
-   # Create a matched filter
-   matched_filter = np.flip(chirp_signal)
-   matched_filter = signal.convolve(chirp_signal, matched_filter, mode='same')
   
+  
+   #create the inverse filter version
+   t = np.linspace(0, T, int(T * fs), endpoint=False)
+   R = np.log(stop_f/start_f)
+   k = np.exp(t*R/T)
+   matched_filter =  chirp_signal[::-1]/k
+
+   filter_IR=signal.convolve(chirp_signal,matched_filter,mode='same')
    
    if len(ref_mic) > len(matched_filter):
     ref_mic = ref_mic[:len(matched_filter)]
@@ -411,8 +416,9 @@ if __name__ == '__main__':
 
    print("number of samples in reference mic",len(ref_mic))
 
+
    
-   reference_IR = signal.convolve(ref_mic,matched_filter,mode='same')
+   reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
 
 
    # find the index with the highest amplutide of the dirac
@@ -464,19 +470,25 @@ if __name__ == '__main__':
    #____Plot IR of ref mic and other mic_______
    
    time_output = np.linspace(0,T,len(ref_mic),endpoint=False)
-   
+   time_tmp = np.linspace(0,T,len(chirp_signal),endpoint=False)
 
+   #plot inverse filter
+   plt.subplot(3,1,1)
+   #plt.figure()
+   plt.plot(time_tmp, filter_IR)
+   plt.title("IR after filter, with generated chirp and MF")
+   plt.xlabel('t (sec)')
    
 
    # plot time-domain IR of ref mic
-   plt.subplot(2,1,1)
+   plt.subplot(3,1,2)
    plt.plot(time_output,reference_IR)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
    plt.title("The IR of the ref mic and filter")
 
    # plot time-domain IR of other mic
-   plt.subplot(2,1,2)
+   plt.subplot(3,1,3)
    plt.plot(time_output,mics_IR)
    plt.xlabel("time (s)")
    plt.ylabel("amplitude")
