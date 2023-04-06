@@ -16,7 +16,7 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 import os
 from scipy.io.wavfile import write
 from scipy import signal 
-from scipy.signal import butter, filtfilt,correlate,chirp
+from scipy.signal import butter, filtfilt,correlate,chirp,welch,periodogram
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -415,15 +415,18 @@ if __name__ == '__main__':
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
 
 
-   # find the index with the highest amplutide of the dirac
-   reference_IR_amp_index = np.argmax(np.abs(reference_IR))
-   # collect the value of the amplitude
-   reference_IR_amp = np.abs(reference_IR[reference_IR_amp_index])
-   
-  
+   #_____________________get amp for reference IR via fft_____________________
+   reference_IR_amp = np.abs(np.fft.fft(reference_IR))
+   reference_IR_amp = np.max(reference_IR_amp)
+
+   # Compute the PSD for ref_mic
+   f_PSD, psd = periodogram(ref_mic, fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
 
    #collecting scaling factor for each mic
    scaling_factors = []
+   spl_other_mics = []
    for i in range(0,64):
      if len(recording[:,i]) > len(matched_filter):
       recording[:,i] = recording[:,i][:len(matched_filter)]
@@ -432,21 +435,26 @@ if __name__ == '__main__':
      #Dirac from each microphone in time domain
      mics_IR= signal.convolve(recording[:,i],matched_filter,mode='same')
    
-
-     # find the index with the highest amplutide of the dirac
-     mics_IR_amp_index = np.argmax(np.abs(mics_IR))
-     # collect the value of the amplitude
-     mics_IR_amp = np.abs(mics_IR[mics_IR_amp_index])
-      #recieve the scaling factor (x )             (ref/mic) ->    x*mic=ref
+     #_____________________get amp for other mics via fft_____________________
+     mics_IR_amp = np.abs(np.fft.fft(mics_IR))
+     mics_IR_amp = np.max(mics_IR_amp)
+     #___collect scaling_factors_for each mic_____
      scaling_factors.append(reference_IR_amp/ mics_IR_amp)
+
+     # Compute the PSD for ref_mic
+     f_PSD, psd = periodogram(recording[:,i], fs)
+     # Convert PSD to sound pressure level (SPL) in dB
+     spl_other_mics.append(20 * np.log10(np.sqrt(psd) / 2e-5))
      
    print("Scaling factor for mic (",microphone+1,"/",other_microphone+1,") =",scaling_factors[other_microphone])  
    #calculate_IR(recording,T,N,fs,inverse_filter)
    ## TESTA SPELA IN OCH DELA, ÄR DET SYNCRONT??
 
-   print("with ",microphone+1," as ref. Scaling factors is the following")
+   print("with ",microphone+1," as ref and average SPL(dB) of: ",np.mean(spl_ref),". Scaling factors is the following :")
    for i in range(0,64):
-      print("mic ",i+1," : ",scaling_factors[i])
+      print("mic ",i+1," scale factor: ",scaling_factors[i], ".  average SPL (db):",np.mean(spl_other_mics[i]))
+
+   #_______________________________________________Plotting_______________________________________ 
 
    # _____________plotting HeatMap_________________________-
     # Compute spectrogram
@@ -493,82 +501,40 @@ if __name__ == '__main__':
    plt.tight_layout()
    plt.show()
 
-
-
-   #___________________ plotta spl db____________________________
-   # Apply the FFT to the signal
-   ref_mic_fft = np.fft.fft(ref_mic)
-   # Compute the magnitude spectrum in decibels (dB)
-   magnitude = np.abs(ref_mic_fft)
-   magnitude_db = 20 * np.log10(magnitude)
-   
-   # Compute the frequency axis
-   freq_axis = np.fft.fftfreq(len(ref_mic), d=1/fs)
-   
    # Plot the magnitude spectrum of reference mic
    plt.subplot(3,1,1)
-   plt.plot(freq_axis[:len(freq_axis)//2], magnitude_db[:len(freq_axis)//2])
-   plt.ylabel("SPl (dB)")
-   plt.xlabel(" f (Hz)")
-   plt.title("referens mic")
+   plt.semilogx(f_PSD, spl_ref)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('SPL (dB)')
+   plt.title("Reference microphone")
+   plt.grid()
 
-   mic_to_be_cal_fft =np.fft.fft(mic_to_be_cal)
-   # Compute the magnitude spectrum in decibels (dB)
-   mics_magnitude = np.abs(mic_to_be_cal_fft)
-   mics_magnitude_db = 20 * np.log10(mics_magnitude)
-   
-   # Compute the frequency axis
-   mics_freq_axis = np.fft.fftfreq(len(mic_to_be_cal), d=1/fs)
-   
-   # Plot the magnitude spectrum
+   print("Average SPL(dB) of ref mic:", np.mean(spl_ref))
+   # Plot the magnitude spectrum of other mic mic
    plt.subplot(3,1,2)
-   plt.plot(mics_freq_axis[:len(freq_axis)//2], mics_magnitude_db[:len(freq_axis)//2])
-   plt.ylabel("SPl (dB)")
-   plt.xlabel(" f (Hz)")
-   plt.title("other mic before calibration")
+   plt.semilogx(f_PSD, spl_other_mics[other_microphone])
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('SPL (dB)')
+   plt.title("Other microphone")
+   plt.grid()
+   print("Average SPL(dB) of other mic before calibration:",np.mean(spl_other_mics[other_microphone]))
+
 
    calebrated_mic = mic_to_be_cal * scaling_factors[other_microphone]
-   calebrated_mic_fft = np.fft.fft(calebrated_mic)
-   # Compute the magnitude spectrum in decibels (dB)
-   calebrated_magnitude = np.abs(calebrated_mic_fft)
-   calebrated_magnitude_db = 20 * np.log10(calebrated_magnitude)
-   
-   # Compute the frequency axis
-   freq_axis = np.fft.fftfreq(len(calebrated_mic), d=1/fs)
 
-   
-   # Plot the magnitude spectrum
+    # Compute the PSD for ref_mic
+   f, psd = periodogram(calebrated_mic, fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   spl_calibrated_mic = 20 * np.log10(np.sqrt(psd) / 2e-5)
+ 
    plt.subplot(3,1,3)
-   plt.plot(freq_axis[:len(freq_axis)//2], calebrated_magnitude_db[:len(freq_axis)//2])
-   plt.ylabel("SPl (dB)")
-   plt.xlabel(" f (Hz)")
-   plt.title("other mic, after calibration")
+   plt.semilogx(f_PSD, spl_calibrated_mic)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('SPL (dB)')
+   plt.title("Other mic after calibration")
+   plt.grid()
    plt.tight_layout()
-   plt.show()
-  #
-   ref_mic_fft = np.fft.fft(ref_mic)
+   print("Average SPL(dB) of other mic after calibration:",np.mean(spl_calibrated_mic))
    
-   # Calculate the power spectrum
-   ref_mic_amplitude = np.abs(ref_mic)
-   
-
-   # Set the reference level to 1 microPascal (20 microPascals is the typical reference level for air)
-   ref_pressure = 20e-6
-
-   # Convert the power spectrum to dB
-   db_spectrum = 20 * np.log10(ref_mic_amplitude / (ref_pressure))
-   # Calculate the length of the signal in seconds
-   length_s = len(ref_mic) / fs
-
-   # Create a time axis for the signal
-   time_axis = np.linspace(0, length_s, len(ref_mic))
-   # Create the plot
-   plt.plot(time_output, db_spectrum)
-
-   # Set the axis labels and title
-   plt.xlabel('Time (s)')
-   plt.ylabel('Sound Pressure Level (dB SPL)')
-   plt.title('SPL of Recorded Signal')
-
-   # Display the plot
    plt.show()
+
