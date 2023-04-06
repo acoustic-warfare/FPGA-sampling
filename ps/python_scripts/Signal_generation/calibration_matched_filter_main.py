@@ -388,11 +388,11 @@ if __name__ == '__main__':
    ref_mic=recording[:,int(microphone)]
    
 
-   #create the inverse filter version
+   #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
    R = np.log(stop_f/start_f)
    k = np.exp(t*R/T)
-   matched_filter =  chirp_signal[::-1]/k
+   matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched
 
 
    filter_IR=signal.convolve(chirp_signal,matched_filter,mode='same')
@@ -538,3 +538,6 @@ if __name__ == '__main__':
    
    plt.show()
 
+
+
+#X = 2*sqrt(f ax/L).*exp(−j*2*pi* f ax*L.*(1−log(f ax/f1)) + j*pi/4);
