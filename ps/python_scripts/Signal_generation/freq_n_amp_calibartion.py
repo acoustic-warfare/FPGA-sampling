@@ -420,14 +420,14 @@ if __name__ == '__main__':
 
    calibrated_mic_IR = np.fft.ifft(scaling_factor*mic_to_be_cal_IR_fft)
 
+   calibrated_mic = np.convolve(calibrated_mic_IR,matched_filter)
    
-
-   
-
    # Compute the PSD for ref_mic
    f_PSD, psd = periodogram(ref_mic, fs)
    # Convert PSD to sound pressure level (SPL) in dB
    spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+
+   
 
    
    #_______________________________________________Plotting_______________________________________ 
@@ -485,6 +485,32 @@ if __name__ == '__main__':
    plt.title("Reference microphone")
    plt.grid()
 
+   # Compute the PSD for ref_mic
+   f_PSD, psd = periodogram(recording[:,other_microphone], fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
    
+    # Plot the magnitude spectrum of reference mic
+   plt.subplot(3,1,2)
+   plt.semilogx(f_PSD, spl_ref)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('SPL (dB)')
+   plt.title("other, before calibration")
+   plt.grid()
+
+   # Compute the PSD for ref_mic
+   f_PSD, psd = periodogram(calibrated_mic, fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+
+
+    # Plot the magnitude spectrum of reference mic
+   plt.subplot(3,1,3)
+   plt.semilogx(f_PSD, spl_ref)
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('SPL (dB)')
+   plt.title("other, after calibration")
+   plt.grid()
+   plt.tight_layout()
    plt.show()
 
