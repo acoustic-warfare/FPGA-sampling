@@ -441,14 +441,17 @@ if __name__ == '__main__':
    #ref mic
    magnitude_ref = np.fft.fft(ref_mic)
    magnitude_ref_dB = 20*np.log10(magnitude_ref)
-
+   magnitude_ref_dB = np.abs(magnitude_ref_dB)
+   
    #other mic
    magnitude_other = np.fft.fft(other_mic)
    magnitude_other_dB = 20*np.log10(magnitude_other)
-
+   magnitude_other_dB = np.abs(magnitude_other_dB)
+   
    #other mic after calibration
    magnitude_other_calibrated = np.fft.fft(other_mic_calibrated)
    magnitude_other_calibrated_dB = 20*np.log10(magnitude_other_calibrated)
+   magnitude_other_calibrated_dB = np.abs(magnitude_other_calibrated_dB)
    
    #frequency vector for plotting
    freq = np.fft.fftfreq(len(ref_mic), 1/fs)
