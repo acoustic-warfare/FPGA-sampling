@@ -386,7 +386,7 @@ if __name__ == '__main__':
   
    #take out reference mic                
    ref_mic=recording[:,int(microphone)]
-   
+   other_mic=recording[:,other_microphone]
 
    #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
@@ -397,10 +397,17 @@ if __name__ == '__main__':
 
    filter_IR=signal.convolve(chirp_signal,matched_filter,mode='same')
    
+
+   #Cut of the signal or filter to receive matching lengths
    if len(ref_mic) > len(matched_filter):
     ref_mic = ref_mic[:len(matched_filter)]
    else:
     matched_filter = matched_filter[:len(ref_mic)]
+
+   if len(other_mic) > len(matched_filter):
+    other_mic = other_mic[:len(matched_filter)]
+   else:
+    matched_filter = matched_filter[:len(other_mic)]
 
    print("length of ref_mic =",ref_mic.shape)
    print("lenght if matched_filter=",matched_filter.shape)
@@ -408,31 +415,46 @@ if __name__ == '__main__':
 
    print("number of samples in reference mic",len(ref_mic))
 
-
+   #recieve IR for both mics
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
-   mic_to_be_cal_IR = np.convolve(recording[:,other_microphone],matched_filter,mode='same')
+   mic_to_be_cal_IR = np.convolve(other_mic,matched_filter,mode='same')
 
-
+   #Enter frequency domain for IR
    reference_IR_fft=np.fft.fft(reference_IR)
    mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR)
 
+   #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
 
-   calibrated_mic_IR = np.fft.ifft(scaling_factor*mic_to_be_cal_IR_fft)
+   #enter frequency domain for the signal to be calibrated
+   other_mic_freq = np.fft.fft(other_mic)
 
-   calibrated_mic = np.convolve(calibrated_mic_IR,matched_filter)
-   
-   # Compute the PSD for ref_mic
-   f_PSD, psd = periodogram(ref_mic, fs)
-   # Convert PSD to sound pressure level (SPL) in dB
-   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+   #calibrate the other signal
+   other_mic_calibrated_freq = other_mic_freq*scaling_factor
 
-   
+   #Go back to time domain
+   other_mic_calibrated = np.fft.ifft(other_mic_calibrated_freq)
 
+
+
+   #______________Get magnitude for each signal___________________
+   #ref mic
+   magnitude_ref = np.fft.fft(ref_mic)
+   magnitude_ref_dB = 20*np.log10(magnitude_ref)
+
+   #other mic
+   magnitude_other = np.fft.fft(other_mic)
+   magnitude_other_dB = 20*np.log10(magnitude_other)
+
+   #other mic after calibration
+   magnitude_other_calibrated = np.fft.fft(other_mic_calibrated)
+   magnitude_other_calibrated_dB = 20*np.log10(magnitude_other_calibrated)
    
+   #frequency vector for plotting
+   freq = np.fft.fftfreq(len(ref_mic), 1/fs)
    #_______________________________________________Plotting_______________________________________ 
 
-   # _____________plotting HeatMap_________________________-
+   # _____________plotting HeatMap__________________
     # Compute spectrogram
    f, t, Sxx = signal.spectrogram(ref_mic, fs=fs)
 #
@@ -448,8 +470,7 @@ if __name__ == '__main__':
    time_recording = np.linspace(0,T,len(ref_mic),endpoint=False)
 
 
-   #____Plot IR of ref mic and other mic_______
-   
+   #____Plot IR of ref mic and other mic_______ 
    time_output = np.linspace(0,T,len(ref_mic),endpoint=False)
    time_tmp = np.linspace(0,T,len(chirp_signal),endpoint=False)
 
@@ -477,40 +498,116 @@ if __name__ == '__main__':
    plt.tight_layout()
    plt.show()
 
-   # Plot the magnitude spectrum of reference mic
+   #_______________Magnitude plot__________________
+   # Plot the dB magnitude spectrum against frequency
+   #Ref mic
    plt.subplot(3,1,1)
-   plt.semilogx(f_PSD, spl_ref)
+   plt.plot(freq[:len(ref_mic)//2], magnitude_ref_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
-   plt.ylabel('SPL (dB)')
-   plt.title("Reference microphone")
-   plt.grid()
-
-   # Compute the PSD for ref_mic
-   f_PSD, psd = periodogram(recording[:,other_microphone], fs)
-   # Convert PSD to sound pressure level (SPL) in dB
-   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+   plt.ylabel('Magnitude (dB)')
+   plt.title("Reference mic")
    
-    # Plot the magnitude spectrum of reference mic
+   #other mic before calibration
    plt.subplot(3,1,2)
-   plt.semilogx(f_PSD, spl_ref)
+   plt.plot(freq[:len(ref_mic)//2], magnitude_other_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
-   plt.ylabel('SPL (dB)')
-   plt.title("other, before calibration")
-   plt.grid()
+   plt.ylabel('Magnitude (dB)')
+   plt.title("Other mic before calibration")
+   
 
-   # Compute the PSD for ref_mic
-   f_PSD, psd = periodogram(calibrated_mic, fs)
-   # Convert PSD to sound pressure level (SPL) in dB
-   spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
-
-
-    # Plot the magnitude spectrum of reference mic
+   #other mic after calibration
    plt.subplot(3,1,3)
-   plt.semilogx(f_PSD, spl_ref)
+   plt.plot(freq[:len(ref_mic)//2], magnitude_other_calibrated_dB.real[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
-   plt.ylabel('SPL (dB)')
-   plt.title("other, after calibration")
-   plt.grid()
+   plt.ylabel('Magnitude (dB)')
    plt.tight_layout()
+   plt.grid()
+   plt.title("Other mic after calibration")
    plt.show()
 
+      #RELA values
+
+   #____________SPL plots______________________
+   # Plot the magnitude spectrum of reference mic
+   #plt.subplot(3,1,1)
+   #plt.semilogx(f_PSD, spl_ref)
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('SPL (dB)')
+   #plt.title("Reference microphone")
+   #plt.grid()
+
+   # Compute the PSD for ref_mic
+   #f_PSD, psd = periodogram(recording[:,other_microphone], fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   #spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+   
+    # Plot the magnitude spectrum of reference mic
+   #plt.subplot(3,1,2)
+   #plt.semilogx(f_PSD, spl_ref)
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('SPL (dB)')
+   #plt.title("other, before calibration")
+   #plt.grid()
+
+   # Compute the PSD for ref_mic
+   #f_PSD, psd = periodogram(other_mic_calibrated.real, fs)
+   # Convert PSD to sound pressure level (SPL) in dB
+   #spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
+
+
+    # Plot the magnitude spectrum of reference mic
+  # plt.subplot(3,1,3)
+   #plt.semilogx(f_PSD, spl_ref)
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('SPL (dB)')
+   #plt.title("other, after calibration")
+   #plt.grid()
+   #plt.tight_layout()
+   #plt.show()
+
+
+
+
+
+
+#chat gpt code______________________________________
+#mport numpy as np
+#from scipy.signal import chirp, convolve
+
+# Generate chirp signal
+#fs = 44100  # Sampling frequency
+#t = np.linspace(0, 1, fs)  # Time vector
+#f0 = 20  # Start frequency
+#f1 = 20000  # End frequency
+#chirp_signal = chirp(t, f0, 1, f1, method='logarithmic')
+
+# Generate inverse filter
+#ir_len = 2048  # Impulse response length
+#inverse_filter = np.fft.irfft(1 / np.fft.rfft(chirp_signal, ir_len))
+
+# Simulate recordings from two microphones
+#mic1_signal = chirp_signal + 0.1 * np.random.randn(len(chirp_signal))  # Add some noise
+#mic2_signal = 0.8 * chirp_signal + 0.2 * np.random.randn(len(chirp_signal))  # Simulate calibration error
+
+# Convolve recorded signals with inverse filter
+#mic1_ir = convolve(mic1_signal, inverse_filter)[:len(chirp_signal)]
+#mic2_ir = convolve(mic2_signal, inverse_filter)[:len(chirp_signal)]
+
+# Compute frequency responses
+#mic1_freq_resp = np.fft.rfft(mic1_ir, ir_len)
+#mic2_freq_resp = np.fft.rfft(mic2_ir, ir_len)
+
+# Compute scaling factors
+#scaling_factors = mic1_freq_resp / mic2_freq_resp
+
+# Apply scaling factors to mic2 signal in each frequency bin
+#mic2_freq = np.fft.rfft(mic2_signal, ir_len)
+#mic2_calibrated_freq = mic2_freq * scaling_factors
+#mic2_calibrated_signal = np.fft.irfft(mic2_calibrated_freq)[:len(chirp_signal)]
+
+# Plot results
+#import matplotlib.pyplot as plt
+#plt.plot(t, mic1_signal, label='Mic 1')
+#plt.plot(t, mic2_calibrated_signal, label='Mic 2 Calibrated')
+#plt.legend()
+#plt.show()
