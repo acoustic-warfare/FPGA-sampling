@@ -350,27 +350,31 @@ def calculate_IR(recording,T,N,fs,inverse_filter):
 
 def truncation(fft_IR):
    # Compute magnitude spectrum
-   mag_spec = np.abs(fft_IR)
+   #mag_spec = np.abs(fft_IR)
 
-   # Find the index of the maximum magnitude
-   max_mag_index = np.argmax(mag_spec)
+   
 
+   # Find the location of the largest peak in the impulse response
+   max_index = np.argmax(np.abs(fft_IR))
+
+# Extract a portion of the impulse response around the largest peak
+   truncated_impulse_response = fft_IR[max_index-2000:max_index+2000]
    # Set threshold as 10% of the maximum magnitude
-   threshold = 0.005 * mag_spec[max_mag_index]
-
-   # Search for starting index of the window
-   start_index = max_mag_index
-   while mag_spec[start_index] > threshold:
-    start_index -= 1
-
-   # Search for ending index of the window
-   end_index = max_mag_index
-   while mag_spec[end_index] > threshold:
-    end_index += 1
-
-   # Extract window
-   impulse_response = fft_IR[start_index:end_index]
-   return impulse_response
+   #threshold = 0.005 * mag_spec[max_mag_index]
+#
+   ## Search for starting index of the window
+   #start_index = max_mag_index
+   #while mag_spec[start_index] > threshold:
+   # start_index -= 1
+#
+   ## Search for ending index of the window
+   #end_index = max_mag_index
+   #while mag_spec[end_index] > threshold:
+   # end_index += 1
+#
+   ## Extract window
+   #impulse_response = fft_IR[start_index:end_index]
+   return truncated_impulse_response
 
 #################################################################################################
 if __name__ == '__main__':
@@ -464,27 +468,37 @@ if __name__ == '__main__':
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
 
-   #enter frequency domain for the signal to be calibrated
-   other_mic_freq = np.fft.fft(other_mic)
+   # Set the length of each segment to be the same as the length of the scaling factor
+   segment_length = len(scaling_factor)
 
-   other_length = len(other_mic_freq)
-   scale_length = len(scaling_factor)
+   # Calculate the number of segments in the normal recording
+   num_segments = int(np.ceil(len(other_mic) / segment_length))
 
-   #pad scaling factors with zero to multiply correct bin
-   scaling_factor_padded = np.pad(scaling_factor, (0, other_length-scale_length), mode='constant')
+   # Pad the normal recording with zeros to make sure its length is a multiple of the segment length
+   normal_recording_padded = np.pad(other_mic, (0, num_segments * segment_length - len(other_mic)), 'constant')
+   
+   # Reshape the padded normal recording into a two-dimensional array, where each row represents a segment
+   segments = np.reshape(normal_recording_padded, (num_segments, segment_length))
 
- #__________________________________________________________________ make sure they are same length____ wierd????
-   #other_mic_freq = other_mic_freq[:len(scaling_factor)]
-   #________________________________________________________________________________
+   # Apply the FFT to convert each segment into the frequency domain
+   segment_frequency_responses = np.fft.fft(segments, axis=1)
 
-   scaling_factor_padded = np.fft.fft(scaling_factor_padded)
 
-   #calibrate the other signal
-   other_mic_calibrated_freq = other_mic_freq*scaling_factor_padded
+   # Pad the frequency response of the scaling factor with zeros to match the shape of the segment frequency responses
+   scaling_factor_padded = np.pad(scaling_factor, (0, segment_length - len(scaling_factor)), 'constant')
+   scaling_factor_padded = np.tile(scaling_factor_padded, (num_segments, 1))
 
+
+   # Multiply each segment frequency response by the scaling factor
+   calibrated_segment_frequency_responses = segment_frequency_responses * scaling_factor_padded
+   
+   
    #Go back to time domain
-   other_mic_calibrated = np.real(np.fft.ifft(other_mic_calibrated_freq))
+   # Apply the IFFT to convert each calibrated segment frequency response back to the time domain
+   other_mic_calibrated = np.real(np.fft.ifft(calibrated_segment_frequency_responses, axis=1))
 
+   # Flatten the calibrated segments into a single array
+   other_mic_calibrated = np.ravel(other_mic_calibrated)
 
 
    #______________Get magnitude for each signal___________________
@@ -567,7 +581,7 @@ if __name__ == '__main__':
 
    #other mic after calibration
    plt.subplot(3,1,3)
-   plt.plot(freq[:len(other_mic_freq)//2], magnitude_other_calibrated_dB[:len(ref_mic)//2])
+   plt.plot(freq[:len(np.fft.fft(other_mic))//2], magnitude_other_calibrated_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Magnitude (dB)')
    plt.tight_layout()
