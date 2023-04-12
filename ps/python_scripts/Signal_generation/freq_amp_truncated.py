@@ -246,7 +246,7 @@ def generate_chirp(start_f,stop_f,T,fs):
    
    #creates curve at the end of signal.
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
-   #chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
+   chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
 
    
    #converts to int16
@@ -352,28 +352,12 @@ def truncation(fft_IR):
    # Compute magnitude spectrum
    #mag_spec = np.abs(fft_IR)
 
-   
-
    # Find the location of the largest peak in the impulse response
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-2000:max_index+2000]
-   # Set threshold as 10% of the maximum magnitude
-   #threshold = 0.005 * mag_spec[max_mag_index]
-#
-   ## Search for starting index of the window
-   #start_index = max_mag_index
-   #while mag_spec[start_index] > threshold:
-   # start_index -= 1
-#
-   ## Search for ending index of the window
-   #end_index = max_mag_index
-   #while mag_spec[end_index] > threshold:
-   # end_index += 1
-#
-   ## Extract window
-   #impulse_response = fft_IR[start_index:end_index]
+   truncated_impulse_response = fft_IR[max_index-500:max_index+500]
+  
    return truncated_impulse_response
 
 #################################################################################################
@@ -428,15 +412,15 @@ if __name__ == '__main__':
    
 
    #Cut of the signal or filter to receive matching lengths
-   if len(ref_mic) > len(matched_filter):
-    ref_mic = ref_mic[:len(matched_filter)]
-   else:
-    matched_filter = matched_filter[:len(ref_mic)]
-
-   if len(other_mic) > len(matched_filter):
-    other_mic = other_mic[:len(matched_filter)]
-   else:
-    matched_filter = matched_filter[:len(other_mic)]
+   #if len(ref_mic) > len(matched_filter):
+   # ref_mic = ref_mic[:len(matched_filter)]
+   #else:
+   # matched_filter = matched_filter[:len(ref_mic)]
+#
+   #if len(other_mic) > len(matched_filter):
+   # other_mic = other_mic[:len(matched_filter)]
+   #else:
+   # matched_filter = matched_filter[:len(other_mic)]
 
    print("length of ref_mic =",ref_mic.shape)
    print("lenght if matched_filter=",matched_filter.shape)
@@ -448,22 +432,24 @@ if __name__ == '__main__':
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
    mic_to_be_cal_IR = np.convolve(other_mic,matched_filter,mode='same')
 
+
+    #window truncation, to remove some of the reflections present in the IR
+   reference_IR_trunc=truncation(reference_IR)
+   mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
-   reference_IR_fft=np.fft.fft(reference_IR)
-   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR)
+   reference_IR_fft=np.fft.fft(reference_IR_trunc)
+   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc)
 
  
 
    
-   #window truncation, to remove some of the reflections present in the IR
-   reference_IR_fft=truncation(reference_IR_fft)
-   mic_to_be_cal_IR_fft=truncation(mic_to_be_cal_IR_fft)
+  
 
    # Make sure they are the same length before finding scale factors
-   min_length = min(len(reference_IR_fft), len(mic_to_be_cal_IR_fft))
-   reference_IR_fft = reference_IR_fft[:min_length]
-   mic_to_be_cal_IR_fft = mic_to_be_cal_IR_fft[:min_length]
-   
+   #min_length = min(len(reference_IR_fft), len(mic_to_be_cal_IR_fft))
+   #reference_IR_fft = reference_IR_fft[:min_length]
+   #mic_to_be_cal_IR_fft = mic_to_be_cal_IR_fft[:min_length]
+   #
 
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
@@ -569,6 +555,7 @@ if __name__ == '__main__':
    plt.plot(freq[:len(ref_mic)//2], magnitude_ref_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Magnitude (dB)')
+   plt.grid()
    plt.title("Reference mic")
    
    #other mic before calibration
@@ -576,6 +563,7 @@ if __name__ == '__main__':
    plt.plot(freq[:len(ref_mic)//2], magnitude_other_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Magnitude (dB)')
+   plt.grid()
    plt.title("Other mic before calibration")
    
 
