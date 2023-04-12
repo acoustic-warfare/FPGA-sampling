@@ -248,18 +248,19 @@ def generate_chirp(start_f,stop_f,T,fs):
    TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
    chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
 
+   
    #normalize the generated chirp to fit a target 24-bit range
-   #scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
-   #chirp_signal_scaled = chirp_signal * scaling_factor
-#
-   #chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
+   scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
+   chirp_signal_scaled = chirp_signal * scaling_factor
 
+   chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
+   
    #converts to int16
-   chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
 
    
-   return chirp_signal
+   return chirp_signal_scaled
 
 def create_sound_file(signal,fs,name):
 
@@ -352,6 +353,19 @@ def calculate_IR(recording,T,N,fs,inverse_filter):
 
    return recording
 
+
+def truncation(fft_IR):
+   # Compute magnitude spectrum
+   #mag_spec = np.abs(fft_IR)
+
+   # Find the location of the largest peak in the impulse response
+   max_index = np.argmax(np.abs(fft_IR))
+
+# Extract a portion of the impulse response around the largest peak
+   truncated_impulse_response = fft_IR[max_index-500:max_index+500]
+  
+   return truncated_impulse_response
+
 #################################################################################################
 if __name__ == '__main__':
    ### values used for generating the chirp
@@ -364,9 +378,9 @@ if __name__ == '__main__':
    #names for the audio files
    #filename_pure_chip = "chirp.wav"
    file_name_recording = "recording_sim.wav"
-   filename_pure_chip = "new_log_chirp_tukey.wav"
+   filename_pure_chip = "farina_log_chirp.wav"
    chirp_signal = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding matched filter
-   create_sound_file(chirp_signal,fs,filename_pure_chip)
+   #create_sound_file(chirp_signal,fs,filename_pure_chip)
 
 
 
@@ -417,7 +431,6 @@ if __name__ == '__main__':
    print("length of ref_mic =",ref_mic.shape)
    print("lenght if matched_filter=",matched_filter.shape)
    
-   #matcha SF med riktig inspelning, skriv kod
 
    print("number of samples in reference mic",len(ref_mic))
 
@@ -425,40 +438,81 @@ if __name__ == '__main__':
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
    mic_to_be_cal_IR = np.convolve(other_mic,matched_filter,mode='same')
 
+
+    #window truncation, to remove some of the reflections present in the IR
+   reference_IR_trunc=truncation(reference_IR)
+   mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
-   reference_IR_fft=np.fft.fft(reference_IR)
-   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR)
+   reference_IR_fft=np.fft.fft(reference_IR_trunc,2048)
+   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,2048)
+
+ 
+
+   #Testa detta script mer
+  
+
+   # Make sure they are the same length before finding scale factors
+   #min_length = min(len(reference_IR_fft), len(mic_to_be_cal_IR_fft))
+   #reference_IR_fft = reference_IR_fft[:min_length]
+   #mic_to_be_cal_IR_fft = mic_to_be_cal_IR_fft[:min_length]
+   #
 
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
+   
 
-   #enter frequency domain for the signal to be calibrated
-   other_mic_freq = np.fft.fft(other_mic)
+   other_mic_fft = np.fft.fft(other_mic,2048)
+   
+   #calibrate the other mic
+   other_mic_fft_calibrated = other_mic_fft * scaling_factor
 
-   print(other_mic_freq.size)
-   #calibrate the other signal
-   other_mic_calibrated_freq = other_mic_freq*scaling_factor   # i should pad SF with zeros to match length??
+   other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,2048)
 
-   #Go back to time domain
-   other_mic_calibrated = np.fft.ifft(other_mic_calibrated_freq)
-
+   # Set the length of each segment to be the same as the length of the scaling factor
+   #segment_length = len(scaling_factor)
+#
+   ## Calculate the number of segments in the normal recording
+   #num_segments = int(np.ceil(len(other_mic) / segment_length))
+#
+   ## Pad the normal recording with zeros to make sure its length is a multiple of the segment length
+   #normal_recording_padded = np.pad(other_mic, (0, num_segments * segment_length - len(other_mic)), 'constant')
+   #
+   ## Reshape the padded normal recording into a two-dimensional array, where each row represents a segment
+   #segments = np.reshape(normal_recording_padded, (num_segments, segment_length))
+#
+   ## Apply the FFT to convert each segment into the frequency domain
+   #segment_frequency_responses = np.fft.fft(segments, axis=1)
+#
+#
+   ## Pad the frequency response of the scaling factor with zeros to match the shape of the segment frequency responses
+   #scaling_factor_padded = np.pad(scaling_factor, (0, segment_length - len(scaling_factor)), 'constant')
+   #scaling_factor_padded = np.tile(scaling_factor_padded, (num_segments, 1))
+#
+#
+   ## Multiply each segment frequency response by the scaling factor
+   #calibrated_segment_frequency_responses = segment_frequency_responses * scaling_factor_padded
+   #
+   #
+   ##Go back to time domain
+   ## Apply the IFFT to convert each calibrated segment frequency response back to the time domain
+   #other_mic_calibrated = np.real(np.fft.ifft(calibrated_segment_frequency_responses, axis=1))
+#
+   ## Flatten the calibrated segments into a single array
+   #other_mic_calibrated = np.ravel(other_mic_calibrated)
 
 
    #______________Get magnitude for each signal___________________
    #ref mic
    magnitude_ref = np.fft.fft(ref_mic)
    magnitude_ref_dB = 20*np.log10(magnitude_ref)
-   magnitude_ref_dB = np.abs(magnitude_ref_dB)
-   
+
    #other mic
    magnitude_other = np.fft.fft(other_mic)
    magnitude_other_dB = 20*np.log10(magnitude_other)
-   magnitude_other_dB = np.abs(magnitude_other_dB)
-   
+
    #other mic after calibration
    magnitude_other_calibrated = np.fft.fft(other_mic_calibrated)
    magnitude_other_calibrated_dB = 20*np.log10(magnitude_other_calibrated)
-   magnitude_other_calibrated_dB = np.abs(magnitude_other_calibrated_dB)
    
    #frequency vector for plotting
    freq = np.fft.fftfreq(len(ref_mic), 1/fs)
@@ -529,7 +583,7 @@ if __name__ == '__main__':
 
    #other mic after calibration
    plt.subplot(3,1,3)
-   plt.plot(freq[:len(ref_mic)//2], magnitude_other_calibrated_dB.real[:len(ref_mic)//2])
+   plt.plot(freq[:len(np.fft.fft(other_mic))//2], magnitude_other_calibrated_dB[:len(ref_mic)//2])
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Magnitude (dB)')
    plt.tight_layout()
@@ -537,89 +591,4 @@ if __name__ == '__main__':
    plt.title("Other mic after calibration")
    plt.show()
 
-      #RELA values
-
-   #____________SPL plots______________________
-   # Plot the magnitude spectrum of reference mic
-   #plt.subplot(3,1,1)
-   #plt.semilogx(f_PSD, spl_ref)
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('SPL (dB)')
-   #plt.title("Reference microphone")
-   #plt.grid()
-
-   # Compute the PSD for ref_mic
-   #f_PSD, psd = periodogram(recording[:,other_microphone], fs)
-   # Convert PSD to sound pressure level (SPL) in dB
-   #spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
-   
-    # Plot the magnitude spectrum of reference mic
-   #plt.subplot(3,1,2)
-   #plt.semilogx(f_PSD, spl_ref)
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('SPL (dB)')
-   #plt.title("other, before calibration")
-   #plt.grid()
-
-   # Compute the PSD for ref_mic
-   #f_PSD, psd = periodogram(other_mic_calibrated.real, fs)
-   # Convert PSD to sound pressure level (SPL) in dB
-   #spl_ref = 20 * np.log10(np.sqrt(psd) / 2e-5)
-
-
-    # Plot the magnitude spectrum of reference mic
-  # plt.subplot(3,1,3)
-   #plt.semilogx(f_PSD, spl_ref)
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('SPL (dB)')
-   #plt.title("other, after calibration")
-   #plt.grid()
-   #plt.tight_layout()
-   #plt.show()
-
-
-
-
-
-
-#chat gpt code______________________________________
-#mport numpy as np
-#from scipy.signal import chirp, convolve
-
-# Generate chirp signal
-#fs = 44100  # Sampling frequency
-#t = np.linspace(0, 1, fs)  # Time vector
-#f0 = 20  # Start frequency
-#f1 = 20000  # End frequency
-#chirp_signal = chirp(t, f0, 1, f1, method='logarithmic')
-
-# Generate inverse filter
-#ir_len = 2048  # Impulse response length
-#inverse_filter = np.fft.irfft(1 / np.fft.rfft(chirp_signal, ir_len))
-
-# Simulate recordings from two microphones
-#mic1_signal = chirp_signal + 0.1 * np.random.randn(len(chirp_signal))  # Add some noise
-#mic2_signal = 0.8 * chirp_signal + 0.2 * np.random.randn(len(chirp_signal))  # Simulate calibration error
-
-# Convolve recorded signals with inverse filter
-#mic1_ir = convolve(mic1_signal, inverse_filter)[:len(chirp_signal)]
-#mic2_ir = convolve(mic2_signal, inverse_filter)[:len(chirp_signal)]
-
-# Compute frequency responses
-#mic1_freq_resp = np.fft.rfft(mic1_ir, ir_len)
-#mic2_freq_resp = np.fft.rfft(mic2_ir, ir_len)
-
-# Compute scaling factors
-#scaling_factors = mic1_freq_resp / mic2_freq_resp
-
-# Apply scaling factors to mic2 signal in each frequency bin
-#mic2_freq = np.fft.rfft(mic2_signal, ir_len)
-#mic2_calibrated_freq = mic2_freq * scaling_factors
-#mic2_calibrated_signal = np.fft.irfft(mic2_calibrated_freq)[:len(chirp_signal)]
-
-# Plot results
-#import matplotlib.pyplot as plt
-#plt.plot(t, mic1_signal, label='Mic 1')
-#plt.plot(t, mic2_calibrated_signal, label='Mic 2 Calibrated')
-#plt.legend()
-#plt.show()
+  

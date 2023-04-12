@@ -249,12 +249,18 @@ def generate_chirp(start_f,stop_f,T,fs):
    chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
 
    
+   #normalize the generated chirp to fit a target 24-bit range
+   scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
+   chirp_signal_scaled = chirp_signal * scaling_factor
+
+   chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
+   
    #converts to int16
-   chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
 
    
-   return chirp_signal
+   return chirp_signal_scaled
 
 def create_sound_file(signal,fs,name):
 
@@ -442,7 +448,7 @@ if __name__ == '__main__':
 
  
 
-   
+   #Testa detta script mer
   
 
    # Make sure they are the same length before finding scale factors
@@ -453,6 +459,7 @@ if __name__ == '__main__':
 
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
+   
 
    # Set the length of each segment to be the same as the length of the scaling factor
    segment_length = len(scaling_factor)
