@@ -353,7 +353,7 @@ if __name__ == '__main__':
    chirp_signal = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding matched filter
    #create_sound_file(chirp_signal,fs,filename_pure_chip)
 
-   fft_size = 4096
+   
 
 
    #normalize to be able to create a audio file. same values is used here
@@ -394,6 +394,8 @@ if __name__ == '__main__':
 
    print("number of samples in reference mic",len(ref_mic))
 
+   fft_size = len(other_mic)
+
    #recieve IR for both mics
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
    mic_to_be_cal_IR = np.convolve(other_mic,matched_filter,mode='same')
@@ -405,37 +407,44 @@ if __name__ == '__main__':
    #Enter frequency domain for IR
 
    # 90000/2048 = 43.95 Hz per bin.
-   reference_IR_fft=np.fft.rfft(reference_IR_trunc,fft_size)
-   mic_to_be_cal_IR_fft=np.fft.rfft(mic_to_be_cal_IR_trunc,fft_size)
+   reference_IR_fft=np.fft.fft(reference_IR,fft_size)
+   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR,fft_size)
 
 
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
    
 
-   other_mic_fft = np.fft.rfft(other_mic,fft_size)
-   
+   other_mic_fft = np.fft.fft(other_mic,fft_size)
+   other_mic_test = np.fft.ifft(other_mic_fft,fft_size)
    #calibrate the other mic
    other_mic_fft_calibrated = other_mic_fft * scaling_factor
 
-   other_mic_calibrated = np.fft.irfft(other_mic_fft_calibrated,len(other_mic))
+   other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,fft_size)
+
+
+   # Verify that the signal looks correct
+
+   plt.plot(other_mic)
+   plt.plot(other_mic_test)
+   plt.show()
 
 
    #______________Get magnitude for each signal___________________
    #ref mic
-   magnitude_ref = np.fft.rfft(ref_mic,fft_size)
+   magnitude_ref = np.fft.fft(ref_mic,fft_size)
    magnitude_ref_dB = 20*np.log10(magnitude_ref)
 
    #other mic
-   magnitude_other = np.fft.rfft(other_mic,fft_size)
+   magnitude_other = np.fft.fft(other_mic,fft_size)
    magnitude_other_dB = 20*np.log10(magnitude_other)
 
    #other mic after calibration
-   magnitude_other_calibrated = np.fft.rfft(other_mic_calibrated,fft_size)
+   magnitude_other_calibrated = np.fft.fft(other_mic_calibrated,fft_size)
    magnitude_other_calibrated_dB = 20*np.log10(magnitude_other_calibrated)
    
    #frequency vector for plotting
-   freq = np.fft.rfftfreq(fft_size, 1/fs)  ##KOLLA DENNA!!!!!  MÅSTE FÅ UT RÄTT SIZE???? plotta tidsdomain signaler???
+   freq = np.fft.fftfreq(fft_size, 1/fs)  ##KOLLA DENNA!!!!!  MÅSTE FÅ UT RÄTT SIZE???? plotta tidsdomain signaler???
    #_______________________________________________Plotting_______________________________________ 
 
    # _____________plotting HeatMap__________________
@@ -518,21 +527,22 @@ if __name__ == '__main__':
 
    chirp_time= np.arange(len(chirp_signal))/fs
     # Plot the chirp signal in the time domain
-   #plt.subplot(2,1,1)
-   #plt.plot(chirp_time, chirp_signal)
-   #plt.xlabel('Time (s)')
-   #plt.ylabel('Amplitude')
-   #plt.title('Chirp signal in the time domain')
+   plt.subplot(3,1,1)
+   plt.plot(time, ref_mic)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('ref mic in the time domain')
 
-   plt.subplot(2,1,1)
+   plt.subplot(3,1,2)
    plt.plot(time, other_mic)
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
-   plt.title('ref signal in the time domain')
+   plt.title('other mic before calibration in the time domain')
 
-   plt.subplot(2,1,2)
+   plt.subplot(3,1,3)
    plt.plot(time, other_mic_calibrated)
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
-   plt.title('other mic signal in the time domain')
+   plt.title('other mic after calibration in the time domain')
+   plt.tight_layout()
    plt.show()

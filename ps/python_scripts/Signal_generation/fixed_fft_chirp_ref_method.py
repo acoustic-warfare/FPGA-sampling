@@ -298,7 +298,7 @@ if __name__ == '__main__':
    chirp_signal = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding matched filter
    #create_sound_file(chirp_signal,fs,filename_pure_chip)
 
-   fft_size = 2048
+   
 
 
    #normalize to be able to create a audio file. same values is used here
@@ -334,26 +334,30 @@ if __name__ == '__main__':
    mic_to_be_cal_IR = np.convolve(other_mic,matched_filter,mode='same')
 
 
-    #window truncation, to remove some of the reflections present in the IR
+   #window truncation, to remove some of the reflections present in the IR
    reference_IR_trunc=truncation(chirp_signal)
    mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
 
-   # 90000/2048 = 43.95 Hz per bin.
-   reference_IR_fft=np.fft.rfft(reference_IR_trunc,fft_size)
-   mic_to_be_cal_IR_fft=np.fft.rfft(mic_to_be_cal_IR_trunc,fft_size)
+   fft_size = len(other_mic)
+
+   # Normalized the IR to have matching  
+
+   # 48828/4096 = 11.92 Hz per bin.
+   reference_IR_fft=np.fft.fft(reference_IR_trunc,fft_size)
+   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,fft_size)
 
 
    #calculate scalingfactors for each freqeuncy bin 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
    
 
-   other_mic_fft = np.fft.rfft(other_mic,fft_size)
+   other_mic_fft = np.fft.fft(other_mic,fft_size)
    
    #calibrate the other mic
    other_mic_fft_calibrated = other_mic_fft * scaling_factor
 
-   other_mic_calibrated = np.fft.irfft(other_mic_fft_calibrated,fft_size)
+   other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,fft_size)
 
 
    #______________Get magnitude for each signal___________________
@@ -439,4 +443,30 @@ if __name__ == '__main__':
    plt.title("Other mic after calibration")
    plt.show()
 
-  
+   # Assume chirp is your chirp signal with N samples
+   N = len(other_mic)
+   time = np.arange(N) / fs  # assuming sample_rate is known
+
+
+   chirp_time= np.arange(len(chirp_signal))/fs
+   # Plot the chirp signal in the time domain
+   plt.subplot(3,1,1)
+   plt.plot(chirp_time, chirp_signal)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('chirp signal in the time domain')
+
+   plt.subplot(3,1,2)
+   plt.plot(time, other_mic)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('other mic before calibration in the time domain')
+
+   plt.subplot(3,1,3)
+   plt.plot(time, other_mic_calibrated.real)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('other mic after calibration in the time domain')
+   plt.tight_layout()
+   plt.show()
+
