@@ -420,6 +420,13 @@ if __name__ == '__main__':
    mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
 
+    # Apply Hamming window and perform FFT
+   window = np.hamming(fft_size)
+   reference_IR_trunc = reference_IR_trunc * window
+   mic_to_be_cal_IR_trunc = mic_to_be_cal_IR_trunc * window
+
+
+
   # 48828*3sec/4096 = 35 Hz per bin.
    reference_IR_fft=np.fft.fft(reference_IR_trunc,fft_size)
    mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,fft_size)
@@ -429,37 +436,8 @@ if __name__ == '__main__':
 
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
    
-   save_to_file(scaling_factor,"SF_4096_fft")
+   #save_to_file(scaling_factor,"SF_4096_fft")
    other_mic_fft = np.fft.fft(other_mic,fft_size)
-
-   #__________________________split the recording into chuncks matching the FFT
-   # Define the length of each chunk
-   #number_of_chunks = int(len(other_mic))/2048
-   #chunk_length = number_of_chunks*2048
-
-
-   # Calculate the number of chunks
-   #num_chunks = int(np.ceil(len(other_mic)/fft_size))
-#
-   ##  Pad the signal to make its length a multiple of chunk length
-   #padded_length = num_chunks*fft_size
-   #padding_length = padded_length - len(other_mic)
-   #
-   #if padding_length > 0:
-   #   other_mic_padded = np.pad(other_mic, (0, padding_length), mode='constant')
-   #else:
-   #   other_mic_padded = other_mic
-   #
-   ## Split the signal into chunks of the desired length
-   #chunks = np.split(other_mic_padded, num_chunks)
-#
-   #other_mic_calibrated = np.zeros_like(other_mic)
-   #
-   #for chunk in chunks:
-   #   chunk_fft=np.fft.fft(chunk,fft_size)
-   #   chunk_fft_scaled = chunk_fft*scaling_factor
-   #   chunk_td = np.fft.ifft(chunk_fft_scaled,fft_size)
-   #   other_mic_calibrated  = np.concatenate((other_mic_calibrated, chunk_td))
 
    #calibrate the other mic
    other_mic_fft_calibrated = other_mic_fft * scaling_factor
