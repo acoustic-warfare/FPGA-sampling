@@ -280,7 +280,7 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-2000:max_index+2000]
+   truncated_impulse_response = fft_IR[max_index-2048:max_index+2048]
   
    return truncated_impulse_response
 
@@ -342,6 +342,11 @@ if __name__ == '__main__':
    mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
 
+    # Apply Hamming window and perform FFT
+   window = np.hamming(fft_size)
+   reference_IR_trunc = reference_IR_trunc * window
+   mic_to_be_cal_IR_trunc = mic_to_be_cal_IR_trunc * window
+
    # 48828*3sec/4096 = 35 Hz per bin.
    reference_IR_fft=np.fft.fft(reference_IR_trunc,fft_size)
    mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,fft_size)
@@ -352,6 +357,11 @@ if __name__ == '__main__':
    
 
    other_mic_fft = np.fft.fft(other_mic,fft_size)
+
+   #calibrate the other mic
+   other_mic_fft_calibrated = other_mic_fft * scaling_factor
+
+   other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,fft_size)
 
    #__________________________split the recording into chuncks matching the FFT
    # Define the length of each chunk
@@ -381,10 +391,7 @@ if __name__ == '__main__':
    #   chunk_td = np.fft.ifft(chunk_fft,fft_size)
    #   other_mic_calibrated  = np.concatenate((other_mic_calibrated, chunk_td))
 
-   #calibrate the other mic
-   other_mic_fft_calibrated = other_mic_fft * scaling_factor
-
-   other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,fft_size)
+   
 
    #For testing and showing______________ Visa RS  vi vill ha samma 
    other_mic_fft_test = np.fft.fft(other_mic,2048)
@@ -509,4 +516,3 @@ if __name__ == '__main__':
    plt.title('other mic after calibration in the time domain')
    plt.tight_layout()
    plt.show()
-
