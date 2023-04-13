@@ -250,11 +250,14 @@ def generate_chirp(start_f,stop_f,T,fs):
 
    
    #normalize the generated chirp to fit a target 24-bit range
-   scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
-   chirp_signal_scaled = chirp_signal * scaling_factor
-
-   chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
+   #scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
+   #chirp_signal_scaled = chirp_signal * scaling_factor
+   #chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
+   #chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
    
+   max_amplitude = np.max(np.abs(chirp_signal))
+   scaling_factor = (2**23 - 1) / max_amplitude
+   chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
    #converts to int16
    #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
@@ -333,9 +336,20 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-2000:max_index+2000]
+   truncated_impulse_response = fft_IR[max_index-2048:max_index+2048]
   
    return truncated_impulse_response
+
+
+def save_to_file(scaling_factor,filename):
+   with open(filename, "wb") as f:
+
+      
+     
+         
+      f.write(scaling_factor)
+   f.close
+   sys.stdout.flush()
 
 #################################################################################################
 if __name__ == '__main__':
@@ -394,7 +408,7 @@ if __name__ == '__main__':
 
    print("number of samples in reference mic",len(ref_mic))
 
-   fft_size = len(other_mic)
+   fft_size = 4096
 
    #recieve IR for both mics
    reference_IR = np.convolve(ref_mic,matched_filter,mode='same')
@@ -406,30 +420,70 @@ if __name__ == '__main__':
    mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
    #Enter frequency domain for IR
 
-   # 90000/2048 = 43.95 Hz per bin.
-   reference_IR_fft=np.fft.fft(reference_IR,fft_size)
-   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR,fft_size)
+  # 48828*3sec/4096 = 35 Hz per bin.
+   reference_IR_fft=np.fft.fft(reference_IR_trunc,fft_size)
+   mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,fft_size)
 
 
    #calculate scalingfactors for each freqeuncy bin 
+
    scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
    
-
+   save_to_file(scaling_factor,"SF_4096_fft")
    other_mic_fft = np.fft.fft(other_mic,fft_size)
-   other_mic_test = np.fft.ifft(other_mic_fft,fft_size)
+
+   #__________________________split the recording into chuncks matching the FFT
+   # Define the length of each chunk
+   #number_of_chunks = int(len(other_mic))/2048
+   #chunk_length = number_of_chunks*2048
+
+
+   # Calculate the number of chunks
+   #num_chunks = int(np.ceil(len(other_mic)/fft_size))
+#
+   ##  Pad the signal to make its length a multiple of chunk length
+   #padded_length = num_chunks*fft_size
+   #padding_length = padded_length - len(other_mic)
+   #
+   #if padding_length > 0:
+   #   other_mic_padded = np.pad(other_mic, (0, padding_length), mode='constant')
+   #else:
+   #   other_mic_padded = other_mic
+   #
+   ## Split the signal into chunks of the desired length
+   #chunks = np.split(other_mic_padded, num_chunks)
+#
+   #other_mic_calibrated = np.zeros_like(other_mic)
+   #
+   #for chunk in chunks:
+   #   chunk_fft=np.fft.fft(chunk,fft_size)
+   #   chunk_fft_scaled = chunk_fft*scaling_factor
+   #   chunk_td = np.fft.ifft(chunk_fft_scaled,fft_size)
+   #   other_mic_calibrated  = np.concatenate((other_mic_calibrated, chunk_td))
+
    #calibrate the other mic
    other_mic_fft_calibrated = other_mic_fft * scaling_factor
 
    other_mic_calibrated = np.fft.ifft(other_mic_fft_calibrated,fft_size)
 
-
+   #For testing and showing______________ Visa RS  vi vill ha samma 
+   other_mic_fft_test = np.fft.fft(other_mic,2048)
+   other_mic_test = np.fft.ifft(other_mic_fft_test,2048)
    # Verify that the signal looks correct
-
    plt.plot(other_mic)
    plt.plot(other_mic_test)
    plt.show()
 
+   plt.plot(other_mic)
+   plt.plot(ref_mic)
+   plt.show()
 
+   plt.plot(other_mic[:fft_size])
+   plt.plot(other_mic_calibrated)
+   plt.show()
+
+
+  
    #______________Get magnitude for each signal___________________
    #ref mic
    magnitude_ref = np.fft.fft(ref_mic,fft_size)
@@ -524,6 +578,7 @@ if __name__ == '__main__':
    N = len(other_mic)
    time = np.arange(N) / fs  # assuming sample_rate is known
 
+ 
 
    chirp_time= np.arange(len(chirp_signal))/fs
     # Plot the chirp signal in the time domain
@@ -538,6 +593,10 @@ if __name__ == '__main__':
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.title('other mic before calibration in the time domain')
+
+      # Assume chirp is your chirp signal with N samples
+   N = len(other_mic_calibrated)
+   time = np.arange(N) / fs  # assuming sample_rate is known
 
    plt.subplot(3,1,3)
    plt.plot(time, other_mic_calibrated)
