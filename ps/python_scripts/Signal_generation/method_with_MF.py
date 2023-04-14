@@ -358,7 +358,7 @@ if __name__ == '__main__':
    #go back into time-domain
    other_mic_calibrated = np.fft.ifft(other_mic_calibrated_fft,fft_size)
    
-   other_mic_error = other_mic - other_mic_calibrated.real
+   other_mic_error = other_mic - other_mic_calibrated
 
    # _____________plotting HeatMap__________________
     # Compute spectrogram
@@ -385,15 +385,17 @@ if __name__ == '__main__':
    chirp_time= np.arange(len(chirp_signal))/fs
    # Plot the chirp signal in the time domain
    plt.subplot(4,1,1)
-   plt.plot(time, ref_mic[0:fft_size])
+   plt.plot(time, ref_mic[0:fft_size],label="reference mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
    plt.title('chirp signal in the time domain')
 
    plt.subplot(4,1,2)
-   plt.plot(time, other_mic[0:fft_size])
+   plt.plot(time, other_mic[0:fft_size],label="before calibration")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
    plt.title('other mic before calibration in the time domain')
 
 
@@ -402,9 +404,10 @@ if __name__ == '__main__':
    time = np.arange(N) / fs  # assuming sample_rate is known
 
    plt.subplot(4,1,3)
-   plt.plot(time, other_mic_calibrated)
+   plt.plot(time, other_mic_calibrated,label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
    plt.title('other mic after calibration in the time domain')
    
 
@@ -413,31 +416,39 @@ if __name__ == '__main__':
    time = np.arange(N) / fs  # assuming sample_rate is known
 
    plt.subplot(4,1,4)
-   plt.plot(time, other_mic_error,color="red")
+   plt.plot(time, other_mic_error,color="red",label="error")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
-   plt.title('error fixed during calibration')
+   plt.title('error = before cal - after_cal')
+   plt.legend(loc='upper right')
    plt.tight_layout()
    plt.show()
 
 
-  # #____Plot IR of ref mic and other mic_______ 
-  # time_output = np.linspace(0,T,len(other_mic),endpoint=False)
-#
-#
-  # # plot time-domain IR of other mic
-  # plt.subplot(2,1,1)
-  # plt.plot(time_output,ref_mic_IR)
-  # plt.xlabel("time (s)")
-  # plt.ylabel("amplitude")
-  # plt.title("The IR of ref mic")
-  # plt.tight_layout()
-#
-  # # plot time-domain IR of other mic
-  # plt.subplot(2,1,2)
-  # plt.plot(time_output,other_mic_IR)
-  # plt.xlabel("time (s)")
-  # plt.ylabel("amplitude")
-  # plt.title("The IR of other mic")
-  # plt.tight_layout()
-  # plt.show()
+   #____________________Plot frequency domain__________
+   magnitude_other_mic_fft = np.abs(other_mic_fft)
+   magnitude_spectrum_other_mic_calibrated_fft = np.abs(other_mic_calibrated_fft)
+   magnitude_spectrum_other_mic_error = np.abs(np.fft.fft(other_mic_error))
+
+   # Plot the magnitude spectrum
+   freqs = np.fft.fftfreq(fft_size, 1/fs)
+   plt.plot(freqs[:fft_size//2], magnitude_other_mic_fft[:fft_size//2],label="before calibration")
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude')
+   plt.legend(loc='upper right')
+
+   # Plot the magnitude spectrum
+   freqs = np.fft.fftfreq(fft_size, 1/fs)
+   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_calibrated_fft[:fft_size//2],label="calibrated")
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude')
+   plt.legend(loc='upper right')
+
+   # Plot the magnitude spectrum
+   freqs = np.fft.fftfreq(fft_size, 1/fs)
+   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_error[:fft_size//2], label="error")
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude')
+   plt.legend(loc='upper right')
+   plt.tight_layout()
+   plt.show()
