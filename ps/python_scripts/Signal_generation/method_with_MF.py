@@ -329,40 +329,21 @@ if __name__ == '__main__':
    t = np.linspace(0, T, int(T * fs), endpoint=False)
    R = np.log(stop_f/start_f)
    k = np.exp(t*R/T)
-   inver =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
-
-   #receive the matched filter IR, which is the filter itself
-   filter_IR=signal.convolve(chirp_signal,inver,mode='same')
+   matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
 
    fft_size = len(ref_mic)
+
+   #get IR and FR for reference mic
+   ref_mic_IR = np.convolve(ref_mic,matched_filter,mode='same')
+   ref_mic_FR = np.fft.fft(ref_mic_IR,fft_size)
    
-
-
-
-   chirp_signal_fft = np.fft.fft(chirp_signal,fft_size)
-
-   #apply the matched filter on the recorded reference signal
-   #ref_mic_filtered = np.convolve(ref_mic,filter_IR)
-   ref_mic_fft = np.fft.fft(ref_mic,fft_size)
+   #get IR and FR for other mic
+   other_mic_IR = np.convolve(other_mic,matched_filter,mode='same')
+   other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
 
    #receive the frequency respons of the reference microphone
-   ref_freq_resp = ref_mic_fft / chirp_signal_fft
+   scaling_factor = ref_mic_FR/ other_mic_FR
 
-
-
-   # repeat the process and receive the Frequency repsone of the microphone to be calibrated.
-   #apply the matched filter on the recorded reference signal
-   #other_mic_filtered = np.convolve(other_mic,filter_IR)
-   other_mic_fft = np.fft.fft(other_mic,fft_size)
-
-   #receive the frequency respons of the other microphone
-   other_freq_resp = other_mic_fft / chirp_signal_fft
-
-
-
-
-   #Calculate the scaling factor by division
-   scaling_factor = ref_freq_resp/other_freq_resp               #this is the scaling factor for "other_microphone"
    
    #apply the scaling factor to the other mic.
 
@@ -418,5 +399,27 @@ if __name__ == '__main__':
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.title('other mic after calibration in the time domain')
+   plt.tight_layout()
+   plt.show()
+
+
+   #____Plot IR of ref mic and other mic_______ 
+   time_output = np.linspace(0,T,len(other_mic),endpoint=False)
+
+
+   # plot time-domain IR of other mic
+   plt.subplot(2,1,1)
+   plt.plot(time_output,ref_mic_IR)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of ref mic")
+   plt.tight_layout()
+
+   # plot time-domain IR of other mic
+   plt.subplot(2,1,2)
+   plt.plot(time_output,other_mic_IR)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of other mic")
    plt.tight_layout()
    plt.show()
