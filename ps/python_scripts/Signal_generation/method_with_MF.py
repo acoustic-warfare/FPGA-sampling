@@ -430,6 +430,8 @@ if __name__ == '__main__':
    magnitude_spectrum_other_mic_calibrated_fft = np.abs(other_mic_calibrated_fft)
    magnitude_spectrum_other_mic_error = np.abs(np.fft.fft(other_mic_error))
 
+
+   
    # Plot the magnitude spectrum
    freqs = np.fft.fftfreq(fft_size, 1/fs)
    plt.plot(freqs[:fft_size//2], magnitude_other_mic_fft[:fft_size//2],label="before calibration")
