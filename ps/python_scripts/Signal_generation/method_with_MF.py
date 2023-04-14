@@ -331,14 +331,19 @@ if __name__ == '__main__':
    k = np.exp(t*R/T)
    matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
 
-   fft_size = len(ref_mic)
+   fft_size = len(ref_mic) #
 
    #get IR and FR for reference mic
    ref_mic_IR = np.convolve(ref_mic,matched_filter,mode='same')
+   ref_mic_IR=truncation(ref_mic_IR)
    ref_mic_FR = np.fft.fft(ref_mic_IR,fft_size)
    
+   
+   
+
    #get IR and FR for other mic
    other_mic_IR = np.convolve(other_mic,matched_filter,mode='same')
+   other_mic_IR=truncation(other_mic_IR)
    other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
 
    #receive the frequency respons of the reference microphone
@@ -346,12 +351,14 @@ if __name__ == '__main__':
 
    
    #apply the scaling factor to the other mic.
+   other_mic_fft =np.fft.fft(other_mic,fft_size)
 
-   other_mic_calibrated_fft = np.fft.fft(other_mic,fft_size)*scaling_factor
+   other_mic_calibrated_fft = other_mic_fft*scaling_factor
 
    #go back into time-domain
    other_mic_calibrated = np.fft.ifft(other_mic_calibrated_fft,fft_size)
    
+   other_mic_error = other_mic - other_mic_calibrated.real
 
    # _____________plotting HeatMap__________________
     # Compute spectrogram
@@ -371,20 +378,20 @@ if __name__ == '__main__':
 
 
    # Assume chirp is your chirp signal with N samples
-   N = len(other_mic)
+   N = fft_size
    time = np.arange(N) / fs  # assuming sample_rate is known
 
 
    chirp_time= np.arange(len(chirp_signal))/fs
    # Plot the chirp signal in the time domain
-   plt.subplot(3,1,1)
-   plt.plot(time, ref_mic)
+   plt.subplot(4,1,1)
+   plt.plot(time, ref_mic[0:fft_size])
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.title('chirp signal in the time domain')
 
-   plt.subplot(3,1,2)
-   plt.plot(time, other_mic)
+   plt.subplot(4,1,2)
+   plt.plot(time, other_mic[0:fft_size])
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.title('other mic before calibration in the time domain')
@@ -394,32 +401,43 @@ if __name__ == '__main__':
    N = len(other_mic_calibrated)
    time = np.arange(N) / fs  # assuming sample_rate is known
 
-   plt.subplot(3,1,3)
+   plt.subplot(4,1,3)
    plt.plot(time, other_mic_calibrated)
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.title('other mic after calibration in the time domain')
+   
+
+   # Assume chirp is your chirp signal with N samples
+   N = len(other_mic_calibrated)
+   time = np.arange(N) / fs  # assuming sample_rate is known
+
+   plt.subplot(4,1,4)
+   plt.plot(time, other_mic_error,color="red")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('error fixed during calibration')
    plt.tight_layout()
    plt.show()
 
 
-   #____Plot IR of ref mic and other mic_______ 
-   time_output = np.linspace(0,T,len(other_mic),endpoint=False)
-
-
-   # plot time-domain IR of other mic
-   plt.subplot(2,1,1)
-   plt.plot(time_output,ref_mic_IR)
-   plt.xlabel("time (s)")
-   plt.ylabel("amplitude")
-   plt.title("The IR of ref mic")
-   plt.tight_layout()
-
-   # plot time-domain IR of other mic
-   plt.subplot(2,1,2)
-   plt.plot(time_output,other_mic_IR)
-   plt.xlabel("time (s)")
-   plt.ylabel("amplitude")
-   plt.title("The IR of other mic")
-   plt.tight_layout()
-   plt.show()
+  # #____Plot IR of ref mic and other mic_______ 
+  # time_output = np.linspace(0,T,len(other_mic),endpoint=False)
+#
+#
+  # # plot time-domain IR of other mic
+  # plt.subplot(2,1,1)
+  # plt.plot(time_output,ref_mic_IR)
+  # plt.xlabel("time (s)")
+  # plt.ylabel("amplitude")
+  # plt.title("The IR of ref mic")
+  # plt.tight_layout()
+#
+  # # plot time-domain IR of other mic
+  # plt.subplot(2,1,2)
+  # plt.plot(time_output,other_mic_IR)
+  # plt.xlabel("time (s)")
+  # plt.ylabel("amplitude")
+  # plt.title("The IR of other mic")
+  # plt.tight_layout()
+  # plt.show()
