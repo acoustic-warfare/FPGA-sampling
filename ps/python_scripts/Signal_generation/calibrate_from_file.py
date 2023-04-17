@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
    #print(scaling_factor_fft.shape)
    # load the scaling factors from the saved file
-   scaling_factor_fft = np.load('SF_full_len_fft_without_MF.npy') 
+   scaling_factor_fft = np.load('SF_full_len_fft_chirp_ref.npy') 
 
    # access an individual scaling factor from the array
    #scaling_factor_i = scaling_factor_fft[:, microphone]
@@ -137,11 +137,11 @@ if __name__ == '__main__':
    #plt.show()
 
    # Assume chirp is your chirp signal with N samples
-   N = 36000
-   time = np.arange(N-30000) / 48828  # assuming sample_rate is known
+   N = 145476
+   time = np.arange(N) / 48828  # assuming sample_rate is known
 
    plt.subplot(2,1,1)
-   plt.plot(time, recording[:,3][30000:N],label="uncalibrated mic")
+   plt.plot(time, recording[:,3][0:N],label="uncalibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
    #plt.subplot(2,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[3,:][30000:N],label="calibrated mic")
+   plt.plot(time, calibrated_mic_array[3,:][0:N],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -157,7 +157,7 @@ if __name__ == '__main__':
    #plt.show()
 
    plt.subplot(2,1,2)
-   plt.plot(time, recording[:,35][30000:N],label="reference mic")
+   plt.plot(time, recording[:,35][0:N],label="reference mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
    #plt.subplot(2,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[3,:][30000:N],label="calibrated mic")
+   plt.plot(time, calibrated_mic_array[3,:][0:N],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
