@@ -16,7 +16,7 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 import os
 from scipy.io.wavfile import write
 from scipy import signal 
-from scipy.signal import butter, filtfilt,correlate,chirp,welch,periodogram
+from scipy.signal import butter, filtfilt,correlate,chirp,welch,periodogram, sosfilt
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -375,9 +375,9 @@ if __name__ == '__main__':
 
    print("Enter a filename for the recording: ")
    fileChooser = input()
-   #print("enter reference microphone microphone id")
-   #microphone=input()
-   #microphone=int(microphone)-1
+   print("enter reference microphone microphone id")
+   microphone=input()
+   microphone=int(microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
    record_time=T
@@ -386,12 +386,15 @@ if __name__ == '__main__':
    recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
   
    #take out reference mic                
-   #ref_mic=recording[:,int(microphone)]
+   ref_mic=recording[:,int(microphone)]
 
-    #Normalize chir so it matches the recording
-   chirp_signal = chirp_signal.astype(np.float32)  # Cast to floating-point type
-   chirp_signal /= np.max(np.abs(chirp_signal))
+   #Normalize chirp so it matches the recording
+   #chirp_signal = chirp_signal.astype(np.float64)  # Cast to floating-point type
+   #chirp_signal /= np.max(np.abs(chirp_signal))
    
+   #Normalize the ref signal
+   ref_mic  = ref_mic.astype(np.float64)
+   ref_mic /= np.max(np.abs(ref_mic))
 
    #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
@@ -399,40 +402,43 @@ if __name__ == '__main__':
    k = np.exp(t*R/T)
    matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
 
+   
+   #print("lenght if matched_filter=",matched_filter.shape)
+  
 
-   #filter_IR=signal.convolve(chirp_signal,matched_filter,mode='same')
+   fft_size = 145476
+
+   
+   #get IR and FR for reference mic
+   ref_mic_IR = np.convolve(ref_mic,matched_filter,mode='same')
+   ref_mic_IR=truncation(ref_mic_IR)
+   ref_mic_FR = np.fft.fft(ref_mic_IR,fft_size)
+   
    
 
-   #print("length of ref_mic =",ref_mic.shape)
-   print("lenght if matched_filter=",matched_filter.shape)
-   #print("number of samples in reference mic",len(ref_mic))
 
-   fft_size = 4096
-
-   #recieve IR for both mics
-   reference_IR = np.convolve(chirp_signal,matched_filter,mode='same')
-   reference_IR_trunc=truncation(reference_IR)
-
-
-   #Apply a bandpass filter to take out frequency of intrest
-
-   # 48828*3sec/4096 = 35 Hz per bin.
-   reference_IR_fft=np.fft.fft(reference_IR_trunc,fft_size)
-   scaling_factor_array = np.zeros((64, 4096), dtype=complex) # create an empty array to store the FFT of the scaling factors
+  
+   
+   scaling_factor_array = np.zeros((64, fft_size), dtype=complex) # create an empty array to store the FFT of the scaling factors
    for i in range(0,64):
       
-      mic = recording[:,i].astype(np.float32) 
+      mic = recording[:,i]#.astype(np.float32) 
+      #Normalize the signal
+      mic  = mic.astype(np.float64)
       mic /= np.max(np.abs(mic))
-      mic_to_be_cal_IR = np.convolve(mic,matched_filter,mode='same')
 
-      mic_to_be_cal_IR_trunc=truncation(mic_to_be_cal_IR)
-      mic_to_be_cal_IR_fft=np.fft.fft(mic_to_be_cal_IR_trunc,fft_size)
+         #get IR and FR for other mic
+      other_mic_IR = np.convolve(mic,matched_filter,mode='same')
+      other_mic_IR=truncation(other_mic_IR)
+      other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
 
-
+      #receive the frequency respons of the reference microphone
+    
+      scaling_factor = ref_mic_FR/other_mic_FR
       #calculate scalingfactors for each freqeuncy bin 
-      scaling_factor = reference_IR_fft/mic_to_be_cal_IR_fft
+      
       scaling_factor_array[i, :] = scaling_factor
-   np.save('SF_4096_fft_chirp_ref.npy', scaling_factor_array) # save the scaling factors to a file
+   np.save('SF_full_len_fft_chirp_ref.npy', scaling_factor_array) # save the scaling factors to a file
    
    
 

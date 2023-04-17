@@ -16,7 +16,7 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 import os
 from scipy.io.wavfile import write
 from scipy import signal 
-from scipy.signal import butter, filtfilt,correlate,chirp,welch,periodogram
+from scipy.signal import butter, filtfilt,correlate,chirp,welch,periodogram, sosfilt
 # This scripts listen on an port and collects array samples and then plots the graphs direcly!
 # Enter a filename and how long you want to record.
 # Pick a horizontal line or a vertical line.
@@ -251,12 +251,13 @@ def generate_chirp(start_f,stop_f,T,fs):
    
    #normalize the generated chirp to fit a target 24-bit range
    #scaling_factor = 8388607 / np.max(np.abs(chirp_signal))
+   #chirp_signal_scaled = chirp_signal * scaling_factor
    #chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
+   #chirp_signal_scaled = chirp_signal_scaled.astype(np.int32)
    
    max_amplitude = np.max(np.abs(chirp_signal))
    scaling_factor = (2**23 - 1) / max_amplitude
    chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
-
    #converts to int16
    #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
@@ -271,6 +272,61 @@ def create_sound_file(signal,fs,name):
 
    write(name,fs , signal)
 
+def calculate_IR(recording,T,N,fs,inverse_filter):
+   
+   
+   time_output = np.linspace(0,T,N,endpoint=False)
+
+   #plot time domain of recorded signal(sim)
+   plt.subplot(4,1,1)
+   plt.plot(time_output,recording)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("Microphine recording (sim)")
+
+   #plot magnitude spectrum of recorded signal(sim)
+   output_fft=np.fft.fft(recording)
+   t_space = 1/fs
+   output_fft_freq = np.fft.fftfreq(len(recording), t_space)
+   plt.subplot(4,1,2)
+   plt.plot(output_fft_freq[0:N//2],np.abs(output_fft)[0:N//2])
+   plt.xlabel("f (Hz)")
+   plt.ylabel("amplitude")
+   plt.title("Magnitude spectrum of recorded(sim)")
+
+
+   #_____________________________#RECIEVE IMPULSE RESPONS METHOD 1. FARINA h(t)=y(t)*x(t)_________________________________________________________
+   system_IR_Farina= np.convolve(recording,inverse_filter,mode='same')
+
+   system_IR_Farina = system_IR_Farina/(np.max(np.abs(system_IR_Farina)))
+
+   system_IR_fft_Farina = np.fft.fft(system_IR_Farina)
+   freq = np.fft.fftfreq(len(system_IR_Farina), t_space)
+
+   # plot time-domain IR
+   plt.subplot(4,1,3)
+   plt.plot(time_output,system_IR_Farina)
+   plt.xlabel("time (s)")
+   plt.ylabel("amplitude")
+   plt.title("The IR of the system (recording * inverse-filter)  NORMALIZED"  )
+
+
+   ## Plot Amplitude of FFT
+   plt.subplot(4,1,4)                                                                  #needs to be changed in order to plot
+   plt.plot(freq[0:N//2], np.abs(system_IR_fft_Farina)[0:N//2])
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Amplitude')
+   plt.title('The FR of the system (recording * inverse-filter)')
+   #_____________________________________________________________________________________________________________________________________________
+   
+
+   
+
+   plt.tight_layout()
+   plt.show()
+
+   return recording
+
 
 def truncation(fft_IR):
    # Compute magnitude spectrum
@@ -283,6 +339,17 @@ def truncation(fft_IR):
    truncated_impulse_response = fft_IR[max_index-2048:max_index+2048]
   
    return truncated_impulse_response
+
+
+def save_to_file(data,filename):
+   with open(filename, "wb") as f:
+
+      
+     
+         
+      f.write(data)
+   f.close
+   sys.stdout.flush()
 
 #################################################################################################
 if __name__ == '__main__':
@@ -308,12 +375,9 @@ if __name__ == '__main__':
 
    print("Enter a filename for the recording: ")
    fileChooser = input()
-   print("enter referece_mic to calibrate according to the chirp")
-   ref_microphone=input()
-   ref_microphone=int(ref_microphone)-1
-   print("enter mic to calibrate according to the chirp")
-   other_microphone=input()
-   other_microphone=int(other_microphone)-1
+   print("enter reference microphone microphone id")
+   microphone=input()
+   microphone=int(microphone)-1
    #print("press ENTER to start")
    input("press ENTER to start")
    record_time=T
@@ -321,9 +385,13 @@ if __name__ == '__main__':
 
    recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
   
-   #take out reference mic   
-   ref_mic=recording[:,ref_microphone]             
-   other_mic=recording[:,other_microphone]
+   #take out reference mic                
+   ref_mic=recording[:,int(microphone)]
+
+   #Normalize chirp so it matches the recording
+   #chirp_signal = chirp_signal.astype(np.float32)  # Cast to floating-point type
+   #chirp_signal /= np.max(np.abs(chirp_signal))
+   
 
    #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
@@ -331,126 +399,56 @@ if __name__ == '__main__':
    k = np.exp(t*R/T)
    matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
 
-   fft_size = len(ref_mic) #
-
-   #get IR and FR for reference mic
-   ref_mic_IR = np.convolve(ref_mic,matched_filter,mode='same')
-   ref_mic_IR=truncation(ref_mic_IR)
-   ref_mic_FR = np.fft.fft(ref_mic_IR,fft_size)
    
-   
-   
+   #print("lenght if matched_filter=",matched_filter.shape)
+  
 
-   #get IR and FR for other mic
-   other_mic_IR = np.convolve(other_mic,matched_filter,mode='same')
-   other_mic_IR=truncation(other_mic_IR)
-   other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
-
-   #receive the frequency respons of the reference microphone   145476
-   scaling_factor = ref_mic_FR/ other_mic_FR
+   fft_size = 145476
 
    
-   #apply the scaling factor to the other mic.
-   other_mic_fft =np.fft.fft(other_mic,fft_size)
-
-   other_mic_calibrated_fft = other_mic_fft*scaling_factor
-
-   #go back into time-domain
-   other_mic_calibrated = np.fft.ifft(other_mic_calibrated_fft,fft_size)
+   #Normalize chirp
+   chirp_signal  = chirp_signal.astype(np.float32)
+   chirp_signal /= np.max(np.abs(chirp_signal))
    
-   other_mic_error = other_mic[0:fft_size] - other_mic_calibrated
-
-   # _____________plotting HeatMap__________________
-    # Compute spectrogram
-   f, t, Sxx = signal.spectrogram(other_mic, fs=fs)
-#
-   #Plot heatmap
-   fig, ax = plt.subplots()
-   im = ax.pcolormesh(t, f, 10 * np.log10(Sxx), cmap='inferno', shading='auto')
-   ax.set_xlabel('Time (s)')
-   ax.set_ylabel('Frequency (Hz)')
-   cbar = fig.colorbar(im)
-   cbar.set_label('Power (dB)')
-   plt.show()
-
-   time_recording = np.linspace(0,T,len(other_mic),endpoint=False)
-
-
-
-   # Assume chirp is your chirp signal with N samples
-   N = fft_size
-   time = np.arange(N) / fs  # assuming sample_rate is known
-
-
-   chirp_time= np.arange(len(chirp_signal))/fs
-   # Plot the chirp signal in the time domain
-   plt.subplot(4,1,1)
-   plt.plot(time, ref_mic[0:fft_size],label="reference mic")
-   plt.xlabel('Time (s)')
-   plt.ylabel('Amplitude')
-   plt.legend(loc='upper right')
-   plt.title('reference signal in the time domain')
-
-   plt.subplot(4,1,2)
-   plt.plot(time, other_mic[0:fft_size],label="before calibration")
-   plt.xlabel('Time (s)')
-   plt.ylabel('Amplitude')
-   plt.legend(loc='upper right')
-   plt.title('other mic before calibration in the time domain')
-
-
-      # Assume chirp is your chirp signal with N samples
-   N = len(other_mic_calibrated)
-   time = np.arange(N) / fs  # assuming sample_rate is known
-
-   plt.subplot(4,1,3)
-   plt.plot(time, other_mic_calibrated,label="calibrated mic")
-   plt.xlabel('Time (s)')
-   plt.ylabel('Amplitude')
-   plt.legend(loc='upper right')
-   plt.title('other mic after calibration in the time domain')
-   
-
-   # Assume chirp is your chirp signal with N samples
-   N = len(other_mic_calibrated)
-   time = np.arange(N) / fs  # assuming sample_rate is known
-
-   plt.subplot(4,1,4)
-   plt.plot(time, other_mic_error,color="red",label="error")
-   plt.xlabel('Time (s)')
-   plt.ylabel('Amplitude')
-   plt.title('error = before cal - after_cal')
-   plt.legend(loc='upper right')
-   plt.tight_layout()
-   plt.show()
-
-
-   #____________________Plot frequency domain__________
-   magnitude_other_mic_fft = np.abs(other_mic_fft)
-   magnitude_spectrum_other_mic_calibrated_fft = np.abs(other_mic_calibrated_fft)
-   magnitude_spectrum_other_mic_error = np.abs(np.fft.fft(other_mic_error))
-
+   chirp_signal_fft = np.fft.fft(chirp_signal,fft_size)
 
    
-   # Plot the magnitude spectrum
-   freqs = np.fft.fftfreq(fft_size, 1/fs)
-   plt.plot(freqs[:fft_size//2], magnitude_other_mic_fft[:fft_size//2],label="before calibration")
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Magnitude')
-   plt.legend(loc='upper right')
+   #Normalize ref mic
+   ref_mic  = ref_mic.astype(np.float32)
+   ref_mic /= np.max(np.abs(ref_mic))
 
-   # Plot the magnitude spectrum
-   freqs = np.fft.fftfreq(fft_size, 1/fs)
-   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_calibrated_fft[:fft_size//2],label="calibrated")
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Magnitude')
-   plt.legend(loc='upper right')
+   #apply the matched filter on the recorded reference signal
+   #ref_mic_filtered = np.convolve(ref_mic,filter_IR)
+   ref_mic_fft = np.fft.fft(ref_mic,fft_size)
 
-   # Plot the magnitude spectrum
-   freqs = np.fft.fftfreq(fft_size, 1/fs)
-   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_error[:fft_size//2], label="error")
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Magnitude')
-   plt.legend(loc='upper right')
-   plt.tight_layout()
-   plt.show()
+   #receive the frequency respons of the reference microphone
+   ref_freq_resp = ref_mic_fft / chirp_signal_fft
+   
+
+
+  
+   
+   scaling_factor_array = np.zeros((64, fft_size), dtype=complex) # create an empty array to store the FFT of the scaling factors
+   for i in range(0,64):
+      
+      mic = recording[:,i]#.astype(np.float32) 
+      mic  = mic.astype(np.float32)
+      mic /= np.max(np.abs(mic))
+
+      other_mic_fft = np.fft.fft(mic,fft_size)
+
+      #receive the frequency respons of the other microphone
+      other_freq_resp = other_mic_fft / chirp_signal_fft
+         #get IR and FR for other mic
+      
+      #receive the frequency respons of the reference microphone
+    
+      scaling_factor = ref_freq_resp/other_freq_resp
+      #calculate scalingfactors for each freqeuncy bin 
+      
+      scaling_factor_array[i, :] = scaling_factor
+   np.save('SF_full_len_fft_without_MF.npy', scaling_factor_array) # save the scaling factors to a file
+   
+   
+
+ 
