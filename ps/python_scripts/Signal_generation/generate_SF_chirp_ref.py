@@ -336,7 +336,7 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-2048:max_index+2048]
+   truncated_impulse_response = fft_IR[max_index-4000:max_index+4000]
   
    return truncated_impulse_response
 
@@ -406,7 +406,7 @@ if __name__ == '__main__':
    #print("lenght if matched_filter=",matched_filter.shape)
   
 
-   fft_size = 145476
+   fft_size = 2**12   #= 4096
 
    
    #get IR and FR for reference mic
