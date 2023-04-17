@@ -103,17 +103,28 @@ if __name__ == '__main__':
    # access an individual scaling factor from the array
    #scaling_factor_i = scaling_factor_fft[:, microphone]
   
-   fft_size=145476
+   fft_size=2**12   #= 4096
 
 
    #apply scaling factor
    #ref_mic_fft = ref_mic_fft*scaling_factor_fft[microphone,:]
-   calibrated_mic_array = np.zeros((64, 145476), dtype=complex) 
+   calibrated_mic_array = np.zeros((64, len(recording[:,0])), dtype=complex) 
    for i in range(0,64):
-      mic_fft= np.fft.fft(recording[:,i],fft_size)
+      #mic_fft= np.fft.fft(recording[:,i],fft_size)
       #if(i < 5):
-      mic_fft= mic_fft*scaling_factor_fft[i,:]
-      calibrated_mic_array[i,:] = np.fft.ifft(mic_fft,fft_size)
+      output = np.zeros_like(recording[:,i])
+      for j in range(0, len(recording[:,i])// fft_size):   # iterate for as many chuncks is availble
+        chunk = recording[:,i][j*fft_size:(j+1)*fft_size]
+        chunk_fft = np.fft.fft(chunk,fft_size)
+        chunk_fft = chunk_fft * scaling_factor_fft[i,:]
+        chunk_ifft = np.fft.ifft(chunk_fft,fft_size)
+        print(chunk_ifft.shape)
+        output[j*fft_size:(j+1)*fft_size] = chunk_ifft
+        
+        
+
+
+      calibrated_mic_array[i,:] = output
 
    # what microphones to plot
    #plot_mics = [-33,26]
@@ -137,11 +148,11 @@ if __name__ == '__main__':
    #plt.show()
 
    # Assume chirp is your chirp signal with N samples
-   N = 145476
+   N = len(recording[:,0])
    time = np.arange(N) / 48828  # assuming sample_rate is known
 
    plt.subplot(2,1,1)
-   plt.plot(time, recording[:,3][0:N],label="uncalibrated mic")
+   plt.plot(time, recording[:,1][0:N],label="uncalibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -149,7 +160,7 @@ if __name__ == '__main__':
 
    #plt.subplot(2,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[3,:][0:N],label="calibrated mic")
+   plt.plot(time, calibrated_mic_array[1,:][0:N],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -165,7 +176,7 @@ if __name__ == '__main__':
 
    #plt.subplot(2,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[2,:][0:N],label="calibrated mic")
+   plt.plot(time, calibrated_mic_array[1,:][0:N],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
