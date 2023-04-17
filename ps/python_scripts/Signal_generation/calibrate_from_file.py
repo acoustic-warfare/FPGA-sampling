@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
    #plt.subplot(2,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[3,:][0:N],label="calibrated mic")
+   plt.plot(time, calibrated_mic_array[2,:][0:N],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')

@@ -393,8 +393,8 @@ if __name__ == '__main__':
    #chirp_signal /= np.max(np.abs(chirp_signal))
    
    #Normalize the ref signal
-   ref_mic  = ref_mic.astype(np.float64)
-   ref_mic /= np.max(np.abs(ref_mic))
+   #ref_mic  = ref_mic.astype(np.float64)
+   #ref_mic /= np.max(np.abs(ref_mic))
 
    #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
@@ -424,8 +424,8 @@ if __name__ == '__main__':
       
       mic = recording[:,i]#.astype(np.float32) 
       #Normalize the signal
-      mic  = mic.astype(np.float64)
-      mic /= np.max(np.abs(mic))
+      #mic  = mic.astype(np.float64)
+      #mic /= np.max(np.abs(mic))
 
          #get IR and FR for other mic
       other_mic_IR = np.convolve(mic,matched_filter,mode='same')
