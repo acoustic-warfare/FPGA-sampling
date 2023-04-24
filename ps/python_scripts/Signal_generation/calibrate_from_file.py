@@ -98,14 +98,13 @@ if __name__ == '__main__':
 
    #print(scaling_factor_fft.shape)
    # load the scaling factors from the saved file
-   scaling_factor_fft = np.load('SF_full_len_fft_chirp_ref.npy') 
+   scaling_factor_fft = np.load('SF_full_len_fft_chirp_ref_28_ref.npy') 
 
    # access an individual scaling factor from the array
    #scaling_factor_i = scaling_factor_fft[:, microphone]
   
    fft_size=2**12   #= 4096
-
-
+   
    #apply scaling factor
    #ref_mic_fft = ref_mic_fft*scaling_factor_fft[microphone,:]
    x = 0
@@ -116,19 +115,21 @@ if __name__ == '__main__':
       output = np.zeros_like(recording[:,i])
       for j in range(0, len(recording[:,i])// fft_size):   # iterate for as many chuncks is availble
         chunk = recording[:,i][j*fft_size:(j+1)*fft_size]
+        
         chunk_fft = np.fft.fft(chunk,fft_size)
-        chunk_fft = chunk_fft * scaling_factor_fft[i,:]
+        chunk_fft = chunk_fft *scaling_factor_fft[i,:]
         chunk_ifft = np.fft.ifft(chunk_fft,fft_size)
         #print(chunk_ifft.shape)
         x = x+1
         
-        output[j*fft_size:(j+1)*fft_size] = chunk_ifft
+        output[j*fft_size:(j+1)*fft_size] = chunk_ifft.real
         
         
 
-      print(i)
-      calibrated_mic_array[i,:] = output
+      #print(i)
+      calibrated_mic_array[i,:] = output.real
    print(x)
+   print(recording.shape)
    # what microphones to plot
    #plot_mics = [-33,26]
   # 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
@@ -154,32 +155,50 @@ if __name__ == '__main__':
    N = len(recording[:,0])
    time = np.arange(N) / 48828  # assuming sample_rate is known
 
-   plt.subplot(2,1,1)
-   plt.plot(time, recording[:,2][0:N],label="uncalibrated mic")
+   plt.subplot(3,1,1)
+   plt.plot(recording[:,27][1000:1100],label="reference mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
    plt.title('before calibration')
 
-   #plt.subplot(2,1,2)
+
+   mic_to_change = 2
+   plt.subplot(3,1,1)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[2,:][0:N],label="calibrated mic")
+   plt.plot(calibrated_mic_array[mic_to_change,:][1000:1100],label="calibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
    plt.title('before calibration')
    #plt.show()
 
-   plt.subplot(2,1,2)
-   plt.plot(time, calibrated_mic_array[16,:][0:N],label="calibrated mic")
+   plt.subplot(3,1,2)
+   plt.plot(recording[:,mic_to_change][1000:1100],label="uncalibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
    plt.title('before calibration')
 
-   #plt.subplot(2,1,2)
+   plt.subplot(3,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time, calibrated_mic_array[2,:][0:N],label="calibrated mic")
+   plt.plot(calibrated_mic_array[mic_to_change,:][1000:1100],label="calibrated mic")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+   plt.title('before calibration')
+
+
+   plt.subplot(3,1,3)
+   plt.plot(recording[:,35][1000:1100],label="reference mic")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+   plt.title('before calibration')
+
+   plt.subplot(3,1,3)
+   #plt.plot(time, recording[:,35][2000:N])
+   plt.plot(recording[:,mic_to_change][1000:1100],label="uncalibrated mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -187,21 +206,38 @@ if __name__ == '__main__':
    plt.show()
    
 
+   # --- PLOT 1---
+   plot_mics = [1,2,4,6,7,8,9,10,11,12,13,14,15,16,
+   17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+   33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+   49,50,51,52,54,55,57,58,59,60,61,62,63,64]                   # what microphones to plot
+   arr_plot_mics = np.array(plot_mics)-1   # convert plot_mics to numpy array with correct index
+   mic_legend = []                         # empty list that should hold legends for plot
+   plt.figure()
+   for i in range(len(arr_plot_mics)):
+      plt.plot(recording[:,int(arr_plot_mics[i])])
+      mic_legend = np.append(mic_legend,str(arr_plot_mics[i]+1))
+      plt.xlim([1000, 1060])
+      plt.xlabel('Samples')
+      plt.ylabel('Amplitude')
+      plt.suptitle('Uncalibrated microphones')
+      #plt.legend(mic_legend)
+   
 
-   #___________________________________________________
-   # Plot the chirp signal in the time domain
-   #plt.subplot(2,1,1)
-   #plt.plot(time, calibrated_mic_array[4,:][2000:N],label="calibrated mic")
-   #plt.xlabel('Time (s)')
-   #plt.ylabel('Amplitude')
-   #plt.legend(loc='upper right')
-   #plt.title('after calibration')
-#
-   ##plt.subplot(2,1,2)
-   #plt.plot(time, calibrated_mic_array[3,:][2000:N],label="calibrated mic" )
-   #plt.xlabel('Time (s)')
-   #plt.ylabel('Amplitude')
-   #plt.legend(loc='upper right')
-   #plt.title('after calibration')
-   #plt.show()
+   # --- PLOT 2---
+                                               # convert plot_mics to numpy array with correct index
+   mic_legend = []                         # empty list that should hold legends for plot
+   plt.figure()
+   for i in range(len(arr_plot_mics)):
+      plt.plot(calibrated_mic_array[int(arr_plot_mics[i]),:])
+      mic_legend = np.append(mic_legend,str(arr_plot_mics[i]+1))
+      plt.xlim([1000, 1060])
+      plt.xlabel('Samples')
+      plt.ylabel('Amplitude')
+      plt.suptitle('calibrated microphones')
+      #plt.legend(mic_legend)
+   plt.show()
+     
+
+
    

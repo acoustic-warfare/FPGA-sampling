@@ -336,7 +336,7 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-4000:max_index+4000]
+   truncated_impulse_response = fft_IR[max_index-45:max_index+45]
   
    return truncated_impulse_response
 
@@ -434,11 +434,12 @@ if __name__ == '__main__':
 
       #receive the frequency respons of the reference microphone
     
-      scaling_factor = ref_mic_FR/other_mic_FR
+      scaling_factor = np.abs(ref_mic_FR)/np.abs(other_mic_FR)
+      scaling_factor = scaling_factor.real + 0j
       #calculate scalingfactors for each freqeuncy bin 
       
       scaling_factor_array[i, :] = scaling_factor
-   np.save('SF_full_len_fft_chirp_ref.npy', scaling_factor_array) # save the scaling factors to a file
+   np.save('SF_full_len_fft_chirp_ref_28_ref.npy', scaling_factor_array) # save the scaling factors to a file
    
    
 

@@ -254,11 +254,11 @@ def generate_chirp(start_f,stop_f,T,fs):
    #chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
    
    max_amplitude = np.max(np.abs(chirp_signal))
-   scaling_factor = (2**23 - 1) / max_amplitude
+   scaling_factor = (2**24 - 1) / max_amplitude
    chirp_signal_scaled = np.round(chirp_signal * scaling_factor).astype(np.int32)
 
    #converts to int16
-   #chirp_signal = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
+   #chirp_signal_scaled = np.int16((chirp_signal / chirp_signal.max()) * 32767)   # normalized to fit targetet format for n bit use (2^(n)/2  -1) = 32767 for 16bit. #this value sets the amplitude.
    
 
    
@@ -280,7 +280,7 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-2048:max_index+2048]
+   truncated_impulse_response = fft_IR[max_index-45:max_index+45]
   
    return truncated_impulse_response
 
@@ -331,14 +331,35 @@ if __name__ == '__main__':
    k = np.exp(t*R/T)
    matched_filter =  chirp_signal[::-1]/k   #divide by k for constans FR for the matched filter
 
+   new_k = k[::-1]
+   chirp_signal_norm = chirp_signal/new_k
+
    fft_size = len(ref_mic) #
 
    #get IR and FR for reference mic
-   ref_mic_IR = np.convolve(ref_mic,matched_filter,mode='same')
-   ref_mic_IR=truncation(ref_mic_IR)
+   ref_mic_IR_plot = np.convolve(ref_mic,matched_filter,mode='same')
+   ref_mic_IR=truncation(ref_mic_IR_plot)
    ref_mic_FR = np.fft.fft(ref_mic_IR,fft_size)
-   
-   
+
+
+
+   #samples_IR = np.arange(len(ref_mic))
+   #time = samples_IR / fs  # assuming sample_rate is known
+   ## Plot the chirp signal in the time domain
+   #plt.subplot(2,1,1)
+   #plt.plot(time, ref_mic_IR_plot)
+   #plt.xlabel('Time (s)')
+   #plt.ylabel('Amplitude')
+   #plt.title('Impulse response')
+   #
+   #ref_fr_show = np.fft.fft(ref_mic_IR_plot,fft_size)
+   #freqs = np.fft.fftfreq(fft_size, 1/fs)
+   #plt.subplot(2,1,2)
+   #plt.plot(freqs[:fft_size//2],np.abs(ref_mic_FR)[:fft_size//2])
+   #plt.xlabel('f (Hz)')
+   #plt.ylabel('Amplitude')
+   #plt.title('reference signal FR')
+   #plt.show()
    
 
    #get IR and FR for other mic
@@ -347,7 +368,7 @@ if __name__ == '__main__':
    other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
 
    #receive the frequency respons of the reference microphone   145476
-   scaling_factor = ref_mic_FR/ other_mic_FR
+   scaling_factor = np.abs(ref_mic_FR)/ np.abs(other_mic_FR)
 
    
    #apply the scaling factor to the other mic.
@@ -384,13 +405,21 @@ if __name__ == '__main__':
 
    chirp_time= np.arange(len(chirp_signal))/fs
    # Plot the chirp signal in the time domain
+
+   #____________________SPL_________________________#
+   # Calculate the voltage from the raw data
+   #sensitivity = -26 
+   #spl = 20 * np.log10(np.abs(ref_mic) / (2**23 * 10**(sensitivity/20)))   #??????????????????
+
+   #________________________________________________________________________________
+
    plt.subplot(4,1,1)
    plt.plot(time, ref_mic[0:fft_size],label="reference mic")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
    plt.title('reference signal in the time domain')
-
+   
    plt.subplot(4,1,2)
    plt.plot(time, other_mic[0:fft_size],label="before calibration")
    plt.xlabel('Time (s)')
@@ -416,13 +445,60 @@ if __name__ == '__main__':
    time = np.arange(N) / fs  # assuming sample_rate is known
 
    plt.subplot(4,1,4)
-   plt.plot(time, other_mic_error,color="red",label="error")
+   plt.plot(time, other_mic_error,color="red",label="deviation")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
-   plt.title('error = before cal - after_cal')
+   plt.title('deviation = before cal - after_cal')
    plt.legend(loc='upper right')
    plt.tight_layout()
    plt.show()
+
+   ## Correct SPL value ## ___________________________________________________________________
+
+   # ICS-52000 microphone Full-scale sensitivity (-26 dBFS/Pa)
+   sensitivity = -26.0
+
+   # Define the reference voltage and sound pressure level
+   Vref = 1.0 # volt
+   SPLref = 94.0 # dB SPL
+
+   #  Load the microphone's output waveform from a WAV file
+   waveform = ref_mic / (2 ** 24 -1)
+
+   # Convert the waveform to RMS voltage
+   Vrms = np.sqrt(np.mean(waveform ** 2))
+
+   # Calculate the SPL value using the formula
+   SPL = 20 * np.log10(Vrms / 0.0501187234) + SPLref
+
+   # Print the calculated SPL value
+   print('SPL ref mic: {:.2f} dB'.format(SPL))
+
+   #  Load the microphone's output waveform from a WAV file
+   waveform = other_mic/ (2 ** 24 -1)
+
+   # Convert the waveform to RMS voltage
+   Vrms = np.sqrt(np.mean(waveform ** 2))
+
+   # Calculate the SPL value using the formula
+   SPL = 20 * np.log10(Vrms / 0.0501187234) + SPLref
+
+   # Print the calculated SPL value
+   print('SPL before cal: {:.2f} dB'.format(SPL))
+
+
+   #  Load the microphone's output waveform from a WAV file
+   waveform = other_mic_calibrated.real/ (2 ** 24 -1)
+
+   # Convert the waveform to RMS voltage
+   Vrms = np.sqrt(np.mean(waveform ** 2))
+
+   # Calculate the SPL value using the formula
+   SPL = 20 * np.log10(Vrms / 0.0501187234) + SPLref
+
+   # Print the calculated SPL value
+   print('SPL after cal: {:.2f} dB'.format(SPL))
+   #_________________________________________________________________________________________
 
 
    #____________________Plot frequency domain__________
@@ -448,9 +524,27 @@ if __name__ == '__main__':
 
    # Plot the magnitude spectrum
    freqs = np.fft.fftfreq(fft_size, 1/fs)
-   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_error[:fft_size//2], label="error")
+   plt.plot(freqs[:fft_size//2], magnitude_spectrum_other_mic_error[:fft_size//2], label="deviation")
    plt.xlabel('Frequency (Hz)')
    plt.ylabel('Magnitude')
    plt.legend(loc='upper right')
    plt.tight_layout()
+   plt.show()
+
+
+   chirp_time= np.arange(len(chirp_signal))/fs
+   # Plot the chirp signal in the time domain
+   
+   plt.subplot(2,1,1)
+   plt.plot(chirp_time, chirp_signal_norm)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('Sine sweep')
+   #plt.show()
+
+   plt.subplot(2,1,2)
+   plt.plot(time, ref_mic)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('Inverse filter')
    plt.show()
