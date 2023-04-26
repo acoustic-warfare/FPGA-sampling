@@ -98,37 +98,30 @@ if __name__ == '__main__':
 
    #print(scaling_factor_fft.shape)
    # load the scaling factors from the saved file
-   scaling_factor_fft = np.load('short_d_log_high_3.npy') 
+   scaling_factor_fft = np.load('method2_short_d_log_high_3.npy') 
 
    # access an individual scaling factor from the array
    #scaling_factor_i = scaling_factor_fft[:, microphone]
   
-   fft_size=2**12   #= 4096
+   fft_size=145476   #= 4096
    
    #apply scaling factor
    #ref_mic_fft = ref_mic_fft*scaling_factor_fft[microphone,:]
-   x = 0
-   calibrated_mic_array = np.zeros((64, len(recording[:,0])), dtype=complex) 
+  
+    #apply scaling factor
+   #ref_mic_fft = ref_mic_fft*scaling_factor_fft[microphone,:]
+   
+   calibrated_mic_array = np.zeros((64, len(scaling_factor_fft[0,:])), dtype=complex) 
    for i in range(0,64):
-      #mic_fft= np.fft.fft(recording[:,i],fft_size)
-      #if(i < 5):
-      output = np.zeros_like(recording[:,i])
-      for j in range(0, len(recording[:,i])// fft_size):   # iterate for as many chuncks is availble
-        chunk = recording[:,i][j*fft_size:(j+1)*fft_size]
-        
-        chunk_fft = np.fft.fft(chunk,fft_size)
-        chunk_fft = chunk_fft *scaling_factor_fft[i,:]
-        chunk_ifft = np.fft.ifft(chunk_fft,fft_size)
-        #print(chunk_ifft.shape)
-        x = x+1
-        
-        output[j*fft_size:(j+1)*fft_size] = chunk_ifft
-        
-        
-
-      #print(i)
-      calibrated_mic_array[i,:] = output.real
-   print(x)
+      #diff_len = len(scaling_factor_fft[i,:]) - len(recording[:,i])
+      #padded_recording = np.pad(recording[:,i], (0, diff_len), mode='constant')
+      
+      chunk_fft = np.fft.fft(recording[:,i],fft_size)
+      chunk_fft = chunk_fft * scaling_factor_fft[i,:]
+      chunk_ifft = np.fft.ifft(chunk_fft,fft_size)
+      calibrated_mic_array[i,:] = chunk_ifft
+   
+   
    print(recording.shape)
   
 
@@ -189,11 +182,13 @@ if __name__ == '__main__':
    plt.legend(loc='upper right')
    
 
-
+   # Assume chirp is your chirp signal with N samples
+   N = len(calibrated_mic_array[0,:])
+   time_cal = np.arange(N) / 48828  # assuming sample_rate is known
    
    plt.subplot(3,1,2)
    #plt.plot(time, recording[:,35][2000:N])
-   plt.plot(time,calibrated_mic_array[mic_to_change,:],label="calibrated MK13")
+   plt.plot(time_cal,calibrated_mic_array[mic_to_change,:],label="calibrated MK13")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')

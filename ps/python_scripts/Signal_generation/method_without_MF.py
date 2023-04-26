@@ -348,7 +348,7 @@ if __name__ == '__main__':
    #receive the frequency respons of the reference microphone
    ref_freq_resp = ref_mic_fft / chirp_signal_fft
 
-
+   ref_IR_resp = np.fft.ifft(ref_freq_resp,fft_size)
 
    # repeat the process and receive the Frequency repsone of the microphone to be calibrated.
    #apply the matched filter on the recorded reference signal
@@ -362,11 +362,11 @@ if __name__ == '__main__':
 
 
    #Calculate the scaling factor by division
-   scaling_factor = ref_freq_resp/other_freq_resp               #this is the scaling factor for "other_microphone"
-   
+   scaling_factor = np.abs(ref_freq_resp/other_freq_resp)               #this is the scaling factor for "other_microphone"
+   amp_scaling_factor = scaling_factor * np.exp(1j * np.zeros_like(scaling_factor))
    #apply the scaling factor to the other mic.
 
-   other_mic_calibrated_fft = np.fft.fft(other_mic,fft_size)*scaling_factor
+   other_mic_calibrated_fft = np.fft.fft(other_mic,fft_size)*amp_scaling_factor
 
    #go back into time-domain
    other_mic_calibrated = np.fft.ifft(other_mic_calibrated_fft,fft_size)
@@ -393,14 +393,33 @@ if __name__ == '__main__':
    N = len(other_mic)
    time = np.arange(N) / fs  # assuming sample_rate is known
 
+   #_________________________________________
+   # Plot the chirp signal in the time domain
+   
+   plt.plot(time, ref_IR_resp,color='green')
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('reference mic in the time domain')
+   plt.show()
+
+
+   
+   freqs = np.fft.fftfreq(fft_size, 1/fs)
+   plt.subplot(2,1,2)
+   plt.plot(freqs[:fft_size//2],np.abs(ref_mic_fft)[:fft_size//2])
+   plt.xlabel('f (Hz)')
+   plt.ylabel('Amplitude')
+   plt.title('reference signal FR')
+   plt.show()
+   #__________________________________________
 
    chirp_time= np.arange(len(chirp_signal))/fs
    # Plot the chirp signal in the time domain
    plt.subplot(3,1,1)
-   plt.plot(time, ref_mic)
+   plt.plot(time, ref_mic,color='green')
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
-   plt.title('chirp signal in the time domain')
+   plt.title('reference mic in the time domain')
 
    plt.subplot(3,1,2)
    plt.plot(time, other_mic)

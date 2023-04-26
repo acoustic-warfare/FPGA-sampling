@@ -183,7 +183,7 @@ def tukey (v, size):  ## Creates a ramp in the end of the generated chirp, to av
     if len(v) < 2*size:
         raise ValueError ("Tukey window size too big for array")
     tuk = 0.5 * (1.0 - np.cos (np.pi * np.arange(size) / size))
-    #v[0:size] *= tuk   # ADD his line for curve at the beginning aswell
+    v[0:size] *= tuk   # ADD his line for curve at the beginning aswell
     v[-size:] *= tuk[::-1]
     
     return v
@@ -245,7 +245,7 @@ def generate_chirp(start_f,stop_f,T,fs):
    
    
    #creates curve at the end of signal.
-   TUKEY_SAMPLES = N //16  ## number of samples to create curve at the end of chirp
+   TUKEY_SAMPLES = N //24  ## number of samples to create curve at the end of chirp
    chirp_signal = tukey(chirp_signal,TUKEY_SAMPLES)                                   #uncomment to ad tukey effect in the end.
 
    
@@ -296,7 +296,7 @@ if __name__ == '__main__':
    #names for the audio files
    #filename_pure_chip = "chirp.wav"
    file_name_recording = "recording_sim.wav"
-   filename_pure_chip = "farina_log_chirp.wav"
+   filename_pure_chip = "farina_log_chirp_tukey_start_stop.wav"
    chirp_signal = generate_chirp(start_f,stop_f,T,fs)   #Generate chirp and its corresponding matched filter
    #create_sound_file(chirp_signal,fs,filename_pure_chip)
 
@@ -325,6 +325,7 @@ if __name__ == '__main__':
    ref_mic=recording[:,ref_microphone]             
    other_mic=recording[:,other_microphone]
 
+   
    #create the matched filter version
    t = np.linspace(0, T, int(T * fs), endpoint=False)
    R = np.log(stop_f/start_f)
@@ -343,15 +344,15 @@ if __name__ == '__main__':
 
 
 
-   #samples_IR = np.arange(len(ref_mic))
-   #time = samples_IR / fs  # assuming sample_rate is known
-   ## Plot the chirp signal in the time domain
-   #plt.subplot(2,1,1)
-   #plt.plot(time, ref_mic_IR_plot)
-   #plt.xlabel('Time (s)')
-   #plt.ylabel('Amplitude')
-   #plt.title('Impulse response')
-   #
+   samples_IR = np.arange(len(ref_mic))
+   time = samples_IR / fs  # assuming sample_rate is known
+   # Plot the chirp signal in the time domain
+   plt.subplot(2,1,1)
+   plt.plot(time, ref_mic_IR_plot)
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.title('Impulse response')
+   
    #ref_fr_show = np.fft.fft(ref_mic_IR_plot,fft_size)
    #freqs = np.fft.fftfreq(fft_size, 1/fs)
    #plt.subplot(2,1,2)
@@ -368,7 +369,7 @@ if __name__ == '__main__':
    other_mic_FR = np.fft.fft(other_mic_IR,fft_size)
 
    #receive the frequency respons of the reference microphone   145476
-   scaling_factor = np.abs(ref_mic_FR)/ np.abs(other_mic_FR)
+   scaling_factor = ref_mic_FR/other_mic_FR
 
    
    #apply the scaling factor to the other mic.
@@ -413,14 +414,56 @@ if __name__ == '__main__':
 
    #________________________________________________________________________________
 
-   plt.subplot(4,1,1)
-   plt.plot(time, ref_mic[0:fft_size],label="reference mic")
+   plt.subplot(3,1,1)
+   plt.plot(time, ref_mic[0:fft_size],label="reference mic",color="green")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+
+   
+   plt.subplot(3,1,2)
+   plt.plot(time, other_mic[0:fft_size],label="before calibration",color="blue")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+   
+
+
+      # Assume chirp is your chirp signal with N samples
+   N = len(other_mic_calibrated)
+   time = np.arange(N) / fs  # assuming sample_rate is known
+
+   plt.subplot(3,1,3)
+   plt.plot(time, other_mic_calibrated,label="calibrated mic",color="orange")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+   
+   
+
+   # Assume chirp is your chirp signal with N samples
+   N = len(other_mic_calibrated)
+   time = np.arange(N) / fs  # assuming sample_rate is known
+
+   #plt.subplot(4,1,4)
+   #plt.plot(time, other_mic_error,color="red",label="deviation")
+   #plt.xlabel('Time (s)')
+   #plt.ylabel('Amplitude')
+   #plt.title('deviation = before cal - after_cal')
+   #plt.legend(loc='upper right')
+   #plt.tight_layout()
+   plt.show()
+
+
+   #_____________For results _________________________________________________________________________________________________##
+   plt.subplot(2,1,2)
+   plt.plot(time, ref_mic[0:fft_size],label="reference mic",color="green")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
    plt.title('reference signal in the time domain')
    
-   plt.subplot(4,1,2)
+   plt.subplot(2,1,1)
    plt.plot(time, other_mic[0:fft_size],label="before calibration")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
@@ -432,8 +475,15 @@ if __name__ == '__main__':
    N = len(other_mic_calibrated)
    time = np.arange(N) / fs  # assuming sample_rate is known
 
-   plt.subplot(4,1,3)
-   plt.plot(time, other_mic_calibrated,label="calibrated mic")
+   plt.subplot(2,1,1)
+   plt.plot(time, other_mic_calibrated,label="calibrated mic",color="orange")
+   plt.xlabel('Time (s)')
+   plt.ylabel('Amplitude')
+   plt.legend(loc='upper right')
+   plt.title('other mic after calibration in the time domain')
+
+   plt.subplot(2,1,2)
+   plt.plot(time, other_mic_calibrated,label="calibrated mic",color="orange")
    plt.xlabel('Time (s)')
    plt.ylabel('Amplitude')
    plt.legend(loc='upper right')
@@ -444,14 +494,16 @@ if __name__ == '__main__':
    N = len(other_mic_calibrated)
    time = np.arange(N) / fs  # assuming sample_rate is known
 
-   plt.subplot(4,1,4)
-   plt.plot(time, other_mic_error,color="red",label="deviation")
-   plt.xlabel('Time (s)')
-   plt.ylabel('Amplitude')
-   plt.title('deviation = before cal - after_cal')
-   plt.legend(loc='upper right')
-   plt.tight_layout()
+   #plt.subplot(4,1,4)
+   #plt.plot(time, other_mic_error,color="red",label="deviation")
+   #plt.xlabel('Time (s)')
+   #plt.ylabel('Amplitude')
+   #plt.title('deviation = before cal - after_cal')
+   #plt.legend(loc='upper right')
+   #plt.tight_layout()
    plt.show()
+
+   # _____________ end of FOR Results ________________________________________________________________________________________##
 
    ## Correct SPL value ## ___________________________________________________________________
 
