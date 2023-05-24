@@ -281,7 +281,7 @@ def truncation(fft_IR):
    max_index = np.argmax(np.abs(fft_IR))
 
 # Extract a portion of the impulse response around the largest peak
-   truncated_impulse_response = fft_IR[max_index-220:max_index+220]
+   truncated_impulse_response = fft_IR[max_index-224:max_index+224]
   
    return truncated_impulse_response
 
@@ -323,9 +323,10 @@ if __name__ == '__main__':
    recording= print_analysis(fileChooser)    #Recording contains data from alla microphones, reference_microphone cointains data from selected mic
   
    #take out reference mic   
-   ref_mic=recording[:,ref_microphone]             
+   ref_mic=recording[:,ref_microphone]    
+   #ref_mic=ref_mic[0:118900]         
    other_mic=recording[:,other_microphone]
-
+   #other_mic=other_mic[0:118900]
    
    
 
@@ -374,8 +375,8 @@ if __name__ == '__main__':
    plt.ylabel('Amplitude')
    plt.show()
 
-   #ref_mic_IR = truncation(ref_mic_IR)
-   #other_mic_IR = truncation(other_mic_IR)
+   ref_mic_IR = truncation(ref_mic_IR)
+   other_mic_IR = truncation(other_mic_IR)
 
 
    ref_mic_IR_truncated_fft = np.fft.fft(ref_mic_IR,fft_size)
@@ -385,20 +386,22 @@ if __name__ == '__main__':
    other_mic_deviation= ref_mic_IR_truncated_fft/other_mic_IR_truncated_fft
 
  
+   #20 *np.log(np.abs(ref_mic_FR))
+   #20 *np.log(np.abs(other_mic_FR))
+   #20 *np.log(other_mic_deviation)
 
+   
+   plt.subplot(2,1,1)
+   plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(ref_mic_FR))[:fft_size//2],label="Frequency response reference MK5",color='green')
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude (dB)')
+   plt.legend(loc='lower left')
 
-
-   #plt.subplot(3,1,1)
-   #plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(ref_mic_FR))[:fft_size//2],label="Frequency response reference MK5",color='green')
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('Magnitude')
-   #plt.legend(loc='lower left')
-#
-   #plt.subplot(3,1,2)
-   #plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(other_mic_FR))[:fft_size//2],label="Frequency response MK16",color='orange')
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('Magnitude')
-   #plt.legend(loc='lower left')
+   plt.subplot(2,1,1)
+   plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(other_mic_FR))[:fft_size//2],label="Frequency response MK16",color='orange')
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude')
+   plt.legend(loc='upper left')
 
    #plt.subplot(3,1,2)
    #plt.plot(freqs[:fft_size//2], 20 *np.log(chirp_fft)[:fft_size//2],label="chirp Freq spectrum")
@@ -406,17 +409,19 @@ if __name__ == '__main__':
    #plt.ylabel('Magnitude')
    #plt.legend(loc='upper right')
 
-   #plt.plot(freqs[:fft_size//2], 20 *np.log(other_mic_deviation)[:fft_size//2],label="Deviation")
-   #plt.xlabel('Frequency (Hz)')
-   #plt.ylabel('Magnitude dB')
-   #plt.legend(loc='upper right')
+   plt.subplot(2,1,2)
+   plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(other_mic_deviation))[:fft_size//2],label="Deviation",color='red')
+   plt.xlabel('Frequency (Hz)')
+   plt.ylabel('Magnitude dB')
+   plt.legend(loc='upper left')
+   plt.plot()
 
 
    #plt.subplot(3,1,3)
-   plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(other_mic_deviation))[:fft_size//2],label="Deviation",color='red')
-   plt.xlabel('Frequency (Hz)')
-   plt.ylabel('Magnitude')
-   plt.legend(loc='lower left')
+   #plt.plot(freqs[:fft_size//2], 20 *np.log(np.abs(other_mic_deviation))[:fft_size//2],label="Deviation",color='red')
+   #plt.xlabel('Frequency (Hz)')
+   #plt.ylabel('Magnitude')
+   #plt.legend(loc='lower left')
    plt.show()
 
    
