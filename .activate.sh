@@ -52,8 +52,9 @@ python --version
 # Vivado
 #
 VIVADO_VERSION="2017.4"
-XILINX_PATH="$(locate -n1 "/Xilinx/Vivado/$VIVADO_VERSION" )"
-[ $? -eq 0 ] && . "$XILINX_PATH/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m" 
+XILINX_PATH="$ "/opt/Xilinx/Vivado/$VIVADO_VERSION""
+#echo -e "$\033[1;33m $XILINX_PATH \033[0m" #print path
+[ $? -eq 0 ] && . "/opt/Xilinx/Vivado/2017.4/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m" 
 echo "Vivado $VIVADO_VERSION"
 
 # TODO: set up simlibs and path to them
