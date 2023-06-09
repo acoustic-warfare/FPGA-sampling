@@ -1,9 +1,16 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+library vunit_lib;
+context vunit_lib.vunit_context;
 
 
 --this is how entity for your test bench code has to be declared.
 entity fifo_test_tb is
+   generic (
+      runner_cfg : string
+   );
 end fifo_test_tb;
 
 architecture behavior of fifo_test_tb is
@@ -78,6 +85,34 @@ UUT : fifo_test port map(
           end if;
  end process;
 
+ main_p : process
+ begin
+    test_runner_setup(runner, runner_cfg);
+    while test_suite loop
+       if run("wave") then
 
+          wait for 8500 ns;
+
+       elsif run("auto") then
+          -- old tests that need to be updated
+          --wait for 3845.1 ns; -- first rise (3845 ns after start)
+          --check(data_valid_collector_out = '0', "fail!1 data_valid first rise");
+
+          --wait for 5 ns; -- back to zero after first rise (3850 ns after start)
+          --check(data_valid_collector_out = '0', "fail!2 data_valid back to zero after fist rise");
+
+          --wait for 3835 ns; -- second rise (7685 ns after start)
+          --check(data_valid_collector_out = '1', "fail!2 data_valid second rise");
+
+          --wait for 5 ns; -- back to zero after second rise (7690 ns after start)
+          --(data_valid_collector_out = '0', "fail!4 data_valid back to zero after second rise");
+
+       end if;
+    end loop;
+
+    test_runner_cleanup(runner);
+ end process;
+
+ test_runner_watchdog(runner, 100 ms);
 
 end architecture;
