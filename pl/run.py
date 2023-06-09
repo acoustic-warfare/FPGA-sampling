@@ -6,9 +6,13 @@ from vunit import VUnit
 ROOT = Path(__file__).parent
 
 vu = VUnit.from_argv()
+vu.add_vhdl_builtins() #new for version 5 VUnit
 
 lib = vu.add_library("lib")
 lib.add_source_files(ROOT.glob("test/**/*.vhd"))
+#lib.add_source_files(ROOT.glob("test/sample.vhd"))
+
+
 lib.add_source_files(ROOT.glob("src/sample_data/*.vhd"))
 lib.add_source_files(ROOT.glob("src/ws_pulse/*.vhd"))
 lib.add_source_files(ROOT.glob("src/axi_lite/rd_en_pulse.vhd"))
