@@ -68,17 +68,11 @@ echo "Vivado $VIVADO_VERSION"
 # TODO: Check GHDL version >= min version
 # TODO: Check if build with 2008 libraries
 GHDL_REQUIRED_VERSION="2.0.0"
-GHDL_PATH="$(dirname $(locate -n1 bin/ghdl) 2> /dev/null )"
-if [ -e "$GHDL_PATH" ]; then 
-    export PATH=$GHDL_PATH:$PATH     
-    GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
-    # Use python to resolve semantic vesrsioning 
-    python -c "from pip._vendor.packaging.version import parse; raise SystemExit(not parse(\"$GHDL_REQUIRED_VERSION\") <= parse(\"$GHDL_VERSION\"))"
-    [ $? -eq 0 ] || echo -e "\033[1;41mERROR: GHDL version '$GHDL_VERSION' less then required '$GHDL_REQUIRED_VERSION'\033[0m"
-    echo "GHDL   $GHDL_VERSION"   
-else
-    echo -e "\033[1;33mWARNING: Could not locate GHDL installation\033[0m"
-fi
+GHDL_PATH="$ "/usr/lib/ghdl""
+GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
+
+echo "GHDL $GHDL_VERSION"
+
 
 #
 # Useful aliases
