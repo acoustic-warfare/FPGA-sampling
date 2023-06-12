@@ -32,6 +32,8 @@ sudo apt install pipx
 
 pipx ensurepath
 
+För att installera pip i venv ex. 
+./venv/bin/pip install numpy
 
 
 
@@ -53,13 +55,33 @@ Finns här med på gammla wikin och gick utan problem
 
 
 GHDL
+vet inte rikigt hur det löste sig men detta verkar fungera:
+Ladda ner GHDL 2.0.0 zip
+mkdir ghdl-objs
+cd ghdl-objs
+./configure --prefix=/usr/local
+/home/toad/Downloads/ghdl-2.0.0/configure --disable-werro
+sudo chmod 777 -R /usr/local/include/ghdl    
+make (detta ska vara i ghdl-objs)
+make install 
 
 
 
 VUnit
+Prova ta bort venv och installera om den med GHDL
+Ladda ner VUnit från source:
+git clone --recurse-submodules https://github.com/VUnit/vunit.git
+python setup.py install (i rätt mapp)
 
+prova även lägga till raderna i run.py (verkar inte behövas):
+import sys
+sys.path.append("/home/toad/vunit/")
 
 
 GTKwave
-
-
+i setting.jason för user lägg till:
+ "terminal.integrated.env.linux": {
+        "GTK_PATH": ""
+   }
+   
+   unset GTK_PATH
