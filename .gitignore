@@ -13,3 +13,6 @@ ip_repo
 ps/server
 ps/mic_data
 bat
+a.out
+zynq_udp_test
+data*

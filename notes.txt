@@ -83,5 +83,13 @@ i setting.jason för user lägg till:
  "terminal.integrated.env.linux": {
         "GTK_PATH": ""
    }
-   
-   unset GTK_PATH
+
+
+
+
+   problem med autonegotiation/phy att det bli 1:0 i linkspeed
+   klicka på biblioteksfoldern till echo_filerna
+   Klicka på system.mss
+   klicka på modify this BSP's design
+   under temac_adapter_options
+   ändra phy_link_speed till 1000Mbps
