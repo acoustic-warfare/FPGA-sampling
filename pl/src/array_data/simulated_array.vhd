@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
-entity array_data is
+entity simulated_array is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
    ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -18,8 +18,8 @@ entity array_data is
       sck_clk1   : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
-end array_data;
-architecture rtl of array_data is
+end simulated_array;
+architecture rtl of simulated_array is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state : state_type;
 
