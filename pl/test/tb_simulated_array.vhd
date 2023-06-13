@@ -12,16 +12,19 @@ end tb_simulated_array;
 
 architecture rtl of tb_simulated_array is
    constant C_CLK_CYKLE : time := 10 ns;
-   signal ws0           : std_logic;
-   signal ws1           : std_logic;
-   signal sck_clk0      : std_logic := '0';
-   signal sck_clk1      : std_logic;
-   signal bit_stream    : std_logic_vector(3 downto 0);
+
+   signal ws0        : std_logic := '0';
+   signal ws1        : std_logic;
+   signal sck_clk0   : std_logic := '0';
+   signal sck_clk1   : std_logic;
+   signal bit_stream : std_logic_vector(3 downto 0);
+
+   signal counter_tb : integer := 0;
 
 begin
    sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE/2;
 
-   simulated_array : entity work.simulated_array port map (
+   simulated_array1 : entity work.simulated_array port map (
       ws0        => ws0,
       ws1        => ws1,
       sck_clk0   => sck_clk0,
@@ -32,7 +35,10 @@ begin
    ws_process : process (sck_clk0)
    begin
       if rising_edge(sck_clk0) then
-         ws0 <= '1';
+         if (counter_tb > 10) then
+            ws0 <= '1';
+         end if;
+         counter_tb <= counter_tb + 1;
       end if;
 
    end process;
@@ -44,7 +50,7 @@ begin
          if run("wave") then
             -- test 1 is so far only ment for gktwave
 
-            wait for 500000 ns; -- duration of test 1
+            wait for 100000 ns; -- duration of test 1
 
          elsif run("auto") then
 
