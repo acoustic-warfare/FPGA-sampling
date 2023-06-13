@@ -96,6 +96,8 @@ UDP_PORT = 21844
 
 print("Enter a filename for the recording: ")
 fileChooser = input()
+print("Save as txt? (y) ")
+txtInput=input()
 print("Enter time to record (seconds): ")
 recordTime=input()
 t_end = time.time()+int(recordTime)
@@ -111,15 +113,51 @@ sock.bind((UDP_IP, UDP_PORT))
 # ROOT +'/array_PCBA1_recordings/'+fileChooser
 # ROOT +'/arrat_pcba2_small_text_recordings/'+fileChooser
 # ROOT +'/array_PCBA2_BOLD_recordings/'+fileChooser
-ROOT = os.getcwd()
-with open(fileChooser, "wb") as f:
 
-   #for count in itertools.count():
-   while time.time()<t_end:
-      data = sock.recv(sizeof(Data))
-      
-      d = Data.from_buffer_copy(data)
-      f.write(d)
+ROOT = os.getcwd()
+
+if(txtInput.lower() == "y"):
+   print("Recording!")
+   with open(fileChooser+".txt", "w") as f:
+      while time.time()<t_end:
+         data = sock.recv(sizeof(Data))
+
+         d = Data.from_buffer_copy(data)
+         
+         # Assuming you have an instance of the Data class named 'data'
+
+         # Printing the first parts
+         f.write("arrayId: " + str(d.arrayId))
+         f.write("   protocolVer: " + str(d.protocolVer))
+         f.write("   frequency: " + str(d.frequency))
+         f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
+
+         # Printing each mic data as integers
+         for i in range(1, 65):
+            field_name = f"mic_{i}"
+            mic_data = str(getattr(d, field_name))
+            f.write(field_name + ": ")
+            f.write(mic_data + "    ")
+
+         f.write("\n")
+
+         # Printing each mic data as strings
+         #for i in range(1, 65):
+         #    field_name = f"mic_{i}"
+         #    mic_data = str(getattr(d, field_name))
+         #    print(f"{field_name}: {mic_data}")
+
+         #f.write(d)
+
+else:
+   print("Recording")
+   with open(fileChooser, "wb") as f:
+      #for count in itertools.count():
+      while time.time()<t_end:
+         data = sock.recv(sizeof(Data))
+
+         d = Data.from_buffer_copy(data)
+         f.write(d)
 
     
 
@@ -127,5 +165,6 @@ with open(fileChooser, "wb") as f:
 
 f.close
 sys.stdout.flush()
+print("Done!")
    
 
