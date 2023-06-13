@@ -35,8 +35,12 @@ begin
    ws_process : process (sck_clk0)
    begin
       if rising_edge(sck_clk0) then
-         if (counter_tb > 10) then
+         if (counter_tb = 10 or counter_tb = 11) then
             ws0 <= '1';
+         elsif(counter_tb = 522 or counter_tb = 522)then
+            ws0 <= '1';
+         else
+            ws0 <= '0';
          end if;
          counter_tb <= counter_tb + 1;
       end if;
