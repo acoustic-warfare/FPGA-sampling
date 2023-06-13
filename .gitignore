@@ -13,3 +13,6 @@ ip_repo
 ps/server
 ps/mic_data
 bat
+project_1
+.vscode/c_cpp_properties.json
+project_2
