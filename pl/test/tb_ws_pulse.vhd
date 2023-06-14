@@ -81,6 +81,8 @@ begin
             clk_wait(5);
             reset <= '0';
 
+            clk_wait(3000000);
+
             wait for 30000 ns; -- duration of test 1
 
          elsif run("auto") then

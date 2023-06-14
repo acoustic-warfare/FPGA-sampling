@@ -56,16 +56,16 @@ begin
                runner <= '0';
 
                if ws = '1' and sck_clk = '1'then
-                  idle_start <= '1';
-                  --state  <= run; --remove this if using delay
-                  --runner <= '1'; --remove this if using delay
+               --   idle_start <= '1';
+                  state  <= run; --remove this if using delay
+                  runner <= '1'; --remove this if using delay
                end if;
                
-               if idle_start = '1' then
-                  state <= run;
-                  runner <= '1';
-                  idle_start <= '0';
-               end if;
+               --if idle_start = '1' then
+               --   state <= run;
+               --   runner <= '1';
+               --   idle_start <= '0';
+               --end if;
 
                -- tweek the idle_counter for optimal delay
                --if (idle_start = '1' and idle_counter = 1) then
