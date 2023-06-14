@@ -45,15 +45,12 @@ architecture structual of aw_top_simulated_array is
 
    signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
    signal sample_counter_out : std_logic_vector(31 downto 0);
-   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
-   signal rst_int : std_logic := '1';
-   signal ws_value : std_logic_vector(31 downto 0) := "00000000000000001011111010111100";
-   --signal ws_value : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(48825,32));    this is a much better solution, untested atm
-   signal ws_value_out : std_logic_vector(31 downto 0);
+   signal rst_cnt            : unsigned(31 downto 0)         := (others => '0'); --125 mhz, 8 ns,
+   signal rst_int            : std_logic                     := '1';
+   signal ws_value           : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(48825, 32)); -- frequency to send over udp
+   signal ws_value_out       : std_logic_vector(31 downto 0);
 
    signal bit_stream : std_logic_vector(3 downto 0);
-
-
 begin
 
    almost_empty <= almost_empty_array(0);
@@ -61,31 +58,30 @@ begin
    empty        <= empty_array(0);
    full         <= full_array(0);
 
-      process(sys_clock, reset_rtl)
-    begin
-        if reset_rtl = '1' then
-            rst_cnt  <= (others => '0');
-            rst_int <= '1';
-        elsif sys_clock'event and sys_clock = '1' then
+   process (sys_clock, reset_rtl)
+   begin
+      if reset_rtl = '1' then
+         rst_cnt <= (others => '0');
+         rst_int <= '1';
+      elsif sys_clock'event and sys_clock = '1' then
 
-        if rst_cnt =  x"01ffffff" then --about 3 sec
-      --  if rst_cnt =  x"00000fff" then
-           rst_int <= '0';
+         if rst_cnt = x"01ffffff" then --about 3 sec
+            rst_int <= '0';
          else
-              rst_cnt <= rst_cnt +1;
+            rst_cnt <= rst_cnt + 1;
          end if;
 
-        end if;
-    end process;
+      end if;
+   end process;
 
-    simulated_array_c : entity work.simulated_array
-    port map(
-      ws0        => ws_internal,
-      ws1        => ws_internal,
-      sck_clk0   => sck_clk_internal,
-      sck_clk1   => sck_clk_internal,
-      bit_stream => bit_stream
-    );
+   simulated_array_c : entity work.simulated_array
+      port map(
+         ws0        => ws_internal,
+         ws1        => ws_internal,
+         sck_clk0   => sck_clk_internal,
+         sck_clk1   => sck_clk_internal,
+         bit_stream => bit_stream
+      );
 
    fifo_bd_wrapper_gen : for i in 0 to 63 generate
    begin
@@ -119,8 +115,9 @@ begin
          wr_clk                 => clk,
          reset                  => reset
       );
--------------------------------------------------------------------------------------------------------
-      fifo_frequency : entity work.fifo_bd_wrapper
+
+   -- fifo to send frequncy to PS
+   fifo_frequency : entity work.fifo_bd_wrapper
       port map(
          FIFO_WRITE_full        => full_array(67),
          FIFO_READ_empty        => empty_array(67),
@@ -129,12 +126,12 @@ begin
          FIFO_WRITE_wr_data     => ws_value, --data in
          FIFO_WRITE_wr_en       => array_matrix_valid,
          FIFO_READ_rd_en        => rd_en_pulse_array(67), --- from pulse
-         FIFO_READ_rd_data      => ws_value_out,    --data out
+         FIFO_READ_rd_data      => ws_value_out,          --data out
          rd_clk                 => clk_axi,
          wr_clk                 => clk,
          reset                  => reset
       );
-------------------------------------------------------------------------------------------
+
    rd_en_pulse_gen : for i in 0 to 69 generate
    begin
       rd_en_pulse : entity work.rd_en_pulse
@@ -160,15 +157,13 @@ begin
             clk                  => clk,
             reset                => reset,
             ws                   => ws_internal,
+            sck_clk              => sck_clk_internal,
             bit_stream           => bit_stream(i),
             mic_sample_data_out  => mic_sample_data_out_internal(i),
             mic_sample_valid_out => mic_sample_valid_out_internal(i)
 
          );
-   end generate sample_gen;ws0      <= ws_internal;
-   ws1      <= ws_internal;
-   sck_clk0 <= sck_clk_internal;
-   sck_clk1 <= sck_clk_internal;
+   end generate sample_gen;
 
    collector_gen : for i in 0 to 3 generate
    begin
@@ -270,7 +265,7 @@ begin
          reg_64_0     => empty_array(31 downto 0),
          reg_65_0     => empty_array(63 downto 32),
          reg_66_0     => sample_counter_out,
-         reg_67_0 => ws_value_out,
+         reg_67_0     => ws_value_out,
          reg_68_0 => (others => '0'),
          reg_69_0 => (others => '0')
       );

@@ -22,7 +22,7 @@ architecture rtl of tb_simulated_array is
    signal counter_tb : integer := 0;
 
 begin
-   sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE/2;
+   sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE*5/2;
 
    simulated_array1 : entity work.simulated_array port map (
       ws0        => ws0,
@@ -34,10 +34,8 @@ begin
 
    ws_process : process (sck_clk0)
    begin
-      if rising_edge(sck_clk0) then
-         if (counter_tb = 10 or counter_tb = 11) then
-            ws0 <= '1';
-         elsif(counter_tb = 522 or counter_tb = 522)then
+      if falling_edge(sck_clk0) then
+         if (counter_tb = 10 or counter_tb = 522 or counter_tb = 1034) then
             ws0 <= '1';
          else
             ws0 <= '0';
@@ -54,7 +52,7 @@ begin
          if run("wave") then
             -- test 1 is so far only ment for gktwave
 
-            wait for 100000 ns; -- duration of test 1
+            wait for 50000 ns; -- duration of test 1
 
          elsif run("auto") then
 

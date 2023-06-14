@@ -19,6 +19,7 @@ entity sample is
       reset                : in std_logic;
       bit_stream           : in std_logic;
       ws                   : in std_logic;
+      sck_clk              : in std_logic;
       mic_sample_data_out  : inout std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0';
       ws_error             : out std_logic := '0' -- TODO: implement this further to check for bad data
@@ -54,19 +55,27 @@ begin
                ------------------------------------------------------------------------------------------------------------------------------------------
                runner <= '0';
 
-               if ws = '1' then
+               if ws = '1' and sck_clk = '1'then
                   idle_start <= '1';
+                  --state  <= run; --remove this if using delay
+                  --runner <= '1'; --remove this if using delay
+               end if;
+               
+               if idle_start = '1' then
+                  state <= run;
+                  runner <= '1';
+                  idle_start <= '0';
                end if;
 
                -- tweek the idle_counter for optimal delay
-               if (idle_start = '1' and idle_counter = 9) then
-                  idle_counter <= 0;
-                  idle_start   <= '0';
-                  state        <= run;
-                  runner       <= '1';
-               elsif (idle_start = '1') then
-                  idle_counter <= idle_counter + 1;
-               end if;
+               --if (idle_start = '1' and idle_counter = 1) then
+               --   idle_counter <= 0;
+               --   idle_start   <= '0';
+               --   state        <= run;
+               --   runner       <= '1';
+               --elsif (idle_start = '1') then
+               --   idle_counter <= idle_counter + 1;
+               --end if;
 
             when run =>
                ---------------------------------------------------------------------------------------------------------
@@ -91,8 +100,7 @@ begin
                   if ws = '1' and counter_mic > 2 then
                      ws_error <= '1';
                   end if;
-
-                  if counter_1s > 1 then
+                  if counter_1s > 1 then -- 3 or more 1s (2 or more no? :))
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
@@ -146,7 +154,7 @@ begin
    begin
       if rising_edge(clk) then
          if (runner = '1') then
-            if bit_stream = '1' then
+            if bit_stream = '1' and counter_samp /= 0 then
                counter_1s <= counter_1s + 1;
             end if;
 

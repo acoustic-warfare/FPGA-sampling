@@ -40,7 +40,7 @@ int main(){
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("mic_data/delay_.txt", "w");
+   FILE *fp = fopen("delay_.txt", "w");
    
    time_t secs = 4;               // HOW LONG TIME TO RECORD UDP PACKEGES
    time_t startTime = time(NULL);
@@ -61,5 +61,6 @@ int main(){
       }
       fprintf(fp, "%9d\n", buffer[67]);
    }
+   
    return 0;
 }

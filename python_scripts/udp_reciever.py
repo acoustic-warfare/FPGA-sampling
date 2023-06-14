@@ -117,37 +117,54 @@ sock.bind((UDP_IP, UDP_PORT))
 ROOT = os.getcwd()
 
 if(txtInput.lower() == "y"):
-   print("Recording!")
-   with open(fileChooser+".txt", "w") as f:
-      while time.time()<t_end:
-         data = sock.recv(sizeof(Data))
 
-         d = Data.from_buffer_copy(data)
-         
-         # Assuming you have an instance of the Data class named 'data'
+   print("Save as bits (y) ")
+   bits=input()
 
-         # Printing the first parts
-         f.write("arrayId: " + str(d.arrayId))
-         f.write("   protocolVer: " + str(d.protocolVer))
-         f.write("   frequency: " + str(d.frequency))
-         f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
+   if(bits.lower() == "y"):
+      print("Recording!!")
+      with open(fileChooser+".txt", "w") as f:
+         while time.time()<t_end:
+            data = sock.recv(sizeof(Data))
 
-         # Printing each mic data as integers
-         for i in range(1, 65):
-            field_name = f"mic_{i}"
-            mic_data = str(getattr(d, field_name))
-            f.write(field_name + ": ")
-            f.write(mic_data + "    ")
+            d = Data.from_buffer_copy(data)
 
-         f.write("\n")
+            # Printing the first parts
+            f.write("arrayId: " + str(d.arrayId))
+            f.write("   protocolVer: " + str(d.protocolVer))
+            f.write("   frequency: " + str(d.frequency))
+            f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
 
-         # Printing each mic data as strings
-         #for i in range(1, 65):
-         #    field_name = f"mic_{i}"
-         #    mic_data = str(getattr(d, field_name))
-         #    print(f"{field_name}: {mic_data}")
+            # Printing each mic data as integers
+            for i in range(1, 65):
+               field_name = f"mic_{i}"
+               mic_data = str(bin(~abs(getattr(d, field_name))))
+               f.write(field_name + ": ")
+               f.write(mic_data + "    ")
 
-         #f.write(d)
+            f.write("\n")
+   else:
+      print("Recording!")
+      with open(fileChooser+".txt", "w") as f:
+         while time.time()<t_end:
+            data = sock.recv(sizeof(Data))
+
+            d = Data.from_buffer_copy(data)
+
+            # Printing the first parts
+            f.write("arrayId: " + str(d.arrayId))
+            f.write("   protocolVer: " + str(d.protocolVer))
+            f.write("   frequency: " + str(d.frequency))
+            f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
+
+            # Printing each mic data as integers
+            for i in range(1, 65):
+               field_name = f"mic_{i}"
+               mic_data = str(getattr(d, field_name))
+               f.write(field_name + ": ")
+               f.write(mic_data + "    ")
+
+            f.write("\n")
 
 else:
    print("Recording")

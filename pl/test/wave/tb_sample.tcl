@@ -21,6 +21,7 @@ for {set i 2} {$i < $nfacts} {incr i} {
       tb_sample.sample1.sample_error -
       tb_sample.sample1.state_1 -
       tb_sample.sample1.ws -
+      tb_sample.sample1.sck_clk - 
       tb_sample.sample_error -
       tb_sample.ws -
       tb_tb.a* {
