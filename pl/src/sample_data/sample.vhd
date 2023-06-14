@@ -100,7 +100,7 @@ begin
                   if ws = '1' and counter_mic > 2 then
                      ws_error <= '1';
                   end if;
-                  if counter_1s > 1 then -- 3 or more 1s (2 or more no? :))
+                  if counter_1s = 1 then -- 3 or more 1s (2 or more no? :))
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
@@ -154,7 +154,7 @@ begin
    begin
       if rising_edge(clk) then
          if (runner = '1') then
-            if bit_stream = '1' and counter_samp /= 0 then
+            if bit_stream = '1' and counter_samp = 3 then
                counter_1s <= counter_1s + 1;
             end if;
 
