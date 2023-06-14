@@ -12,9 +12,23 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 
 
 
-
-
-
+def int_to_twos_complement_string(num):
+    if num >= 0:
+        binary = bin(num)[2:]  # Convert to binary string excluding the '0b' prefix
+        binary = binary.zfill(32)  # Pad with leading zeros to ensure 32 bits
+        binary_with_spaces = ' '.join(binary[i:i+8] for i in range(0, 32, 8))  # Add space between each byte
+    else:
+        # Convert to positive form by flipping the bits and adding 1
+        positive_num = abs(num) - 1
+        binary = bin(positive_num)[2:]  # Convert to binary string excluding the '0b' prefix
+        binary = binary.zfill(32)  # Pad with leading zeros to ensure 32 bits
+        
+        # Flip the bits
+        inverted_binary = ''.join('1' if bit == '0' else '0' for bit in binary)
+        
+        binary_with_spaces = ' '.join(inverted_binary[i:i+8] for i in range(0, 32, 8))  # Add space between each byte
+    binary_with_spaces = binary_with_spaces[:26] + binary_with_spaces[27:]  # Remove space between last two bytes
+    return binary_with_spaces
 
 # NOTE: Check if big-endian or little-endian as this is often flipped
 # use:
@@ -138,7 +152,7 @@ if(txtInput.lower() == "y"):
             # Printing each mic data as integers
             for i in range(1, 65):
                field_name = f"mic_{i}"
-               mic_data = str(bin(~abs(getattr(d, field_name))))
+               mic_data = int_to_twos_complement_string(getattr(d, field_name))
                f.write(field_name + ": ")
                f.write(mic_data + "    ")
 
