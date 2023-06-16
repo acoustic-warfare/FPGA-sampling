@@ -42,7 +42,7 @@ int main(){
       exit(EXIT_FAILURE);
    }
 
-   FILE *fp = fopen("mic_data/new_sample_data_new.txt", "w");
+   FILE *fp = fopen("new_sample_data_new.txt", "w");
 
    
    
@@ -58,9 +58,7 @@ int main(){
                    &len);
       buffer[n] = '\0';
 
-
-//131
-      for (int i = 0; i < 63+4; i++)
+      for (int i = 0; i < 64+63+4; i++)
       {
          fprintf(fp, "%9d, ", buffer[i]);
       }

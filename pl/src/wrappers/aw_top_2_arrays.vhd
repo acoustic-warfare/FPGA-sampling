@@ -122,9 +122,24 @@ begin
          ws      => ws_internal
       );
 
-   sample_gen : for i in 0 to 7 generate
+   sample_gen : for i in 4 to 7 generate
    begin
       sample_C : entity work.sample
+         port map(
+            clk                  => clk,
+            reset                => reset,
+            ws                   => ws_internal,
+            sck_clk              => sck_clk_internal,
+            bit_stream           => bit_stream(i - 4),
+            mic_sample_data_out  => mic_sample_data_out_internal(i),
+            mic_sample_valid_out => mic_sample_valid_out_internal(i)
+
+         );
+   end generate sample_gen;
+
+   sample_gen_clk : for i in 0 to 3 generate
+   begin
+      sample_clk_C : entity work.sample_clk
          port map(
             clk                  => clk,
             reset                => reset,
@@ -134,7 +149,7 @@ begin
             mic_sample_valid_out => mic_sample_valid_out_internal(i)
 
          );
-   end generate sample_gen;
+   end generate sample_gen_clk;
 
    collector_gen : for i in 0 to 7 generate
    begin
@@ -159,8 +174,6 @@ begin
          array_matrix_valid_out  => array_matrix_valid,
          sample_counter_array    => sample_counter(15 downto 0)
       );
-
-
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
          clk_125      => clk,
@@ -301,15 +314,13 @@ begin
          reg_mic_127_0 => data(127),
 
          reg_128_0 => empty_array(31 downto 0), -- for fifo empty_flag
-         reg_129_0 => sample_counter_out,        -- for sample_counter
+         reg_129_0 => sample_counter_out,       -- for sample_counter
 
          reg_130_0 => (others => '0'),
          reg_131_0 => (others => '0'),
          reg_132_0 => (others => '0'),
          reg_133_0 => (others => '0'),
          reg_134_0 => (others => '0')
-
-
       );
 
 end structual;

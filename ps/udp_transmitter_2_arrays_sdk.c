@@ -23,6 +23,13 @@ void tcp_slowtmr(void);
 
 #define AD0 0x40000000
 
+/*
+ void delay(unsigned int mseconds){
+ clock_t goal = mseconds \+ clock();
+ while (goal > clock());
+ }
+ */
+
 void print_ip(char *msg, struct ip_addr *ip) {
     print(msg);
     xil_printf("%d.%d.%d.%d\r\n", ip4_addr1(ip), ip4_addr2(ip), ip4_addr3(ip),
@@ -40,7 +47,7 @@ void PayloadID(u32 data[]) {}
 
 int main() {
     // set number of arrays used
-    u32 nr_arrays = 1;
+    u32 nr_arrays = 2;
 
     // set number of 32bit slots in payload_header
     u32 payload_header_size = 4;
@@ -74,11 +81,20 @@ int main() {
 
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 
+    // before sending to network
+
+    int len = 0;
+
+    len = sizeof(data);
+
+    data[len] = data[len];
+
     netif = &server_netif;
 
     init_platform();
 
     xil_printf("\r\n\r\n");
+
     xil_printf("-----lwIP RAW Mode Application ------\r\n");
 
     /* initliaze IP addresses to be used */
@@ -118,7 +134,7 @@ int main() {
     xil_printf("Setup Done!\r\n");
 
     // ip of reciving pc
-    IP4_ADDR(&ip_remote, 10, 0, 0, 1);
+	IP4_ADDR(&ip_remote, 10, 0, 0, 1);
 
     udp_1 = udp_new();
 
@@ -145,16 +161,16 @@ int main() {
     xil_printf("\r\n");
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
-    // add payload_headder
-    data[0] = array_id;                                        // id
-    data[1] = protocol_ver;                                    // ver
-    data[2] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
-
     while (1) {
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
         if (empty == 0) {
-            data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
-            for (int i = 0; i < 64; i++) {
+            // add payload_headder
+            data[0] = array_id;
+            data[1] = protocol_ver;
+            data[2] = 0;
+            data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 4); //counter
+
+            for (int i = 0; i < 64*nr_arrays; i++) {
                 data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
             }
 
