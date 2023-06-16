@@ -83,17 +83,25 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 
 update_compile_order -fileset sources_1
 
-## run synthesis
+## start gui
 switch $params(gui) {
    1 { start_gui }
    0 { puts "gui not started" }
    default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
 }
 
-## run implementation
+## run synth
 switch $params(synth) {
    1 { launch_runs synth_1 -jobs 4
        wait_on_run synth_1 }
+   0 { puts "synth not started" }
+   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+}
+
+## run impl
+switch $params(impl) {
+   1 { launch_runs impl_1 -to_step write_bitstream -jobs 4
+       wait_on_run impl_1 }
    0 { puts "synth not started" }
    default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
 }
