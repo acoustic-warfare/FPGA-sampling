@@ -24,7 +24,7 @@ set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 #set outputdir [file join "$ROOT" vivado_files]
 #file mkdir $outputdir
 #open_project
-open_project /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.xpr
+open_project [file join "$ROOT" vivado_files acoustic_warfare.xpr]
 
 ## start gui
 switch $params(gui) {

@@ -83,17 +83,25 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 
 update_compile_order -fileset sources_1
 
-## run synthesis
+## start gui
 switch $params(gui) {
    1 { start_gui }
    0 { puts "gui not started" }
    default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
 }
 
-## run implementation
+## run synth
 switch $params(synth) {
    1 { launch_runs synth_1 -jobs 4
        wait_on_run synth_1 }
+   0 { puts "synth not started" }
+   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+}
+
+## run impl
+switch $params(impl) {
+   1 { launch_runs impl_1 -to_step write_bitstream -jobs 4
+       wait_on_run impl_1 }
    0 { puts "synth not started" }
    default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
 }
@@ -103,9 +111,9 @@ update_compile_order -fileset sources_1
 ## launch SDK
 switch $params(sdk) {
    1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
+       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_2_arrays.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_2_arrays.hdf]
 
-       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
+       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_2_arrays.hdf]}
    0 { puts "SDK not launched" }
    default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
 }
