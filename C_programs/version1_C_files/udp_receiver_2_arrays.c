@@ -9,12 +9,14 @@
 #include <unistd.h>
 
 #define PORT 21844
-#define MAXLINE 1024
+#define MAXLINE 2048
 #define MAX_SAMPLES 10000
 // Driver code
 int main() {
     int sockfd;
     int buffer[MAXLINE];
+
+    //unsigned char buffer[1056];
 
     struct sockaddr_in servaddr, cliaddr;
 
@@ -40,16 +42,14 @@ int main() {
     }
 
     FILE *fp = fopen("new_sample_data_new.txt", "w");
-   
-    int length = 64 + 64 + 4;
-    int sample_cnt = 0;
-    while (sample_cnt < MAX_SAMPLES) {
+
+    for (int sample_cnt = 0; sample_cnt < MAX_SAMPLES; sample_cnt++) {
         int len, n;
 
         len = sizeof(cliaddr);  // len is value/result
-
-        n = recvfrom(sockfd, (char *)buffer, MAXLINE, MSG_WAITALL,
-                     (struct sockaddr *)&cliaddr, &len);
+         
+        n = recvfrom(sockfd, buffer, sizeof(buffer), MSG_WAITALL, (struct sockaddr *)&cliaddr, &len);
+        //n = recvfrom(sockfd, (char *)buffer, MAXLINE, MSG_WAITALL,(struct sockaddr *)&cliaddr, &len);
         buffer[n] = '\0';
 
         // header
@@ -77,11 +77,8 @@ int main() {
             fprintf(fp, "%8d, ", buffer[64 + i]);
 
             fprintf(fp, "     ");
-            
-        
         }
         fprintf(fp, "\n");
-        sample_cnt = sample_cnt + 1;
     }
     return 0;
 }

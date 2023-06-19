@@ -18,4 +18,5 @@ project_1
 project_2
 a.out
 data*
-bitstreams&ps.elf
+bitstreams_PSelf
+clk_sample*
