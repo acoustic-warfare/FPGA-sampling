@@ -228,11 +228,11 @@ proc create_root_design { parentCell } {
   # Create ports
   set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {8000000} \
+   CONFIG.FREQ_HZ {25000000} \
  ] $clk_25
   set clk_125 [ create_bd_port -dir O -type clk clk_125 ]
   set_property -dict [ list \
-   CONFIG.FREQ_HZ {40000000} \
+   CONFIG.FREQ_HZ {125000000} \
  ] $clk_125
   set clk_axi [ create_bd_port -dir O -type clk clk_axi ]
   set_property -dict [ list \

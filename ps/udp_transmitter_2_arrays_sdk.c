@@ -23,13 +23,6 @@ void tcp_slowtmr(void);
 
 #define AD0 0x40000000
 
-/*
- void delay(unsigned int mseconds){
- clock_t goal = mseconds \+ clock();
- while (goal > clock());
- }
- */
-
 void print_ip(char *msg, struct ip_addr *ip) {
     print(msg);
     xil_printf("%d.%d.%d.%d\r\n", ip4_addr1(ip), ip4_addr2(ip), ip4_addr3(ip),
@@ -55,7 +48,7 @@ int main() {
     // constants that will be sent in payload_header
     u32 array_id = 1;
     u32 protocol_ver = 1;
-    // u32 samp_frequency = 15625;
+    u32 samp_frequency = 48828;
 
     u32 data[payload_header_size + nr_arrays * 64];
 
@@ -161,13 +154,17 @@ int main() {
     xil_printf("\r\n");
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
+    data[0] = array_id;
+    data[1] = protocol_ver;
+    data[2] = samp_frequency;
+
     while (1) {
+         //ADDR: (data)start_addr-start_addr+63*4     (rd_enable)start_addr+64*4       (counter)start_addr+65*4
+
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
         if (empty == 0) {
             // add payload_headder
-            data[0] = array_id;
-            data[1] = protocol_ver;
-            data[2] = 0;
+
             data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 4); //counter
 
             for (int i = 0; i < 64*nr_arrays; i++) {
