@@ -87,7 +87,7 @@ alias open_vivado_project='vivado -notrace -mode batch -source $(git rev-parse -
 
 echo -e '
 Welcome to Acustic Warfare!
-   To run a test bench for a HDL-file write: vuinit "*HDL_file_name*"
+   To run a test bench for a HDL-file write: vunit "*HDL_file_name*"
    To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave"
    To create and lanch the Vivado project write: gen_all
 \033[4mCommands:\033[0m
