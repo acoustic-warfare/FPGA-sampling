@@ -26,6 +26,9 @@ mic = input()
 
 
 fs = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
+if(fs == 0): #Default to 48828 if no fs is sent in the data
+    fs = 48828 
+
 data2D = data2D[:,4:]    # removes headerinformation
 
 mic_data=data2D[:,int(mic)]
