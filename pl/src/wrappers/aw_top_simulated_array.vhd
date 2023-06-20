@@ -157,7 +157,6 @@ begin
             clk                  => clk,
             reset                => reset,
             ws                   => ws_internal,
-            sck_clk              => sck_clk_internal,
             bit_stream           => bit_stream(i),
             mic_sample_data_out  => mic_sample_data_out_internal(i),
             mic_sample_valid_out => mic_sample_valid_out_internal(i)

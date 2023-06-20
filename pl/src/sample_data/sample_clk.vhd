@@ -61,7 +61,7 @@ begin
                end if;
 
                -- this waits for the sck to have a rising_edge
-               if (idle_counter = 9) then
+               if (idle_counter = 4) then
                   idle_counter <= 0;
                   state        <= run;
                   runner       <= '1';
