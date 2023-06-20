@@ -29,15 +29,11 @@ architecture rtl of sample is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state        : state_type;
    signal counter_bit  : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
    signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
-   signal active       : std_logic := '0';           -- Make sure that ws only resets the the counters once
 
    signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
    signal idle_start   : std_logic := '0'; -- Part of the delay to make it more flexible
-   signal runner       : std_logic := '0'; -- Make sure that all counters are in synq with the delay
 
 begin
    main_state_p : process (sys_clk) -- main process for the statemachine. Starts in IDLE
@@ -52,19 +48,9 @@ begin
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
-               runner <= '0';
 
                if ws = '1' then
-                  idle_counter <= idle_counter + 1;
-               elsif idle_counter /= 0 then
-                  idle_counter <= idle_counter + 1;
-               end if;
-
-               -- this waits for the sck to have a rising_edge
-               if (idle_counter = 5) then
-                  idle_counter <= 0;
                   state        <= run;
-                  runner       <= '1';
                end if;
 
             when run =>
@@ -87,10 +73,8 @@ begin
                   ws_error <= '1';
                end if;
 
-               if counter_samp = 4 then
-                  -- 5 bits have been sampled,
-
-                  if counter_1s = 1 then
+              
+                  if bit_stream = '1' then
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
@@ -105,7 +89,7 @@ begin
                      mic_sample_valid_out <= '1';
                      state                <= pause;
                   end if;
-               end if;
+               counter_bit <= counter_bit + 1;
 
             when pause =>
                -------------------------------------------------------------------------------------------------------------------
@@ -121,68 +105,30 @@ begin
                end if;
 
                mic_sample_valid_out <= '0';
-               if counter_mic = 15 and counter_bit = 24 then
+               counter_bit <= counter_bit + 1;
+
+               if counter_mic = 15 then
                   -- all mic are sampled
                   state <= idle;
-               elsif counter_bit = 0 then
+               elsif counter_bit = 31 then
                   -- return to RUN to sample next mic
                   state <= run;
+                  counter_bit  <= 0;
                end if;
-
+               
             when others =>
                -- should never get here
                report("error_1");
                state <= idle;
          end case;
+
          if reset = '1' then
             state <= idle;
-         end if;
-      end if;
-   end process;
-
-   count_p : process (sys_clk)
-   begin
-      if rising_edge(sys_clk) then
-         if (runner = '1') then
-            -- to sample on the forth clk cycle of sck use counter_samp = 3
-            if bit_stream = '1' and counter_samp = 3 then
-               counter_1s <= 1;
-            end if;
-
-            -- a full bit has been sampled
-            if counter_samp = 4 then
-               counter_bit  <= counter_bit + 1;
-               counter_1s   <= 0;
-               counter_samp <= 0;
-            else
-               counter_samp <= counter_samp + 1;
-            end if;
-
-            -- a full mic has been sampled
-            if counter_bit = 31 and counter_samp = 4 then
-               counter_bit <= 0;
-               counter_mic <= counter_mic + 1;
-            end if;
-
-            -- all 16 mics have been sampled, the
-            if counter_mic = 15 and counter_bit = 31 then
-               counter_mic <= 0;
-            end if;
-         end if;
-
-         -- activate makes shure the reset only happens once per ws-pulse
-         if ws = '0' then
-            active <= '0';
-         end if;
-
-         if reset = '1' or (ws = '1' and active = '0') then
-            active       <= '1';
             counter_bit  <= 0;
-            counter_samp <= 0;
             counter_mic  <= 0;
-            counter_1s   <= 0;
          end if;
-      end if;
+
+         end if;
    end process;
 
    state_num : process (state) -- only for findig buggs in gtkwave
