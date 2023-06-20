@@ -14,9 +14,8 @@ entity tb_sample is
 end tb_sample;
 
 architecture tb of tb_sample is
-   constant C_CLK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
 
-   signal clk        : std_logic := '0';
    signal sck_clk    : std_logic := '0';
    signal reset      : std_logic := '0';
    signal ws         : std_logic := '0';
@@ -30,12 +29,11 @@ architecture tb of tb_sample is
    signal counter_tb  : integer := 0;
 
 begin
-   clk     <= not(clk) after C_CLK_CYKLE/2;
-   sck_clk <= not(sck_clk) after C_CLK_CYKLE * 5/2;
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
    sample1 : entity work.sample
       port map(
-         sys_clk              => clk,
+         sys_clk              => sck_clk,
          reset                => reset,
          bit_stream           => bit_stream,
          ws                   => ws,

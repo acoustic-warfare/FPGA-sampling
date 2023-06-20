@@ -14,7 +14,7 @@ entity tb_super_test is
 end tb_super_test;
 
 architecture tb of tb_super_test is
-   constant C_CLK_CYKLE : time := 50 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
 
    signal clk        : std_logic := '0';
    signal sck_clk    : std_logic := '0';
@@ -31,7 +31,7 @@ architecture tb of tb_super_test is
    signal counter_tb  : integer := 0;
 
 begin
-   sck_clk <= not(sck_clk) after C_CLK_CYKLE/2;
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    bit_stream <= bit_stream_vector(0);
 
    sample1 : entity work.sample
