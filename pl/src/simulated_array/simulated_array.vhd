@@ -11,8 +11,8 @@ entity simulated_array is
    );
    port (
 
-      ws        : in std_logic;
-      sck_clk   : in std_logic;
+      ws         : in std_logic;
+      sck_clk    : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
 end simulated_array;
@@ -45,8 +45,10 @@ begin
          mic_id3 <= to_unsigned(mic_counter + 48, 8);
 
          case state is
-            when idle             =>
+            when idle =>
+
                bit_stream <= (others => '1');
+               
                if (ws = '1' and ws_d = '0') then
                   state <= run;
                end if;

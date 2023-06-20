@@ -16,44 +16,40 @@ end tb_super_test;
 architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
 
-   signal clk        : std_logic := '0';
-   signal sck_clk    : std_logic := '0';
-   signal reset      : std_logic := '0';
-   signal ws         : std_logic := '0';
-   signal bit_stream : std_logic := '1';
+   signal sys_clk : std_logic := '0';
+   signal sck_clk        : std_logic := '0';
+   signal reset          : std_logic := '0';
+   signal ws             : std_logic := '0';
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
    signal ws_error             : std_logic;
-   signal bit_stream_vector : std_logic_vector(3 downto 0);
+   signal bit_stream_vector    : std_logic_vector(3 downto 0);
 
    signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
 
 begin
-   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
-   bit_stream <= bit_stream_vector(0);
+   sck_clk        <= not(sck_clk) after C_SCK_CYKLE/2;
+   sys_clk <= sck_clk;
+
+   simulated_array1 : entity work.simulated_array
+      port map(
+         ws         => ws,
+         sck_clk    => sck_clk,
+         bit_stream => bit_stream_vector
+      );
 
    sample1 : entity work.sample
       port map(
-         sys_clk              => sck_clk,
+         sys_clk              => sys_clk,
          reset                => reset,
-         bit_stream           => bit_stream,
+         bit_stream           => bit_stream_vector(0),
          ws                   => ws,
          mic_sample_data_out  => mic_sample_data_out,
          mic_sample_valid_out => mic_sample_valid_out,
          ws_error             => ws_error
       );
-
-   simulated_array1 : entity work.simulated_array
-      port map (
-         ws => ws,        
-         sck_clk => sck_clk,   
-         bit_stream => bit_stream_vector
-      );
-
-   
-
 
    ws_process : process (sck_clk)
    begin
