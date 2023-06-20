@@ -14,9 +14,7 @@ architecture rtl of tb_simulated_array is
    constant C_CLK_CYKLE : time := 10 ns;
 
    signal ws0        : std_logic := '0';
-   signal ws1        : std_logic;
    signal sck_clk0   : std_logic := '0';
-   signal sck_clk1   : std_logic;
    signal bit_stream : std_logic_vector(3 downto 0);
 
    signal counter_tb : integer := 0;
@@ -26,9 +24,7 @@ begin
 
    simulated_array1 : entity work.simulated_array port map (
       ws0        => ws0,
-      ws1        => ws1,
       sck_clk0   => sck_clk0,
-      sck_clk1   => sck_clk1,
       bit_stream => bit_stream
       );
 

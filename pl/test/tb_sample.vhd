@@ -39,7 +39,6 @@ begin
          reset                => reset,
          bit_stream           => bit_stream,
          ws                   => ws,
-         sck_clk              => sck_clk,
          mic_sample_data_out  => mic_sample_data_out,
          mic_sample_valid_out => mic_sample_valid_out,
          ws_error             => ws_error

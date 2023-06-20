@@ -12,9 +12,7 @@ entity simulated_array is
    port (
 
       ws0        : in std_logic;
-      ws1        : in std_logic;
       sck_clk0   : in std_logic;
-      sck_clk1   : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
 end simulated_array;
@@ -50,11 +48,6 @@ begin
             when idle             =>
                bit_stream <= (others => '1');
                if (ws0 = '1' and ws_d = '0') then
-                  bit_stream(0) <= mic_id0(7);
-                  bit_stream(1) <= mic_id1(7);
-                  bit_stream(2) <= mic_id2(7);
-                  bit_stream(3) <= mic_id3(7);
-                  bit_counter <= bit_counter + 1;
                   state <= run;
                end if;
 
