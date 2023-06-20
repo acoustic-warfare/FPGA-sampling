@@ -25,13 +25,13 @@ architecture tb of tb_super_test is
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
    signal ws_error             : std_logic;
-   signal bit_stream_vector : std_logic_vector(3 downto 0);
+   signal bit_stream_vector    : std_logic_vector(3 downto 0);
 
    signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
 
 begin
-   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
+   sck_clk    <= not(sck_clk) after C_SCK_CYKLE/2;
    bit_stream <= bit_stream_vector(0);
 
    sample1 : entity work.sample
@@ -46,15 +46,11 @@ begin
       );
 
    simulated_array1 : entity work.simulated_array
-      port map (
-         ws => ws,        
-         sck_clk => sck_clk,   
+      port map(
+         ws         => ws,
+         sck_clk    => sck_clk,
          bit_stream => bit_stream_vector
       );
-
-   
-
-
    ws_process : process (sck_clk)
    begin
       if falling_edge(sck_clk) then

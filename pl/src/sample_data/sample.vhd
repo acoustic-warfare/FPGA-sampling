@@ -27,10 +27,10 @@ end entity;
 
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
-   signal state        : state_type;
-   signal counter_bit  : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal state_1      : integer range 0 to 2;       -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+   signal state       : state_type;
+   signal counter_bit : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_mic : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
+   signal state_1     : integer range 0 to 2;       -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
    signal idle_start   : std_logic := '0'; -- Part of the delay to make it more flexible
@@ -50,7 +50,7 @@ begin
                ------------------------------------------------------------------------------------------------------------------------------------------
 
                if ws = '1' then
-                  state        <= run;
+                  state <= run;
                end if;
 
             when run =>
@@ -73,22 +73,21 @@ begin
                   ws_error <= '1';
                end if;
 
-              
-                  if bit_stream = '1' then
-                     -- sampled bit = 1
-                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0)           <= '1';
-                  else
-                     -- sampled bit = 0
-                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0)           <= '0';
-                  end if;
+               if bit_stream = '1' then
+                  -- sampled bit = 1
+                  mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
+                  mic_sample_data_out(0)           <= '1';
+               else
+                  -- sampled bit = 0
+                  mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
+                  mic_sample_data_out(0)           <= '0';
+               end if;
 
-                  if counter_bit = 23 then
-                     -- if the last bit of the mic, go to PAUSE
-                     mic_sample_valid_out <= '1';
-                     state                <= pause;
-                  end if;
+               if counter_bit = 23 then
+                  -- if the last bit of the mic, go to PAUSE
+                  mic_sample_valid_out <= '1';
+                  state                <= pause;
+               end if;
                counter_bit <= counter_bit + 1;
 
             when pause =>
@@ -105,17 +104,17 @@ begin
                end if;
 
                mic_sample_valid_out <= '0';
-               counter_bit <= counter_bit + 1;
+               counter_bit          <= counter_bit + 1;
 
                if counter_mic = 15 then
                   -- all mic are sampled
                   state <= idle;
                elsif counter_bit = 31 then
                   -- return to RUN to sample next mic
-                  state <= run;
-                  counter_bit  <= 0;
+                  state       <= run;
+                  counter_bit <= 0;
                end if;
-               
+
             when others =>
                -- should never get here
                report("error_1");
@@ -123,12 +122,12 @@ begin
          end case;
 
          if reset = '1' then
-            state <= idle;
-            counter_bit  <= 0;
-            counter_mic  <= 0;
+            state       <= idle;
+            counter_bit <= 0;
+            counter_mic <= 0;
          end if;
 
-         end if;
+      end if;
    end process;
 
    state_num : process (state) -- only for findig buggs in gtkwave

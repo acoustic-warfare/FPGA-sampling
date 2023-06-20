@@ -20,11 +20,11 @@ architecture rtl of tb_simulated_array is
    signal counter_tb : integer := 0;
 
 begin
-   sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE*5/2;
+   sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE * 5/2;
 
    simulated_array1 : entity work.simulated_array port map (
-      ws        => ws0,
-      sck_clk   => sck_clk0,
+      ws         => ws0,
+      sck_clk    => sck_clk0,
       bit_stream => bit_stream
       );
 

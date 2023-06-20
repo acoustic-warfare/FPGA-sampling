@@ -11,8 +11,8 @@ entity simulated_array is
    );
    port (
 
-      ws        : in std_logic;
-      sck_clk   : in std_logic;
+      ws         : in std_logic;
+      sck_clk    : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
 end simulated_array;
