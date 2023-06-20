@@ -23,43 +23,39 @@ entity collector is
       reset                  : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
-      chain_matrix_data_out  : inout matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
-      chain_matrix_valid_out : out std_logic := '0'     --  A signal to tell the receiver to start reading the data_out_matrix
+      chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
+      chain_matrix_valid_out : out std_logic := '0'   --  A signal to tell the receiver to start reading the data_out_matrix
    );
 end collector;
 
 architecture rtl of collector is
-   signal counter_mic : integer range 0 to G_NR_MICS := 0; --Counter for rows in data_matrix_16_24_out
-   signal tmp_holder  : std_logic_vector(31 downto 0);     -- temporary holder for incomming data, used for padding
+   signal counter_mic           : integer range 0 to G_NR_MICS := 0; --Counter for rows in data_matrix_16_24_out
    signal mic_sample_valid_in_d : std_logic;
 begin
    collect_p : process (clk) -- Process which collects the input data and put it in the matrix
-   --variable tmp_holder  : std_logic_vector(31 downto 0);
+      variable tmp_holder            : std_logic_vector(31 downto 0);     -- temporary holder for incomming data, used for padding
    begin
       if rising_edge(clk) then
-         mic_sample_valid_in_d <= mic_sample_valid_in;
-
          chain_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
-         if mic_sample_valid_in = '1' then -- Data from a new mic is valid and the shift register puts it at the first place
+         if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place
             if (mic_sample_data_in(23) = '0') then
-               tmp_holder(23 downto 0)  <= mic_sample_data_in;
-               tmp_holder(31 downto 24) <= "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
+               tmp_holder(23 downto 0)  := mic_sample_data_in;
+               tmp_holder(31 downto 24) := "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
             else
-               tmp_holder(23 downto 0)  <= mic_sample_data_in;
-               tmp_holder(31 downto 24) <= "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
+               tmp_holder(23 downto 0)  := mic_sample_data_in;
+               tmp_holder(31 downto 24) := "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
             end if;
-          -- chain_matrix_data_out <= chain_matrix_data_out(14 downto 0) & tmp_holder;
-          -- counter_mic           <= counter_mic + 1;
-         elsif counter_mic = G_NR_MICS then -- When all Vectors is full in the matrix set the data_valid_out to HIGH
+            chain_matrix_data_out(counter_mic) <= tmp_holder;
+            counter_mic                        <= counter_mic + 1;
+         end if;
+
+         if counter_mic = 16 then -- When all Vectors is full in the matrix set the data_valid_out to HIGH
             chain_matrix_valid_out <= '1';
             counter_mic            <= 0; -- Resets the microphone counter, to prepare collect the chain again
          end if;
 
-         if  mic_sample_valid_in_d = '1' then
-                chain_matrix_data_out(counter_mic) <= tmp_holder;        ---chain_matrix_data_out(14 downto 0) & tmp_holder;
-                counter_mic           <= counter_mic + 1;
-         end if;
+         mic_sample_valid_in_d <= mic_sample_valid_in;
 
          if reset = '1' then -- When reset is HIGH data_valid_out and counter_mic are reset back to LOW and zero
             chain_matrix_valid_out <= '0';

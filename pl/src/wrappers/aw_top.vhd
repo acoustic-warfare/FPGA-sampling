@@ -152,7 +152,7 @@ begin
    begin
       sample_C : entity work.sample
          port map(
-            clk                  => clk,
+            sys_clk              => sck_clk_internal,
             reset                => reset,
             ws                   => ws_internal,
             bit_stream           => bit_stream(i),
