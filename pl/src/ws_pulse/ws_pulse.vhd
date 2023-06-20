@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 entity ws_pulse is
+   generic (startup_length : integer := 3000000);
    port (
       sck_clk : in std_logic;
       reset   : in std_logic;
@@ -16,8 +17,8 @@ begin
    ws_pulse_p : process (sck_clk)
    begin
       if (falling_edge(sck_clk)) then
-         if (startup_counter > 3000000) then
-            if (rising_edge_counter = 510) then
+         if (startup_counter > startup_length) then
+            if (rising_edge_counter = 511) then
                ws                  <= '1'; -- set ws to HIGH after 509 cykles
                rising_edge_counter <= 0;
             else

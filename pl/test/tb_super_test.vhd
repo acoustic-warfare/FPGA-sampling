@@ -17,9 +17,9 @@ architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
 
    signal sys_clk : std_logic := '0';
-   signal sck_clk        : std_logic := '0';
-   signal reset          : std_logic := '0';
-   signal ws             : std_logic := '0';
+   signal sck_clk : std_logic := '0';
+   signal reset   : std_logic := '0';
+   signal ws      : std_logic := '0';
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
@@ -30,7 +30,7 @@ architecture tb of tb_super_test is
    signal counter_tb  : integer := 0;
 
 begin
-   sck_clk        <= not(sck_clk) after C_SCK_CYKLE/2;
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    sys_clk <= sck_clk;
 
    simulated_array1 : entity work.simulated_array
@@ -51,17 +51,13 @@ begin
          ws_error             => ws_error
       );
 
-   ws_process : process (sck_clk)
-   begin
-      if falling_edge(sck_clk) then
-         if (counter_tb = 10 or counter_tb = 522 or counter_tb = 1034) then
-            ws <= '1';
-         else
-            ws <= '0';
-         end if;
-         counter_tb <= counter_tb + 1;
-      end if;
-   end process;
+   ws_pulse1 : entity work.ws_pulse
+      generic map(startup_length => 10)
+      port map(
+         sck_clk => sck_clk,
+         ws      => ws,
+         reset   => reset
+      );
 
    main : process
    begin
@@ -70,7 +66,7 @@ begin
          if run("wave") then
             -- test 1 is so far only ment for gktwave
 
-            wait for 50000 ns; -- duration of test 1
+            wait for 1000000 ns; -- duration of test 1
 
          elsif run("auto") then
 

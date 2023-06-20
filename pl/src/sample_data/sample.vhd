@@ -110,6 +110,7 @@ begin
                   -- all mic are sampled
                   state <= idle;
                   counter_mic <= 0;
+                  counter_bit <= 0;
                elsif counter_bit = 31 then
                   -- return to RUN to sample next mic
                   state       <= run;

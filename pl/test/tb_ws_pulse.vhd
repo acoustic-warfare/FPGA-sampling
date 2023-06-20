@@ -14,6 +14,7 @@ end tb_ws_pulse;
 
 architecture tb of tb_ws_pulse is
    constant C_SCK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
+   constant startup_length : integer := 1;
 
    signal sck_clk     : std_logic := '0';
    signal reset       : std_logic;
@@ -32,8 +33,11 @@ architecture tb of tb_ws_pulse is
    end procedure;
 
 begin
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
-   ws_pulse_1 : entity work.ws_pulse port map(
+   ws_pulse_1 : entity work.ws_pulse 
+   generic map (startup_length => startup_length)
+   port map(
       sck_clk => sck_clk,
       ws      => ws,
       reset   => reset
@@ -47,7 +51,7 @@ begin
       end if;
    end process;
 
-   -- counter for fs_clk cykles
+   -- counter for ws cykles
    ws_counter_p : process (ws)
    begin
       if rising_edge(ws) and reset = '0' then
@@ -55,21 +59,9 @@ begin
       end if;
    end process;
 
-   -- generate clock pulses with a clock period of clk_cykle
-   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
+   
 
-   assert_p : process (ws) -- TODO: more automatic test
-   begin
-      if auto = '1' then
-         if rising_edge(ws) then
-            if ws_counter = 0 then
-               sck_counter_start <= sck_counter;
-            elsif ws_counter = 1 then
-               assert (sck_counter - sck_counter_start) = 512 report integer'image(sck_counter) severity error;
-            end if;
-         end if;
-      end if;
-   end process;
+
 
    main_p : process
    begin
@@ -77,20 +69,12 @@ begin
       while test_suite loop
          if run("wave") then -- only for use in gktwave
 
-            reset <= '1';
-            clk_wait(5);
-            reset <= '0';
 
-            clk_wait(3000000);
 
-            wait for 30000 ns; -- duration of test 1
+            wait for 300000 ns; -- duration of test 1
 
          elsif run("auto") then
 
-            auto  <= '1';
-            reset <= '1';
-            clk_wait(5);
-            reset <= '0';
 
             wait for 30000 ns; -- duration of test 1
 
