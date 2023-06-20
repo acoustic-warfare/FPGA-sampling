@@ -11,30 +11,30 @@ entity tb_simulated_array is
 end tb_simulated_array;
 
 architecture rtl of tb_simulated_array is
-   constant C_CLK_CYKLE : time := 10 ns;
+   constant C_SCK_CYKLE : time := 10 ns;
 
-   signal ws0        : std_logic := '0';
-   signal sck_clk0   : std_logic := '0';
+   signal ws         : std_logic := '0';
+   signal sck_clk    : std_logic := '0';
    signal bit_stream : std_logic_vector(3 downto 0);
 
    signal counter_tb : integer := 0;
 
 begin
-   sck_clk0 <= not (sck_clk0) after C_CLK_CYKLE * 5/2;
+   sck_clk <= not (sck_clk) after C_SCK_CYKLE * 5/2;
 
    simulated_array1 : entity work.simulated_array port map (
-      ws         => ws0,
-      sck_clk    => sck_clk0,
+      ws         => ws,
+      sck_clk    => sck_clk,
       bit_stream => bit_stream
       );
 
-   ws_process : process (sck_clk0)
+   ws_process : process (sck_clk)
    begin
-      if falling_edge(sck_clk0) then
+      if falling_edge(sck_clk) then
          if (counter_tb = 10 or counter_tb = 522 or counter_tb = 1034) then
-            ws0 <= '1';
+            ws <= '1';
          else
-            ws0 <= '0';
+            ws <= '0';
          end if;
          counter_tb <= counter_tb + 1;
       end if;
