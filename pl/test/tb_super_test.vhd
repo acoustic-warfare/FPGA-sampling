@@ -6,15 +6,15 @@ context vunit_lib.vunit_context;
 
 use work.MATRIX_TYPE.all;
 
-entity tb_sample is
+entity tb_super_test is
    generic (
       runner_cfg : string
    );
 
-end tb_sample;
+end tb_super_test;
 
-architecture tb of tb_sample is
-   constant C_CLK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
+architecture tb of tb_super_test is
+   constant C_CLK_CYKLE : time := 50 ns; -- set the duration of one clock cycle
 
    signal clk        : std_logic := '0';
    signal sck_clk    : std_logic := '0';
@@ -25,17 +25,18 @@ architecture tb of tb_sample is
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
    signal ws_error             : std_logic;
+   signal bit_stream_vector : std_logic_vector(3 downto 0);
 
    signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
 
 begin
-   clk     <= not(clk) after C_CLK_CYKLE/2;
-   sck_clk <= not(sck_clk) after C_CLK_CYKLE * 5/2;
+   sck_clk <= not(sck_clk) after C_CLK_CYKLE/2;
+   bit_stream <= bit_stream_vector(0);
 
    sample1 : entity work.sample
       port map(
-         sys_clk              => clk,
+         sys_clk              => sck_clk,
          reset                => reset,
          bit_stream           => bit_stream,
          ws                   => ws,
@@ -43,6 +44,16 @@ begin
          mic_sample_valid_out => mic_sample_valid_out,
          ws_error             => ws_error
       );
+
+   simulated_array1 : entity work.simulated_array
+      port map (
+         ws => ws,        
+         sck_clk => sck_clk,   
+         bit_stream => bit_stream_vector
+      );
+
+   
+
 
    ws_process : process (sck_clk)
    begin

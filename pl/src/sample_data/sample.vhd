@@ -15,7 +15,7 @@ entity sample is
    --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
    --------------------------------------------------------------------------------------------------------------------------------------------------
    port (
-      clk                  : in std_logic;
+      sys_clk              : in std_logic;
       reset                : in std_logic;
       bit_stream           : in std_logic;
       ws                   : in std_logic;
@@ -40,9 +40,9 @@ architecture rtl of sample is
    signal runner       : std_logic := '0'; -- Make sure that all counters are in synq with the delay
 
 begin
-   main_state_p : process (clk) -- main process for the statemachine. Starts in IDLE
+   main_state_p : process (sys_clk) -- main process for the statemachine. Starts in IDLE
    begin
-      if rising_edge(clk) then
+      if rising_edge(sys_clk) then
 
          case state is
             when idle => -- after a complete sample of all mics (only exit on ws high)
@@ -87,12 +87,10 @@ begin
                   ws_error <= '1';
                end if;
 
-               
-
                if counter_samp = 4 then
                   -- 5 bits have been sampled,
 
-                  if counter_1s = 1 then 
+                  if counter_1s = 1 then
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
@@ -142,9 +140,9 @@ begin
       end if;
    end process;
 
-   count_p : process (clk)
+   count_p : process (sys_clk)
    begin
-      if rising_edge(clk) then
+      if rising_edge(sys_clk) then
          if (runner = '1') then
             -- to sample on the forth clk cycle of sck use counter_samp = 3
             if bit_stream = '1' and counter_samp = 3 then

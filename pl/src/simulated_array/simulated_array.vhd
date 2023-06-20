@@ -11,8 +11,8 @@ entity simulated_array is
    );
    port (
 
-      ws0        : in std_logic;
-      sck_clk0   : in std_logic;
+      ws        : in std_logic;
+      sck_clk   : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
 end simulated_array;
@@ -35,9 +35,9 @@ architecture rtl of simulated_array is
 
 begin
 
-   fill_matrix_out_p : process (sck_clk0)
+   fill_matrix_out_p : process (sck_clk)
    begin
-      if rising_edge(sck_clk0) then
+      if rising_edge(sck_clk) then
 
          mic_id0 <= to_unsigned(mic_counter, 8);
          mic_id1 <= to_unsigned(mic_counter + 16, 8);
@@ -47,7 +47,7 @@ begin
          case state is
             when idle             =>
                bit_stream <= (others => '1');
-               if (ws0 = '1' and ws_d = '0') then
+               if (ws = '1' and ws_d = '0') then
                   state <= run;
                end if;
 
@@ -92,7 +92,7 @@ begin
                state <= idle;
          end case;
 
-         ws_d <= ws0;
+         ws_d <= ws;
       end if;
    end process;
 
