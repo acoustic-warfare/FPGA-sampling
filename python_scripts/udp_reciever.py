@@ -30,6 +30,21 @@ def int_to_twos_complement_string(num):
     binary_with_spaces = binary_with_spaces[:26] + binary_with_spaces[27:]  # Remove space between last two bytes
     return binary_with_spaces
 
+def int_to_twos_complement_string_16bit(num):
+    if num >= 0:
+        binary = bin(num)[2:]  # Convert to binary string excluding the '0b' prefix
+        binary = binary.zfill(32)  # Pad with leading zeros to ensure 32 bits
+    else:
+        # Convert to positive form by flipping the bits and adding 1
+        positive_num = abs(num) - 1
+        binary = bin(positive_num)[2:]  # Convert to binary string excluding the '0b' prefix
+        binary = binary.zfill(32)  # Pad with leading zeros to ensure 32 bits
+        
+    binary = binary[16:]  # Remove space between last two bytes
+    return binary
+
+
+
 # NOTE: Check if big-endian or little-endian as this is often flipped
 # use:
 # from ctypes import LittleEndianStructure, BigEndianStructure
@@ -147,7 +162,8 @@ if(txtInput.lower() == "y"):
             f.write("arrayId: " + str(d.arrayId))
             f.write("   protocolVer: " + str(d.protocolVer))
             f.write("   frequency: " + str(d.frequency))
-            f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
+            f.write("   sampelCounter: " + str(d.sampelCounter) + " ")
+            f.write("   sampelCounter: " + int_to_twos_complement_string_16bit(d.sampelCounter) + "        ")
 
             # Printing each mic data as integers
             for i in range(1, 65):
@@ -170,6 +186,7 @@ if(txtInput.lower() == "y"):
             f.write("   protocolVer: " + str(d.protocolVer))
             f.write("   frequency: " + str(d.frequency))
             f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
+            
 
             # Printing each mic data as integers
             for i in range(1, 65):

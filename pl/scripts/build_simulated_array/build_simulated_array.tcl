@@ -108,11 +108,11 @@ switch $params(impl) {
 update_compile_order -fileset sources_1
 
 ## launch SDK
-switch $params(sdk) {
-   1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_simulated_array.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_simulated_array.hdf]
-
-       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_simulated_array.hdf]}
-   0 { puts "SDK not launched" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+#switch $params(sdk) {
+#   1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
+#       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_simulated_array.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_simulated_array.hdf]
+#
+#       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_simulated_array.hdf]}
+#   0 { puts "SDK not launched" }
+#   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+#}
