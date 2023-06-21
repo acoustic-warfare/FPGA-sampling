@@ -25,14 +25,15 @@ begin
                ws                  <= '0';
                rising_edge_counter <= rising_edge_counter + 1;
             end if;
-
-            if (reset = '1') then
-               ws                  <= '0';
-               rising_edge_counter <= 0;
-            end if;
          else
             ws              <= '0';
             startup_counter <= startup_counter + 1;
+         end if;
+
+         if (reset = '1') then
+            ws                  <= '0';
+            startup_counter     <= (others => '0');
+            rising_edge_counter <= 0;
          end if;
       end if;
    end process;
