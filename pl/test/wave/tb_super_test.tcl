@@ -1,5 +1,3 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample.gtkw
-
 set nfacts [ gtkwave::getNumFacs ]
 puts "$nfacts"
 
@@ -9,21 +7,15 @@ for {set i 2} {$i < $nfacts} {incr i} {
    puts "$name"
 
    switch -glob -- $name {
-      tb_super_test.sample1.sys_clk -
-      tb_super_test.sample1.bit_stream -
-      tb_super_test.sample1.counter_samp -
-      tb_super_test.sample1.counter_bit -
-      tb_super_test.sample1.counter_mic -
-      tb_super_test.sample1.rd_enable -
-      tb_super_test.sample1.reg* -
-      tb_super_test.sample1.reset -
-      tb_super_test.sample1.sample_error -
-      tb_super_test.sample1.state_1 -
-      tb_super_test.sample1.ws -
-      tb_super_test.sample1.sck_clk - 
-      tb_super_test.sample_error -
-      tb_super_test.ws -
-      tb_tb.a* {
+      tb_super_test.sck_clk -
+      tb_super_test.clk -
+      tb_super_test.ws - 
+      tb_super_test.bit_stream_v* -
+      tb_super_test.array_matrix_valid_out - 
+      tb_super_test.chain_matrix_valid_o* -
+      tb_super_test.mic_sample_valid_out - 
+      tb_super_test.mic_sample_data_o* - 
+      tb_super_test.tb_look* {
          gtkwave::addSignalsFromList "$name"
       }
    }

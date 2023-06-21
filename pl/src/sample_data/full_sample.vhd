@@ -31,23 +31,26 @@ entity full_sample is
    );
 end full_sample;
 architecture rtl of full_sample is
-   signal temp_chain_matrix_0 : matrix_16_32_type;
-   signal temp_chain_matrix_1 : matrix_16_32_type;
-   signal temp_chain_matrix_2 : matrix_16_32_type;
-   signal temp_chain_matrix_3 : matrix_16_32_type;
+
    signal sample_counter      : unsigned(31 downto 0) := (others => '0');
 
 begin
 
    fill_matrix_out_p : process (sys_clk) -- This proccess fills an matrix with samples from all four collectors
+
+   variable temp_chain_matrix_0 : matrix_16_32_type;
+   variable temp_chain_matrix_1 : matrix_16_32_type;
+   variable temp_chain_matrix_2 : matrix_16_32_type;
+   variable temp_chain_matrix_3 : matrix_16_32_type;
+
    begin
       if rising_edge(sys_clk) then
 
          if chain_matrix_valid_in = "1111" then             -- If all valid signal was High, then store each chain in a temporary holder
-            temp_chain_matrix_0 <= chain_x4_matrix_data_in(0); --chain 1
-            temp_chain_matrix_1 <= chain_x4_matrix_data_in(1); --chain 2
-            temp_chain_matrix_2 <= chain_x4_matrix_data_in(2); --chain 3
-            temp_chain_matrix_3 <= chain_x4_matrix_data_in(3); --chain 4
+            temp_chain_matrix_0 := chain_x4_matrix_data_in(0); --chain 1
+            temp_chain_matrix_1 := chain_x4_matrix_data_in(1); --chain 2
+            temp_chain_matrix_2 := chain_x4_matrix_data_in(2); --chain 3
+            temp_chain_matrix_3 := chain_x4_matrix_data_in(3); --chain 4
 
             for i in 0 to 15 loop -- take samples from all four chains and store it in a matrix with the dimension of 64x32
                array_matrix_data_out(i)      <= temp_chain_matrix_0(i);
