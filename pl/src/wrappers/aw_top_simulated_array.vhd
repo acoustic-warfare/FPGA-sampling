@@ -8,6 +8,8 @@ entity aw_top_simulated_array is
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
       reset        : in std_logic;
+      micID_sw     : in std_logic;
+      led_r        : out std_logic;
       full         : out std_logic;
       empty        : out std_logic;
       almost_full  : out std_logic;
@@ -58,6 +60,8 @@ begin
    empty        <= empty_array(0);
    full         <= full_array(0);
 
+   led_r <= not micID_sw;
+
    process (sys_clock, reset_rtl)
    begin
       if reset_rtl = '1' then
@@ -76,13 +80,12 @@ begin
 
    simulated_array_c : entity work.simulated_array
       port map(
-         ws0        => ws_internal,
-         ws1        => ws_internal,
-         sck_clk0   => sck_clk_internal,
-         sck_clk1   => sck_clk_internal,
+         ws         => ws_internal,
+         sck_clk    => sck_clk_internal,
          bit_stream => bit_stream
       );
 
+   -- fifo to send data
    fifo_bd_wrapper_gen : for i in 0 to 63 generate
    begin
       fifo_gen : entity work.fifo_bd_wrapper
@@ -101,6 +104,7 @@ begin
          );
    end generate fifo_bd_wrapper_gen;
 
+   -- fifo to send counter
    fifo_sample_counter : entity work.fifo_bd_wrapper
       port map(
          FIFO_WRITE_full        => full_array(66),
@@ -154,7 +158,7 @@ begin
    begin
       sample_C : entity work.sample
          port map(
-            clk                  => clk,
+            sys_clk              => sck_clk_internal,
             reset                => reset,
             ws                   => ws_internal,
             bit_stream           => bit_stream(i),
@@ -167,9 +171,11 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector_c : entity work.collector
+         generic map(chainID => i)
          port map(
-            clk                    => clk,
+            sys_clk                => clk,
             reset                  => reset,
+            micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -179,7 +185,7 @@ begin
 
    full_sample_c : entity work.full_sample
       port map(
-         clk                     => clk,
+         sys_clk                 => clk,
          reset                   => reset,
          chain_x4_matrix_data_in => chain_matrix_data,
          chain_matrix_valid_in   => chain_matrix_valid_array,

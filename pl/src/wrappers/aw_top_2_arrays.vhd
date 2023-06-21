@@ -121,22 +121,20 @@ begin
          reset   => reset,
          ws      => ws_internal
       );
-
+   -- two diffrent sample_gen to use two diffrent sample_algoritms
    sample_gen : for i in 4 to 7 generate
    begin
       sample_C : entity work.sample
          port map(
-            clk                  => clk,
+            sys_clk              => sck_clk_internal,
             reset                => reset,
             ws                   => ws_internal,
-            --sck_clk              => sck_clk_internal,
             bit_stream           => bit_stream(i - 4),
             mic_sample_data_out  => mic_sample_data_out_internal(i),
             mic_sample_valid_out => mic_sample_valid_out_internal(i)
 
          );
    end generate sample_gen;
-
    sample_gen_clk : for i in 0 to 3 generate
    begin
       sample_clk_C : entity work.sample_clk
@@ -155,7 +153,7 @@ begin
    begin
       collector_c : entity work.collector
          port map(
-            clk                    => clk,
+            sys_clk                => clk,
             reset                  => reset,
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
