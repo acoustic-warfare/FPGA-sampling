@@ -48,9 +48,14 @@ begin
             when idle =>
 
                bit_stream <= (others => '1');
-               
-               if (ws = '1' and ws_d = '0') then
-                  state <= run;
+
+               if (ws = '1') then
+                  bit_stream(0) <= mic_id0(7);
+                  bit_stream(1) <= mic_id1(7);
+                  bit_stream(2) <= mic_id2(7);
+                  bit_stream(3) <= mic_id3(7);
+                  bit_counter   <= bit_counter + 1;
+                  state         <= run;
                end if;
 
             when run =>

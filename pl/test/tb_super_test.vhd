@@ -17,7 +17,6 @@ architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
-   signal sys_clk  : std_logic := '0';
    signal clk      : std_logic := '0';
    signal sck_clk  : std_logic := '0';
    signal reset    : std_logic := '0';
@@ -48,7 +47,6 @@ architecture tb of tb_super_test is
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
-   sys_clk <= sck_clk;
 
    tb_look_fullsample_data_out_0  <= array_matrix_data_out(0);
    tb_look_fullsample_data_out_15 <= array_matrix_data_out(15);
@@ -70,7 +68,7 @@ begin
    begin
       sample : entity work.sample
          port map(
-            sys_clk              => sys_clk,
+            sys_clk              => sck_clk,
             reset                => reset,
             bit_stream           => bit_stream_vector(i),
             ws                   => ws,

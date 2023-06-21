@@ -9,6 +9,8 @@ entity aw_top_2_arrays is
       reset_rtl    : in std_logic;
       reset        : in std_logic;
       bit_stream   : in std_logic_vector(7 downto 0);
+      micID_sw     : in std_logic;
+      led_r        : out std_logic;
       ws0          : out std_logic;
       ws1          : out std_logic;
       ws2          : out std_logic;
@@ -152,9 +154,11 @@ begin
    collector_gen : for i in 0 to 7 generate
    begin
       collector_c : entity work.collector
+         generic map(chainID => i)
          port map(
             sys_clk                => clk,
             reset                  => reset,
+            micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data_x2(i),
