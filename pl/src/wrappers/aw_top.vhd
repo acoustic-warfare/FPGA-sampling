@@ -8,6 +8,8 @@ entity aw_top is
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
       reset        : in std_logic;
+      micID_sw     : in std_logic;
+      led_r        : out std_logic;
       bit_stream   : in std_logic_vector(3 downto 0);
       ws0          : out std_logic;
       ws1          : out std_logic;
@@ -65,6 +67,8 @@ begin
    almost_full  <= almost_full_array(0);
    empty        <= empty_array(0);
    full         <= full_array(0);
+
+   led_r <= not micID_sw;
 
    process (sys_clock, reset_rtl)
    begin
@@ -165,9 +169,11 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector_c : entity work.collector
+         generic map(chainID => i)
          port map(
-            clk                    => clk,
+            sys_clk                => clk,
             reset                  => reset,
+            micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -177,7 +183,7 @@ begin
 
    full_sample_c : entity work.full_sample
       port map(
-         clk                     => clk,
+         sys_clk                 => clk,
          reset                   => reset,
          chain_x4_matrix_data_in => chain_matrix_data,
          chain_matrix_valid_in   => chain_matrix_valid_array,

@@ -17,11 +17,12 @@ architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
-   signal sys_clk : std_logic := '0';
-   signal clk     : std_logic := '0';
-   signal sck_clk : std_logic := '0';
-   signal reset   : std_logic := '0';
-   signal ws      : std_logic := '0';
+   signal sys_clk  : std_logic := '0';
+   signal clk      : std_logic := '0';
+   signal sck_clk  : std_logic := '0';
+   signal reset    : std_logic := '0';
+   signal ws       : std_logic := '0';
+   signal micID_sw : std_logic := '0';
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
@@ -82,9 +83,11 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector : entity work.collector
+         generic map(chainID => i)
          port map(
             sys_clk                => clk,
             reset                  => reset,
+            micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
             chain_matrix_data_out  => chain_x4_matrix_data_in(i),

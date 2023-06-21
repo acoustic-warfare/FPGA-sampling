@@ -18,6 +18,7 @@ architecture tb of tb_collector is
 
    signal clk                    : std_logic                     := '0';
    signal reset                  : std_logic                     := '0';
+   signal micID_sw               : std_logic                     := '0';
    signal mic_sample_data_in     : std_logic_vector(23 downto 0) := "000000000000000000000000";
    signal mic_sample_valid_in    : std_logic;
    signal chain_matrix_data_out  : matrix_16_32_type;
@@ -37,6 +38,7 @@ begin
    collector1 : entity work.collector port map(
       sys_clk                => clk,
       reset                  => reset,
+      micID_sw               => micID_sw,
       mic_sample_data_in     => mic_sample_data_in,
       mic_sample_valid_in    => mic_sample_valid_in,
       chain_matrix_data_out  => chain_matrix_data_out,

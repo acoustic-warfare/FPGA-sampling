@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use work.matrix_type.all;
-
+use ieee.numeric_std.all;
 entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
@@ -16,11 +16,13 @@ entity collector is
    generic (
       -- TODO: implement generics
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
+      G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
+      chainID    : integer := 0
    );
    port (
       sys_clk                : in std_logic;
       reset                  : in std_logic;
+      micID_sw               : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
@@ -39,13 +41,18 @@ begin
          chain_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
          if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place
-            if (mic_sample_data_in(23) = '0') then
-               tmp_holder(23 downto 0)  := mic_sample_data_in;
-               tmp_holder(31 downto 24) := "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
+            tmp_holder(23 downto 0) := mic_sample_data_in;
+
+            if micID_sw = '1' then
+               if (mic_sample_data_in(23) = '0') then
+                  tmp_holder(31 downto 24) := "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
+               else
+                  tmp_holder(31 downto 24) := "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
+               end if;
             else
-               tmp_holder(23 downto 0)  := mic_sample_data_in;
-               tmp_holder(31 downto 24) := "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
+               tmp_holder(31 downto 24) := std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8));
             end if;
+
             chain_matrix_data_out(counter_mic) <= tmp_holder;
             counter_mic                        <= counter_mic + 1;
          end if;
