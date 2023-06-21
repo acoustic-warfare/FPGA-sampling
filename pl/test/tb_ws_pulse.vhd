@@ -13,7 +13,7 @@ entity tb_ws_pulse is
 end tb_ws_pulse;
 
 architecture tb of tb_ws_pulse is
-   constant C_SCK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE    : time    := 10 ns; -- set the duration of one clock cycle
    constant startup_length : integer := 1;
 
    signal sck_clk     : std_logic := '0';
@@ -35,12 +35,12 @@ architecture tb of tb_ws_pulse is
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
-   ws_pulse_1 : entity work.ws_pulse 
-   generic map (startup_length => startup_length)
-   port map(
-      sck_clk => sck_clk,
-      ws      => ws,
-      reset   => reset
+   ws_pulse_1 : entity work.ws_pulse
+      generic map(startup_length => startup_length)
+      port map(
+         sck_clk => sck_clk,
+         ws      => ws,
+         reset   => reset
       );
 
    -- counter for fs_clk cykles
@@ -59,23 +59,15 @@ begin
       end if;
    end process;
 
-   
-
-
-
    main_p : process
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then -- only for use in gktwave
 
-
-
             wait for 300000 ns; -- duration of test 1
 
          elsif run("auto") then
-
-
             wait for 30000 ns; -- duration of test 1
 
          end if;

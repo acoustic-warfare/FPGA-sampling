@@ -19,7 +19,7 @@ entity collector is
       G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
    );
    port (
-      clk                    : in std_logic;
+      sys_clk                : in std_logic;
       reset                  : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
@@ -32,10 +32,10 @@ architecture rtl of collector is
    signal counter_mic           : integer range 0 to G_NR_MICS := 0; --Counter for rows in data_matrix_16_24_out
    signal mic_sample_valid_in_d : std_logic;
 begin
-   collect_p : process (clk) -- Process which collects the input data and put it in the matrix
-      variable tmp_holder            : std_logic_vector(31 downto 0);     -- temporary holder for incomming data, used for padding
+   collect_p : process (sys_clk)                        -- Process which collects the input data and put it in the matrix
+      variable tmp_holder : std_logic_vector(31 downto 0); -- temporary holder for incomming data, used for padding
    begin
-      if rising_edge(clk) then
+      if rising_edge(sys_clk) then
          chain_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
 
          if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place

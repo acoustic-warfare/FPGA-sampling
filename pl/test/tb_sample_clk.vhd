@@ -30,7 +30,7 @@ architecture tb of tb_sample_clk is
 
 begin
    clk <= not(clk) after C_CLK_CYKLE/2;
-   
+
    sample_clk1 : entity work.sample_clk
       port map(
          clk                  => clk,

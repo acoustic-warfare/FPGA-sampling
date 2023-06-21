@@ -21,7 +21,7 @@ entity full_sample is
       G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
    );
    port (
-      clk                     : in std_logic;
+      sys_clk                 : in std_logic;
       reset                   : in std_logic;
       chain_x4_matrix_data_in : in matrix_4_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(3 downto 0);
@@ -31,7 +31,6 @@ entity full_sample is
    );
 end full_sample;
 architecture rtl of full_sample is
-   signal valid_check         : std_logic_vector(3 downto 0); -- TODO: change namr of rd_check to somthing more describing
    signal temp_chain_matrix_0 : matrix_16_32_type;
    signal temp_chain_matrix_1 : matrix_16_32_type;
    signal temp_chain_matrix_2 : matrix_16_32_type;
@@ -40,16 +39,11 @@ architecture rtl of full_sample is
 
 begin
 
-   fill_matrix_out_p : process (clk) -- This proccess fills an matrix with samples from all four collectors
+   fill_matrix_out_p : process (sys_clk) -- This proccess fills an matrix with samples from all four collectors
    begin
-      if rising_edge(clk) then
-         for i in 0 to 3 loop
-            if chain_matrix_valid_in(i) = '1' then -- checks if valid signals from all collectors is HIGH
-               valid_check(i) <= '1';
-            end if;
-         end loop;
+      if rising_edge(sys_clk) then
 
-         if valid_check = "1111" then                       -- If all valid signal was High, then store each chain in a temporary holder
+         if chain_matrix_valid_in = "1111" then             -- If all valid signal was High, then store each chain in a temporary holder
             temp_chain_matrix_0 <= chain_x4_matrix_data_in(0); --chain 1
             temp_chain_matrix_1 <= chain_x4_matrix_data_in(1); --chain 2
             temp_chain_matrix_2 <= chain_x4_matrix_data_in(2); --chain 3
@@ -63,7 +57,6 @@ begin
             end loop;
 
             array_matrix_valid_out <= '1';                              -- Set the valid signal to High, so the next component can read the samples
-            valid_check            <= (others => '0');                  -- Reset the valid signals from the Collectors
             sample_counter         <= sample_counter + 1;               --increment the sample counter
             sample_counter_array   <= std_logic_vector(sample_counter); -- convert INT to a vector
          else
@@ -72,7 +65,6 @@ begin
 
          if reset = '1' then -- resets data_valid_out to low and
             array_matrix_valid_out <= '0';
-            valid_check            <= (others => '0');
          end if;
       end if;
    end process;

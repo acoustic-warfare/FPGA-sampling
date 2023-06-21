@@ -48,7 +48,7 @@ def print_analysis(fileChooser,microphones,source_audio):
 
       micData = data2D[:,4:] #An array with only mic data. i.e removes (Array id, protocol version, freq and counter)
       f_sampling = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
-      #f_sampling = 10000
+      f_sampling = 48828
       return micData, int(f_sampling),fileChooser
 
    def delete_mic_data(signal, mic_to_delete):
