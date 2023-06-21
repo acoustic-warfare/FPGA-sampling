@@ -42,7 +42,7 @@ architecture tb of tb_full_sample is
 begin
 
    full_sample_1 : entity work.full_sample port map(
-      clk                     => clk,
+      sys_clk                 => clk,
       reset                   => reset,
       chain_x4_matrix_data_in => chain_x4_matrix_data_in,
       chain_matrix_valid_in   => chain_matrix_valid_in,

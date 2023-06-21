@@ -15,8 +15,10 @@ end tb_super_test;
 
 architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
+   constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
    signal sys_clk : std_logic := '0';
+   signal clk     : std_logic := '0';
    signal sck_clk : std_logic := '0';
    signal reset   : std_logic := '0';
    signal ws      : std_logic := '0';
@@ -26,12 +28,36 @@ architecture tb of tb_super_test is
    signal ws_error             : std_logic;
    signal bit_stream_vector    : std_logic_vector(3 downto 0);
 
-   signal sim_counter : integer := 0;
-   signal counter_tb  : integer := 0;
+   signal chain_matrix_data_out  : matrix_16_32_type;
+   signal chain_matrix_1s        : matrix_16_32_type;
+   signal chain_matrix_valid_out : std_logic;
+
+   signal tb_look_collector_data_out_0  : std_logic_vector(31 downto 0);
+   signal tb_look_collector_data_out_15 : std_logic_vector(31 downto 0);
+
+   signal tb_look_fullsample_data_out_0  : std_logic_vector(31 downto 0);
+   signal tb_look_fullsample_data_out_15 : std_logic_vector(31 downto 0);
+
+   signal chain_x4_matrix_data_in : matrix_4_16_32_type;
+   signal chain_matrix_valid_in   : std_logic_vector(3 downto 0);
+   signal array_matrix_data_out   : matrix_64_32_type;
+   signal array_matrix_valid_out  : std_logic;
+   signal sample_counter_array    : std_logic_vector(31 downto 0);
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
+   clk     <= not(clk) after C_CLK_CYKLE/2;
    sys_clk <= sck_clk;
+
+   chain_matrix_valid_in(0)          <= chain_matrix_valid_out;
+   chain_matrix_valid_in(3 downto 1) <= (others => '1');
+   chain_x4_matrix_data_in(0)        <= chain_matrix_data_out;
+
+   tb_look_collector_data_out_0  <= chain_matrix_data_out(0);
+   tb_look_collector_data_out_15 <= chain_matrix_data_out(15);
+
+   tb_look_fullsample_data_out_0  <= array_matrix_data_out(0);
+   tb_look_fullsample_data_out_15 <= array_matrix_data_out(15);
 
    simulated_array1 : entity work.simulated_array
       port map(
@@ -49,6 +75,27 @@ begin
          mic_sample_data_out  => mic_sample_data_out,
          mic_sample_valid_out => mic_sample_valid_out,
          ws_error             => ws_error
+      );
+
+   collector1 : entity work.collector
+      port map(
+         sys_clk                => clk,
+         reset                  => reset,
+         mic_sample_data_in     => mic_sample_data_out,
+         mic_sample_valid_in    => mic_sample_valid_out,
+         chain_matrix_data_out  => chain_matrix_data_out,
+         chain_matrix_valid_out => chain_matrix_valid_out
+      );
+
+   full_sample1 : entity work.full_sample
+      port map(
+         sys_clk                 => clk,
+         reset                   => reset,
+         chain_x4_matrix_data_in => chain_x4_matrix_data_in,
+         chain_matrix_valid_in   => chain_matrix_valid_in,
+         array_matrix_data_out   => array_matrix_data_out,
+         array_matrix_valid_out  => array_matrix_valid_out,
+         sample_counter_array    => sample_counter_array
       );
 
    ws_pulse1 : entity work.ws_pulse

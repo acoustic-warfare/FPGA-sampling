@@ -21,8 +21,8 @@ architecture tb of tb_rd_en_pulse is
 begin
 
    rd_en_pulse : entity work.rd_en_pulse port map(
-      clk_axi         => clk_axi,
-      reset           => reset,
+      clk_axi   => clk_axi,
+      reset     => reset,
       rd_en_in  => rd_en_in,
       rd_en_out => rd_en_out
       );
