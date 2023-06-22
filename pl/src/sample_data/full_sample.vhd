@@ -25,8 +25,8 @@ entity full_sample is
       reset                   : in std_logic;
       chain_x4_matrix_data_in : in matrix_4_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(3 downto 0);
-      array_matrix_data_out   : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      array_matrix_valid_out  : out std_logic;
+      array_matrix_data_out   : out matrix_64_32_type; --S AMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_valid_out  : out std_logic;  -- A signal to tell the receiver to start reading the array_matrix_data_out
       sample_counter_array    : out std_logic_vector(31 downto 0)
    );
 end full_sample;

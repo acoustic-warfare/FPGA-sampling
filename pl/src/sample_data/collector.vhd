@@ -5,6 +5,8 @@ use ieee.numeric_std.all;
 entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
+   -- MICID_SW: Signal to indicate if padding should be an ID for each mic or two's complement. 
+   --
    -- MIC_SAMPLE_DATA_IN: Incomming array of data. One microphone sends 32 bits.
    --
    -- MIC_SAMPLE_VALID_IN: High for one clk cykle when the MIC_SAMPLE_DATA_IN has bean updated
@@ -17,7 +19,7 @@ entity collector is
       -- TODO: implement generics
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
-      chainID    : integer := 0
+      chainID    : integer := 0   -- Identifier for a specific chain
    );
    port (
       sys_clk                : in std_logic;
@@ -26,7 +28,7 @@ entity collector is
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
-      chain_matrix_valid_out : out std_logic := '0'   --  A signal to tell the receiver to start reading the data_out_matrix
+      chain_matrix_valid_out : out std_logic := '0'   -- A signal to tell the receiver to start reading the data_out_matrix
    );
 end collector;
 
@@ -50,7 +52,7 @@ begin
                   tmp_holder(31 downto 24) := "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"
                end if;
             else
-               tmp_holder(31 downto 24) := std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8));
+               tmp_holder(31 downto 24) := std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8)); --Add padding according to the the current mic. if 2:nd mic then padding = "00000010"
             end if;
 
             chain_matrix_data_out(counter_mic) <= tmp_holder;
