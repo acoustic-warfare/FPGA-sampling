@@ -20,28 +20,28 @@ entity sample is
       bit_stream           : in std_logic;
       ws                   : in std_logic;
       mic_sample_data_out  : inout std_logic_vector(23 downto 0);
-      mic_sample_valid_out : out std_logic := '0';
-      ws_error             : out std_logic := '0' -- TODO: implement this further to check for bad data
+      mic_sample_valid_out : out std_logic := '0'; -- A signal to tell the receiver to start reading the mic_sample_data_out
+      ws_error             : out std_logic := '0'  -- TODO: implement this further to check for bad data
    );
 end entity;
 
 architecture rtl of sample is
-   type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
+   type state_type is (idle, run, pause); -- Three states for the state-machine. See State-diagram for more information
    signal state       : state_type;
    signal counter_bit : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_mic : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal state_1     : integer range 0 to 2;       -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+   signal state_1     : integer range 0 to 2;       -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
    signal idle_start   : std_logic := '0'; -- Part of the delay to make it more flexible
 
 begin
-   main_state_p : process (sys_clk) -- main process for the statemachine. Starts in IDLE
+   main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin
       if rising_edge(sys_clk) then
 
          case state is
-            when idle => -- after a complete sample of all mics (only exit on ws high)
+            when idle => -- After a complete sample of all mics (only exit on ws high)
                ------------------------------------------------------------------------------------------------------------------------------------------
                -- Starting state.
                -- wait here until a WS pulse is received, which progress the machine to enter the RUN state.
@@ -55,16 +55,12 @@ begin
 
             when run =>
                ---------------------------------------------------------------------------------------------------------
-               -- This is the state who collects the sampled TDM-slots.
+               -- This is the state that collects the sampled TDM-slots.
                --
-               -- The parallel process count_p samples the incomming bits,
-               -- and enters the following IF-statements after sampling a bit five times(counter_samp = 4).
+               -- The process takes a one bit sample of the incoming bitstream and the determined bit 
+               -- is it's incoming value, e.g. "1" or "0".
                --
-               -- counter_1s is counting how many of the five samples was a 1,
-               -- if the majority of the five samples is 1:s then it is determined that the sampled bit is a 1.
-               -- Else the determined bit is a 0.
-               --
-               -- when a bit is determined it is then shifted in to a register,
+               -- When a bit is determined it is then shifted in to a register,
                -- and this process is repeated for all 24 TDM bits which now represents a full microphone sample.
                --
                -- When 24 bits have been sampled the machine change state to PAUSE.
@@ -92,7 +88,7 @@ begin
 
             when pause =>
                -------------------------------------------------------------------------------------------------------------------
-               -- a Microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
+               -- A Microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
                -- This state is used to wait and let those 8 empty TDM-slots bits pass by.
                --
                -- After the 8 empty bits the machine returns to the RUN state to start to sample the next microphone in the chain
@@ -108,7 +104,7 @@ begin
 
                if counter_mic = 15 then
                   -- all mic are sampled
-                  state <= idle;
+                  state       <= idle;
                   counter_mic <= 0;
                   counter_bit <= 0;
                elsif counter_bit = 31 then
