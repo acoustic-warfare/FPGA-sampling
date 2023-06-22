@@ -78,7 +78,7 @@ echo "GHDL $GHDL_VERSION"
 # Useful aliases
 #
 alias clean="git clean -xdie $VENV_NAME"
-alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd'
+alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py -v '
 alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
 alias build='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_1_array/build_1_array.tcl'
 alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_simulated_array.tcl'
