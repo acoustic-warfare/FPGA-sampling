@@ -13,7 +13,7 @@ entity tb_sample_clk is
 
 end tb_sample_clk;
 
-architecture tb of tb_sample_clk is
+architecture behave of tb_sample_clk is
    constant C_CLK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
 
    signal clk        : std_logic := '0';

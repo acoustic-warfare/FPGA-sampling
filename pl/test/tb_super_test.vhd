@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
+use ieee.numeric_std.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
@@ -113,6 +114,8 @@ begin
       );
 
    main : process
+      variable auto_test_data : unsigned(32 downto 0) := (others => '0');
+      variable auto_test_data_int : integer := 0;
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
@@ -121,14 +124,18 @@ begin
             wait for 1000000 ns; -- duration of test 1
 
          elsif run("auto") then
-            wait for 50 ns;
+            for i in 0 to 26000 loop
 
-            info("test");
+               if (array_matrix_valid_out = '1') then
+                  info("test");
+                  for row in 0 to 63 loop
+                     auto_test_data := to_unsigned(auto_test_data_int, 32);
+                     check(array_matrix_data_out(row) = std_logic_vector(auto_test_data), to_string(row), warning);
+                  end loop;
+               end if;
 
-            check(clk = '1', "hej hej", warning);
-            check(clk = '0', "hej", warning);
-            wait for 50 ns;
-
+               wait for C_CLK_CYKLE;
+            end loop;
          end if;
       end loop;
 
