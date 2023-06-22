@@ -118,12 +118,16 @@ begin
       while test_suite loop
          if run("wave") then
             -- test 1 is so far only ment for gktwave
-
             wait for 1000000 ns; -- duration of test 1
 
          elsif run("auto") then
+            wait for 50 ns;
 
-            wait for 11 ns;
+            info("test");
+
+            check(clk = '1', "hej hej", warning);
+            check(clk = '0', "hej", warning);
+            wait for 50 ns;
 
          end if;
       end loop;
