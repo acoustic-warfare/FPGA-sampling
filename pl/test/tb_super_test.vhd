@@ -114,8 +114,9 @@ begin
       );
 
    main : process
-      variable auto_test_data : unsigned(32 downto 0) := (others => '0');
-      variable auto_test_data_int : integer := 0;
+      variable auto_test_data : unsigned(31 downto 0) := (others => '0');
+      variable counter_test   : unsigned(15 downto 0) := (others => '0');
+
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
@@ -124,18 +125,21 @@ begin
             wait for 1000000 ns; -- duration of test 1
 
          elsif run("auto") then
-            for i in 0 to 26000 loop
+            for i in 0 to 100000 loop
 
                if (array_matrix_valid_out = '1') then
-                  info("test");
+                  --info("test");
                   for row in 0 to 63 loop
-                     auto_test_data := to_unsigned(auto_test_data_int, 32);
+                     auto_test_data(31 downto 24) := to_unsigned(row, 8);
+                     auto_test_data(23 downto 16) := to_unsigned(row, 8);
+                     auto_test_data(15 downto 0)  := counter_test;
                      check(array_matrix_data_out(row) = std_logic_vector(auto_test_data), to_string(row), warning);
                   end loop;
+                  counter_test := counter_test + 1;
                end if;
-
                wait for C_CLK_CYKLE;
             end loop;
+            info("test done");
          end if;
       end loop;
 
