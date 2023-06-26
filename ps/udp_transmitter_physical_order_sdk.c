@@ -43,14 +43,14 @@ int main() {
     u32 nr_arrays = 1;
 
     // set number of 32bit slots in payload_header
-    u32 payload_header_size = 4;
+    u32 payload_header_size = 2;
 
     // constants that will be sent in payload_header
-    u32 array_id = 1;
-    u32 protocol_ver = 1;
-    // u32 samp_frequency = 15625;
+    u32 protocol_ver = 2;
 
-    u32 data[payload_header_size + nr_arrays * 64];
+    u32 frequency = 48828;
+
+    u32 data[payload_header_size + nr_arrays * 64 * 3];
 
     u32 start_addr = AD0;
 
@@ -146,18 +146,21 @@ int main() {
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
     // add payload_headder
-    data[0] = array_id;                                        // id
-    data[1] = protocol_ver;                                    // ver
-    data[2] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
+    data[0] = protocol_ver;  
+    data[0] << 8;
+    data[0] += nr_arrays;
+    data[0] << 16;
+    data[0] += frequency;                                                 
+    //data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
 
     while (1) {
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
         if (empty == 0) {
-            data[3] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
-            for (int i = 0; i < 64; i++) {
+            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
+            for (int i = 0; i < 64 * nr_arrays; i++) {
                 data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
             }
-
+            
             xemacif_input(netif);
 
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
