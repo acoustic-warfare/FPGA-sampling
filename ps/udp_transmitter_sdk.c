@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 
 #include "lwip/udp.h"
 #include "lwipopts.h"
@@ -7,19 +6,9 @@
 #include "platform.h"
 #include "platform_config.h"
 #include "xil_io.h"
-#include "xparameters.h"
 
-#ifndef __PPC__
-#include "xil_printf.h"
-#endif
-
-void print_headers();
-int start_applications();
-int transfer_data();
 void platform_enable_interrupts();
 void lwip_init(void);
-void tcp_fasttmr(void);
-void tcp_slowtmr(void);
 
 #define AD0 0x40000000
 
@@ -71,7 +60,6 @@ int main() {
     int buflen = 500;
 
     /* The MAC address of the board. this should be unique per board */
-
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 
     netif = &server_netif;
@@ -82,15 +70,6 @@ int main() {
     xil_printf("-----lwIP RAW Mode Application ------\r\n");
 
     /* initliaze IP addresses to be used */
-
-#if (LWIP_DHCP == 0)
-    IP4_ADDR(&ipaddr, 192, 168, 1, 75);
-    IP4_ADDR(&netmask, 0, 0, 0, 0);
-    IP4_ADDR(&gw, 192, 168, 1, 1);
-
-    print_ip_settings(&ipaddr, &netmask, &gw);
-#endif
-
 #if (LWIP_DHCP == 1 || LWIP_DHCP == 0)
     IP4_ADDR(&ipaddr, 192, 168, 1, 75);
     IP4_ADDR(&netmask, 0, 0, 0, 0);
@@ -123,22 +102,16 @@ int main() {
     udp_1 = udp_new();
 
     error = udp_bind(udp_1, IP_ADDR_ANY, Port);
-
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }
-
-    else if (error == 0) {
+    }else if (error == 0) {
         xil_printf("Success in UDP binding \r\n");
     }
 
     error = udp_connect(udp_1, &ip_remote, Port);
-
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }
-
-    else if (error == 0) {
+    }else if (error == 0) {
         xil_printf("Success in UDP connect \r\n");
     }
 
@@ -146,21 +119,20 @@ int main() {
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
     // add payload_headder
-    data[0] = protocol_ver;  
-    data[0] << 8;
-    data[0] += nr_arrays;
-    data[0] << 16;
-    data[0] += frequency;                                                 
-    //data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
+    data[0] = protocol_ver << 24;
+    data[0] += nr_arrays << 16;
+    data[0] += frequency;
+    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
 
     while (1) {
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
         if (empty == 0) {
-            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
+            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 +
+                               8);  // counter for header
             for (int i = 0; i < 64 * nr_arrays; i++) {
                 data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
             }
-            
+
             xemacif_input(netif);
 
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);

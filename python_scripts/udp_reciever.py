@@ -51,9 +51,7 @@ def int_to_twos_complement_string_16bit(num):
 # and replace Structure with LittleEndianStructure or BigEndianStructure to get the right one.
 class Data(Structure):
     _fields_ = [
-        ("arrayId", c_int32),  
-        ("protocolVer", c_int32),  # The data we care about
-        ("frequency", c_int32),
+        ("header", c_int32),  
         ("sampelCounter", c_int32),
         ("mic_1", c_int32),
         ("mic_2", c_int32),
@@ -118,7 +116,17 @@ class Data(Structure):
         ("mic_61", c_int32),
         ("mic_62", c_int32),
         ("mic_63", c_int32),
-        ("mic_64", c_int32),          
+        ("mic_64", c_int32),      
+        ("mic_65", c_int32),
+        ("mic_66", c_int32),
+        ("mic_67", c_int32),
+        ("mic_68", c_int32),
+        ("mic_69", c_int32),
+        ("mic_70", c_int32),
+        ("mic_71", c_int32),
+        ("mic_72", c_int32),
+        ("mic_73", c_int32),
+        ("mic_74", c_int32),      
     ]
 UDP_IP = "0.0.0.0"
 UDP_PORT = 21844
@@ -146,11 +154,6 @@ sock.bind((UDP_IP, UDP_PORT))
 ROOT = os.getcwd()
 
 if(txtInput.lower() == "y"):
-
-   print("Save as bits (y) ")
-   bits=input()
-
-   if(bits.lower() == "y"):
       print("Recording!!")
       with open(fileChooser+".txt", "w") as f:
          while time.time()<t_end:
@@ -159,44 +162,20 @@ if(txtInput.lower() == "y"):
             d = Data.from_buffer_copy(data)
 
             # Printing the first parts
-            f.write("arrayId: " + str(d.arrayId))
-            f.write("   protocolVer: " + str(d.protocolVer))
-            f.write("   frequency: " + str(d.frequency))
+            f.write("header: " + str(d.header) + " ")
+            f.write("header: " + int_to_twos_complement_string(d.header) + "        ")
+         
             f.write("   sampelCounter: " + str(d.sampelCounter) + " ")
             f.write("   sampelCounter: " + int_to_twos_complement_string_16bit(d.sampelCounter) + "        ")
 
             # Printing each mic data as integers
-            for i in range(1, 65):
+            for i in range(1, 75):
                field_name = f"mic_{i}"
                mic_data = int_to_twos_complement_string(getattr(d, field_name))
                f.write(field_name + ": ")
                f.write(mic_data + "    ")
-
             f.write("\n")
-   else:
-      print("Recording!")
-      with open(fileChooser+".txt", "w") as f:
-         while time.time()<t_end:
-            data = sock.recv(sizeof(Data))
-
-            d = Data.from_buffer_copy(data)
-
-            # Printing the first parts
-            f.write("arrayId: " + str(d.arrayId))
-            f.write("   protocolVer: " + str(d.protocolVer))
-            f.write("   frequency: " + str(d.frequency))
-            f.write("   sampelCounter: " + str(d.sampelCounter) + "       ")
-            
-
-            # Printing each mic data as integers
-            for i in range(1, 65):
-               field_name = f"mic_{i}"
-               mic_data = str(getattr(d, field_name))
-               f.write(field_name + ": ")
-               f.write(mic_data + "    ")
-
-            f.write("\n")
-
+   
 else:
    print("Recording")
    with open(fileChooser, "wb") as f:
