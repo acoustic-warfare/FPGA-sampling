@@ -34,7 +34,7 @@ switch $params(board) {
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 set outputdir [file join "$ROOT" vivado_files]
 file mkdir $outputdir
-create_project acoustic_warfare_simulated_array $outputdir -force
+create_project acoustic_warfare $outputdir -force
 
 # Set Properties
 set_property board_part $board     [current_project]
