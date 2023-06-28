@@ -14,27 +14,43 @@ architecture rtl of tb_simulated_array is
    constant C_SCK_CYKLE : time := 10 ns;
 
    signal ws         : std_logic := '0';
+   signal clk        : std_logic := '0';
    signal sck_clk    : std_logic := '0';
    signal bit_stream : std_logic_vector(3 downto 0);
+   signal clk_count  : integer := 0;
 
    signal counter_tb : integer := 0;
 
-   signal ws_ok      : std_logic;
-   signal sck_ok   :  std_logic;
-   signal reset    :  std_logic  := '0';
-
-
+   signal ws_ok  : std_logic;
+   signal sck_ok : std_logic;
+   signal reset  : std_logic := '0';
 begin
-   sck_clk <= not (sck_clk) after C_SCK_CYKLE * 5/2;
 
-   simulated_array1 : entity work.simulated_array_alternating port map (
+   process (clk)
+   begin
+      if (falling_edge(clk)) then
+         clk_count <= clk_count + 1;
+         if clk_count = 4 then
+            sck_clk <= '0';
+         elsif clk_count = 5 then
+            sck_clk <= '1';
+         elsif clk_count = 6 then
+            sck_clk <= '0';
+         else
+            sck_clk <= not (sck_clk) after C_SCK_CYKLE * 5 / 2 + 5 ns;
+         end if;
+      end if;
+   end process;
+   clk <= not (clk) after C_SCK_CYKLE / 2;
+
+   simulated_array1 : entity work.simulated_array port map (
       ws         => ws,
       sck_clk    => sck_clk,
       bit_stream => bit_stream,
-
-      ws_ok  => ws_ok,
-      sck_ok => sck_ok,
-      reset  => reset
+      clk        => clk,
+      ws_ok      => ws_ok,
+      sck_ok     => sck_ok,
+      reset      => reset
 
       );
 
