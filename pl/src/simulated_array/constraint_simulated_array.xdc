@@ -10,6 +10,7 @@
 ##Clock signal
 set_property -dict { PACKAGE_PIN Y6   IOSTANDARD LVCMOS33 } [get_ports { sck_clk }]; #IO_L12P_T1_MRCC_35 Sch=sysclk
 create_clock -add -name sys_clk_pin -period 40.00 -waveform {0 4} [get_ports { sck_clk }];
+# create_clock -period 10.000 -name clk -waveform {0.000 5.000} [get_pins clk_IBUF_BUFG_inst/O]
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets sck_clk_IBUF]
 
 ##Switches
