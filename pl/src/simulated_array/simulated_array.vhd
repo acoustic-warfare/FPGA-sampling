@@ -50,7 +50,7 @@ begin
 
          sck_d <= sck_clk;
 
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' and c = '0' then
+         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then -- and c = '0'
             a       <= '1';
             sck_ok  <= '1';
             mic_id0 <= to_unsigned(mic_counter, 8);
@@ -113,13 +113,11 @@ begin
                   state <= idle;
             end case;
 
-            ws_d <= ws;
-
          else
             sck_ok <= '0';
             a      <= '0';
             b      <= a;
-            c      <= b;
+            --c      <= b;
          end if;
 
          if reset = '1' then
