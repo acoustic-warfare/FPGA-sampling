@@ -19,13 +19,23 @@ architecture rtl of tb_simulated_array is
 
    signal counter_tb : integer := 0;
 
+   signal ws_ok      : std_logic;
+   signal sck_ok   :  std_logic;
+   signal reset    :  std_logic  := '0';
+
+
 begin
    sck_clk <= not (sck_clk) after C_SCK_CYKLE * 5/2;
 
-   simulated_array1 : entity work.simulated_array port map (
+   simulated_array1 : entity work.simulated_array_alternating port map (
       ws         => ws,
       sck_clk    => sck_clk,
-      bit_stream => bit_stream
+      bit_stream => bit_stream,
+
+      ws_ok  => ws_ok,
+      sck_ok => sck_ok,
+      reset  => reset
+
       );
 
    ws_process : process (sck_clk)

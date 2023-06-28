@@ -104,14 +104,14 @@ int main() {
     error = udp_bind(udp_1, IP_ADDR_ANY, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }else if (error == 0) {
+    } else if (error == 0) {
         xil_printf("Success in UDP binding \r\n");
     }
 
     error = udp_connect(udp_1, &ip_remote, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }else if (error == 0) {
+    } else if (error == 0) {
         xil_printf("Success in UDP connect \r\n");
     }
 
@@ -119,16 +119,15 @@ int main() {
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
     // add payload_headder
-    data[0] = protocol_ver << 24;
-    data[0] += nr_arrays << 16;
-    data[0] += frequency;
-    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency
+    data[0] = protocol_ver << 24;         //protocol version
+    data[0] += nr_arrays << 16;           //number of arrays
+    data[0] += frequency;                 //frequency
+    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency (input)
 
     while (1) {
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
         if (empty == 0) {
-            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 +
-                               8);  // counter for header
+            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
             for (int i = 0; i < 64 * nr_arrays; i++) {
                 data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
             }
