@@ -80,8 +80,7 @@ int main() {
 
     lwip_init();
 
-    if (!xemac_add(netif, &ipaddr, &netmask, &gw, mac_ethernet_address,
-                   PLATFORM_EMAC_BASEADDR)) {
+    if (!xemac_add(netif, &ipaddr, &netmask, &gw, mac_ethernet_address, PLATFORM_EMAC_BASEADDR)) {
         xil_printf("Error adding N/W interface\r\n");
         return -1;
     }
@@ -104,14 +103,14 @@ int main() {
     error = udp_bind(udp_1, IP_ADDR_ANY, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    } else if (error == 0) {
+    }else if (error == 0) {
         xil_printf("Success in UDP binding \r\n");
     }
 
     error = udp_connect(udp_1, &ip_remote, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    } else if (error == 0) {
+    }else if (error == 0) {
         xil_printf("Success in UDP connect \r\n");
     }
 
@@ -119,10 +118,11 @@ int main() {
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
     // add payload_headder
-    data[0] = protocol_ver << 24;         //protocol version
-    data[0] += nr_arrays << 16;           //number of arrays
-    data[0] += frequency;                 //frequency
-    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // frequency (input)
+    data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
+    data[0] += nr_arrays << 16;    // second 8-bits of header: Number of Arrays
+    data[0] += frequency;          // last 16-bits of header: Frequency
+    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // read
+    // frequency from axi
 
     while (1) {
         empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
