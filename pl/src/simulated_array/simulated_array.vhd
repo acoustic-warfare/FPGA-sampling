@@ -113,8 +113,6 @@ begin
                   state <= idle;
             end case;
 
-            ws_d <= ws;
-
          else
             sck_ok <= '0';
             a      <= '0';
