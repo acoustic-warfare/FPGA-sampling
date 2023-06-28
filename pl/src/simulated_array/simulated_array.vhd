@@ -26,7 +26,6 @@ architecture rtl of simulated_array is
    signal state : state_type;
 
    signal paus_bit : std_logic             := '1';
-   signal ws_d     : std_logic             := '0';
    signal counter  : unsigned(15 downto 0) := (others => '0');
 
    signal bit_counter : integer range 0 to 33 := 0;
@@ -47,17 +46,15 @@ begin
    begin
       if rising_edge(clk) then
 
-         sck_d <= sck_clk; 
+         sck_d <= sck_clk;
 
          if sck_clk = '1' and sck_d = '0' and a = '0' then
-            a <= '1';
+            a       <= '1';
             sck_ok  <= '1';
             mic_id0 <= to_unsigned(mic_counter, 8);
             mic_id1 <= to_unsigned(mic_counter + 16, 8);
             mic_id2 <= to_unsigned(mic_counter + 32, 8);
             mic_id3 <= to_unsigned(mic_counter + 48, 8);
-
-
             case state is
                when idle =>
                   ws_ok      <= '0';
@@ -114,9 +111,7 @@ begin
                   state <= idle;
             end case;
 
-            ws_d <= ws;
-
-         else 
+         else
             a <= '0';
          end if;
 
