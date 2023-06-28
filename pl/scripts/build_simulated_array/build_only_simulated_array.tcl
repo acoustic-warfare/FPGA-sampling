@@ -34,16 +34,18 @@ switch $params(board) {
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 set outputdir [file join "$ROOT" vivado_files]
 file mkdir $outputdir
-create_project acoustic_warfare_simulated_array $outputdir -force
+create_project acoustic_warfare $outputdir -force
 
 # Set Properties
 set_property board_part $board     [current_project]
 set_property target_language VHDL  [current_project]
 
 # Set the file that will be top module
-set top_module [file join "$ROOT" src simulated_array simulated_array.vhd]
+set top_module [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
+add_files [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
+add_files [file join "$ROOT" src matrix_package.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src simulated_array constraint_simulated_array.xdc]
 
@@ -52,7 +54,16 @@ import_files -force
 # set VHDL 2008 as default
 set_property file_type {VHDL 2008} [get_files  *.vhd]
 
+
+# Import Block Designs
+source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
+
+make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
+add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
+
+
 update_compile_order -fileset sources_1
+
 
 ## start gui
 switch $params(gui) {
