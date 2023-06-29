@@ -4,6 +4,19 @@ use ieee.numeric_std.all;
 entity simulated_array is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
+   -- WS: The WS puls is sent out once every 2560 clk cycles,
+   -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain .
+   --
+   -- BIT_STREAM: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
+   --
+   -- SCK_CLK:
+   --
+   -- WS_OK:
+   --
+   -- SCK_OK:
+   --
+   -- CLK:
+   --
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
@@ -50,6 +63,7 @@ begin
 
          sck_d <= sck_clk;
 
+         -- delays 2 clk cycles before collecting data
          if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then -- and c = '0'
             a       <= '1';
             sck_ok  <= '1';

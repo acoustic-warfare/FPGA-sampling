@@ -4,15 +4,15 @@ use ieee.std_logic_1164.all;
 entity sample is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   --BIT_STREAM: incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
+   -- BIT_STREAM: incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
    --
-   --WS: The WS puls is sent out once every 2560 clk cycles,
+   -- WS: The WS puls is sent out once every 2560 clk cycles,
    -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain .
    --
-   --MIC_SAMPLE_DATA_OUT: Every microphone in the array sends 32 bit in TDM-slots, but only 24 bit is actual data. Hence a vector of 24 bits is filled
+   -- MIC_SAMPLE_DATA_OUT: Every microphone in the array sends 32 bit in TDM-slots, but only 24 bit is actual data. Hence a vector of 24 bits is filled
    -- each TDMS with data is sampled five times.
    --
-   --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
+   -- MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
    --------------------------------------------------------------------------------------------------------------------------------------------------
    port (
       sys_clk              : in std_logic;
