@@ -5,17 +5,13 @@ entity simulated_array is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
    -- WS: The WS puls is sent out once every 2560 clk cycles,
-   -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain .
+   -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain.
    --
-   -- BIT_STREAM: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits
+   -- BIT_STREAM: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits.
    --
-   -- SCK_CLK:
+   -- WS_OK: LED to tell if a ws pulse is recieved, used for bugfixing.
    --
-   -- WS_OK:
-   --
-   -- SCK_OK:
-   --
-   -- CLK:
+   -- SCK_OK: LED to tell when data is collected, used for bugfixing. 
    --
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
@@ -26,11 +22,11 @@ entity simulated_array is
 
       ws         : in std_logic;
       sck_clk    : in std_logic;
+      clk        : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0);
       ws_ok      : out std_logic := '0';
       sck_ok     : out std_logic := '0';
-      reset      : in std_logic;
-      clk        : in std_logic
+      reset      : in std_logic
 
    );
 end simulated_array;
@@ -64,7 +60,7 @@ begin
          sck_d <= sck_clk;
 
          -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then -- and c = '0'
+         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then 
             a       <= '1';
             sck_ok  <= '1';
             mic_id0 <= to_unsigned(mic_counter, 8);
@@ -131,7 +127,6 @@ begin
             sck_ok <= '0';
             a      <= '0';
             b      <= a;
-            --c      <= b;
          end if;
 
          if reset = '1' then

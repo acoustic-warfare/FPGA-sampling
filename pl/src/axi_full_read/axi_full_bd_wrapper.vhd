@@ -9,8 +9,8 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
-library UNISIM;
-use UNISIM.VCOMPONENTS.all;
+--library UNISIM;
+--use UNISIM.VCOMPONENTS.all;
 
 entity axi_full_bd_wrapper is
    port (
