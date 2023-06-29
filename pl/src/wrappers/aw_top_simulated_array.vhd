@@ -50,10 +50,5 @@ bufg : entity work.design_1_wrapper
          sys_clock => sys_clock
 
       );
-      
-    clk_buffer : entity work.clk_buffer_wrapper
-        port map(
-             BUFG_I_0(0) => sck_in(0),
-             BUFG_O_0(0) => sck_out(0)
-        );
+
 end structual;

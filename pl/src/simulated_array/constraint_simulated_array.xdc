@@ -16,9 +16,7 @@ create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { sy
 
 # create_clock -period 10.000 -name clk -waveform {0.000 5.000} [get_pins clk_IBUF_BUFG_inst/O]
 #set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets sck_clk_IBUF]
-
-set_property -dict { PACKAGE_PIN K17   IOSTANDARD LVCMOS33 } [get_ports { sys_clock }]; #IO_L12P_T1_MRCC_35 Sch=sysclk
-create_clock -add -name sys_clk_pin -period 8.00 -waveform {0 4} [get_ports { sys_clock }];
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets {sck_clk_IBUF}]
 
 ##Switches
 #set_property -dict { PACKAGE_PIN G15   IOSTANDARD LVCMOS33 } [get_ports { micID_sw }]; #IO_L19N_T3_VREF_35 Sch=sw[0]
