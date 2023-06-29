@@ -57,10 +57,13 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
+source [ file normalize [ file join $ROOT scripts build_simulated_array design_1.tcl ] ]
 
 make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
 add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
 
+make_wrapper -inst_template [ get_files {design_1.bd} ]
+add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd design_1 hdl design_1_wrapper.vhd]
 
 update_compile_order -fileset sources_1
 

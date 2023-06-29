@@ -18,12 +18,19 @@ end entity;
 
 architecture structual of aw_top_simulated_array is
    signal clk : std_logic;
-   signal sck_in      : std_logic_vector(0 to 0);
-   signal sck_out     : std_logic_vector(0 to 0);
-
+   signal sck_in : std_logic_vector ( 0 downto 0);
+   signal sck_out : std_logic_vector (0 downto 0);
 begin
-    sck_in(0) <= sck_clk;
-    
+
+sck_in(0) <= sck_clk;
+
+bufg : entity work.design_1_wrapper
+  port map (
+    BUFG_I_0 => sck_in,
+    BUFG_O_0 => sck_out
+  );
+
+
    simulated_array1 : entity work.simulated_array
       port map(
          ws         => ws,
