@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity test2_v1_0 is
+entity axitest_v1_0 is
 	generic (
 		-- Users to add parameters here
 
@@ -83,9 +83,9 @@ entity test2_v1_0 is
 		m00_axi_bvalid	: in std_logic;
 		m00_axi_bready	: out std_logic
 	);
-end test2_v1_0;
+end axitest_v1_0;
 
-architecture arch_imp of test2_v1_0 is
+architecture arch_imp of axitest_v1_0 is
     signal m00_axi_init_axi_txn : std_logic;
     signal m00_axi_txn_done : std_logic;
     signal m00_axi_error : std_logic;

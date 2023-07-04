@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity test2_v1_0_M00_AXI is
+entity axitest_v1_0_M00_AXI is
    generic (
       -- Users to add parameters here
 
@@ -105,9 +105,9 @@ entity test2_v1_0_M00_AXI is
       -- can accept a write response.
       M_AXI_BREADY : out std_logic
    );
-end test2_v1_0_M00_AXI;
+end axitest_v1_0_M00_AXI;
 
-architecture implementation of test2_v1_0_M00_AXI is
+architecture implementation of axitest_v1_0_M00_AXI is
 
    signal axi_awvalid : std_logic;
    signal axi_wdata   : std_logic_vector(C_M_AXI_DATA_WIDTH - 1 downto 0);
