@@ -26,6 +26,10 @@ entity axitest_v1_0_M00_AXI is
       C_M_AXI_BUSER_WIDTH : integer := 0
    );
    port (
+      rd_en : out std_logic;
+      empty : in std_logic;
+      data  : in std_logic_vector(31 downto 0);
+
       read_done : in std_logic;
 
       led_AWREADY : out std_logic;
@@ -149,8 +153,6 @@ begin
 
    --I/O Connections. Write Address (AW)
    --M_AXI_AWID <= (others => '0');
-
-
    --The AXI address is a concatenation of the target base address + active offset range
    M_AXI_AWADDR <= std_logic_vector(unsigned(C_M_TARGET_SLAVE_BASE_ADDR));
    --Burst LENgth is number of transaction beats inside on burst, minus 1
@@ -247,7 +249,9 @@ begin
    ----------------------
    --Write Data Channel
    ----------------------
-   wnext <= M_AXI_WREADY and axi_wvalid;
+   wnext     <= M_AXI_WREADY and axi_wvalid;
+   rd_en     <= M_AXI_WREADY and axi_wvalid; -- new data for each cykle that this is satisfied (from fifo)
+   axi_wdata <= data;
 
    ----------------------------------------
    process (M_AXI_ACLK)
@@ -348,27 +352,27 @@ begin
 
    -- Write Data Generator                                                             
    -- Data pattern is only a simple incrementing count from 0 for each burst  */       
-   process (M_AXI_ACLK)
-      variable data : integer := 0;
-   begin
-      if (rising_edge (M_AXI_ACLK)) then
-         if (state = idle) then
-            data := 16;
-            axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-         elsif (state = run) then
-            data := 256;
-            axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-         elsif (state = pause) then
-            data := 4096;
-            axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-         elsif (state = startup) then
-            data := 0;
-            axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-         else
-            axi_wdata <= (others => '1');
-         end if;
-      end if;
-   end process;
+   --process (M_AXI_ACLK)
+   --   variable data : integer := 0;
+   --begin
+   --   if (rising_edge (M_AXI_ACLK)) then
+   --      if (state = idle) then
+   --         data := 16;
+   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
+   --      elsif (state = run) then
+   --         data := 256;
+   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
+   --      elsif (state = pause) then
+   --         data := 4096;
+   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
+   --      elsif (state = startup) then
+   --         data := 0;
+   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
+   --      else
+   --         axi_wdata <= (others => '1');
+   --      end if;
+   --   end if;
+   --end process;
 
    process (M_AXI_ACLK) -- Main process for the statemachine. Starts in IDLE
    begin
@@ -384,7 +388,7 @@ begin
                end if;
 
             when startup =>
-               if (axi_awvalid = '0' and start_single_burst_write = '0' and burst_write_active = '0') then
+               if (axi_awvalid = '0' and start_single_burst_write = '0' and burst_write_active = '0' and empty = '0') then
                   start_single_burst_write <= '1';
                   state                    <= run;
                else

@@ -25,6 +25,10 @@ entity axitest_v1_0 is
       C_M00_AXI_BUSER_WIDTH            : integer          := 0
    );
    port (
+      rd_en : out std_logic;
+      empty : in std_logic;
+      data  : in std_logic_vector(31 downto 0);
+
       -- Users to add ports here
       led_1 : out std_logic;
       led_2 : out std_logic;
@@ -151,6 +155,10 @@ architecture arch_imp of axitest_v1_0 is
          C_M_AXI_BUSER_WIDTH        : integer          := 0
       );
       port (
+         rd_en : out std_logic;
+         empty : in std_logic;
+         data  : in std_logic_vector(31 downto 0);
+
          led_AWREADY : out std_logic;
          led_BVALID  : out std_logic;
          led_WREADY  : out std_logic;
@@ -249,6 +257,10 @@ begin
       C_M_AXI_BUSER_WIDTH        => C_M00_AXI_BUSER_WIDTH
    )
    port map(
+      rd_en => rd_en, 
+      empty => empty, 
+      data => data,   
+
       led_AWREADY => led_1,
       led_BVALID  => led_2,
       led_WREADY  => led_3,
