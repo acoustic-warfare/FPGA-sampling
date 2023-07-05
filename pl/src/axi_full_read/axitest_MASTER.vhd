@@ -4,11 +4,6 @@ use ieee.numeric_std.all;
 
 entity axitest_v1_0_M00_AXI is
    generic (
-      -- Users to add parameters here
-
-      -- User parameters ends
-      -- Do not modify the parameters beyond this line
-
       -- Base address of targeted slave
       C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"10000000";
       -- Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
@@ -31,10 +26,15 @@ entity axitest_v1_0_M00_AXI is
       C_M_AXI_BUSER_WIDTH : integer := 0
    );
    port (
-      -- Users to add ports here
-      -- User ports ends
-      -- Do not modify the ports beyond this line
       read_done : in std_logic;
+
+      led_AWREADY : out std_logic;
+      led_BVALID  : out std_logic;
+      led_WREADY  : out std_logic;
+
+      led_red   : out std_logic;
+      led_green : out std_logic;
+      led_blue  : out std_logic;
       -- Initiate AXI transactions
       INIT_AXI_TXN : in std_logic;
       -- Asserts when transaction is complete
@@ -46,7 +46,7 @@ entity axitest_v1_0_M00_AXI is
       -- Global Reset Singal. This Signal is Active Low
       M_AXI_ARESETN : in std_logic;
       -- Master Interface Write Address ID
-      M_AXI_AWID : out std_logic_vector(C_M_AXI_ID_WIDTH - 1 downto 0);
+      --M_AXI_AWID : out std_logic_vector(C_M_AXI_ID_WIDTH - 1 downto 0);
       -- Master Interface Write Address
       M_AXI_AWADDR : out std_logic_vector(C_M_AXI_ADDR_WIDTH - 1 downto 0);
       -- Burst length. The burst length gives the exact number of transfers in a burst
@@ -124,11 +124,11 @@ architecture implementation of axitest_v1_0_M00_AXI is
    signal read_done_dd    : std_logic;
    signal read_done_pulse : std_logic;
 
-   signal sig_one : integer := 10; --ny
+   --signal sig_one : integer := 10; --ny
 
    signal write_index_int : integer := 0;
 
-   type state_type is (idle, run, pause);
+   type state_type is (idle, startup, run, pause);
    signal state : state_type := idle;
 
    signal addr_ready : std_logic := '0';
@@ -136,24 +136,33 @@ architecture implementation of axitest_v1_0_M00_AXI is
 
    signal read_done_counter : integer := 0;
 
+   signal start_single_burst_write : std_logic;
+   signal burst_write_active       : std_logic;
+
    --signal burst_size_bytes_int : integer;
    --signal new_data    : std_logic := '0';
 begin
    -- I/O Connections assignments
+   led_AWREADY <= M_AXI_AWREADY;
+   led_BVALID  <= M_AXI_BVALID;
+   led_WREADY  <= M_AXI_WREADY;
 
    --I/O Connections. Write Address (AW)
-   M_AXI_AWID <= (others => '0');
+   --M_AXI_AWID <= (others => '0');
+
+
    --The AXI address is a concatenation of the target base address + active offset range
    M_AXI_AWADDR <= std_logic_vector(unsigned(C_M_TARGET_SLAVE_BASE_ADDR));
    --Burst LENgth is number of transaction beats inside on burst, minus 1
-   M_AXI_AWLEN <= "01111111"; -- = 01111111 = 127
+   --M_AXI_AWLEN <= "10000000"; -- = 01111111 = 127
+   M_AXI_AWLEN <= std_logic_vector(to_unsigned(C_M_AXI_BURST_LEN - 1, 8));
    --Size should be C_M_AXI_DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
    M_AXI_AWSIZE <= "010";
    --INCR burst type is usually used, except for keyhole bursts
    M_AXI_AWBURST <= "01";
-   M_AXI_AWLOCK  <= '0';
+   M_AXI_AWLOCK  <= '0'; -- spelar ingen roll
    --Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache. 
-   M_AXI_AWCACHE <= "0010";
+   M_AXI_AWCACHE <= "0000";
    M_AXI_AWPROT  <= "000";
    M_AXI_AWQOS   <= x"0";
    M_AXI_AWUSER  <= (others => '1');
@@ -202,22 +211,111 @@ begin
    begin
       if (rising_edge (M_AXI_ACLK)) then
          if read_done_pulse = '1' then
-            read_done_counter <= read_done_counter + 65536;
+            if (read_done_counter = 0) then
+               read_done_counter <= 65536;
+            end if;
          end if;
       end if;
    end process;
-   
+
+   process (state)
+   begin
+      if (state = idle) then
+         led_red   <= '1';
+         led_green <= '0';
+         led_blue  <= '0';
+      elsif (state = startup) then
+         led_red   <= '1';
+         led_green <= '1';
+         led_blue  <= '1';
+      elsif (state = run) then
+         led_red   <= '0';
+         led_green <= '1';
+         led_blue  <= '0';
+      elsif (state = pause) then
+         led_red   <= '0';
+         led_green <= '0';
+         led_blue  <= '1';
+
+      else
+         led_red   <= '0';
+         led_green <= '0';
+         led_blue  <= '0';
+
+      end if;
+   end process;
    ----------------------
    --Write Data Channel
    ----------------------
    wnext <= M_AXI_WREADY and axi_wvalid;
+
+   ----------------------------------------
+   process (M_AXI_ACLK)
+   begin
+      if (rising_edge (M_AXI_ACLK)) then
+         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1' or read_done_pulse = '1') then
+            burst_write_active <= '0';
+
+            --The burst_write_active is asserted when a write burst transaction is initiated                      
+         else
+            if (start_single_burst_write = '1') then
+               burst_write_active <= '1';
+            elsif (M_AXI_BVALID = '1' and axi_bready = '1') then
+               burst_write_active <= '0';
+            end if;
+         end if;
+      end if;
+   end process;
+
+   process (M_AXI_ACLK)
+   begin
+      if (rising_edge (M_AXI_ACLK)) then
+         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1' or read_done_pulse = '1') then
+            axi_awvalid <= '0';
+         else
+            -- If previously not valid , start next transaction            
+            if (axi_awvalid = '0' and start_single_burst_write = '1') then
+               axi_awvalid <= '1';
+               -- Once asserted, VALIDs cannot be deasserted, so axi_awvalid
+               -- must wait until transaction is accepted                   
+            elsif (M_AXI_AWREADY = '1' and axi_awvalid = '1') then
+               axi_awvalid <= '0';
+            else
+               axi_awvalid <= axi_awvalid;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   process (M_AXI_ACLK)
+   begin
+      if (rising_edge (M_AXI_ACLK)) then
+         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1' or read_done_pulse = '1') then
+            axi_wvalid <= '0';
+         else
+            if (axi_wvalid = '0' and start_single_burst_write = '1') then
+               -- If previously not valid, start next transaction                        
+               axi_wvalid <= '1';
+               --     /* If WREADY and too many writes, throttle WVALID                  
+               --      Once asserted, VALIDs cannot be deasserted, so WVALID             
+               --      must wait until burst is complete with WLAST */                   
+            elsif (wnext = '1' and axi_wlast = '1') then
+               axi_wvalid <= '0';
+            else
+               axi_wvalid <= axi_wvalid;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   ---------------------------------------
 
    --WLAST generation on the MSB of a counter underflow                                
    -- WVALID logic, similar to the axi_awvalid always block above                      
    process (M_AXI_ACLK)
    begin
       if (rising_edge (M_AXI_ACLK)) then
-         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1') then
+         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1' or read_done_pulse = '1') then
             axi_wlast <= '0';
 
          else
@@ -234,13 +332,15 @@ begin
    process (M_AXI_ACLK)
    begin
       if (rising_edge (M_AXI_ACLK)) then
-         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1') then
+         if (M_AXI_ARESETN = '0' or init_txn_pulse = '1' or read_done_pulse = '1') then
             write_index_int <= 0;
          else
-            if (wnext = '1') then
+            if (wnext = '1' and axi_wlast = '1') then
+               write_index_int <= 0;
+            elsif (wnext = '1') then
                write_index_int <= write_index_int + 1;
             else
-               write_index_int <= 0;
+               write_index_int <= write_index_int;
             end if;
          end if;
       end if;
@@ -261,6 +361,9 @@ begin
          elsif (state = pause) then
             data := 4096;
             axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
+         elsif (state = startup) then
+            data := 0;
+            axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
          else
             axi_wdata <= (others => '1');
          end if;
@@ -275,17 +378,24 @@ begin
             when idle =>
                axi_bready <= '0';
                if (init_txn_pulse = '1' or read_done_pulse = '1') then
-                  axi_awvalid <= '1';
+                  ERROR <= '0';
+
+                  state <= startup;
                end if;
 
-               if (M_AXI_AWREADY = '1') then
-                  addr_ready  <= '1';
-                  axi_awvalid <= '0';
-                  state       <= run;
+            when startup =>
+               if (axi_awvalid = '0' and start_single_burst_write = '0' and burst_write_active = '0') then
+                  start_single_burst_write <= '1';
+                  state                    <= run;
+               else
+                  start_single_burst_write <= '0'; --Negate to generate a pulse                              
                end if;
+
             when run =>
-               axi_wvalid <= '1';
+               start_single_burst_write <= '0'; --Negate to generate a pulse                              
+               --axi_wvalid <= '1';
                if (wnext = '1' and axi_wlast = '1') then
+                  --axi_wvalid <= '0';
                   state <= pause;
                end if;
 
