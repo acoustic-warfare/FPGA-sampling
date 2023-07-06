@@ -60,7 +60,7 @@ begin
          sck_d <= sck_clk;
 
          -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then 
+         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
             a       <= '1';
             sck_ok  <= '1';
             mic_id0 <= to_unsigned(mic_counter, 8);
