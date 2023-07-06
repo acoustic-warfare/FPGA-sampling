@@ -45,6 +45,7 @@ set top_module [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 add_files [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
+add_files [file join "$ROOT" src simulated_array mmcm_wrapper.vhd]
 add_files [file join "$ROOT" src matrix_package.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src simulated_array constraint_simulated_array.xdc]
@@ -57,13 +58,34 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts build_simulated_array design_1.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_simulated_array buffers.tcl ] ]
 
 make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
 add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
 
-make_wrapper -inst_template [ get_files {design_1.bd} ]
-add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd design_1 hdl design_1_wrapper.vhd]
+#make_wrapper -inst_template [ get_files {buffers.bd} ]
+#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd buffers hdl buffers_warpper.vhd]
+
+
+#Create IP
+create_ip -name clk_wiz -vendor xilinx.com -library ip -version 5.4 -module_name mmcm
+set_property -dict [list CONFIG.Component_Name {mmcm} CONFIG.PRIM_IN_FREQ {25} CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {25} CONFIG.CLKIN1_JITTER_PS {400.0} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {36.500} CONFIG.MMCM_CLKIN1_PERIOD {40.000} CONFIG.MMCM_CLKIN2_PERIOD {10.0} CONFIG.MMCM_CLKOUT0_DIVIDE_F {36.500} CONFIG.CLKOUT1_JITTER {401.466} CONFIG.CLKOUT1_PHASE_ERROR {245.713}] [get_ips mmcm]
+#reset_target all [get_files  /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci]
+#generate_target all [get_files  /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci#]#
+
+#export_ip_user_files -of_objects  [get_files  /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci] -sync -no_#script -force -quiet
+#delete_ip_run [get_files -of_objects [get_fileset mmcm] /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/so#urces_1/ip/mmcm/mmcm.xci]
+#generate_target all [get_files  /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci]
+
+#catch { config_ip_cache -export [get_ips -all mmcm] }
+#export_ip_user_files -of_objects [get_files /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci] -no_script -sync -force -quiet
+#create_ip_run [get_files -of_objects [get_fileset sources_1] /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci]
+#export_simulation -of_objects [get_files /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci] -directory /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files/sim_scripts -ip_user_files_dir /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files -ipstatic_source_dir /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/modelsim} {questa=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/questa} {ies=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/ies} {vcs=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/vcs} {riviera=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+
+
+#generate_target {instantiation_template} [get_files /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci]
+#export_simulation -of_objects [get_files /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.srcs/sources_1/ip/mmcm/mmcm.xci] -directory /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files/sim_scripts -ip_user_files_dir /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files -ipstatic_source_dir /home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/modelsim} {questa=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/questa} {ies=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/ies} {vcs=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/vcs} {riviera=/home/yoshi/FPGA-sampling2/pl/vivado_files/acoustic_warfare.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+
 
 update_compile_order -fileset sources_1
 
