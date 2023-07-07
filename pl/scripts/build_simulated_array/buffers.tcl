@@ -191,12 +191,15 @@ proc create_root_design { parentCell } {
   # Create interface ports
 
   # Create ports
-  set BUFG_I_0 [ create_bd_port -dir I -from 0 -to 0 -type clk BUFG_I_0 ]
-  set BUFG_O_0 [ create_bd_port -dir O -from 0 -to 0 -type clk BUFG_O_0 ]
   set reset [ create_bd_port -dir I -type rst reset ]
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_HIGH} \
  ] $reset
+  set sck_in [ create_bd_port -dir I -from 0 -to 0 -type clk sck_in ]
+  set_property -dict [ list \
+   CONFIG.FREQ_HZ {25000000} \
+ ] $sck_in
+  set sck_out [ create_bd_port -dir O -from 0 -to 0 -type clk sck_out ]
 
   # Create instance: clk_wiz_0, and set properties
   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:5.4 clk_wiz_0 ]
@@ -214,11 +217,11 @@ proc create_root_design { parentCell } {
  ] $util_ds_buf_1
 
   # Create port connections
-  connect_bd_net -net BUFG_I_0_1 [get_bd_ports BUFG_I_0] [get_bd_pins util_ds_buf_0/BUFG_I]
+  connect_bd_net -net BUFG_I_0_1 [get_bd_ports sck_in] [get_bd_pins util_ds_buf_0/BUFG_I]
   connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins util_ds_buf_1/BUFG_I]
   connect_bd_net -net reset_rtl_1 [get_bd_ports reset] [get_bd_pins clk_wiz_0/reset]
   connect_bd_net -net util_ds_buf_0_BUFG_O [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins util_ds_buf_0/BUFG_O]
-  connect_bd_net -net util_ds_buf_1_BUFG_O [get_bd_ports BUFG_O_0] [get_bd_pins util_ds_buf_1/BUFG_O]
+  connect_bd_net -net util_ds_buf_1_BUFG_O [get_bd_ports sck_out] [get_bd_pins util_ds_buf_1/BUFG_O]
 
   # Create address segments
 
