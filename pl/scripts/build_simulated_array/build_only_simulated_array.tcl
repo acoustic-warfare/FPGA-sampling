@@ -32,7 +32,7 @@ switch $params(board) {
 # Create project
 # ------------------------------------------------------------------------------------
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
-set outputdir [file join "$ROOT" vivado_files]
+set outputdir [file join "$ROOT" vivado_files_sim]                   
 file mkdir $outputdir
 create_project acoustic_warfare $outputdir -force
 
@@ -45,7 +45,10 @@ set top_module [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 add_files [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
-#add_files [file join "$ROOT" src simulated_array mmcm_wrapper.vhd]
+
+add_files [file join "$ROOT" src simulated_array mmcm_wrapper.vhd]
+add_files [file join "$ROOT" src simulated_array clk_wiz_ip_wrapper.vhd]
+
 add_files [file join "$ROOT" src matrix_package.vhd]
 
 add_files -fileset constrs_1 [file join "$ROOT" src simulated_array constraint_simulated_array.xdc]
@@ -57,24 +60,33 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 
 # Import Block Designs
-source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts build_simulated_array buffers.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_simulated_array buffers.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_simulated_array design_1.tcl ] ]
 
-make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
-add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
+#Make wrapper bd
+#make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
+#add_files -files [file join "$ROOT" vivado_files_sim acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
 
-make_wrapper -inst_template [ get_files {buffers.bd} ]
-add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd buffers hdl buffers_wrapper.vhd]
+#make_wrapper -inst_template [ get_files {buffers.bd} ]
+#add_files -files [file join "$ROOT" vivado_files_sim acoustic_warfare.srcs sources_1 bd buffers hdl buffers_wrapper.vhd]
 
 
-#Effort to add IP driectly to project (not bd), does not work
-#Create IP
-#create_ip -name clk_wiz -vendor xilinx.com -library ip -version 5.4 -module_name mmcm
-#set_property -dict [list CONFIG.Component_Name {mmcm} CONFIG.PRIM_IN_FREQ {25} CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {25} CONFIG.CLKIN1_JITTER_PS {400.0} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {36.500} CONFIG.MMCM_CLKIN1_PERIOD {40.000} CONFIG.MMCM_CLKIN2_PERIOD {10.0} CONFIG.MMCM_CLKOUT0_DIVIDE_F {36.500} CONFIG.CLKOUT1_JITTER {401.466} CONFIG.CLKOUT1_PHASE_ERROR {245.713}] [get_ips mmcm]
+#Importing existing ip from another project, uses cached results (faster)
+#import_ip [   file join "$ROOT" ../ project_1 project_1.srcs sources_1 ip clk_wiz_ip clk_wiz_ip.xci] -name clk_wiz_ip
+#import_ip [  file join "$ROOT" ../ project_1 project_1.srcs sources_1 ip mmcm mmcm.xci] -name mmcm
+
+#Creating a new ip with every build
+create_ip -name clk_wiz -vendor xilinx.com -library ip -version 5.4 -module_name mmcm
+set_property -dict [list CONFIG.PRIM_IN_FREQ {25} CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {25} CONFIG.CLKIN1_JITTER_PS {400.0} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {36.500} CONFIG.MMCM_CLKIN1_PERIOD {40.000} CONFIG.MMCM_CLKIN2_PERIOD {10.0} CONFIG.MMCM_CLKOUT0_DIVIDE_F {36.500} CONFIG.CLKOUT1_JITTER {401.466} CONFIG.CLKOUT1_PHASE_ERROR {245.713}] [get_ips mmcm]
+generate_target {instantiation_template} [get_files {mmcm.xci}]
+
+create_ip -name clk_wiz -vendor xilinx.com -library ip -version 5.4 -module_name clk_wiz_ip
+set_property -dict [list CONFIG.Component_Name {clk_wiz_ip} CONFIG.PRIM_IN_FREQ {125} CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {125} CONFIG.CLKIN1_JITTER_PS {80.0} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {8.000} CONFIG.MMCM_CLKIN1_PERIOD {8.000} CONFIG.MMCM_CLKOUT0_DIVIDE_F {8.000} CONFIG.CLKOUT1_JITTER {119.348} CONFIG.CLKOUT1_PHASE_ERROR {96.948}] [get_ips clk_wiz_ip]
+generate_target {instantiation_template} [get_files {clk_wiz_ip.xci}]
 
 
 update_compile_order -fileset sources_1
-
 
 ## start gui
 switch $params(gui) {
