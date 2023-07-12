@@ -76,7 +76,8 @@ begin
          bit_stream => bit_stream,
          reset      => reset,
          ws_ok      => ws_ok,
-         sck_ok     => sck_ok
+         sck_ok     => sck_ok,
+         clk => clk
       );
 
    sample_gen : for i in 0 to 3 generate

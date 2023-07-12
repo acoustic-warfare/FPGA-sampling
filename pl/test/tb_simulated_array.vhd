@@ -43,14 +43,15 @@ begin
    end process;
    clk <= not (clk) after C_SCK_CYKLE / 2;
 
-   simulated_array1 : entity work.simulated_array port map (
-      ws         => ws,
-      sck_clk    => sck_clk,
-      bit_stream => bit_stream,
-      clk        => clk,
-      ws_ok      => ws_ok,
-      sck_ok     => sck_ok,
-      reset      => reset
+   simulated_array1 : entity work.simulated_array
+      port map(
+         ws         => ws,
+         sck_clk    => sck_clk,
+         bit_stream => bit_stream,
+         clk        => clk,
+         ws_ok      => ws_ok,
+         sck_ok     => sck_ok,
+         reset      => reset
 
       );
 

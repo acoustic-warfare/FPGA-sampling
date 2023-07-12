@@ -13,6 +13,7 @@ entity simulated_array is
    --
    -- SCK_OK: LED to tell when data is collected, used for bugfixing. 
    --
+   -- CLK: 
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
@@ -27,7 +28,6 @@ entity simulated_array is
       ws_ok      : out std_logic := '0';
       sck_ok     : out std_logic := '0';
       reset      : in std_logic
-
    );
 end simulated_array;
 architecture rtl of simulated_array is
@@ -41,6 +41,7 @@ architecture rtl of simulated_array is
    signal mic_counter : integer range 0 to 17 := 0;
    signal state_1     : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
+   -- mic_id for each chain
    signal mic_id0 : unsigned(7 downto 0) := (others => '0');
    signal mic_id1 : unsigned(7 downto 0) := (others => '0');
    signal mic_id2 : unsigned(7 downto 0) := (others => '0');
@@ -49,7 +50,6 @@ architecture rtl of simulated_array is
    signal sck_d : std_logic;
    signal a     : std_logic := '0';
    signal b     : std_logic := '0';
-   signal c     : std_logic := '0';
 
 begin
 
@@ -60,9 +60,10 @@ begin
          sck_d <= sck_clk;
 
          -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then 
+         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
             a       <= '1';
             sck_ok  <= '1';
+
             mic_id0 <= to_unsigned(mic_counter, 8);
             mic_id1 <= to_unsigned(mic_counter + 16, 8);
             mic_id2 <= to_unsigned(mic_counter + 32, 8);
@@ -96,7 +97,7 @@ begin
                      bit_stream(3) <= counter(23 - bit_counter);
                   end if;
 
-                  if (bit_counter = 23) then -- kanske 24
+                  if (bit_counter = 23) then 
                      mic_counter <= mic_counter + 1;
                      state       <= pause;
                   end if;
