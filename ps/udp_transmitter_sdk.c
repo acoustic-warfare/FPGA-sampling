@@ -117,7 +117,7 @@ int main() {
     xil_printf("\r\n");
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
 
-    // add payload_headder
+    // add 32-bit payload_headder
     data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
     data[0] += nr_arrays << 16;    // second 8-bits of header: Number of Arrays
     data[0] += frequency;          // last 16-bits of header: Frequency
