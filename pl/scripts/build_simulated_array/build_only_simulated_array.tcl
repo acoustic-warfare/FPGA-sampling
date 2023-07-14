@@ -46,8 +46,8 @@ add_files [file join "$ROOT" src wrappers aw_top_simulated_array.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
-add_files [file join "$ROOT" src simulated_array ip mmcm_wrapper.vhd]
-add_files [file join "$ROOT" src simulated_array ip clk_wiz_ip_wrapper.vhd]
+add_files [file join "$ROOT" src simulated_array ip_wrappers mmcm_wrapper.vhd]
+add_files [file join "$ROOT" src simulated_array ip_wrappers clk_wiz_ip_wrapper.vhd]
 
 add_files [file join "$ROOT" src matrix_package.vhd]
 
