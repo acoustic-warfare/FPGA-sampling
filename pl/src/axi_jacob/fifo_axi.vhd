@@ -1,12 +1,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
--- This fifo is written and taken by VHDLwiz.com
+-- This fifo is written and taken from VHDLwiz.com
 
 entity fifo_axi is
   generic (
     RAM_WIDTH : natural :=32;
-    RAM_DEPTH : natural := 256
+    RAM_DEPTH : natural := 1024
   );
   port (
     clk : in std_logic;
@@ -45,7 +45,9 @@ architecture rtl of fifo_axi is
   signal empty_i : std_logic;
   signal full_i : std_logic;
   signal fill_count_i : integer range RAM_DEPTH - 1 downto 0;
-
+    
+    
+  signal tmp : std_logic := '0';
   -- Increment and wrap
   procedure incr(signal index : inout index_type) is
   begin
@@ -109,10 +111,19 @@ begin
   begin
     if rising_edge(clk) then
       ram(head) <= wr_data;
-      rd_data <= ram(tail);
+      --tmp <= not tmp;
+        rd_data <= ram(tail); 
+      
+      --if(tmp='1') then
+       -- rd_data <= (others => '0'); 
+      --else 
+       -- rd_data <= (others => '1'); 
+     -- end if;
     end if;
   end process;
-
+    
+    --rd_data <= (others=>'1');
+  
   -- Update the fill count
   PROC_COUNT : process(head, tail)
   begin
