@@ -39,28 +39,28 @@ architecture behavior of tb_fifo_axi is
 
 begin
 
-   UUT : entity work.fifo_axi
-     port map(
-        clk => clk,
-        rst => rst,
-
-        -- Write port
-        wr_en => wr_en,
-        wr_data => wr_data,
-
-        -- Read port
-        rd_en => rd_en,
-        --rd_valid : out std_logic;
-        rd_data => rd_data,
-
-        -- Flags
-        empty => empty,
-        empty_next => empty_next,
-        full => full,
-        full_next => full_next,
-
-        fill_count => fill_count
-   );
+   --UUT : entity work.fifo_axi
+   --  port map(
+   --     clk => clk,
+   --     rst => rst,
+--
+   --     -- Write port
+   --     wr_en => wr_en,
+   --     wr_data => wr_data,
+--
+   --     -- Read port
+   --     rd_en => rd_en,
+   --     --rd_valid : out std_logic;
+   --     rd_data => rd_data,
+--
+   --     -- Flags
+   --     empty => empty,
+   --     empty_next => empty_next,
+   --     full => full,
+   --     full_next => full_next,
+--
+   --     fill_count => fill_count
+   --);
 
 
 
