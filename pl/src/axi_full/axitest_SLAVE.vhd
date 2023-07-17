@@ -16,10 +16,9 @@ entity axitest_v1_0_S00_AXI is
    );
    port (
       -- Users to add ports here
-      led_read_done : out std_logic;
 
-      read_done     : out std_logic;
-      init_txn      : out std_logic;
+      read_done : out std_logic;
+      init_txn  : out std_logic;
 
       txn_done  : in std_logic;
       txn_error : in std_logic;
@@ -95,7 +94,7 @@ entity axitest_v1_0_S00_AXI is
    );
 end axitest_v1_0_S00_AXI;
 
-architecture arch_imp of axitest_v1_0_S00_AXI is
+architecture rtl of axitest_v1_0_S00_AXI is
 
    -- AXI4LITE signals
    signal axi_awaddr  : std_logic_vector(C_S_AXI_ADDR_WIDTH - 1 downto 0);
@@ -135,9 +134,6 @@ architecture arch_imp of axitest_v1_0_S00_AXI is
 
 begin
    -- I/O Connections assignments
-   led_read_done <= slv_reg0(1);
-
-
    S_AXI_AWREADY <= axi_awready;
    S_AXI_WREADY  <= axi_wready;
    S_AXI_BRESP   <= axi_bresp;
@@ -403,4 +399,4 @@ begin
 
    -- User logic ends
 
-end arch_imp;
+end rtl;

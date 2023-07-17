@@ -18,28 +18,17 @@ entity axitest_v1_0 is
       C_M00_AXI_ID_WIDTH               : integer          := 1;
       C_M00_AXI_ADDR_WIDTH             : integer          := 32;
       C_M00_AXI_DATA_WIDTH             : integer          := 32;
-      C_M00_AXI_AWUSER_WIDTH           : integer          := 0;
+      C_M00_AXI_AWUSER_WIDTH           : integer          := 1; -- ändrat denna
       C_M00_AXI_ARUSER_WIDTH           : integer          := 0;
-      C_M00_AXI_WUSER_WIDTH            : integer          := 0;
-      C_M00_AXI_RUSER_WIDTH            : integer          := 0;
-      C_M00_AXI_BUSER_WIDTH            : integer          := 0
+      --C_M00_AXI_WUSER_WIDTH            : integer          := 0;
+      C_M00_AXI_WUSER_WIDTH : integer := 32; --prova med 32 får en critical warning annars tror jag /Ivar :)
+      C_M00_AXI_RUSER_WIDTH : integer := 0;
+      C_M00_AXI_BUSER_WIDTH : integer := 1 -- ändrat denna
    );
    port (
       rd_en : out std_logic;
       empty : in std_logic;
       data  : in std_logic_vector(31 downto 0);
-
-      -- Users to add ports here
-      led_1 : out std_logic;
-      led_2 : out std_logic;
-      led_3 : out std_logic;
-      led_4 : out std_logic;
-
-      led_red   : out std_logic;
-      led_green : out std_logic;
-      led_blue  : out std_logic;
-      -- User ports ends
-      -- Do not modify the ports beyond this line
       -- Ports of Axi Slave Bus Interface S00_AXI
       s00_axi_aclk    : in std_logic;
       s00_axi_aresetn : in std_logic;
@@ -92,7 +81,7 @@ entity axitest_v1_0 is
    );
 end axitest_v1_0;
 
-architecture arch_imp of axitest_v1_0 is
+architecture rtl of axitest_v1_0 is
    signal m00_axi_init_axi_txn : std_logic;
    signal m00_axi_txn_done     : std_logic;
    signal m00_axi_error        : std_logic;
@@ -109,8 +98,6 @@ architecture arch_imp of axitest_v1_0 is
          C_S_AXI_ADDR_WIDTH : integer := 4
       );
       port (
-         led_read_done : out std_logic;
-
          read_done     : out std_logic;
          init_txn      : out std_logic;
          txn_done      : in std_logic;
@@ -159,14 +146,6 @@ architecture arch_imp of axitest_v1_0 is
          empty : in std_logic;
          data  : in std_logic_vector(31 downto 0);
 
-         led_AWREADY : out std_logic;
-         led_BVALID  : out std_logic;
-         led_WREADY  : out std_logic;
-
-         led_red   : out std_logic;
-         led_green : out std_logic;
-         led_blue  : out std_logic;
-
          read_done : in std_logic;
 
          INIT_AXI_TXN  : in std_logic;
@@ -210,7 +189,6 @@ begin
       C_S_AXI_ADDR_WIDTH => C_S00_AXI_ADDR_WIDTH
    )
    port map(
-      led_read_done => led_4,
 
       read_done => read_done_internal,
 
@@ -257,17 +235,9 @@ begin
       C_M_AXI_BUSER_WIDTH        => C_M00_AXI_BUSER_WIDTH
    )
    port map(
-      rd_en => rd_en, 
-      empty => empty, 
-      data => data,   
-
-      led_AWREADY => led_1,
-      led_BVALID  => led_2,
-      led_WREADY  => led_3,
-
-      led_red   => led_red,
-      led_green => led_green,
-      led_blue  => led_blue,
+      rd_en => rd_en,
+      empty => empty,
+      data  => data,
 
       read_done     => read_done_internal,
       INIT_AXI_TXN  => m00_axi_init_axi_txn,
@@ -300,9 +270,4 @@ begin
       M_AXI_BUSER  => m00_axi_buser,
       M_AXI_BREADY => m00_axi_bready
    );
-
-   -- Add user logic here
-
-   -- User logic ends
-
-end arch_imp;
+end rtl;

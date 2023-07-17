@@ -31,14 +31,6 @@ entity axitest_v1_0_M00_AXI is
       data  : in std_logic_vector(31 downto 0);
 
       read_done : in std_logic;
-
-      led_AWREADY : out std_logic;
-      led_BVALID  : out std_logic;
-      led_WREADY  : out std_logic;
-
-      led_red   : out std_logic;
-      led_green : out std_logic;
-      led_blue  : out std_logic;
       -- Initiate AXI transactions
       INIT_AXI_TXN : in std_logic;
       -- Asserts when transaction is complete
@@ -111,7 +103,7 @@ entity axitest_v1_0_M00_AXI is
    );
 end axitest_v1_0_M00_AXI;
 
-architecture implementation of axitest_v1_0_M00_AXI is
+architecture rtl of axitest_v1_0_M00_AXI is
 
    signal axi_awvalid : std_logic;
    signal axi_wdata   : std_logic_vector(C_M_AXI_DATA_WIDTH - 1 downto 0);
@@ -147,9 +139,9 @@ architecture implementation of axitest_v1_0_M00_AXI is
    --signal new_data    : std_logic := '0';
 begin
    -- I/O Connections assignments
-   led_AWREADY <= M_AXI_AWREADY;
-   led_BVALID  <= M_AXI_BVALID;
-   led_WREADY  <= M_AXI_WREADY;
+   --led_AWREADY <= M_AXI_AWREADY;
+   --led_BVALID  <= M_AXI_BVALID;
+   --led_WREADY  <= M_AXI_WREADY;
 
    --I/O Connections. Write Address (AW)
    --M_AXI_AWID <= (others => '0');
@@ -220,32 +212,33 @@ begin
       end if;
    end process;
 
-   process (state)
-   begin
-      if (state = idle) then
-         led_red   <= '1';
-         led_green <= '0';
-         led_blue  <= '0';
-      elsif (state = startup) then
-         led_red   <= '1';
-         led_green <= '1';
-         led_blue  <= '1';
-      elsif (state = run) then
-         led_red   <= '0';
-         led_green <= '1';
-         led_blue  <= '0';
-      elsif (state = pause) then
-         led_red   <= '0';
-         led_green <= '0';
-         led_blue  <= '1';
+   --process (state)
+   --begin
+   --   if (state = idle) then
+   --      led_red   <= '1';
+   --      led_green <= '0';
+   --      led_blue  <= '0';
+   --   elsif (state = startup) then
+   --      led_red   <= '1';
+   --      led_green <= '1';
+   --      led_blue  <= '1';
+   --   elsif (state = run) then
+   --      led_red   <= '0';
+   --      led_green <= '1';
+   --      led_blue  <= '0';
+   --   elsif (state = pause) then
+   --      led_red   <= '0';
+   --      led_green <= '0';
+   --      led_blue  <= '1';
+   --
+   --   else
+   --      led_red   <= '0';
+   --      led_green <= '0';
+   --      led_blue  <= '0';
+   --
+   --   end if;
+   --end process;
 
-      else
-         led_red   <= '0';
-         led_green <= '0';
-         led_blue  <= '0';
-
-      end if;
-   end process;
    ----------------------
    --Write Data Channel
    ----------------------
@@ -420,4 +413,4 @@ begin
       end if;
    end process;
 
-end implementation;
+end rtl;
