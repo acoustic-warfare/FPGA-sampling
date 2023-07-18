@@ -148,17 +148,17 @@ int main() {
         if (empty == 0) {
             // flush the cache from old data
             Xil_DCacheFlushRange(data_p, 1024);
-             
+
+            // send read_done to AXI (read_done_pulse)
+            *(slaveaddr_p + 0) = 0x00000002;
+            *(slaveaddr_p + 0) = 0x00000000;
+
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
             for (int i = 0; i < 128; i++) {
                 data[i + payload_header_size] = *(data_p + i);
             }
-
-            // send read_done to AXI (read_done_pulse)
-            *(slaveaddr_p + 0) = 0x00000002;
-            *(slaveaddr_p + 0) = 0x00000000;
 
             // package and send UDP
             xemacif_input(netif);
