@@ -10,13 +10,13 @@ set options {
    {impl.arg  "1"             "Run impl (1 to run impl | 0 not run impl)"        }
    {sdk.arg   "1"             "Launch SDK (1 to launch SDK | 0 not launch SDK)"  }
 }
-# TODO: update usage to be better 
+# TODO: update usage to be better
 array set params [::cmdline::getoptions argv $options]
 
 parray params
 
 #TODO: make the auto install of boards work :)
-# Make sure boards are installed 
+# Make sure boards are installed
 #xhub::install [xhub::get_xitems $board ]
 #xhub::update  [xhub::get_xitems $board ]
 
@@ -48,6 +48,9 @@ add_files [file join "$ROOT" src wrappers aw_top.vhd]
 add_files [file join "$ROOT" src axi_full axitest_MASTER.vhd]
 add_files [file join "$ROOT" src axi_full axitest_SLAVE.vhd]
 add_files [file join "$ROOT" src axi_full axitest_TOP_v1_0.vhd]
+add_files [file join "$ROOT" src axi_full mux_v2.vhd]
+
+add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
@@ -55,10 +58,8 @@ add_files [file join "$ROOT" src sample_data full_sample.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
-
-
+# packeges
 add_files [file join "$ROOT" src matrix_package.vhd]
-
 
 add_files -fileset constrs_1 [file join "$ROOT" src constraint.xdc]
 
@@ -97,29 +98,29 @@ update_compile_order -fileset sources_1
 ## run synth
 switch $params(synth) {
    1 { launch_runs synth_1 -jobs 4
-       wait_on_run synth_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run synth_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-update_compile_order -fileset sources_1
+   update_compile_order -fileset sources_1
 
-## run impl
-switch $params(impl) {
+   ## run impl
+   switch $params(impl) {
    1 { launch_runs impl_1 -to_step write_bitstream -jobs 4
-       wait_on_run impl_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run impl_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-update_compile_order -fileset sources_1
+   update_compile_order -fileset sources_1
 
-## launch SDK
-switch $params(sdk) {
+   ## launch SDK
+   switch $params(sdk) {
    1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
+      file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
 
-       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
-   0 { puts "SDK not launched" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
+      0 { puts "SDK not launched" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }

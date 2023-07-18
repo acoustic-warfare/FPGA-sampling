@@ -381,7 +381,7 @@ begin
                end if;
 
             when startup =>
-               if (axi_awvalid = '0' and start_single_burst_write = '0' and burst_write_active = '0' and empty = '0') then
+               if (axi_awvalid = '0' and start_single_burst_write = '0' and burst_write_active = '0') then
                   start_single_burst_write <= '1';
                   state                    <= run;
                else

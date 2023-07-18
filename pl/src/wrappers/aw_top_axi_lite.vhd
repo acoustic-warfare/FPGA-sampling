@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
 
-entity aw_top is
+entity aw_top_lite is
    port (
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
@@ -21,7 +21,7 @@ entity aw_top is
       almost_empty : out std_logic
    );
 end entity;
-architecture structual of aw_top is
+architecture structual of aw_top_lite is
    signal rst_axi : std_logic_vector (0 to 0);
    signal clk     : std_logic;
 
