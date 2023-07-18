@@ -32,7 +32,7 @@ switch $params(board) {
 # Create project
 # ------------------------------------------------------------------------------------
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
-set outputdir [file join "$ROOT" vivado_files_sim]                   
+set outputdir [file join "$ROOT" vivado_files]                   
 file mkdir $outputdir
 create_project acoustic_warfare $outputdir -force
 
@@ -58,25 +58,28 @@ import_files -force
 # set VHDL 2008 as default
 set_property file_type {VHDL 2008} [get_files  *.vhd]
 
-
-# Import Block Designs
+# ------------------------------------------------------------------------------------
+# To import block design
+# ------------------------------------------------------------------------------------
 #source [ file normalize [ file join $ROOT scripts build_simulated_array clk_wiz_bd.tcl ] ]
-#source [ file normalize [ file join $ROOT scripts build_simulated_array buffers.tcl ] ]
-#source [ file normalize [ file join $ROOT scripts build_simulated_array design_1.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_simulated_array buffers_bd.tcl ] ]
 
 #Make wrapper bd
 #make_wrapper -inst_template [ get_files {clk_wiz.bd} ]
-#add_files -files [file join "$ROOT" vivado_files_sim acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
+#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd clk_wiz hdl clk_wiz_wrapper.vhd]
 
 #make_wrapper -inst_template [ get_files {buffers.bd} ]
-#add_files -files [file join "$ROOT" vivado_files_sim acoustic_warfare.srcs sources_1 bd buffers hdl buffers_wrapper.vhd]
+#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd buffers hdl buffers_wrapper.vhd]
 
-
-#Importing existing ip from another project, uses cached results (faster)
+# ------------------------------------------------------------------------------------
+# To import existing ip from another project, uses cached results (faster)
+# ------------------------------------------------------------------------------------
 #import_ip [   file join "$ROOT" ../ project_1 project_1.srcs sources_1 ip clk_wiz_ip clk_wiz_ip.xci] -name clk_wiz_ip
 #import_ip [  file join "$ROOT" ../ project_1 project_1.srcs sources_1 ip mmcm mmcm.xci] -name mmcm
 
-#Creating a new ip with every build
+# ------------------------------------------------------------------------------------
+# Creating a new ip with every build
+# ------------------------------------------------------------------------------------
 create_ip -name clk_wiz -vendor xilinx.com -library ip -version 5.4 -module_name mmcm
 set_property -dict [list CONFIG.PRIM_IN_FREQ {25} CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {25} CONFIG.CLKIN1_JITTER_PS {400.0} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {36.500} CONFIG.MMCM_CLKIN1_PERIOD {40.000} CONFIG.MMCM_CLKIN2_PERIOD {10.0} CONFIG.MMCM_CLKOUT0_DIVIDE_F {36.500} CONFIG.CLKOUT1_JITTER {401.466} CONFIG.CLKOUT1_PHASE_ERROR {245.713}] [get_ips mmcm]
 generate_target {instantiation_template} [get_files {mmcm.xci}]
