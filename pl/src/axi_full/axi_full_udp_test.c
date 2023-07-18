@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include "lwip/udp.h"
 #include "lwipopts.h"
 #include "netif/xadapter.h"
@@ -13,7 +14,7 @@ void platform_enable_interrupts();
 void lwip_init(void);
 
 void Xil_DCacheFlush(void);
-void Xil_DCacheFlushRange(u32* adr, u32 len);
+void Xil_DCacheFlushRange(u32 *adr, u32 len);
 
 void print_ip(char *msg, struct ip_addr *ip) {
     print(msg);
@@ -124,7 +125,7 @@ int main() {
     xil_printf("\r\n");
 
     Xil_DCacheFlush();  // important to make the zynq not cache the data
-    //Xil_L2CacheDisable();
+    // Xil_L2CacheDisable();
 
     // pointer to address the AXI4-Lite slave
     Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
@@ -133,8 +134,8 @@ int main() {
     Xuint32 *data_p = (Xuint32 *)0x10000000;
 
     // start AXI4 write/read burst transaction (axi_init_pulse)
-    Xil_Out32((int)(slaveaddr_p + 0), 0x00000001);
-    Xil_Out32((int)(slaveaddr_p + 0), 0x00000000);
+    *(slaveaddr_p + 0) = 0x00000001;
+    *(slaveaddr_p + 0) = 0x00000000;
 
     // add 32-bit payload_headder
     data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
@@ -145,7 +146,9 @@ int main() {
         // check if fifo are empty
         empty = *(slaveaddr_p + 3);
         if (empty == 0) {
-        	Xil_DCacheFlushRange(data_p, 1024);
+            // flush the cache from old data
+            Xil_DCacheFlushRange(data_p, 1024);
+             
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
@@ -154,8 +157,8 @@ int main() {
             }
 
             // send read_done to AXI (read_done_pulse)
-            Xil_Out32((int)(slaveaddr_p + 0), 0x00000002);
-            Xil_Out32((int)(slaveaddr_p + 0), 0x00000000);
+            *(slaveaddr_p + 0) = 0x00000002;
+            *(slaveaddr_p + 0) = 0x00000000;
 
             // package and send UDP
             xemacif_input(netif);
