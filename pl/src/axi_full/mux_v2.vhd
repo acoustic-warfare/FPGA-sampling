@@ -29,9 +29,11 @@ begin
          case state is
             when idle =>
                rd_en_fifo <= '0';
+               data       <= fifo(0);
                if (rd_en = '1' and rd_en_d = '0') then -- rising_edge rd_en
-                  state <= run;
-                  data  <= fifo(counter);
+                  counter <= - 1;
+                  state   <= run;
+                  data    <= fifo(1);
                end if;
             when run =>
                rd_en_fifo <= '0';
@@ -40,6 +42,9 @@ begin
                   state      <= idle;
                   data       <= (others => '1');
                   rd_en_fifo <= '1';
+               elsif (counter < 2) then
+                  data <= "01010101010101010101010101010101";
+                  counter <= counter + 1;
                else
                   data    <= fifo(counter);
                   counter <= counter + 1;
