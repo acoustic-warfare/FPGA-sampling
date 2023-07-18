@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include "lwip/udp.h"
 #include "lwipopts.h"
 #include "netif/xadapter.h"
@@ -13,7 +12,8 @@
 void platform_enable_interrupts();
 void lwip_init(void);
 
-//#define AD0 0x40000000
+void Xil_DCacheFlush(void);
+void Xil_DCacheFlushRange(u32* adr, u32 len);
 
 void print_ip(char *msg, struct ip_addr *ip) {
     print(msg);
@@ -44,7 +44,7 @@ int main() {
 
     u32 data[payload_header_size + nr_arrays * 64];
 
-    //u32 start_addr = AD0;
+    // u32 start_addr = AD0;
 
     u32 empty;
 
@@ -120,49 +120,40 @@ int main() {
 
     xil_printf("\r\n");
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
+    xil_printf("-------------Bursts using AXI_FULL!--------------\r\n");
+    xil_printf("\r\n");
 
-    Xil_DCacheDisable();
-    xil_printf("== burst test== \n\r");
+    Xil_DCacheFlush();  // important to make the zynq not cache the data
+    //Xil_L2CacheDisable();
 
     // pointer to address the AXI4-Lite slave
-    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // change this to
-                                      // XPAR_name_of_axi_slave_AXI_BASEADDR
-    // pointer to memory address 0x10000000
+    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
+
+    // pointer to memory start address where data will be sent 0x10000000
     Xuint32 *data_p = (Xuint32 *)0x10000000;
 
-    // check status
-    xil_printf("INIT_TXN\t0x%08x\n", *(slaveaddr_p + 0));
-    xil_printf("TXN_DONE\t0x%08x\n", *(slaveaddr_p + 1));
-    xil_printf("ERROR\t\t0x%08x\n", *(slaveaddr_p + 2));
-    xil_printf("\n\r");
-
-    // start AXI4 write/read burst transaction
+    // start AXI4 write/read burst transaction (axi_init_pulse)
     Xil_Out32((int)(slaveaddr_p + 0), 0x00000001);
-
-    xil_printf("INIT_TXN\t0x%08x\n", *(slaveaddr_p + 0));
-    xil_printf("TXN_DONE\t0x%08x\n", *(slaveaddr_p + 1));
-    xil_printf("ERROR\t\t0x%08x\n", *(slaveaddr_p + 2));
-    xil_printf("\n\r");
-
     Xil_Out32((int)(slaveaddr_p + 0), 0x00000000);
 
     // add 32-bit payload_headder
     data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
     data[0] += nr_arrays << 16;    // second 8-bits of header: Number of Arrays
     data[0] += frequency;          // last 16-bits of header: Frequency
-    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // read
-    // frequency from axi
 
     while (1) {
-        // empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
-        empty = 0;
+        // check if fifo are empty
+        empty = *(slaveaddr_p + 3);
         if (empty == 0) {
+        	Xil_DCacheFlushRange(data_p, 1024);
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
             for (int i = 0; i < 128; i++) {
                 data[i + payload_header_size] = *(data_p + i);
             }
+
+            // send read_done to AXI (read_done_pulse)
             Xil_Out32((int)(slaveaddr_p + 0), 0x00000002);
             Xil_Out32((int)(slaveaddr_p + 0), 0x00000000);
 

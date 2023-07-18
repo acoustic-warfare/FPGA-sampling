@@ -23,6 +23,8 @@ entity axitest_v1_0_S00_AXI is
       txn_done  : in std_logic;
       txn_error : in std_logic;
 
+      empty : in std_logic;
+
       -- Optional User-defined signal in the write data channel.
       --S_AXI_WUSER : out std_logic_vector(0 downto 0);
       --S_AXI_BRESP1	: out std_logic_vector(1 downto 0);
@@ -368,7 +370,7 @@ begin
          when "00" => reg_data_out   <= slv_reg0;
          when "01" => reg_data_out   <= (31 downto 1 => '0') & txn_done;
          when "10" => reg_data_out   <= (31 downto 1 => '0') & txn_error;
-         when "11" => reg_data_out   <= slv_reg3;
+         when "11" => reg_data_out   <= (31 downto 1 => '0') & empty;
          when others => reg_data_out <= (others => '0');
       end case;
    end process;
@@ -390,13 +392,8 @@ begin
          end if;
       end if;
    end process;
-   -- Add user logic here
+
    init_txn  <= slv_reg0(0);
    read_done <= slv_reg0(1);
-
-   --S_AXI_WVALID1 <= slv_reg0(1);
-   --S_AXI_AWVALID1 <= slv_reg0(2);
-
-   -- User logic ends
 
 end rtl;

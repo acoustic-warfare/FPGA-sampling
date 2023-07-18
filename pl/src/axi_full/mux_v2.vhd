@@ -9,12 +9,16 @@ entity mux_v2 is
       rd_en   : in std_logic;
       fifo    : in matrix_64_32_type;
 
-      rd_en_fifo : out std_logic_vector(63 downto 0);
+      rd_en_fifo : out std_logic;
       data       : out std_logic_vector(31 downto 0)
    );
 
 end mux_v2;
 architecture rtl of mux_v2 is
+   signal rd_en_d : std_logic;
+
+   type state_type is (idle, run);
+   signal state : state_type := idle;
 
    signal counter : integer := 0;
 begin
@@ -22,23 +26,36 @@ begin
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
-         if (rd_en = '1') then
+         case state is
+            when idle =>
+               rd_en_fifo <= '0';
+               if (rd_en = '1' and rd_en_d = '0') then -- rising_edge rd_en
+                  state <= run;
+                  data  <= fifo(counter);
+               end if;
+            when run =>
+               rd_en_fifo <= '0';
+               if (counter = 64) then
+                  counter    <= 0;
+                  state      <= idle;
+                  data       <= (others => '1');
+                  rd_en_fifo <= '1';
+               else
+                  data    <= fifo(counter);
+                  counter <= counter + 1;
+               end if;
 
-            if (counter = 64) then
-               counter <= 0;
-            else
-               data                <= fifo(counter);
-               rd_en_fifo          <= (others => '0');
-               rd_en_fifo(counter) <= '1';
-               counter             <= counter + 1;
-            end if;
-         end if;
+            when others =>
+               -- should never get here
+               state <= idle;
+         end case;
 
          if (reset = '1') then
             data       <= (others => '0');
-            rd_en_fifo <= (others => '0');
+            rd_en_fifo <= '0';
             counter    <= 0;
          end if;
+         rd_en_d <= rd_en;
       end if;
    end process;
 end rtl;

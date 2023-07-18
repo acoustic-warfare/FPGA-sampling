@@ -27,7 +27,6 @@ entity axitest_v1_0_M00_AXI is
    );
    port (
       rd_en : out std_logic;
-      empty : in std_logic;
       data  : in std_logic_vector(31 downto 0);
 
       read_done : in std_logic;

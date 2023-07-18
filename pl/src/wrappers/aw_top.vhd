@@ -5,7 +5,7 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      num_arrays : integer := 2
+      num_arrays : integer := 1
    );
    port (
       sys_clock    : in std_logic;
@@ -38,7 +38,7 @@ architecture structual of aw_top is
    signal gen_data_valid : std_logic;
 
    signal data_fifo_out : matrix_64_32_type;
-   signal rd_en_fifo    : std_logic_vector(63 downto 0);
+   signal rd_en_fifo    : std_logic;
 
    signal remove_this : std_logic := '1'; -- remove this when fixed axi master
 
@@ -85,14 +85,11 @@ begin
          rst_cnt <= (others => '0');
          rst_int <= '1';
       elsif sys_clock'event and sys_clock = '1' then
-
          if rst_cnt = x"01ffffff" then --about 3 sec
-            --  if rst_cnt =  x"00000fff" then
             rst_int <= '0';
          else
             rst_cnt <= rst_cnt + 1;
          end if;
-
       end if;
    end process;
 
@@ -114,6 +111,7 @@ begin
          reset      => reset
 
       );
+
    sample_gen : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample
@@ -165,7 +163,7 @@ begin
             FIFO_READ_almost_empty => almost_empty_array(i),
             FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
             FIFO_WRITE_wr_en       => array_matrix_valid,
-            FIFO_READ_rd_en        => rd_en_fifo(i),    --- from pulse
+            FIFO_READ_rd_en        => rd_en_fifo,    
             FIFO_READ_rd_data      => data_fifo_out(i), --data out
             rd_clk                 => clk,
             wr_clk                 => clk,
@@ -188,7 +186,7 @@ begin
          clk_125   => clk,
          clk_25    => sck_clk,
          axi_data  => data_test,
-         axi_empty => remove_this,
+         axi_empty => empty_array(0),
          axi_rd_en => rd_en_test,
          reset_rtl => reset_rtl,
          sys_clock => sys_clock

@@ -227,6 +227,9 @@ proc create_root_design { parentCell } {
   set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 
   # Create ports
+  set axi_data [ create_bd_port -dir I -from 31 -to 0 axi_data ]
+  set axi_empty [ create_bd_port -dir I axi_empty ]
+  set axi_rd_en [ create_bd_port -dir O axi_rd_en ]
   set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
   set_property -dict [ list \
    CONFIG.FREQ_HZ {25000000} \
@@ -235,9 +238,6 @@ proc create_root_design { parentCell } {
   set_property -dict [ list \
    CONFIG.FREQ_HZ {125000000} \
  ] $clk_125
-  set axi_data [ create_bd_port -dir I -from 31 -to 0 axi_data ]
-  set axi_empty [ create_bd_port -dir I axi_empty ]
-  set axi_rd_en [ create_bd_port -dir O axi_rd_en ]
   set reset_rtl [ create_bd_port -dir I -type rst reset_rtl ]
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_HIGH} \
@@ -250,7 +250,7 @@ proc create_root_design { parentCell } {
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [ list \
-   CONFIG.NUM_CLKS {2} \
+   CONFIG.NUM_CLKS {1} \
    CONFIG.NUM_SI {1} \
  ] $axi_smc
 
@@ -273,8 +273,10 @@ proc create_root_design { parentCell } {
  ] [get_bd_intf_pins /axitest_v1_0_0/m00_axi]
 
   set_property -dict [ list \
+   CONFIG.SUPPORTS_NARROW_BURST {0} \
    CONFIG.NUM_READ_OUTSTANDING {1} \
    CONFIG.NUM_WRITE_OUTSTANDING {1} \
+   CONFIG.MAX_BURST_LENGTH {1} \
  ] [get_bd_intf_pins /axitest_v1_0_0/s00_axi]
 
   # Create instance: clk_wiz_0, and set properties
@@ -318,7 +320,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ACT_DCI_PERIPHERAL_FREQMHZ {10.158730} \
    CONFIG.PCW_ACT_ENET0_PERIPHERAL_FREQMHZ {125.000000} \
    CONFIG.PCW_ACT_ENET1_PERIPHERAL_FREQMHZ {10.000000} \
-   CONFIG.PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ {50.000000} \
+   CONFIG.PCW_ACT_FPGA0_PERIPHERAL_FREQMHZ {10.000000} \
    CONFIG.PCW_ACT_FPGA1_PERIPHERAL_FREQMHZ {10.000000} \
    CONFIG.PCW_ACT_FPGA2_PERIPHERAL_FREQMHZ {10.000000} \
    CONFIG.PCW_ACT_FPGA3_PERIPHERAL_FREQMHZ {10.000000} \
@@ -341,7 +343,7 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ARMPLL_CTRL_FBDIV {40} \
    CONFIG.PCW_CAN_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_CAN_PERIPHERAL_DIVISOR1 {1} \
-   CONFIG.PCW_CLK0_FREQ {50000000} \
+   CONFIG.PCW_CLK0_FREQ {10000000} \
    CONFIG.PCW_CLK1_FREQ {10000000} \
    CONFIG.PCW_CLK2_FREQ {10000000} \
    CONFIG.PCW_CLK3_FREQ {10000000} \
@@ -387,21 +389,23 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_ENET_RESET_POLARITY {Active Low} \
    CONFIG.PCW_ENET_RESET_SELECT {Share reset pin} \
    CONFIG.PCW_EN_4K_TIMER {0} \
+   CONFIG.PCW_EN_CLK0_PORT {0} \
    CONFIG.PCW_EN_ENET0 {1} \
    CONFIG.PCW_EN_GPIO {1} \
    CONFIG.PCW_EN_QSPI {1} \
    CONFIG.PCW_EN_SDIO0 {1} \
    CONFIG.PCW_EN_UART1 {1} \
    CONFIG.PCW_EN_USB0 {1} \
-   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR0 {5} \
-   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR1 {4} \
+   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR0 {1} \
+   CONFIG.PCW_FCLK0_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_FCLK1_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK2_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_FCLK2_PERIPHERAL_DIVISOR1 {1} \
    CONFIG.PCW_FCLK3_PERIPHERAL_DIVISOR0 {1} \
    CONFIG.PCW_FCLK3_PERIPHERAL_DIVISOR1 {1} \
-   CONFIG.PCW_FPGA_FCLK0_ENABLE {1} \
+   CONFIG.PCW_FCLK_CLK0_BUF {FALSE} \
+   CONFIG.PCW_FPGA_FCLK0_ENABLE {0} \
    CONFIG.PCW_FPGA_FCLK1_ENABLE {0} \
    CONFIG.PCW_FPGA_FCLK2_ENABLE {0} \
    CONFIG.PCW_FPGA_FCLK3_ENABLE {0} \
@@ -810,10 +814,9 @@ proc create_root_design { parentCell } {
   connect_bd_net -net axitest_v1_0_0_rd_en [get_bd_ports axi_rd_en] [get_bd_pins axitest_v1_0_0/rd_en]
   connect_bd_net -net clk_in1_0_1 [get_bd_ports sys_clock] [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net clk_wiz_0_clk_25 [get_bd_ports clk_25] [get_bd_pins clk_wiz_0/clk_25]
-  connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axitest_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk]
+  connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axitest_v1_0_0/m00_axi_aclk] [get_bd_pins axitest_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
   connect_bd_net -net data_0_1 [get_bd_ports axi_data] [get_bd_pins axitest_v1_0_0/data]
   connect_bd_net -net empty_0_1 [get_bd_ports axi_empty] [get_bd_pins axitest_v1_0_0/empty]
-  connect_bd_net -net processing_system7_0_FCLK_CLK0 [get_bd_pins axi_smc/aclk1] [get_bd_pins axitest_v1_0_0/m00_axi_aclk] [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in] [get_bd_pins rst_ps7_0_50M_1/ext_reset_in]
   connect_bd_net -net reset_0_1 [get_bd_ports reset_rtl] [get_bd_pins clk_wiz_0/reset]
   connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axitest_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]
@@ -839,4 +842,6 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
+
+common::send_msg_id "BD_TCL-1000" "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 

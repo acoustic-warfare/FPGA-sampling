@@ -100,6 +100,7 @@ architecture rtl of axitest_v1_0 is
       port (
          read_done     : out std_logic;
          init_txn      : out std_logic;
+         empty         : in std_logic;
          txn_done      : in std_logic;
          txn_error     : in std_logic;
          S_AXI_ACLK    : in std_logic;
@@ -143,7 +144,6 @@ architecture rtl of axitest_v1_0 is
       );
       port (
          rd_en : out std_logic;
-         empty : in std_logic;
          data  : in std_logic_vector(31 downto 0);
 
          read_done : in std_logic;
@@ -191,6 +191,7 @@ begin
    port map(
 
       read_done => read_done_internal,
+      empty     => empty,
 
       S_AXI_ACLK    => s00_axi_aclk,
       S_AXI_ARESETN => s00_axi_aresetn,
@@ -236,7 +237,6 @@ begin
    )
    port map(
       rd_en => rd_en,
-      empty => empty,
       data  => data,
 
       read_done     => read_done_internal,

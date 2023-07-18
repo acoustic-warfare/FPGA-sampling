@@ -86,6 +86,7 @@ alias build_simulated_sampling='vivado -notrace -mode batch -source $(git rev-pa
 alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias build_2_arrays='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_2_arrays/build_2_arrays.tcl'
 alias open_vivado_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_vivado_project.tcl'
+alias open_sdk_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_sdk_project.tcl'
 
 echo -e '
 Welcome to Acustic Warfare!
