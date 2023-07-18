@@ -125,8 +125,7 @@ int main() {
     xil_printf("== burst test== \n\r");
 
     // pointer to address the AXI4-Lite slave
-    Xuint32 *slaveaddr_p = (Xuint32 *)
-        PAR_AXITEST_V1_0_0_BASEADDR;  // change this to
+    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // change this to
                                       // XPAR_name_of_axi_slave_AXI_BASEADDR
     // pointer to memory address 0x10000000
     Xuint32 *data_p = (Xuint32 *)0x10000000;
