@@ -211,33 +211,6 @@ begin
       end if;
    end process;
 
-   --process (state)
-   --begin
-   --   if (state = idle) then
-   --      led_red   <= '1';
-   --      led_green <= '0';
-   --      led_blue  <= '0';
-   --   elsif (state = startup) then
-   --      led_red   <= '1';
-   --      led_green <= '1';
-   --      led_blue  <= '1';
-   --   elsif (state = run) then
-   --      led_red   <= '0';
-   --      led_green <= '1';
-   --      led_blue  <= '0';
-   --   elsif (state = pause) then
-   --      led_red   <= '0';
-   --      led_green <= '0';
-   --      led_blue  <= '1';
-   --
-   --   else
-   --      led_red   <= '0';
-   --      led_green <= '0';
-   --      led_blue  <= '0';
-   --
-   --   end if;
-   --end process;
-
    ----------------------
    --Write Data Channel
    ----------------------
@@ -303,7 +276,6 @@ begin
          end if;
       end if;
    end process;
-
    ---------------------------------------
 
    --WLAST generation on the MSB of a counter underflow                                
@@ -341,30 +313,6 @@ begin
          end if;
       end if;
    end process;
-
-   -- Write Data Generator                                                             
-   -- Data pattern is only a simple incrementing count from 0 for each burst  */       
-   --process (M_AXI_ACLK)
-   --   variable data : integer := 0;
-   --begin
-   --   if (rising_edge (M_AXI_ACLK)) then
-   --      if (state = idle) then
-   --         data := 16;
-   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-   --      elsif (state = run) then
-   --         data := 256;
-   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-   --      elsif (state = pause) then
-   --         data := 4096;
-   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-   --      elsif (state = startup) then
-   --         data := 0;
-   --         axi_wdata <= std_logic_vector(to_unsigned(data + write_index_int + read_done_counter, 32));
-   --      else
-   --         axi_wdata <= (others => '1');
-   --      end if;
-   --   end if;
-   --end process;
 
    process (M_AXI_ACLK) -- Main process for the statemachine. Starts in IDLE
    begin
