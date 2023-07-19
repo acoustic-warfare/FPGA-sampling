@@ -44,13 +44,13 @@ if(txtInput.lower() == "y"):
    print("Recording!!")
    with open(fileChooser+".txt", "w") as f:
       while time.time()<t_end:
-         data = sock.recv(4096)
+         data = sock.recv(1600)
 
          f.write("Header:  " + ints_to_twos_complement_string(data[3], data[2], data[1], data[0]) + "    ")
          
          f.write("   sampelCounter: " + ints_to_twos_complement_string(data[3 + 4], data[2 + 4], data[1 + 4], data[0 + 4]) + "      ")
 
-         for i in range(2, 125):
+         for i in range(2, 212):
             f.write("Mic" + str(i - 1) + ": ")
             f.write(ints_to_twos_complement_string(data[3 + i * 4], data[2 + i* 4], data[1 + i*4], data[0 + i*4]) + "    ")
          f.write("\n")

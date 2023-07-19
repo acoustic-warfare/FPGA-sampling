@@ -59,7 +59,7 @@ int main() {
 
     u16_t Port = 21844;
 
-    int buflen = 500;
+    int buflen = 1600;
 
     /* The MAC address of the board. this should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -129,7 +129,7 @@ int main() {
     Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
 
     // pointer to memory start address where data will be sent 0x10000000
-    Xuint32 *data_p = (Xuint32 *)0x00000000;
+    Xuint32 *data_p = (Xuint32 *)0x40000000;
 
     // start AXI4 write/read burst transaction (axi_init_pulse)
     *(slaveaddr_p + 0) = 0x00000001;
