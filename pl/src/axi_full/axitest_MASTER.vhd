@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity axitest_v1_0_M00_AXI is
    generic (
       -- Base address of targeted slave
-      C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"10000000";
+      C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"00000000";
       -- Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
       C_M_AXI_BURST_LEN : integer := 256;
       -- Thread ID Width

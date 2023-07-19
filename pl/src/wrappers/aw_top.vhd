@@ -8,6 +8,7 @@ entity aw_top is
       num_arrays : integer := 1
    );
    port (
+      sw           : in std_logic;
       sys_clock    : in std_logic;
       reset_rtl    : in std_logic;
       reset        : in std_logic;
@@ -54,10 +55,10 @@ architecture structual of aw_top is
    signal empty_array        : std_logic_vector(255 downto 0) := (others => '0');
    signal full_array         : std_logic_vector(255 downto 0) := (others => '0');
 
-   signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
+   signal sample_counter : std_logic_vector(31 downto 0) := (others => '0');
    --signal sample_counter_out : std_logic_vector(31 downto 0);
-   signal rst_cnt            : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
-   signal rst_int            : std_logic             := '1';
+   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
+   signal rst_int : std_logic             := '1';
 
 begin
 
@@ -105,8 +106,6 @@ begin
          reset   => reset,
          ws      => ws
       );
-
-   
    simulated_array_c : entity work.simulated_array
       port map(
          ws         => ws,
@@ -164,6 +163,9 @@ begin
    begin
       fifo_gen : entity work.fifo_bd_wrapper
          port map(
+            rd_clk                 => clk,
+            wr_clk                 => clk,
+            reset                  => reset,
             FIFO_WRITE_full        => full_array(i),
             FIFO_READ_empty        => empty_array(i),
             FIFO_WRITE_almost_full => almost_full_array(i),
@@ -171,15 +173,13 @@ begin
             FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
             FIFO_WRITE_wr_en       => array_matrix_valid,
             FIFO_READ_rd_en        => rd_en_fifo,
-            FIFO_READ_rd_data      => data_fifo_out(i), --data out
-            rd_clk                 => clk,
-            wr_clk                 => clk,
-            reset                  => reset
+            FIFO_READ_rd_data      => data_fifo_out(i) --data out
          );
    end generate fifo_bd_wrapper_gen;
 
    mux_v2 : entity work.mux_v2
       port map(
+         sw         => sw,
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_test,
@@ -192,11 +192,11 @@ begin
       port map(
          clk_125   => clk,
          clk_25    => sck_clk,
+         sys_clock => sys_clock,
+         reset_rtl => reset_rtl,
          axi_data  => data_test,
          axi_empty => empty_array(0),
-         axi_rd_en => rd_en_test,
-         reset_rtl => reset_rtl,
-         sys_clock => sys_clock
+         axi_rd_en => rd_en_test
       );
 
 end structual;
