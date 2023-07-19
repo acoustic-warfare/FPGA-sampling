@@ -33,7 +33,7 @@ void PayloadID(u32 data[]) {}
 
 int main() {
     // set number of arrays used
-    u32 nr_arrays = 2;
+    u32 nr_arrays = 4;
 
     // set number of 32bit slots in payload_header
     u32 payload_header_size = 2;
@@ -44,8 +44,6 @@ int main() {
     u32 frequency = 48828;
 
     u32 data[payload_header_size + nr_arrays * 64];
-
-    // u32 start_addr = AD0;
 
     u32 empty;
 
@@ -163,10 +161,6 @@ int main() {
             // package and send UDP
             xemacif_input(netif);
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
-            if (!p) {
-                xil_printf("error allocating pbuf \r\n");
-                return ERR_MEM;
-            }
 
             memcpy(p->payload, data, buflen);
             udp_send(udp_1, p);

@@ -57,7 +57,7 @@ begin
    begin
       if rising_edge(sys_clk) then
 
-         if chain_matrix_valid_in = "1111111111111111" then               -- If all valid signal was High, then store each chain in a temporary holder
+         if chain_matrix_valid_in(0) = '1' then               -- If all valid signal was High, then store each chain in a temporary holder
             temp_chain_matrix_0  := chain_x4_matrix_data_in(0);  --chain 1
             temp_chain_matrix_1  := chain_x4_matrix_data_in(1);  --chain 2
             temp_chain_matrix_2  := chain_x4_matrix_data_in(2);  --chain 3
