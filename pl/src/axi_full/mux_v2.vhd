@@ -7,7 +7,7 @@ entity mux_v2 is
       sys_clk : in std_logic;
       reset   : in std_logic;
       rd_en   : in std_logic;
-      fifo    : in matrix_64_32_type;
+      fifo    : in matrix_256_32_type;
 
       rd_en_fifo : out std_logic;
       data       : out std_logic_vector(31 downto 0)
@@ -37,7 +37,7 @@ begin
                end if;
             when run =>
                rd_en_fifo <= '0';
-               if (counter = 64) then
+               if (counter = 256) then
                   counter    <= 0;
                   state      <= idle;
                   data       <= (others => '1');

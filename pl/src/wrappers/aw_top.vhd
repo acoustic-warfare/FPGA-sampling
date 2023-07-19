@@ -21,9 +21,8 @@ entity aw_top is
 end entity;
 architecture structual of aw_top is
 
-   signal bit_stream : std_logic_vector(3 downto 0);
+   signal bit_stream : std_logic_vector(15 downto 0);
 
-   signal rst_axi : std_logic_vector (0 to 0);
    signal clk     : std_logic;
    signal sck_clk : std_logic;
    signal ws      : std_logic;
@@ -37,31 +36,26 @@ architecture structual of aw_top is
    signal gen_data       : std_logic_vector(31 downto 0);
    signal gen_data_valid : std_logic;
 
-   signal data_fifo_out : matrix_64_32_type;
+   signal data_fifo_out : matrix_256_32_type;
    signal rd_en_fifo    : std_logic;
 
    signal remove_this : std_logic := '1'; -- remove this when fixed axi master
 
-   --
-   --
-   signal mic_sample_data_out_internal  : matrix_4_24_type;
-   signal mic_sample_valid_out_internal : std_logic_vector(3 downto 0);
+   signal mic_sample_data_out_internal  : matrix_16_24_type;
+   signal mic_sample_valid_out_internal : std_logic_vector(15 downto 0);
 
-   --signal data_collector : matrix_4_16_32_type;
-   signal data : matrix_64_32_type;
-
-   signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
-   signal chain_matrix_data        : matrix_4_16_32_type;
+   signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
+   signal chain_matrix_data        : matrix_16_16_32_type;
 
    signal array_matrix_valid : std_logic;
-   signal array_matrix_data  : matrix_64_32_type;
-   signal almost_empty_array : std_logic_vector(69 downto 0) := (others => '0');
-   signal almost_full_array  : std_logic_vector(69 downto 0) := (others => '0');
-   signal empty_array        : std_logic_vector(69 downto 0) := (others => '0');
-   signal full_array         : std_logic_vector(69 downto 0) := (others => '0');
+   signal array_matrix_data  : matrix_256_32_type;
+   signal almost_empty_array : std_logic_vector(255 downto 0) := (others => '0');
+   signal almost_full_array  : std_logic_vector(255 downto 0) := (others => '0');
+   signal empty_array        : std_logic_vector(255 downto 0) := (others => '0');
+   signal full_array         : std_logic_vector(255 downto 0) := (others => '0');
 
    signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
-   signal sample_counter_out : std_logic_vector(31 downto 0);
+   --signal sample_counter_out : std_logic_vector(31 downto 0);
    signal rst_cnt            : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int            : std_logic             := '1';
 
@@ -71,6 +65,18 @@ begin
    --ws1      <= ws;
    --sck_clk0 <= sck_clk;
    --sck_clk1 <= sck_clk;
+   --ws2      <= ws;
+   --ws3      <= ws;
+   --sck_clk2 <= sck_clk;
+   --sck_clk3 <= sck_clk;
+   --ws4      <= ws;
+   --ws5      <= ws;
+   --sck_clk4 <= sck_clk;
+   --sck_clk5 <= sck_clk;
+   --ws6      <= ws;
+   --ws7      <= ws;
+   --sck_clk6 <= sck_clk;
+   --sck_clk7 <= sck_clk;
 
    almost_empty <= almost_empty_array(0);
    almost_full  <= almost_full_array(0);
@@ -100,6 +106,7 @@ begin
          ws      => ws
       );
 
+   
    simulated_array_c : entity work.simulated_array
       port map(
          ws         => ws,
@@ -112,7 +119,7 @@ begin
 
       );
 
-   sample_gen : for i in 0 to 3 generate
+   sample_gen : for i in 0 to 15 generate
    begin
       sample_C : entity work.sample
          port map(
@@ -126,7 +133,7 @@ begin
          );
    end generate sample_gen;
 
-   collector_gen : for i in 0 to 3 generate
+   collector_gen : for i in 0 to 15 generate
    begin
       collector_c : entity work.collector
          generic map(chainID => i)
@@ -153,7 +160,7 @@ begin
       );
 
    -- fifo to send data
-   fifo_bd_wrapper_gen : for i in 0 to 63 generate
+   fifo_bd_wrapper_gen : for i in 0 to 255 generate
    begin
       fifo_gen : entity work.fifo_bd_wrapper
          port map(
@@ -163,7 +170,7 @@ begin
             FIFO_READ_almost_empty => almost_empty_array(i),
             FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
             FIFO_WRITE_wr_en       => array_matrix_valid,
-            FIFO_READ_rd_en        => rd_en_fifo,    
+            FIFO_READ_rd_en        => rd_en_fifo,
             FIFO_READ_rd_data      => data_fifo_out(i), --data out
             rd_clk                 => clk,
             wr_clk                 => clk,

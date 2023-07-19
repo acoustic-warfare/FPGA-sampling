@@ -156,7 +156,7 @@ int main() {
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
-            for (int i = 0; i < 128; i++) {
+            for (int i = 0; i < 256; i++) {
                 data[i + payload_header_size] = *(data_p + i);
             }
 
