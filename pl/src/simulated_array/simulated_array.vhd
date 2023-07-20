@@ -20,13 +20,15 @@ entity simulated_array is
       G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
    );
    port (
-
-      ws         : in std_logic;
-      sck_clk    : in std_logic;
-      clk        : in std_logic;
-      bit_stream : out std_logic_vector(15 downto 0);
-      reset      : in std_logic
+      clk            : in std_logic;
+      sck_clk        : in std_logic;
+      ws             : in std_logic;
+      reset          : in std_logic;
+      switch         : in std_logic;
+      bit_stream_in  : in std_logic_vector(15 downto 0);
+      bit_stream_out : out std_logic_vector(15 downto 0)
    );
+
 end simulated_array;
 architecture rtl of simulated_array is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
@@ -50,118 +52,123 @@ architecture rtl of simulated_array is
    signal b     : std_logic := '0';
 
 begin
-
    fill_matrix_out_p : process (clk)
    begin
       if rising_edge(clk) then
-
-         sck_d <= sck_clk;
-
-         -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
-            a      <= '1';
-
-            mic_id0 <= to_unsigned(mic_counter, 8);
-            mic_id1 <= to_unsigned(mic_counter + 16, 8);
-            mic_id2 <= to_unsigned(mic_counter + 32, 8);
-            mic_id3 <= to_unsigned(mic_counter + 48, 8);
-            case state is
-               when idle =>
-                  bit_stream <= (others => '1');
-
-                  if (ws = '1') then
-                     bit_stream(0)  <= mic_id0(7);
-                     bit_stream(1)  <= mic_id1(7);
-                     bit_stream(2)  <= mic_id2(7);
-                     bit_stream(3)  <= mic_id3(7);
-                     bit_stream(4)  <= mic_id0(7);
-                     bit_stream(5)  <= mic_id1(7);
-                     bit_stream(6)  <= mic_id2(7);
-                     bit_stream(7)  <= mic_id3(7);
-                     bit_stream(8)  <= mic_id0(7);
-                     bit_stream(9)  <= mic_id1(7);
-                     bit_stream(10) <= mic_id2(7);
-                     bit_stream(11) <= mic_id3(7);
-                     bit_stream(12) <= mic_id0(7);
-                     bit_stream(13) <= mic_id1(7);
-                     bit_stream(14) <= mic_id2(7);
-                     bit_stream(15) <= mic_id3(7);
-                     bit_counter    <= bit_counter + 1;
-                     state          <= run;
-                  end if;
-
-               when run =>
-
-                  if (bit_counter < 8) then --send ID
-                     bit_stream(0)  <= mic_id0(7 - bit_counter);
-                     bit_stream(1)  <= mic_id1(7 - bit_counter);
-                     bit_stream(2)  <= mic_id2(7 - bit_counter);
-                     bit_stream(3)  <= mic_id3(7 - bit_counter);
-                     bit_stream(4)  <= mic_id0(7 - bit_counter);
-                     bit_stream(5)  <= mic_id1(7 - bit_counter);
-                     bit_stream(6)  <= mic_id2(7 - bit_counter);
-                     bit_stream(7)  <= mic_id3(7 - bit_counter);
-                     bit_stream(8)  <= mic_id0(7 - bit_counter);
-                     bit_stream(9)  <= mic_id1(7 - bit_counter);
-                     bit_stream(10) <= mic_id2(7 - bit_counter);
-                     bit_stream(11) <= mic_id3(7 - bit_counter);
-                     bit_stream(12) <= mic_id0(7 - bit_counter);
-                     bit_stream(13) <= mic_id1(7 - bit_counter);
-                     bit_stream(14) <= mic_id2(7 - bit_counter);
-                     bit_stream(15) <= mic_id3(7 - bit_counter);
-                  else -- send counter
-                     bit_stream(0)  <= counter(23 - bit_counter);
-                     bit_stream(1)  <= counter(23 - bit_counter);
-                     bit_stream(2)  <= counter(23 - bit_counter);
-                     bit_stream(3)  <= counter(23 - bit_counter);
-                     bit_stream(4)  <= counter(23 - bit_counter);
-                     bit_stream(5)  <= counter(23 - bit_counter);
-                     bit_stream(6)  <= counter(23 - bit_counter);
-                     bit_stream(7)  <= counter(23 - bit_counter);
-                     bit_stream(8)  <= counter(23 - bit_counter);
-                     bit_stream(9)  <= counter(23 - bit_counter);
-                     bit_stream(10) <= counter(23 - bit_counter);
-                     bit_stream(11) <= counter(23 - bit_counter);
-                     bit_stream(12) <= counter(23 - bit_counter);
-                     bit_stream(13) <= counter(23 - bit_counter);
-                     bit_stream(14) <= counter(23 - bit_counter);
-                     bit_stream(15) <= counter(23 - bit_counter);
-                  end if;
-
-                  if (bit_counter = 23) then
-                     mic_counter <= mic_counter + 1;
-                     state       <= pause;
-                  end if;
-
-                  bit_counter <= bit_counter + 1;
-
-               when pause =>
-                  bit_counter <= bit_counter + 1;
-                  bit_stream  <= (others => '1');
-                  if (mic_counter = 16) then
-                     counter     <= counter + 1;
-                     bit_counter <= 0;
-                     mic_counter <= 0;
-                     state       <= idle;
-                  end if;
-
-                  if (bit_counter = 31) then
-                     bit_counter <= 0;
-                     state       <= run;
-                  end if;
-               when others =>
-                  -- should never get here
-                  report("error_1");
-                  state <= idle;
-            end case;
-
+         if (switch = '0') then
+            bit_stream_out <= bit_stream_in;
          else
-            a      <= '0';
-            b      <= a;
-         end if;
+            sck_d <= sck_clk;
 
-         if reset = '1' then
+            -- delays 2 clk cycles before collecting data
+            if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
+               a <= '1';
 
+               mic_id0 <= to_unsigned(mic_counter, 8);
+               mic_id1 <= to_unsigned(mic_counter + 16, 8);
+               mic_id2 <= to_unsigned(mic_counter + 32, 8);
+               mic_id3 <= to_unsigned(mic_counter + 48, 8);
+               case state is
+                  when idle                 =>
+                     bit_stream_out <= (others => '1');
+
+                     if (ws = '1') then
+                        bit_stream_out(0)  <= mic_id0(7);
+                        bit_stream_out(1)  <= mic_id1(7);
+                        bit_stream_out(2)  <= mic_id2(7);
+                        bit_stream_out(3)  <= mic_id3(7);
+                        bit_stream_out(4)  <= mic_id0(7);
+                        bit_stream_out(5)  <= mic_id1(7);
+                        bit_stream_out(6)  <= mic_id2(7);
+                        bit_stream_out(7)  <= mic_id3(7);
+                        bit_stream_out(8)  <= mic_id0(7);
+                        bit_stream_out(9)  <= mic_id1(7);
+                        bit_stream_out(10) <= mic_id2(7);
+                        bit_stream_out(11) <= mic_id3(7);
+                        bit_stream_out(12) <= mic_id0(7);
+                        bit_stream_out(13) <= mic_id1(7);
+                        bit_stream_out(14) <= mic_id2(7);
+                        bit_stream_out(15) <= mic_id3(7);
+                        bit_counter        <= bit_counter + 1;
+                        state              <= run;
+                     end if;
+
+                  when run =>
+
+                     if (bit_counter < 8) then --send ID
+                        bit_stream_out(0)  <= mic_id0(7 - bit_counter);
+                        bit_stream_out(1)  <= mic_id1(7 - bit_counter);
+                        bit_stream_out(2)  <= mic_id2(7 - bit_counter);
+                        bit_stream_out(3)  <= mic_id3(7 - bit_counter);
+                        bit_stream_out(4)  <= mic_id0(7 - bit_counter);
+                        bit_stream_out(5)  <= mic_id1(7 - bit_counter);
+                        bit_stream_out(6)  <= mic_id2(7 - bit_counter);
+                        bit_stream_out(7)  <= mic_id3(7 - bit_counter);
+                        bit_stream_out(8)  <= mic_id0(7 - bit_counter);
+                        bit_stream_out(9)  <= mic_id1(7 - bit_counter);
+                        bit_stream_out(10) <= mic_id2(7 - bit_counter);
+                        bit_stream_out(11) <= mic_id3(7 - bit_counter);
+                        bit_stream_out(12) <= mic_id0(7 - bit_counter);
+                        bit_stream_out(13) <= mic_id1(7 - bit_counter);
+                        bit_stream_out(14) <= mic_id2(7 - bit_counter);
+                        bit_stream_out(15) <= mic_id3(7 - bit_counter);
+                     else -- send counter
+                        bit_stream_out(0)  <= counter(23 - bit_counter);
+                        bit_stream_out(1)  <= counter(23 - bit_counter);
+                        bit_stream_out(2)  <= counter(23 - bit_counter);
+                        bit_stream_out(3)  <= counter(23 - bit_counter);
+                        bit_stream_out(4)  <= counter(23 - bit_counter);
+                        bit_stream_out(5)  <= counter(23 - bit_counter);
+                        bit_stream_out(6)  <= counter(23 - bit_counter);
+                        bit_stream_out(7)  <= counter(23 - bit_counter);
+                        bit_stream_out(8)  <= counter(23 - bit_counter);
+                        bit_stream_out(9)  <= counter(23 - bit_counter);
+                        bit_stream_out(10) <= counter(23 - bit_counter);
+                        bit_stream_out(11) <= counter(23 - bit_counter);
+                        bit_stream_out(12) <= counter(23 - bit_counter);
+                        bit_stream_out(13) <= counter(23 - bit_counter);
+                        bit_stream_out(14) <= counter(23 - bit_counter);
+                        bit_stream_out(15) <= counter(23 - bit_counter);
+                     end if;
+
+                     if (bit_counter = 23) then
+                        mic_counter <= mic_counter + 1;
+                        state       <= pause;
+                     end if;
+
+                     bit_counter <= bit_counter + 1;
+
+                  when pause =>
+                     bit_counter    <= bit_counter + 1;
+                     bit_stream_out <= (others => '1');
+                     if (mic_counter = 16) then
+                        counter     <= counter + 1;
+                        bit_counter <= 0;
+                        mic_counter <= 0;
+                        state       <= idle;
+                     end if;
+
+                     if (bit_counter = 31) then
+                        bit_counter <= 0;
+                        state       <= run;
+                     end if;
+                  when others =>
+                     -- should never get here
+                     report("error_1");
+                     state <= idle;
+               end case;
+
+            else
+               a <= '0';
+               b <= a;
+            end if;
+
+            if reset = '1' then
+               state       <= idle;
+               counter     <= (others => '0');
+               bit_counter <= 0;
+               mic_counter <= 0;
+            end if;
          end if;
       end if;
    end process;
