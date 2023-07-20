@@ -25,13 +25,19 @@ architecture structual of aw_top_dummy is
    signal clk     : std_logic;
    signal sck_clk : std_logic;
 
-   signal data_test   : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
+   signal data_test     : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
+   signal data_fifo_1   : std_logic_vector(31 downto 0) := "11111101010101010101010111111111";
+   signal data_fifo_256 : matrix_256_32_type;
+
    signal rd_en_pulse : std_logic;
+   signal rd_en_fifo  : std_logic;
 
    signal empty_to_axi : std_logic := '0';
 
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
+
+   signal counter : integer := 0;
 
 begin
 
@@ -56,6 +62,10 @@ begin
    process (clk)
    begin
       if (rising_edge(clk)) then
+         for i in 0 to 255 loop
+            data_fifo_256(i) <= data_fifo_1;
+         end loop;
+
          if (rd_en_pulse = '1') then
             led_r        <= '1';
             full         <= '1';
@@ -66,8 +76,18 @@ begin
             almost_full  <= '0';
             almost_empty <= '0';
          end if;
+
+         if (counter = 2000) then
+            full         <= '0';
+            empty        <= '0';
+            counter <= 0;
+         elsif (counter > 0) then
+            counter <= counter + 1;
+         end if;
       end if;
    end process;
+
+   --
 
    process (sys_clock, reset_rtl)
    begin
@@ -82,6 +102,19 @@ begin
          end if;
       end if;
    end process;
+
+   --
+
+   mux_v2 : entity work.mux_v2
+      port map(
+         sw         => sw,
+         sys_clk    => clk,
+         reset      => reset,
+         rd_en      => rd_en_pulse,
+         fifo       => data_fifo_256,
+         rd_en_fifo => rd_en_fifo,
+         data       => data_test
+      );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(

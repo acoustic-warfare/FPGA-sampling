@@ -145,7 +145,7 @@ int main() {
         empty = *(slaveaddr_p + 3);
         if (empty == 0) {
             // flush the cache from old data
-            Xil_DCacheFlushRange(data_p, 1024);
+            Xil_DCacheFlushRange(data_p, 2048);
 
             // send read_done to AXI (read_done_pulse)
             *(slaveaddr_p + 0) = 0x00000002;

@@ -48,6 +48,13 @@ add_files [file join "$ROOT" src wrappers aw_top_dummy.vhd]
 add_files [file join "$ROOT" src axi_full axitest_MASTER.vhd]
 add_files [file join "$ROOT" src axi_full axitest_SLAVE.vhd]
 add_files [file join "$ROOT" src axi_full axitest_TOP_v1_0.vhd]
+add_files [file join "$ROOT" src axi_full mux_v2.vhd]
+
+add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
+
+add_files [file join "$ROOT" src sample_data sample.vhd]
+add_files [file join "$ROOT" src sample_data collector.vhd]
+add_files [file join "$ROOT" src sample_data full_sample.vhd]
 
 # packeges
 add_files [file join "$ROOT" src matrix_package.vhd]
