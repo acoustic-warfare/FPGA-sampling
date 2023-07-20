@@ -51,7 +51,7 @@ begin
    --ws7      <= ws;
    --sck_clk6 <= sck_clk;
    --sck_clk7 <= sck_clk;
-   led_r <= not micID_sw;
+   --led_r <= not micID_sw;
 
    process (clk)
    begin
@@ -91,7 +91,7 @@ begin
          reset_rtl => reset_rtl,
          axi_data  => data_test,
          axi_empty => empty_to_axi,
-         axi_rd_en => rd_en_test
+         axi_rd_en => rd_en_pulse
       );
 
 end structual;
