@@ -24,19 +24,30 @@ architecture structual of aw_top_dummy is
 
    signal clk     : std_logic;
    signal sck_clk : std_logic;
+   signal ws      : std_logic;
 
    signal data_test   : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
    signal data_fifo_1 : std_logic_vector(31 downto 0) := "11111101010101010101010111111111";
+
+   signal bit_stream : std_logic_vector(15 downto 0);
+
+   signal mic_sample_data  : matrix_16_24_type;
+   signal mic_sample_valid : std_logic_vector(15 downto 0);
+
+   signal chain_matrix_data        : matrix_16_16_32_type;
+   signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
+
+   signal sample_counter : std_logic_vector(31 downto 0);
 
    signal full_array         : std_logic_vector(255 downto 0);
    signal empty_array        : std_logic_vector(255 downto 0);
    signal almost_full_array  : std_logic_vector(255 downto 0);
    signal almost_empty_array : std_logic_vector(255 downto 0);
 
-   signal data_fifo_256_in  : matrix_256_32_type;
+   signal array_matrix_data : matrix_256_32_type;
    signal data_fifo_256_out : matrix_256_32_type;
 
-   signal array_matrix_valid : std_logic := '1';
+   signal array_matrix_valid : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -71,10 +82,6 @@ begin
    process (clk)
    begin
       if (rising_edge(clk)) then
-         for i in 0 to 255 loop
-            data_fifo_256_in(i) <= data_fifo_1;
-         end loop;
-
          if (rd_en_pulse = '1') then
             led_r        <= '1';
             full         <= '1';
@@ -114,6 +121,63 @@ begin
 
    --
 
+   ws_pulse : entity work.ws_pulse
+      port map(
+         sck_clk => sck_clk,
+         reset   => reset,
+         ws      => ws
+      );
+
+   simulated_array_c : entity work.simulated_array
+      port map(
+         ws         => ws,
+         sck_clk    => sck_clk,
+         clk        => clk,
+         bit_stream => bit_stream,
+         reset      => reset
+
+      );
+
+   sample_gen : for i in 0 to 15 generate
+   begin
+      sample_C : entity work.sample
+         port map(
+            sys_clk              => sck_clk,
+            reset                => reset,
+            ws                   => ws,
+            bit_stream           => bit_stream(i),
+            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_valid_out => mic_sample_valid(i)
+
+         );
+   end generate sample_gen;
+
+   collector_gen : for i in 0 to 15 generate
+   begin
+      collector_c : entity work.collector
+         generic map(chainID => i)
+         port map(
+            sys_clk                => clk,
+            reset                  => reset,
+            micID_sw               => micID_sw,
+            mic_sample_data_in     => mic_sample_data(i),
+            mic_sample_valid_in    => mic_sample_valid(i),
+            chain_matrix_data_out  => chain_matrix_data(i),
+            chain_matrix_valid_out => chain_matrix_valid_array(i)
+         );
+   end generate collector_gen;
+
+   full_sample_c : entity work.full_sample
+      port map(
+         sys_clk                 => clk,
+         reset                   => reset,
+         chain_x4_matrix_data_in => chain_matrix_data,
+         chain_matrix_valid_in   => chain_matrix_valid_array,
+         array_matrix_data_out   => array_matrix_data,
+         array_matrix_valid_out  => array_matrix_valid,
+         sample_counter_array    => sample_counter
+      );
+
    fifo_bd_wrapper_gen : for i in 0 to 255 generate
    begin
       fifo_gen : entity work.fifo_bd_wrapper
@@ -125,11 +189,10 @@ begin
             FIFO_READ_empty        => empty_array(i),
             FIFO_WRITE_almost_full => almost_full_array(i),
             FIFO_READ_almost_empty => almost_empty_array(i),
-
-            FIFO_WRITE_wr_data => data_fifo_256_in(i), --data in
-            FIFO_WRITE_wr_en   => array_matrix_valid,
-            FIFO_READ_rd_en    => rd_en_fifo,
-            FIFO_READ_rd_data  => data_fifo_256_out(i) --data out
+            FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
+            FIFO_WRITE_wr_en       => array_matrix_valid,
+            FIFO_READ_rd_en        => rd_en_fifo,
+            FIFO_READ_rd_data      => data_fifo_256_out(i) --data out
          );
    end generate fifo_bd_wrapper_gen;
 

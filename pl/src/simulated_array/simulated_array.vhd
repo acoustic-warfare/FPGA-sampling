@@ -25,8 +25,6 @@ entity simulated_array is
       sck_clk    : in std_logic;
       clk        : in std_logic;
       bit_stream : out std_logic_vector(15 downto 0);
-      ws_ok      : out std_logic := '0';
-      sck_ok     : out std_logic := '0';
       reset      : in std_logic
    );
 end simulated_array;
@@ -62,7 +60,6 @@ begin
          -- delays 2 clk cycles before collecting data
          if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
             a      <= '1';
-            sck_ok <= '1';
 
             mic_id0 <= to_unsigned(mic_counter, 8);
             mic_id1 <= to_unsigned(mic_counter + 16, 8);
@@ -70,11 +67,9 @@ begin
             mic_id3 <= to_unsigned(mic_counter + 48, 8);
             case state is
                when idle =>
-                  ws_ok      <= '0';
                   bit_stream <= (others => '1');
 
                   if (ws = '1') then
-                     ws_ok          <= '1';
                      bit_stream(0)  <= mic_id0(7);
                      bit_stream(1)  <= mic_id1(7);
                      bit_stream(2)  <= mic_id2(7);
@@ -119,18 +114,18 @@ begin
                      bit_stream(1)  <= counter(23 - bit_counter);
                      bit_stream(2)  <= counter(23 - bit_counter);
                      bit_stream(3)  <= counter(23 - bit_counter);
-                     bit_stream(4)  <= mic_id0(23 - bit_counter);
-                     bit_stream(5)  <= mic_id1(23 - bit_counter);
-                     bit_stream(6)  <= mic_id2(23 - bit_counter);
-                     bit_stream(7)  <= mic_id3(23 - bit_counter);
-                     bit_stream(8)  <= mic_id0(23 - bit_counter);
-                     bit_stream(9)  <= mic_id1(23 - bit_counter);
-                     bit_stream(10) <= mic_id2(23 - bit_counter);
-                     bit_stream(11) <= mic_id3(23 - bit_counter);
-                     bit_stream(12) <= mic_id0(23 - bit_counter);
-                     bit_stream(13) <= mic_id1(23 - bit_counter);
-                     bit_stream(14) <= mic_id2(23 - bit_counter);
-                     bit_stream(15) <= mic_id3(23 - bit_counter);
+                     bit_stream(4)  <= counter(23 - bit_counter);
+                     bit_stream(5)  <= counter(23 - bit_counter);
+                     bit_stream(6)  <= counter(23 - bit_counter);
+                     bit_stream(7)  <= counter(23 - bit_counter);
+                     bit_stream(8)  <= counter(23 - bit_counter);
+                     bit_stream(9)  <= counter(23 - bit_counter);
+                     bit_stream(10) <= counter(23 - bit_counter);
+                     bit_stream(11) <= counter(23 - bit_counter);
+                     bit_stream(12) <= counter(23 - bit_counter);
+                     bit_stream(13) <= counter(23 - bit_counter);
+                     bit_stream(14) <= counter(23 - bit_counter);
+                     bit_stream(15) <= counter(23 - bit_counter);
                   end if;
 
                   if (bit_counter = 23) then
@@ -161,14 +156,12 @@ begin
             end case;
 
          else
-            sck_ok <= '0';
             a      <= '0';
             b      <= a;
          end if;
 
          if reset = '1' then
-            sck_ok <= '0';
-            ws_ok  <= '0';
+
          end if;
       end if;
    end process;
