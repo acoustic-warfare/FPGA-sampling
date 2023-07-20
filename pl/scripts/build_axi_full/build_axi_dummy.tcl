@@ -66,7 +66,7 @@ set_property file_type {VHDL} [ get_files *axitest_TOP_v1_0.vhd]
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_axi_full zynq_bd.tcl ] ]
 
-
+set_property top aw_top_dummy [current_fileset]
 
 # Make wrapper zynq
 make_wrapper -inst_template [ get_files {zynq_bd.bd} ]
