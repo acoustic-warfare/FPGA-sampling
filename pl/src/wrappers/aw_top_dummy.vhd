@@ -25,10 +25,10 @@ architecture structual of aw_top_dummy is
    signal clk     : std_logic;
    signal sck_clk : std_logic;
 
-   signal data_test  : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
-   signal rd_en_test : std_logic;
+   signal data_test   : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
+   signal rd_en_pulse : std_logic;
 
-   signal empty_array : std_logic_vector(256 downto 0) := (others => '0');
+   signal empty_to_axi : std_logic := '0';
 
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
@@ -53,6 +53,22 @@ begin
    --sck_clk7 <= sck_clk;
    led_r <= not micID_sw;
 
+   process (clk)
+   begin
+      if (rising_edge(clk)) then
+         if (rd_en_pulse = '1') then
+            led_r        <= '1';
+            full         <= '1';
+            empty        <= '1';
+            almost_full  <= '1';
+            almost_empty <= '1';
+         else
+            almost_full  <= '0';
+            almost_empty <= '0';
+         end if;
+      end if;
+   end process;
+
    process (sys_clock, reset_rtl)
    begin
       if reset_rtl = '1' then
@@ -74,7 +90,7 @@ begin
          sys_clock => sys_clock,
          reset_rtl => reset_rtl,
          axi_data  => data_test,
-         axi_empty => empty_array(0),
+         axi_empty => empty_to_axi,
          axi_rd_en => rd_en_test
       );
 
