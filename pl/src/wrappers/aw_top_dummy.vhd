@@ -25,9 +25,18 @@ architecture structual of aw_top_dummy is
    signal clk     : std_logic;
    signal sck_clk : std_logic;
 
-   signal data_test     : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
-   signal data_fifo_1   : std_logic_vector(31 downto 0) := "11111101010101010101010111111111";
-   signal data_fifo_256 : matrix_256_32_type;
+   signal data_test   : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
+   signal data_fifo_1 : std_logic_vector(31 downto 0) := "11111101010101010101010111111111";
+
+   signal full_array         : std_logic_vector(255 downto 0);
+   signal empty_array        : std_logic_vector(255 downto 0);
+   signal almost_full_array  : std_logic_vector(255 downto 0);
+   signal almost_empty_array : std_logic_vector(255 downto 0);
+
+   signal data_fifo_256_in  : matrix_256_32_type;
+   signal data_fifo_256_out : matrix_256_32_type;
+
+   signal array_matrix_valid : std_logic := '1';
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -63,7 +72,7 @@ begin
    begin
       if (rising_edge(clk)) then
          for i in 0 to 255 loop
-            data_fifo_256(i) <= data_fifo_1;
+            data_fifo_256_in(i) <= data_fifo_1;
          end loop;
 
          if (rd_en_pulse = '1') then
@@ -78,8 +87,8 @@ begin
          end if;
 
          if (counter = 2000) then
-            full         <= '0';
-            empty        <= '0';
+            full    <= '0';
+            empty   <= '0';
             counter <= 0;
          elsif (counter > 0) then
             counter <= counter + 1;
@@ -105,13 +114,32 @@ begin
 
    --
 
+   fifo_bd_wrapper_gen : for i in 0 to 255 generate
+   begin
+      fifo_gen : entity work.fifo_bd_wrapper
+         port map(
+            rd_clk                 => clk,
+            wr_clk                 => clk,
+            reset                  => reset,
+            FIFO_WRITE_full        => full_array(i),
+            FIFO_READ_empty        => empty_array(i),
+            FIFO_WRITE_almost_full => almost_full_array(i),
+            FIFO_READ_almost_empty => almost_empty_array(i),
+
+            FIFO_WRITE_wr_data => data_fifo_256_in(i), --data in
+            FIFO_WRITE_wr_en   => array_matrix_valid,
+            FIFO_READ_rd_en    => rd_en_fifo,
+            FIFO_READ_rd_data  => data_fifo_256_out(i) --data out
+         );
+   end generate fifo_bd_wrapper_gen;
+
    mux_v2 : entity work.mux_v2
       port map(
          sw         => sw,
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
-         fifo       => data_fifo_256,
+         fifo       => data_fifo_256_out,
          rd_en_fifo => rd_en_fifo,
          data       => data_test
       );
