@@ -27,12 +27,14 @@ UDP_IP = "0.0.0.0"
 UDP_PORT = 21844
 
 print("Enter a filename for the recording: ")
-fileChooser = input()
+fileChooser = "data"
+#fileChooser = input()
 print("Save as txt? (y) ")
-txtInput=input()
+txtInput="y"
+#txtInput=input()
 print("Enter time to record (seconds): ")
-#recordTime=input()
 recordTime = 1
+#recordTime=input()
 t_end = time.time()+int(recordTime)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP

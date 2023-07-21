@@ -71,7 +71,7 @@ begin
    led(1) <= almost_full_array(0);
    led(0) <= full_array(0);
 
-   -- indecates rd_en mabe move to own vhd file or remove when debugging done. s
+   -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)
    begin
       if (rising_edge(clk)) then

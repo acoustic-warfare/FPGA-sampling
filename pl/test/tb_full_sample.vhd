@@ -19,11 +19,11 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal chain_x4_matrix_data_in : matrix_4_16_32_type          := (others => (others => (others => '0')));
-   signal chain_matrix_valid_in   : std_logic_vector(3 downto 0) := "0000";
+   signal chain_x16_matrix_data_in : matrix_16_16_32_type          := (others => (others => (others => '0')));
+   signal chain_matrix_valid_in   : std_logic_vector(15 downto 0) := (others => '0');
 
    signal array_matrix_valid_out : std_logic;
-   signal array_matrix_data_out  : matrix_64_32_type;
+   signal array_matrix_data_out  : matrix_256_32_type;
 
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
@@ -44,7 +44,7 @@ begin
    full_sample_1 : entity work.full_sample port map(
       sys_clk                 => clk,
       reset                   => reset,
-      chain_x4_matrix_data_in => chain_x4_matrix_data_in,
+      chain_x4_matrix_data_in => chain_x16_matrix_data_in,
       chain_matrix_valid_in   => chain_matrix_valid_in,
       array_matrix_data_out   => array_matrix_data_out,
       array_matrix_valid_out  => array_matrix_valid_out,
@@ -57,17 +57,17 @@ begin
    begin
       if rising_edge(clk) then
          if data_valid_in_counter = 10 then
-            chain_matrix_valid_in <= "1111";
+            chain_matrix_valid_in <= (others => '1');
             data_valid_in_counter <= 0;
          else
-            chain_matrix_valid_in <= "0000";
+            chain_matrix_valid_in <= (others => '0');
             data_valid_in_counter <= data_valid_in_counter + 1;
          end if;
       end if;
    end process;
 
-   temp_in_chain0 <= chain_x4_matrix_data_in(0);
-   temp_in_chain1 <= chain_x4_matrix_data_in(1);
+   temp_in_chain0 <= chain_x16_matrix_data_in(0);
+   temp_in_chain1 <= chain_x16_matrix_data_in(1);
 
    temp_in_arrays0  <= temp_in_chain0(0);
    temp_in_arrays16 <= temp_in_chain1(0);
@@ -81,8 +81,8 @@ begin
             data_change_counter <= 0;
          else
             if data_change_counter < 15 then
-               chain_x4_matrix_data_in    <= (others => (others => (others => '1')));
-               chain_x4_matrix_data_in(0) <= (others => (others => '0'));
+               chain_x16_matrix_data_in    <= (others => (others => (others => '1')));
+               chain_x16_matrix_data_in(0) <= (others => (others => '0'));
                --   chain_x4_matrix_data_in(1) <= (others => (others => '0'));
                --   chain_x4_matrix_data_in(2) <= (others => (others => '0'));
                --   chain_x4_matrix_data_in(3) <= (others => (others => '0'));
@@ -91,8 +91,8 @@ begin
                --   chain_x4_matrix_data_in(6) <= (others => (others => '0'));
                --   chain_x4_matrix_data_in(7) <= (others => (others => '0'));
             elsif data_change_counter >= 16 then
-               chain_x4_matrix_data_in    <= (others => (others => (others => '0')));
-               chain_x4_matrix_data_in(0) <= (others => (others => '1'));
+               chain_x16_matrix_data_in    <= (others => (others => (others => '0')));
+               chain_x16_matrix_data_in(0) <= (others => (others => '1'));
                --   chain_x4_matrix_data_in(1) <= (others => (others => '1'));
                --   chain_x4_matrix_data_in(2) <= (others => (others => '1'));
                --   chain_x4_matrix_data_in(3) <= (others => (others => '1'));
