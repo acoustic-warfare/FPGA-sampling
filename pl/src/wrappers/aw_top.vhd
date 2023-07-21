@@ -64,10 +64,10 @@ begin
    led_rgb_6(0) <= sw(0) and sw(3);
    led_rgb_6(2) <= sw(1) and sw(3);
 
-   led(3) <= empty_array(0)and sw(3);
-   led(2) <= almost_empty_array(0)and sw(3);
-   led(1) <= almost_full_array(0)and sw(3);
-   led(0) <= full_array(0)and sw(3);
+   led(3) <= empty_array(0) and sw(3);
+   led(2) <= almost_empty_array(0) and sw(3);
+   led(1) <= almost_full_array(0) and sw(3);
+   led(0) <= full_array(0) and sw(3);
 
    -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)

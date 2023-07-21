@@ -16,6 +16,7 @@ bat
 .vscode/c_cpp_properties.json
 a.out
 data*
+ljud*
 bitstreams_PSelf
 clk_sample*
 ljud
