@@ -33,7 +33,7 @@ void PayloadID(u32 data[]) {}
 
 int main() {
     // set number of arrays used
-    u32 nr_arrays = 2;
+    u32 nr_arrays = 4;
 
     // set number of 32bit slots in payload_header
     u32 payload_header_size = 2;
@@ -44,8 +44,6 @@ int main() {
     u32 frequency = 48828;
 
     u32 data[payload_header_size + nr_arrays * 64];
-
-    // u32 start_addr = AD0;
 
     u32 empty;
 
@@ -61,7 +59,7 @@ int main() {
 
     u16_t Port = 21844;
 
-    int buflen = 500;
+    int buflen = 1600;
 
     /* The MAC address of the board. this should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -147,7 +145,7 @@ int main() {
         empty = *(slaveaddr_p + 3);
         if (empty == 0) {
             // flush the cache from old data
-            Xil_DCacheFlushRange(data_p, 1024);
+            Xil_DCacheFlushRange(data_p, 2048);
 
             // send read_done to AXI (read_done_pulse)
             *(slaveaddr_p + 0) = 0x00000002;
@@ -156,17 +154,13 @@ int main() {
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
-            for (int i = 0; i < 128; i++) {
+            for (int i = 0; i < 256; i++) {
                 data[i + payload_header_size] = *(data_p + i);
             }
 
             // package and send UDP
             xemacif_input(netif);
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
-            if (!p) {
-                xil_printf("error allocating pbuf \r\n");
-                return ERR_MEM;
-            }
 
             memcpy(p->payload, data, buflen);
             udp_send(udp_1, p);

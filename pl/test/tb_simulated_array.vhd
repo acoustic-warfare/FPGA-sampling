@@ -13,17 +13,18 @@ end tb_simulated_array;
 architecture rtl of tb_simulated_array is
    constant C_SCK_CYKLE : time := 10 ns;
 
-   signal ws         : std_logic := '0';
    signal clk        : std_logic := '0';
    signal sck_clk    : std_logic := '0';
-   signal bit_stream : std_logic_vector(3 downto 0);
+   signal ws         : std_logic := '0';
+   signal bit_stream_in : std_logic_vector(15 downto 0) := (others => '1') ;
+   signal bit_stream_out : std_logic_vector(15 downto 0);
+   
    signal clk_count  : integer := 0;
 
    signal counter_tb : integer := 0;
 
-   signal ws_ok  : std_logic;
-   signal sck_ok : std_logic;
    signal reset  : std_logic := '0';
+   signal switch : std_logic := '1';
 begin
 
    process (clk)
@@ -45,14 +46,13 @@ begin
 
    simulated_array1 : entity work.simulated_array
       port map(
-         ws         => ws,
-         sck_clk    => sck_clk,
-         bit_stream => bit_stream,
-         clk        => clk,
-         ws_ok      => ws_ok,
-         sck_ok     => sck_ok,
-         reset      => reset
-
+         clk            => clk,
+         sck_clk        => sck_clk,
+         ws             => ws,
+         reset          => reset,
+         switch         => switch,
+         bit_stream_in  => bit_stream_in,
+         bit_stream_out => bit_stream_out
       );
 
    ws_process : process (sck_clk)

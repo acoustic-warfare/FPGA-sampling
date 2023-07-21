@@ -45,7 +45,7 @@ begin
          if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place
             tmp_holder(23 downto 0) := mic_sample_data_in;
 
-            if micID_sw = '1' then
+            if micID_sw = '0' then
                if (mic_sample_data_in(23) = '0') then
                   tmp_holder(31 downto 24) := "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
                else

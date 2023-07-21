@@ -7,7 +7,7 @@ entity axitest_v1_0_M00_AXI is
       -- Base address of targeted slave
       C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"10000000";
       -- Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
-      C_M_AXI_BURST_LEN : integer := 128;
+      C_M_AXI_BURST_LEN : integer := 256;
       -- Thread ID Width
       C_M_AXI_ID_WIDTH : integer := 1;
       -- Width of Address Bus
@@ -147,7 +147,7 @@ begin
    --The AXI address is a concatenation of the target base address + active offset range
    M_AXI_AWADDR <= std_logic_vector(unsigned(C_M_TARGET_SLAVE_BASE_ADDR));
    --Burst LENgth is number of transaction beats inside on burst, minus 1
-   --M_AXI_AWLEN <= "10000000"; -- = 01111111 = 127
+   --M_AXI_AWLEN <= "10000000"; -- = 01111111 = 127 11111111; = 255(256)
    M_AXI_AWLEN <= std_logic_vector(to_unsigned(C_M_AXI_BURST_LEN - 1, 8));
    --Size should be C_M_AXI_DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
    M_AXI_AWSIZE <= "010";

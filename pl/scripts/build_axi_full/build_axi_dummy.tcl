@@ -41,9 +41,9 @@ set_property board_part $board     [current_project]
 set_property target_language VHDL  [current_project]
 
 # Set the file that will be top module
-set top_module [file join "$ROOT" src wrappers aw_top.vhd]
+set top_module [file join "$ROOT" src wrappers aw_top_dummy.vhd]
 
-add_files [file join "$ROOT" src wrappers aw_top.vhd]
+add_files [file join "$ROOT" src wrappers aw_top_dummy.vhd]
 
 add_files [file join "$ROOT" src axi_full axitest_MASTER.vhd]
 add_files [file join "$ROOT" src axi_full axitest_SLAVE.vhd]
@@ -76,7 +76,7 @@ set_property file_type {VHDL} [ get_files *axitest_TOP_v1_0.vhd]
 source [ file normalize [ file join $ROOT scripts build_axi_full zynq_bd.tcl ] ]
 source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
 
-set_property top aw_top [current_fileset]
+set_property top aw_top_dummy [current_fileset]
 
 # Make wrapper fifo
 make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
@@ -120,9 +120,9 @@ switch $params(synth) {
    ## launch SDK
    switch $params(sdk) {
    1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-      file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
+      file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_dummy.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_dummy.hdf]
 
-      launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
+      launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_dummy.hdf]}
       0 { puts "SDK not launched" }
       default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
    }

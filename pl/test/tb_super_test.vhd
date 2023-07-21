@@ -27,9 +27,11 @@ architecture tb of tb_super_test is
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
    signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream           : std_logic_vector(3 downto 0);
+   signal bit_stream_in        : std_logic_vector(15 downto 0);
+   signal bit_stream_out       : std_logic_vector(15 downto 0);
+   signal switch               : std_logic := '1';
 
-   signal chain_matrix_valid_out : std_logic_vector(3 downto 0);
+   signal chain_matrix_valid_out : std_logic_vector(15 downto 0);
 
    signal tb_look_fullsample_data_out_0  : std_logic_vector(31 downto 0);
    signal tb_look_fullsample_data_out_15 : std_logic_vector(31 downto 0);
@@ -40,17 +42,17 @@ architecture tb of tb_super_test is
    signal tb_look_fullsample_data_out_48 : std_logic_vector(31 downto 0);
    signal tb_look_fullsample_data_out_63 : std_logic_vector(31 downto 0);
 
-   signal chain_x4_matrix_data_in : matrix_4_16_32_type;
-   signal array_matrix_data_out   : matrix_64_32_type;
-   signal array_matrix_valid_out  : std_logic;
-   signal sample_counter_array    : std_logic_vector(31 downto 0);
+   signal chain_x16_matrix_data_in : matrix_16_16_32_type;
+   signal array_matrix_data_out    : matrix_256_32_type;
+   signal array_matrix_valid_out   : std_logic;
+   signal sample_counter_array     : std_logic_vector(31 downto 0);
 
    signal ws_ok  : std_logic;
    signal sck_ok : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
-   signal bitstream_cable : std_logic_vector(3 downto 0);
+   signal bitstream_cable : std_logic_vector(15 downto 0);
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
@@ -58,7 +60,7 @@ begin
 
    ws_cable        <= transport ws after 30 ns;
    sck_clk_cable   <= transport sck_clk after 30 ns;
-   bitstream_cable <= transport bit_stream after 0 ns;
+   bitstream_cable <= transport bit_stream_out after 0 ns;
 
    tb_look_fullsample_data_out_0  <= array_matrix_data_out(0);
    tb_look_fullsample_data_out_15 <= array_matrix_data_out(15);
@@ -71,13 +73,13 @@ begin
 
    simulated_array1 : entity work.simulated_array
       port map(
-         ws         => ws_cable,
-         sck_clk    => sck_clk_cable,
-         bit_stream => bit_stream,
-         reset      => reset,
-         ws_ok      => ws_ok,
-         sck_ok     => sck_ok,
-         clk => clk
+         clk            => clk,
+         sck_clk        => sck_clk_cable,
+         ws             => ws_cable,
+         reset          => reset,
+         switch         => switch,
+         bit_stream_in  => bit_stream_in,
+         bit_stream_out => bit_stream_out
       );
 
    sample_gen : for i in 0 to 3 generate
@@ -104,7 +106,7 @@ begin
             micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
-            chain_matrix_data_out  => chain_x4_matrix_data_in(i),
+            chain_matrix_data_out  => chain_x16_matrix_data_in(i),
             chain_matrix_valid_out => chain_matrix_valid_out(i)
          );
    end generate collector_gen;
@@ -113,7 +115,7 @@ begin
       port map(
          sys_clk                 => clk,
          reset                   => reset,
-         chain_x4_matrix_data_in => chain_x4_matrix_data_in,
+         chain_x4_matrix_data_in => chain_x16_matrix_data_in,
          chain_matrix_valid_in   => chain_matrix_valid_out,
          array_matrix_data_out   => array_matrix_data_out,
          array_matrix_valid_out  => array_matrix_valid_out,

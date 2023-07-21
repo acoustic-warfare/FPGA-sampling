@@ -4,11 +4,11 @@ use work.matrix_type.all;
 
 entity mux_v2 is
    port (
-      sys_clk : in std_logic;
-      reset   : in std_logic;
-      rd_en   : in std_logic;
-      fifo    : in matrix_64_32_type;
-
+      sw         : in std_logic;
+      sys_clk    : in std_logic;
+      reset      : in std_logic;
+      rd_en      : in std_logic;
+      fifo       : in matrix_256_32_type;
       rd_en_fifo : out std_logic;
       data       : out std_logic_vector(31 downto 0)
    );
@@ -26,41 +26,52 @@ begin
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
-         case state is
-            when idle =>
+         if (sw = '1') then
+            data <= "11111101010101010101010101010101";
+            if (counter >= 256) then
+               rd_en_fifo <= '1';
+               counter    <= 0;
+            else
                rd_en_fifo <= '0';
-               data       <= fifo(0);
-               if (rd_en = '1' and rd_en_d = '0') then -- rising_edge rd_en
-                  counter <= - 1;
-                  state   <= run;
-                  data    <= fifo(1);
-               end if;
-            when run =>
+               counter    <= counter + 1;
+            end if;
+         else
+            case state is
+               when idle =>
+                  rd_en_fifo <= '0';
+                  data       <= fifo(0);
+                  if (rd_en = '1' and rd_en_d = '0') then -- rising_edge rd_en
+                     counter <= - 1;
+                     state   <= run;
+                     data    <= fifo(1);
+                  end if;
+               when run =>
+                  rd_en_fifo <= '0';
+                  if (counter >= 256) then
+                     counter    <= 0;
+                     state      <= idle;
+                     data       <= (others => '1');
+                     rd_en_fifo <= '1';
+                  elsif (counter < 2) then
+                     data    <= "01010101010101010101010101010101";
+                     counter <= counter + 1;
+                  else
+                     data    <= fifo(counter);
+                     counter <= counter + 1;
+                  end if;
+
+               when others =>
+                  -- should never get here
+                  state <= idle;
+            end case;
+
+            if (reset = '1') then
+               data       <= (others => '0');
                rd_en_fifo <= '0';
-               if (counter = 64) then
-                  counter    <= 0;
-                  state      <= idle;
-                  data       <= (others => '1');
-                  rd_en_fifo <= '1';
-               elsif (counter < 2) then
-                  data <= "01010101010101010101010101010101";
-                  counter <= counter + 1;
-               else
-                  data    <= fifo(counter);
-                  counter <= counter + 1;
-               end if;
-
-            when others =>
-               -- should never get here
-               state <= idle;
-         end case;
-
-         if (reset = '1') then
-            data       <= (others => '0');
-            rd_en_fifo <= '0';
-            counter    <= 0;
+               counter    <= 0;
+            end if;
+            rd_en_d <= rd_en;
          end if;
-         rd_en_d <= rd_en;
       end if;
    end process;
 end rtl;

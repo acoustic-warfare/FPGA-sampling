@@ -21,12 +21,12 @@ parray params
 # Open project
 # ------------------------------------------------------------------------------------
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
-#set outputdir [file join "$ROOT" vivado_files]
-#file mkdir $outputdir
+set outputdir [file join "$ROOT" vivado_files]
+file mkdir $outputdir
 #open_project
 open_project [file join "$ROOT" vivado_files acoustic_warfare.xpr]
 
-## start gui
+# start gui
 switch $params(gui) {
    1 { start_gui }
    0 { puts "gui not started" }
@@ -36,11 +36,12 @@ switch $params(gui) {
 update_compile_order -fileset sources_1
 
 
-# launch SDK
-switch $params(sdk) {
-   1 {  file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf] 
-      launch_sdk -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf] -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk]}
-   0 { puts "SDK not launched" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+## launch SDK
+   switch $params(sdk) {
+   1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
+      file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
 
+      launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}
+      0 { puts "SDK not launched" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }

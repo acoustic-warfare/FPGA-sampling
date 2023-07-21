@@ -3,32 +3,33 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
 
-entity aw_top is
+entity aw_top_dummy is
    generic (
-      num_arrays : integer := 4 -- not in use yet
+      num_arrays : integer := 1
    );
    port (
-      sys_clock   : in std_logic;
-      reset_rtl   : in std_logic;
-      reset       : in std_logic;
-      sw          : in std_logic_vector(3 downto 0);
-      bit_stream  : in std_logic_vector(15 downto 0);
-      ws_out      : out std_logic_vector(7 downto 0);
-      sck_clk_out : out std_logic_vector(7 downto 0);
-      led         : out std_logic_vector(3 downto 0);
-      led_rgb_5   : out std_logic_vector(2 downto 0);
-      led_rgb_6   : out std_logic_vector(2 downto 0)
+      sw           : in std_logic;
+      sys_clock    : in std_logic;
+      reset_rtl    : in std_logic;
+      reset        : in std_logic;
+      micID_sw     : in std_logic;
+      led_r        : out std_logic;
+      full         : out std_logic;
+      empty        : out std_logic;
+      almost_full  : out std_logic;
+      almost_empty : out std_logic
    );
 end entity;
-architecture structual of aw_top is
+architecture structual of aw_top_dummy is
 
    signal clk     : std_logic;
    signal sck_clk : std_logic;
    signal ws      : std_logic;
 
-   signal data_test : std_logic_vector(31 downto 0);
+   signal data_test   : std_logic_vector(31 downto 0) := "11111101010101010101010101010101";
+   signal data_fifo_1 : std_logic_vector(31 downto 0) := "11111101010101010101010111111111";
 
-   signal bit_stream_out : std_logic_vector(15 downto 0);
+   signal bit_stream : std_logic_vector(15 downto 0);
 
    signal mic_sample_data  : matrix_16_24_type;
    signal mic_sample_valid : std_logic_vector(15 downto 0);
@@ -60,29 +61,42 @@ architecture structual of aw_top is
 
 begin
 
-   ws_out      <= (others => ws);
-   sck_clk_out <= (others => sck_clk);
+   --ws0      <= ws;
+   --ws1      <= ws;
+   --sck_clk0 <= sck_clk;
+   --sck_clk1 <= sck_clk;
+   --ws2      <= ws;
+   --ws3      <= ws;
+   --sck_clk2 <= sck_clk;
+   --sck_clk3 <= sck_clk;
+   --ws4      <= ws;
+   --ws5      <= ws;
+   --sck_clk4 <= sck_clk;
+   --sck_clk5 <= sck_clk;
+   --ws6      <= ws;
+   --ws7      <= ws;
+   --sck_clk6 <= sck_clk;
+   --sck_clk7 <= sck_clk;
+   --led_r <= not micID_sw;
 
-   led_rgb_6(0) <= sw(0);
-   led_rgb_6(2) <= sw(3);
-
-   led(3) <= empty_array(0);
-   led(2) <= almost_empty_array(0);
-   led(1) <= almost_full_array(0);
-   led(0) <= full_array(0);
-
-   -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)
    begin
       if (rising_edge(clk)) then
          if (rd_en_pulse = '1') then
-            counter      <= 1;
-            led_rgb_5(1) <= '1';
+            led_r        <= '1';
+            full         <= '1';
+            empty        <= '1';
+            almost_full  <= '1';
+            almost_empty <= '1';
+         else
+            almost_full  <= '0';
+            almost_empty <= '0';
          end if;
 
          if (counter = 2000) then
-            counter      <= 0;
-            led_rgb_5(1) <= '0';
+            full    <= '0';
+            empty   <= '0';
+            counter <= 0;
          elsif (counter > 0) then
             counter <= counter + 1;
          end if;
@@ -116,14 +130,12 @@ begin
 
    simulated_array_c : entity work.simulated_array
       port map(
+         ws         => ws,
+         sck_clk    => sck_clk,
+         clk        => clk,
+         bit_stream => bit_stream,
+         reset      => reset
 
-         clk            => clk,
-         sck_clk        => sck_clk,
-         ws             => ws,
-         reset          => reset,
-         switch         => sw(0),
-         bit_stream_in  => bit_stream,
-         bit_stream_out => bit_stream_out
       );
 
    sample_gen : for i in 0 to 15 generate
@@ -147,7 +159,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => sw(0),
+            micID_sw               => micID_sw,
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -186,7 +198,7 @@ begin
 
    mux_v2 : entity work.mux_v2
       port map(
-         sw         => sw(3),
+         sw         => sw,
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
