@@ -46,7 +46,7 @@ if(txtInput.lower() == "y"):
    print("Recording!!")
    with open(fileChooser+".txt", "w") as f:
       while time.time()<t_end:
-         data = sock.recv(1600)
+         data = sock.recv(1032)
 
          f.write("Header:  " + ints_to_twos_complement_string(data[3], data[2], data[1], data[0]) + "    ")
          

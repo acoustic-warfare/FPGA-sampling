@@ -51,8 +51,6 @@ architecture structual of aw_top is
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
-   signal empty_to_axi : std_logic := '0';
-
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
 
@@ -63,13 +61,13 @@ begin
    ws_out      <= (others => ws);
    sck_clk_out <= (others => sck_clk);
 
-   led_rgb_6(0) <= sw(0);
-   led_rgb_6(2) <= sw(3);
+   led_rgb_6(0) <= sw(0) and sw(3);
+   led_rgb_6(2) <= sw(1) and sw(3);
 
-   led(3) <= empty_array(0);
-   led(2) <= almost_empty_array(0);
-   led(1) <= almost_full_array(0);
-   led(0) <= full_array(0);
+   led(3) <= empty_array(0)and sw(3);
+   led(2) <= almost_empty_array(0)and sw(3);
+   led(1) <= almost_full_array(0)and sw(3);
+   led(0) <= full_array(0)and sw(3);
 
    -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)
@@ -77,7 +75,7 @@ begin
       if (rising_edge(clk)) then
          if (rd_en_pulse = '1') then
             counter      <= 1;
-            led_rgb_5(1) <= '1';
+            led_rgb_5(1) <= sw(3);
          end if;
 
          if (counter = 2000) then
@@ -186,7 +184,7 @@ begin
 
    mux_v2 : entity work.mux_v2
       port map(
-         sw         => sw(3),
+         sw         => sw(1),
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
@@ -202,7 +200,7 @@ begin
          sys_clock => sys_clock,
          reset_rtl => reset_rtl,
          axi_data  => data_test,
-         axi_empty => empty_to_axi,
+         axi_empty => empty_array(0),
          axi_rd_en => rd_en_pulse
       );
 

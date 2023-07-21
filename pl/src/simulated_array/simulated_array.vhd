@@ -69,7 +69,7 @@ begin
                   if (ws = '1') then
                      for i in 0 to 15 loop
                         bit_stream_gen(i) <= mic_id(7);
-                        mic_id := mic_id + 8;
+                        mic_id := mic_id + 16;
                      end loop;
                      bit_counter <= bit_counter + 1;
                      state       <= run;
@@ -80,7 +80,7 @@ begin
                   if (bit_counter < 8) then --send ID
                      for i in 0 to 15 loop
                         bit_stream_gen(i) <= mic_id(7 - bit_counter);
-                        mic_id := mic_id + 8;
+                        mic_id := mic_id + 16;
                      end loop;
 
                   else -- send counter

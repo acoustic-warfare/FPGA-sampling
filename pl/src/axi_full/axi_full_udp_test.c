@@ -59,7 +59,7 @@ int main() {
 
     u16_t Port = 21844;
 
-    int buflen = 1600;
+    int buflen = 1032;
 
     /* The MAC address of the board. this should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -161,7 +161,6 @@ int main() {
             // package and send UDP
             xemacif_input(netif);
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
-
             memcpy(p->payload, data, buflen);
             udp_send(udp_1, p);
             pbuf_free(p);
