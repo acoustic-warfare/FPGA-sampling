@@ -133,7 +133,7 @@ begin
             sys_clk              => sck_clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream(i),
+            bit_stream           => bit_stream_out(i),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
 
