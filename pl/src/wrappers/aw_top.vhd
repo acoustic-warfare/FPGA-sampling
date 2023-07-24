@@ -94,7 +94,7 @@ begin
       if reset_rtl = '1' then
          rst_cnt <= (others => '0');
          rst_int <= '1';
-      elsif sys_clock'event and sys_clock = '1' then
+      elsif rising_edge(sys_clock) then
          if rst_cnt = x"01ffffff" then --about 3 sec
             rst_int <= '0';
          else

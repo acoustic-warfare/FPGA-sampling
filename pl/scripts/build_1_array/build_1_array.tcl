@@ -68,7 +68,7 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 set_property file_type {VHDL} [ get_files *axi_lite_slave.vhd]
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_1_array zynq_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts build_1_array fifo_bd.tcl ] ]
+source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
 
 # Make wrapper fifo
 make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
