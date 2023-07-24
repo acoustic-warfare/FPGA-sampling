@@ -60,7 +60,8 @@ architecture structual of aw_top is
 
 begin
 
-   ws_out         <= (others => ws);
+   ws_out <= (others => ws);
+
    sck_clk_out(0) <= sck_clk and sck_startup(0);
    sck_clk_out(1) <= sck_clk and sck_startup(0);
 
@@ -86,16 +87,16 @@ begin
    begin
       if (rising_edge(clk)) then
          counter_sck_startup <= counter_sck_startup + 1;
-         if counter_sck_startup = x"0fffffff" then
+         if counter_sck_startup = x"00ffffff" then -- 0.1 seconds
             sck_startup(0) <= '1';
 
-         elsif counter_sck_startup = x"2fffffff" then
+         elsif counter_sck_startup = x"04ffffff" then -- 0.7 seconds
             sck_startup(1) <= '1';
 
-         elsif counter_sck_startup = x"4fffffff" then
+         elsif counter_sck_startup = x"08ffffff" then -- 1.2 seconds
             sck_startup(2) <= '1';
 
-         elsif counter_sck_startup = x"6fffffff" then
+         elsif counter_sck_startup = x"0bffffff" then -- 1.6 seconds
             sck_startup(3)      <= '1';
             counter_sck_startup <= (others => '0');
 
@@ -129,7 +130,7 @@ begin
          rst_cnt <= (others => '0');
          rst_int <= '1';
       elsif rising_edge(sys_clock) then
-         if rst_cnt = x"01ffffff" then --about 3 sec
+         if rst_cnt = x"03ffffff" then --about 2.7 seconds
             rst_int <= '0';
          else
             rst_cnt <= rst_cnt + 1;

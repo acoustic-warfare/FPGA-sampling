@@ -18,11 +18,11 @@ begin
    begin
       if (falling_edge(sck_clk)) then
          if (startup_counter > startup_length) then
-            if (rising_edge_counter = 511) then
-               ws                  <= '1'; -- set ws to HIGH after 509 cykles
+            if (rising_edge_counter = 510) then
+               ws                  <= '1';
                rising_edge_counter <= rising_edge_counter + 1;
-            elsif (rising_edge_counter = 512) then
-               ws                  <= '1'; -- set ws to HIGH after 509 cykles
+            elsif (rising_edge_counter = 511) then
+               ws                  <= '1';
                rising_edge_counter <= 0;
             else
                ws                  <= '0';
