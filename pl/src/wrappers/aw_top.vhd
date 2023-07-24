@@ -142,9 +142,10 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_clk => sck_clk,
-         reset   => reset,
-         ws      => ws
+         sck_startup => sck_startup(3),
+         sck_clk     => sck_clk,
+         reset       => reset,
+         ws          => ws
       );
 
    simulated_array_c : entity work.simulated_array
