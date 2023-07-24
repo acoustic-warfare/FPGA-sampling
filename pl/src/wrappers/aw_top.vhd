@@ -62,7 +62,8 @@ begin
    sck_clk_out <= (others => sck_clk);
 
    led_rgb_6(0) <= sw(0) and sw(3);
-   led_rgb_6(2) <= sw(1) and sw(3);
+   led_rgb_6(1) <= sw(1) and sw(3);
+   led_rgb_6(2) <= sw(2) and sw(3);
 
    led(3) <= empty_array(0) and sw(3);
    led(2) <= almost_empty_array(0) and sw(3);
@@ -119,7 +120,7 @@ begin
          sck_clk        => sck_clk,
          ws             => ws,
          reset          => reset,
-         switch         => sw(0),
+         switch         => sw(1),
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
@@ -184,7 +185,7 @@ begin
 
    mux_v2 : entity work.mux_v2
       port map(
-         sw         => sw(1),
+         sw         => sw(2),
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
