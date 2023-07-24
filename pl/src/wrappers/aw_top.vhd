@@ -54,12 +54,24 @@ architecture structual of aw_top is
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
 
-   signal counter : integer := 0;
+   signal counter_led         : integer                      := 0;
+   signal counter_sck_startup : unsigned(31 downto 0)        := (others => '0');
+   signal sck_startup         : std_logic_vector(3 downto 0) := (others => '0');
 
 begin
 
-   ws_out      <= (others => ws);
-   sck_clk_out <= (others => sck_clk);
+   ws_out         <= (others => ws);
+   sck_clk_out(0) <= sck_clk and sck_startup(0);
+   sck_clk_out(1) <= sck_clk and sck_startup(0);
+
+   sck_clk_out(2) <= sck_clk and sck_startup(1);
+   sck_clk_out(3) <= sck_clk and sck_startup(1);
+
+   sck_clk_out(4) <= sck_clk and sck_startup(2);
+   sck_clk_out(5) <= sck_clk and sck_startup(2);
+
+   sck_clk_out(6) <= sck_clk and sck_startup(3);
+   sck_clk_out(7) <= sck_clk and sck_startup(3);
 
    led_rgb_6(0) <= sw(0) and sw(3);
    led_rgb_6(1) <= sw(1) and sw(3);
@@ -70,20 +82,41 @@ begin
    led(1) <= almost_full_array(0) and sw(3);
    led(0) <= full_array(0) and sw(3);
 
+   process (clk)
+   begin
+      if (rising_edge(clk)) then
+         counter_sck_startup <= counter_sck_startup + 1;
+         if counter_sck_startup = x"0fffffff" then
+            sck_startup(0) <= '1';
+
+         elsif counter_sck_startup = x"2fffffff" then
+            sck_startup(1) <= '1';
+
+         elsif counter_sck_startup = x"4fffffff" then
+            sck_startup(2) <= '1';
+
+         elsif counter_sck_startup = x"6fffffff" then
+            sck_startup(3)      <= '1';
+            counter_sck_startup <= (others => '0');
+
+         end if;
+      end if;
+   end process;
+
    -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)
    begin
       if (rising_edge(clk)) then
          if (rd_en_pulse = '1') then
-            counter      <= 1;
+            counter_led  <= 1;
             led_rgb_5(1) <= sw(3);
          end if;
 
-         if (counter = 2000) then
-            counter      <= 0;
+         if (counter_led = 2000) then
+            counter_led  <= 0;
             led_rgb_5(1) <= '0';
-         elsif (counter > 0) then
-            counter <= counter + 1;
+         elsif (counter_led > 0) then
+            counter_led <= counter_led + 1;
          end if;
       end if;
    end process;

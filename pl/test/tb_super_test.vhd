@@ -54,6 +54,15 @@ architecture tb of tb_super_test is
    signal sck_clk_cable   : std_logic;
    signal bitstream_cable : std_logic_vector(15 downto 0);
 
+   signal RAM_DEPTH        : natural := 32;
+   signal rd_en            : std_logic;
+   signal data_fifo_out    : matrix_256_32_type;
+   signal full_array       : std_logic_vector(255 downto 0);
+   signal empty_array      : std_logic_vector(255 downto 0);
+   signal full_next_array  : std_logic_vector(255 downto 0);
+   signal empty_next_array : std_logic_vector(255 downto 0);
+   signal fill_count       : integer range RAM_DEPTH - 1 downto 0;
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
@@ -121,6 +130,28 @@ begin
          array_matrix_valid_out  => array_matrix_valid_out,
          sample_counter_array    => sample_counter_array
       );
+
+   fifo_gen : for i in 0 to 256 generate
+   begin
+      fifo : entity work.fifo_axi
+         generic map(
+            RAM_WIDTH => 32,
+            RAM_DEPTH => RAM_DEPTH
+         )
+         port map(
+            clk        => clk,
+            rst        => reset,
+            wr_en      => array_matrix_valid_out,
+            wr_data    => array_matrix_data_out(i),
+            rd_en      => rd_en,
+            rd_data    => data_fifo_out(i),
+            empty      => empty_array(i),
+            empty_next => empty_next_array(i),
+            full       => full_array(i),
+            full_next  => full_next_array(i),
+            fill_count => fill_count
+         );
+   end generate fifo_gen;
 
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
