@@ -156,9 +156,10 @@ begin
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
       port map(
-         sck_clk => sck_clk,
-         ws      => ws,
-         reset   => reset
+         sck_startup => '1',
+         sck_clk     => sck_clk,
+         ws          => ws,
+         reset       => reset
       );
 
    main : process

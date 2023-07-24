@@ -31,7 +31,7 @@ architecture rtl of sample_clk is
    signal counter_bit  : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
    signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
+   --signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1      : integer range 0 to 2;       -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
    signal active       : std_logic := '0';           -- Make sure that ws only resets the the counters once
 
@@ -92,7 +92,7 @@ begin
                if counter_samp = 4 then
                   -- 5 bits have been sampled,
 
-                  if counter_1s = 1 then 
+                  if bit_stream = '1' then 
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
@@ -146,15 +146,10 @@ begin
    begin
       if rising_edge(clk) then
          if (runner = '1') then
-            -- to sample on the forth clk cycle of sck use counter_samp = 3
-            if bit_stream = '1' and counter_samp = 3 then
-               counter_1s <= 1;
-            end if;
 
             -- a full bit has been sampled
             if counter_samp = 4 then
                counter_bit  <= counter_bit + 1;
-               counter_1s   <= 0;
                counter_samp <= 0;
             else
                counter_samp <= counter_samp + 1;
@@ -182,7 +177,6 @@ begin
             counter_bit  <= 0;
             counter_samp <= 0;
             counter_mic  <= 0;
-            counter_1s   <= 0;
          end if;
       end if;
    end process;
