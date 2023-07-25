@@ -5,20 +5,16 @@ use work.matrix_type.all;
 
 entity aw_top_lite is
    port (
-      sys_clock    : in std_logic;
-      reset_rtl    : in std_logic;
-      reset        : in std_logic;
-      micID_sw     : in std_logic;
-      led_r        : out std_logic;
-      bit_stream   : in std_logic_vector(3 downto 0);
-      ws0          : out std_logic;
-      ws1          : out std_logic;
-      sck_clk0     : out std_logic;
-      sck_clk1     : out std_logic;
-      full         : out std_logic;
-      empty        : out std_logic;
-      almost_full  : out std_logic;
-      almost_empty : out std_logic
+      sys_clock   : in std_logic;
+      reset_rtl   : in std_logic;
+      reset       : in std_logic;
+      sw          : in std_logic_vector(3 downto 0);
+      bit_stream  : in std_logic_vector(15 downto 0);
+      ws_out      : out std_logic_vector(7 downto 0);
+      sck_clk_out : out std_logic_vector(7 downto 0);
+      led         : out std_logic_vector(3 downto 0);
+      led_rgb_5   : out std_logic_vector(2 downto 0);
+      led_rgb_6   : out std_logic_vector(2 downto 0)
    );
 end entity;
 architecture structual of aw_top_lite is
@@ -33,11 +29,11 @@ architecture structual of aw_top_lite is
    --signal data_collector : matrix_4_16_32_type;
    signal data : matrix_64_32_type;
 
-   signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
-   signal chain_matrix_data        : matrix_4_16_32_type;
+   signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
+   signal chain_matrix_data        : matrix_16_16_32_type;
 
    signal array_matrix_valid : std_logic;
-   signal array_matrix_data  : matrix_64_32_type;
+   signal array_matrix_data  : matrix_256_32_type;
 
    signal rd_en_array       : std_logic_vector(69 downto 0); -- rd_en from axi_lite
    signal rd_en_pulse_array : std_logic_vector(69 downto 0);
@@ -52,23 +48,21 @@ architecture structual of aw_top_lite is
 
    signal sample_counter     : std_logic_vector(31 downto 0) := (others => '0');
    signal sample_counter_out : std_logic_vector(31 downto 0);
-   signal rst_cnt            : unsigned(31 downto 0)         := (others => '0'); --125 mhz, 8 ns,
-   signal rst_int            : std_logic                     := '1';
-   signal ws_value           : std_logic_vector(31 downto 0) := std_logic_vector(to_unsigned(48825, 32)); --send 48825 to ps
-   signal ws_value_out       : std_logic_vector(31 downto 0);
+   signal rst_cnt            : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
+   signal rst_int            : std_logic             := '1';
 begin
 
-   ws0      <= ws_internal;
-   ws1      <= ws_internal;
-   sck_clk0 <= sck_clk_internal;
-   sck_clk1 <= sck_clk_internal;
+   ws_out      <= (others => ws_internal);
+   sck_clk_out <= (others => sck_clk_internal);
 
-   almost_empty <= almost_empty_array(0);
-   almost_full  <= almost_full_array(0);
-   empty        <= empty_array(0);
-   full         <= full_array(0);
+   led(3) <= empty_array(0);
+   led(2) <= almost_empty_array(0);
+   led(1) <= almost_full_array(0);
+   led(0) <= full_array(0);
 
-   led_r <= not micID_sw;
+   led_rgb_6(0) <= sw(0) and sw(3);
+   led_rgb_6(1) <= sw(1) and sw(3);
+   led_rgb_6(2) <= sw(2) and sw(3);
 
    process (sys_clock, reset_rtl)
    begin
@@ -118,22 +112,7 @@ begin
          wr_clk                 => clk,
          reset                  => reset
       );
-   -------------------------------------------------------------------------------------------------------
-   fifo_frequency : entity work.fifo_bd_wrapper
-      port map(
-         FIFO_WRITE_full        => full_array(67),
-         FIFO_READ_empty        => empty_array(67),
-         FIFO_WRITE_almost_full => almost_full_array(67),
-         FIFO_READ_almost_empty => almost_empty_array(67),
-         FIFO_WRITE_wr_data     => ws_value, --data in
-         FIFO_WRITE_wr_en       => array_matrix_valid,
-         FIFO_READ_rd_en        => rd_en_pulse_array(67), --- from pulse
-         FIFO_READ_rd_data      => ws_value_out,          --data out
-         rd_clk                 => clk_axi,
-         wr_clk                 => clk,
-         reset                  => reset
-      );
-   ------------------------------------------------------------------------------------------
+
    rd_en_pulse_gen : for i in 0 to 69 generate
    begin
       rd_en_pulse : entity work.rd_en_pulse
@@ -147,14 +126,15 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_clk => sck_clk_internal,
-         reset   => reset,
-         ws      => ws_internal
+         sck_startup => '1',
+         sck_clk     => sck_clk_internal,
+         reset       => reset,
+         ws          => ws_internal
       );
 
    sample_gen : for i in 0 to 3 generate
    begin
-      sample_C : entity work.sample
+      sample_C : entity work.sample_clk
          port map(
             sys_clk              => sck_clk_internal,
             reset                => reset,
@@ -173,7 +153,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => micID_sw,
+            micID_sw               => sw(0),
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -268,7 +248,7 @@ begin
          reg_64_0     => empty_array(31 downto 0),
          reg_65_0     => empty_array(63 downto 32),
          reg_66_0     => sample_counter_out,
-         reg_67_0     => ws_value_out,
+         reg_67_0 => (others => '0'),
          reg_68_0 => (others => '0'),
          reg_69_0 => (others => '0')
       );
