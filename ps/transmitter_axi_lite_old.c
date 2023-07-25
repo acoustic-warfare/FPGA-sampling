@@ -57,7 +57,7 @@ int main() {
 
     u16_t Port = 21844;
 
-    int buflen = 500;
+    int buflen = 1458;
 
     /* The MAC address of the board. this should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
