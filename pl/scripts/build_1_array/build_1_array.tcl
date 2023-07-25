@@ -48,6 +48,7 @@ add_files [file join "$ROOT" src wrappers aw_top_axi_lite.vhd]
 add_files [file join "$ROOT" src axi_lite axi_lite_slave.vhd]
 add_files [file join "$ROOT" src axi_lite rd_en_pulse.vhd]
 
+add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data full_sample.vhd]

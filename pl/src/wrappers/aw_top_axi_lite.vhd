@@ -134,7 +134,7 @@ begin
 
    sample_gen : for i in 0 to 3 generate
    begin
-      sample_C : entity work.sample_clk
+      sample_C : entity work.sample
          port map(
             sys_clk              => sck_clk_internal,
             reset                => reset,
