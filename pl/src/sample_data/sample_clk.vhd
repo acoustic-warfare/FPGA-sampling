@@ -112,20 +112,24 @@ begin
                --
                -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
                -------------------------------------------------------------------------------------------------------------------
-               mic_sample_valid_out <= '0';
-               counter_bit          <= counter_bit + 1;
+               counter_samp <= counter_samp + 1;
+               if counter_samp = 4 then
+                  mic_sample_valid_out <= '0';
+                  counter_samp         <= 0;
+                  counter_bit          <= counter_bit + 1;
 
-               if counter_bit = 31 then
-                  counter_bit <= 0;
-                  counter_mic <= counter_mic + 1;
-                  state       <= run;
-               end if;
+                  if counter_bit = 31 then
+                     counter_bit <= 0;
+                     counter_mic <= counter_mic + 1;
+                     state       <= run;
+                  end if;
 
-               if counter_mic = 15 then
-                  -- all mic are sampled
-                  counter_bit <= 0;
-                  counter_mic <= 0;
-                  state       <= idle;
+                  if counter_mic = 15 then
+                     -- all mic are sampled
+                     counter_bit <= 0;
+                     counter_mic <= 0;
+                     state       <= idle;
+                  end if;
                end if;
 
             when others =>
