@@ -33,13 +33,12 @@ begin
 
    sample_clk1 : entity work.sample_clk
       port map(
-         clk                  => clk,
+         sys_clk              => clk,
          reset                => reset,
          bit_stream           => bit_stream,
          ws                   => ws,
          mic_sample_data_out  => mic_sample_data_out,
-         mic_sample_valid_out => mic_sample_valid_out,
-         ws_error             => ws_error
+         mic_sample_valid_out => mic_sample_valid_out
       );
 
    ws_process : process (clk)
