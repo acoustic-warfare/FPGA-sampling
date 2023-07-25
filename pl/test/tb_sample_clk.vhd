@@ -23,7 +23,6 @@ architecture behave of tb_sample_clk is
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
-   signal ws_error             : std_logic;
 
    signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
@@ -32,6 +31,9 @@ begin
    clk <= not(clk) after C_CLK_CYKLE/2;
 
    sample_clk1 : entity work.sample_clk
+      generic map(
+         index => 4
+      )
       port map(
          sys_clk              => clk,
          reset                => reset,
@@ -44,7 +46,7 @@ begin
    ws_process : process (clk)
    begin
       if falling_edge(clk) then
-         if (counter_tb = 10 or counter_tb = 522 or counter_tb = 1034) then
+         if (counter_tb = 10 or counter_tb = 522*5 or counter_tb = 1034*5) then
             ws <= '1';
          else
             ws <= '0';
@@ -60,7 +62,7 @@ begin
          if run("wave") then
             -- test 1 is so far only ment for gktwave
 
-            wait for 50000 ns; -- duration of test 1
+            wait for 100000 ns; -- duration of test 1
 
          elsif run("auto") then
 

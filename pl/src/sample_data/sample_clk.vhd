@@ -14,6 +14,9 @@ entity sample_clk is
    --
    --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
    --------------------------------------------------------------------------------------------------------------------------------------------------
+   generic (
+      index : integer := 4
+   );
    port (
       sys_clk              : in std_logic;
       reset                : in std_logic;
@@ -27,13 +30,13 @@ end entity;
 architecture rtl of sample_clk is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state        : state_type;
-   signal counter_bit  : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_samp : integer range 0 to 4  := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic  : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_bit  : integer range 0 to 60 := 0; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_samp : integer range 0 to 7  := 0; -- Counts number of samples per TDM-slot   (0-4)
+   signal counter_mic  : integer range 0 to 17 := 0; -- Counts number of microphones per chain  (0-15)
    --signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
    signal state_1 : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
-   signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
+   signal idle_counter : integer := 0; -- Creates a delay for staying in idle until data is transmitted from array
 
 begin
    main_state_p : process (sys_clk) -- main process for the statemachine. Starts in IDLE
@@ -56,7 +59,7 @@ begin
                end if;
 
                -- this waits for the sck to have a rising_edge
-               if (idle_counter = 4) then
+               if (idle_counter = index) then
                   idle_counter <= 0;
                   state        <= run;
                end if;
@@ -79,17 +82,18 @@ begin
                -----------------------------------------------------------------------------------------------------------
                counter_samp <= counter_samp + 1;
                if counter_samp = 4 then
-                  counter_bit  <= counter_bit + 1;
                   counter_samp <= 0;
 
                   if bit_stream = '1' then
                      -- sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
+                     counter_bit                      <= counter_bit + 1;
                   else
                      -- sampled bit = 0
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '0';
+                     counter_bit                      <= counter_bit + 1;
                   end if;
 
                   if counter_bit = 23 then
@@ -108,20 +112,20 @@ begin
                --
                -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
                -------------------------------------------------------------------------------------------------------------------
+               mic_sample_valid_out <= '0';
+               counter_bit          <= counter_bit + 1;
 
                if counter_bit = 31 then
                   counter_bit <= 0;
                   counter_mic <= counter_mic + 1;
+                  state       <= run;
                end if;
 
-               mic_sample_valid_out <= '0';
-               if counter_mic = 15 and counter_bit = 24 then
+               if counter_mic = 15 then
                   -- all mic are sampled
+                  counter_bit <= 0;
                   counter_mic <= 0;
                   state       <= idle;
-               elsif counter_bit = 0 then
-                  -- return to RUN to sample next mic
-                  state <= run;
                end if;
 
             when others =>

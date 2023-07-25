@@ -38,8 +38,7 @@ begin
          bit_stream           => bit_stream,
          ws                   => ws,
          mic_sample_data_out  => mic_sample_data_out,
-         mic_sample_valid_out => mic_sample_valid_out,
-         ws_error             => ws_error
+         mic_sample_valid_out => mic_sample_valid_out
       );
 
    ws_process : process (sck_clk)

@@ -20,8 +20,7 @@ entity sample is
       bit_stream           : in std_logic;
       ws                   : in std_logic;
       mic_sample_data_out  : inout std_logic_vector(23 downto 0);
-      mic_sample_valid_out : out std_logic := '0'; -- A signal to tell the receiver to start reading the mic_sample_data_out
-      ws_error             : out std_logic := '0'  -- TODO: implement this further to check for bad data
+      mic_sample_valid_out : out std_logic := '0' -- A signal to tell the receiver to start reading the mic_sample_data_out
    );
 end entity;
 
@@ -65,10 +64,6 @@ begin
                --
                -- When 24 bits have been sampled the machine change state to PAUSE.
                -----------------------------------------------------------------------------------------------------------
-               if ws = '1' and counter_mic > 1 then
-                  ws_error <= '1';
-               end if;
-
                if bit_stream = '1' then
                   -- sampled bit = 1
                   mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
@@ -95,10 +90,6 @@ begin
                --
                -- When all 16 microphones in a chain has been sampled the machine return to the IDLE state.
                -------------------------------------------------------------------------------------------------------------------
-               if ws = '1' then
-                  ws_error <= '1';
-               end if;
-
                mic_sample_valid_out <= '0';
                counter_bit          <= counter_bit + 1;
 

@@ -122,8 +122,6 @@ begin
       end if;
    end process;
 
-   --
-
    process (sys_clock, reset_rtl)
    begin
       if reset_rtl = '1' then
@@ -137,8 +135,6 @@ begin
          end if;
       end if;
    end process;
-
-   --
 
    ws_pulse : entity work.ws_pulse
       port map(
@@ -159,25 +155,13 @@ begin
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
-
-   -- first two arrays (normal sampling)
-   sample_gen_01 : for i in 0 to 7 generate
-   begin
-      sample_C : entity work.sample
-         port map(
-            sys_clk              => sck_clk,
-            reset                => reset,
-            ws                   => ws,
-            bit_stream           => bit_stream_out(i),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_01;
-
-   -- third array (delayed sampling)
-   sample_gen_2 : for i in 8 to 11 generate
+   -- first array (delayed sampling)
+   sample_gen_2 : for i in 0 to 15 generate
    begin
       sample_C : entity work.sample_clk
+         generic map(
+            index => i
+         )
          port map(
             sys_clk              => clk,
             reset                => reset,
@@ -188,19 +172,19 @@ begin
          );
    end generate sample_gen_2;
 
-   -- forth array (not in use yet)
-   sample_gen_3 : for i in 12 to 15 generate
-   begin
-      sample_C : entity work.sample
-         port map(
-            sys_clk              => sck_clk,
-            reset                => reset,
-            ws                   => ws,
-            bit_stream           => bit_stream_out(i),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_3;
+   -- last three arrays (normal sampling)
+   --sample_gen_01 : for i in 4 to 15 generate
+   --begin
+   --   sample_C : entity work.sample
+   --      port map(
+   --         sys_clk              => sck_clk,
+   --         reset                => reset,
+   --         ws                   => ws,
+   --         bit_stream           => bit_stream_out(i),
+   --         mic_sample_data_out  => mic_sample_data(i),
+   --         mic_sample_valid_out => mic_sample_valid(i)
+   --      );
+   --end generate sample_gen_01;
 
    collector_gen : for i in 0 to 15 generate
    begin

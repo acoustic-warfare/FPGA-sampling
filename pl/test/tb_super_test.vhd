@@ -100,8 +100,7 @@ begin
             bit_stream           => bitstream_cable(i),
             ws                   => ws,
             mic_sample_data_out  => mic_sample_data_out(i),
-            mic_sample_valid_out => mic_sample_valid_out(i),
-            ws_error             => ws_error(i)
+            mic_sample_valid_out => mic_sample_valid_out(i)
          );
    end generate sample_gen;
 
