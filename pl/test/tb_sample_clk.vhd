@@ -14,21 +14,39 @@ entity tb_sample_clk is
 end tb_sample_clk;
 
 architecture behave of tb_sample_clk is
-   constant C_CLK_CYKLE : time := 10 ns; -- set the duration of one clock cycle
+   constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
+   constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
-   signal clk        : std_logic := '0';
+   signal clk     : std_logic := '0';
+   signal sck_clk : std_logic := '0';
+
    signal reset      : std_logic := '0';
    signal ws         : std_logic := '0';
-   signal bit_stream : std_logic := '1';
+   signal bit_stream : std_logic_vector(15 downto 0);
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
+
+   signal mic_sample_data_out_2  : std_logic_vector(23 downto 0);
+   signal mic_sample_valid_out_2 : std_logic;
 
    signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
 
 begin
-   clk <= not(clk) after C_CLK_CYKLE/2;
+   sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
+   clk     <= not(clk) after C_CLK_CYKLE/2;
+
+   simulated_array1 : entity work.simulated_array
+      port map(
+         clk            => clk,
+         sck_clk        => sck_clk,
+         ws             => ws,
+         reset          => reset,
+         switch         => '1',
+         bit_stream_in  => (others => '0'),
+         bit_stream_out => bit_stream
+      );
 
    sample_clk1 : entity work.sample_clk
       generic map(
@@ -37,23 +55,30 @@ begin
       port map(
          sys_clk              => clk,
          reset                => reset,
-         bit_stream           => bit_stream,
+         bit_stream           => bit_stream(0),
          ws                   => ws,
          mic_sample_data_out  => mic_sample_data_out,
          mic_sample_valid_out => mic_sample_valid_out
       );
 
-   ws_process : process (clk)
-   begin
-      if falling_edge(clk) then
-         if (counter_tb = 10 or counter_tb = 522*5 or counter_tb = 1034*5) then
-            ws <= '1';
-         else
-            ws <= '0';
-         end if;
-         counter_tb <= counter_tb + 1;
-      end if;
-   end process;
+      sample1 : entity work.sample
+      port map(
+         sys_clk              => sck_clk,
+         reset                => reset,
+         bit_stream           => bit_stream(0),
+         ws                   => ws,
+         mic_sample_data_out  => mic_sample_data_out_2,
+         mic_sample_valid_out => mic_sample_valid_out_2
+      );
+
+   ws_pulse1 : entity work.ws_pulse
+      generic map(startup_length => 10)
+      port map(
+         sck_startup => '1',
+         sck_clk     => sck_clk,
+         ws          => ws,
+         reset       => reset
+      );
 
    main : process
    begin

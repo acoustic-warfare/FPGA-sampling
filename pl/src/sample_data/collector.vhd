@@ -33,7 +33,7 @@ entity collector is
 end collector;
 
 architecture rtl of collector is
-   signal counter_mic           : integer range 0 to G_NR_MICS := 0; --Counter for rows in data_matrix_16_24_out
+   signal counter_mic           : integer := 0; --Counter for rows in data_matrix_16_32_out
    signal mic_sample_valid_in_d : std_logic;
 begin
    collect_p : process (sys_clk)                        -- Process which collects the input data and put it in the matrix
