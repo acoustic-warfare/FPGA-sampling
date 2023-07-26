@@ -12,13 +12,15 @@ def Average(l):
 
 
 print("Enter file: ")
-fileChooser = input()
+#fileChooser = input()
+fileChooser = "ljud"
+
 
 ROOT = os.getcwd()
 path = Path(ROOT + "/"+fileChooser)
 
 data = np.fromfile(path,dtype=c_int32,count=-1,offset=0) #Read the whole file
-data2D = data.reshape(-1,76)  # reshapes into a Numpy array which is N*68 in dimensions
+data2D = data.reshape(-1,258)  # reshapes into a Numpy array which is N*68 in dimensions
 
 print("Enter microphone number: ")
 mic = input()
@@ -27,11 +29,12 @@ fs = 48828
 data2D = data2D[:,2:]    # removes headerinformation
    
 if(mic.lower() == "y"):
-    for i in range(0, 64):
+    for i in range(63, 128):
+        fs = 50000 
         mic_data=data2D[:,int(i)]
         sound_scaled = data2D[:, int(i)]/np.max(np.abs(data2D[:, int(i)])) # normalize mic data
         #sound_scaled = data2D[:, int(i)]/(500000)
-        print(i)
+        print(i + 1)
         sounddevice.play(sound_scaled, fs, blocking=True)
 else:
    mic_data=data2D[:,int(mic)]

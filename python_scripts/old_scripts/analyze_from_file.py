@@ -130,7 +130,121 @@ def print_analysis(fileChooser,microphones,source_audio):
                axs[j,i].axis('off')
                #if normalized:
                #   axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
-               
+
+      # Set microphone signals of bad mics to zero
+      #clean_data = delete_mic_data(ok_data, arr_mics_to_delete)
+      #clean_initial_data = delete_mic_data(initial_data, arr_mics_to_delete)
+
+      # --- PLOT 2---
+      #   plot of all microphones, after bad signals have been set to 0
+      #plt.figure()
+      #plt.plot(ok_data)
+      #plt.xlim([0, plot_samples])
+      #plt.xlabel('Samples')
+      #plt.ylabel('Amplitude')
+      #plt.suptitle('All microphones')
+      #if normalized:
+      #   plt.ylim([-max_value_ok*1.1, max_value_ok*1.1])
+      #
+      
+   #Copy these values and but in "plot_mices"
+
+  #[1,2,4,6,7,8,9,10,11,12,13,14,15,16,
+  # 17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,
+  # 33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+  # 49,50,51,52,54,55,57,58,59,60,61,62,63,64]  
+            
+            # --- PLOT 3---
+      #   of selected microphones
+
+      #plot_mics = microphones                    # what microphones to plot
+      #arr_plot_mics = np.array(plot_mics)-1   # convert plot_mics to numpy array with correct index
+      #mic_legend = []                         # empty list that should hold legends for plot
+      #plt.figure()
+      #for i in range(len(arr_plot_mics)):
+      #   plt.plot(ok_data[:,int(arr_plot_mics[i])], '-*')
+      #   mic_legend = np.append(mic_legend,str(arr_plot_mics[i]+1))
+      #plt.xlim([0, plot_samples])
+      #plt.xlabel('Samples')
+      #plt.ylabel('Amplitude')
+      #plt.suptitle('Selected microphones')
+      #plt.legend(mic_legend)
+      #if normalized:
+      #   plt.ylim([-max_value_ok*1.1, max_value_ok*1.1])
+#
+      ## --- PLOT  4---
+      #plt.figure()
+      #plt.plot(initial_data[:,3])
+      #plt.plot(new_lab_data)
+      #plt.xlim([0, initial_samples])
+      #plt.xlabel('Samples')
+      #plt.ylabel('Amplitude')
+      #plt.suptitle('Initial values')
+      #
+      ## --- PLOT 5---
+      ##   of FFT of several signals
+      #mics_FFT = microphones
+      #samples = len(ok_data[:,0])
+      #t_stop = samples/fs
+      #t = np.linspace(0,t_stop,samples)
+      #arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
+      #FFT_mic_legend = []                         # empty list that should hold legends for plot
+      #plt.figure()
+      #for i in range(len(arr_mics_FFT)):
+      #   data_FFT = np.fft.fft(ok_data[:,int(arr_mics_FFT[i])])
+      #   energy = abs(data_FFT)**2
+      #   freq = np.fft.fftfreq(t.shape[-1])
+      #   plt.plot(fs*freq,energy)
+      #   FFT_mic_legend = np.append(FFT_mic_legend,str(arr_mics_FFT[i]+1))
+      #plt.suptitle('Energy of selected microphones signals')
+      #plt.xlabel('Frequency [Hz]')
+      #plt.legend(FFT_mic_legend)
+#
+
+     #### CALCULATE THE PHASE ####
+      #mics_FFT = microphones
+      #arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
+      #tmp=0                         # empty list that should hold legends for plot
+#
+      #N=1000
+      #phase_diff_collection = ["" for x in range(len(arr_mics_FFT))]
+#
+      #for i in range(len(arr_mics_FFT)):
+      #  micdata=np.fft.fft(ok_data[0:N + 1,int(arr_mics_FFT[i])])
+      #  
+      #  index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
+      #  y=micdata[int(index)]
+#
+      #  if(i>0):
+      #     phase_diff = np.angle(tmp/y)
+      #     phase_diff = (phase_diff*180)/np.pi
+      #     phase_diff=round(phase_diff,2)
+      #     mic_nr = str(arr_mics_FFT[i-1]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
+      #     phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0"
+      #  tmp=y
+      #      
+      #      # --- PLOT 3---
+      ##   of selected microphones
+#
+      #plot_mics = microphones                    # what microphones to plot
+      #arr_plot_mics = np.array(plot_mics)-1   # convert plot_mics to numpy array with correct index
+      #mic_legend = []                         # empty list that should hold legends for plot
+      #plt.figure()
+      #ax=plt.subplot(111)
+      #for i in range(len(arr_plot_mics)):
+      #   plt.plot(ok_data[:,int(arr_plot_mics[i])], '-*')
+      #   textstr= phase_diff_collection[i]
+      #   mic_legend = np.append(mic_legend,"mic "+str(arr_plot_mics[i]+1)+".  "+textstr)
+      #plt.xlim([0, plot_samples])
+      #plt.xlabel('Samples')
+      #plt.ylabel('Amplitude')
+      #plt.suptitle('Selected microphones')
+      #plt.legend(mic_legend)
+      #
+   #
+      #if normalized:
+      #   plt.ylim([-max_value_ok*1.1, max_value_ok*1.1])
+
       # Show all plots
       plt.show()
 
