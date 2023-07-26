@@ -211,7 +211,7 @@ begin
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 5
+            index => 8
          )
          port map(
             sys_clk              => clk,
@@ -228,7 +228,7 @@ begin
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 6
+            index => 9
          )
          port map(
             sys_clk              => clk,
