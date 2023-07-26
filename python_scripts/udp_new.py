@@ -1,6 +1,7 @@
 import socket
-import time 
+import time
 import os
+
 
 def ints_to_twos_complement_string(a, b, c, d):
     binary_strings = []
@@ -20,41 +21,46 @@ def ints_to_twos_complement_string(a, b, c, d):
         binary_strings.append(binary)
 
     # Join the binary strings with a space, except for the last two sections
-    result = binary_strings[-4] + ' ' + binary_strings[-3] + ' ' + binary_strings[-2] + binary_strings[-1]
+    result = binary_strings[-4] + ' ' + binary_strings[-3] + \
+        ' ' + binary_strings[-2] + binary_strings[-1]
     return result
+
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 21844
 
 print("Enter a filename for the recording: ")
 fileChooser = "data"
-#fileChooser = input()
+# fileChooser = input()
 print("Save as txt? (y) ")
-txtInput="y"
-#txtInput=input()
+txtInput = "y"
+# txtInput=input()
 print("Enter time to record (seconds): ")
 recordTime = 1
-#recordTime=input()
+# recordTime=input()
 t_end = time.time()+int(recordTime)
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
 sock.bind((UDP_IP, UDP_PORT))
 
 ROOT = os.getcwd()
 
-if(txtInput.lower() == "y"):
-   print("Recording!!")
-   with open(fileChooser+".txt", "w") as f:
-      while time.time()<t_end:
-         data = sock.recv(1458)
+if (txtInput.lower() == "y"):
+    print("Recording!!")
+    with open(fileChooser+".txt", "w") as f:
+        while time.time() < t_end:
+            data = sock.recv(1458)
 
-         f.write("Header:  " + ints_to_twos_complement_string(data[3], data[2], data[1], data[0]) + "    ")
-         
-         f.write("   sampelCounter: " + ints_to_twos_complement_string(data[3 + 4], data[2 + 4], data[1 + 4], data[0 + 4]) + "      ")
+            f.write("Header:  " + ints_to_twos_complement_string(
+                data[3], data[2], data[1], data[0]) + "    ")
 
-         for i in range(2, 212):
-            f.write("Mic" + str(i - 1) + ": ")
-            f.write(ints_to_twos_complement_string(data[3 + i * 4], data[2 + i* 4], data[1 + i*4], data[0 + i*4]) + "    ")
-         f.write("\n")
+            f.write("   sampelCounter: " + ints_to_twos_complement_string(
+                data[3 + 4], data[2 + 4], data[1 + 4], data[0 + 4]) + "      ")
+
+            for i in range(2, 212):
+                f.write("Mic" + str(i - 1) + ": ")
+                f.write(ints_to_twos_complement_string(
+                    data[3 + i * 4], data[2 + i * 4], data[1 + i*4], data[0 + i*4]) + "    ")
+            f.write("\n")
 
 print("Done!")
