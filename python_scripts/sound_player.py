@@ -37,7 +37,7 @@ if (mic.lower() == "y"):
         mic_data = data2D[:, int(i)]
         # normalize mic data
         sound_scaled = data2D[:, int(i)]/np.max(np.abs(data2D[:, int(i)]))
-        # sound_scaled = data2D[:, int(i)]/(500000)
+        # sound_scaled = data2D[:, int(i)]/(2**24)
         print(i + 1)
         sounddevice.play(sound_scaled, fs, blocking=True)
 else:

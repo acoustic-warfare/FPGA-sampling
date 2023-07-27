@@ -159,6 +159,10 @@ int main() {
                 data[i + payload_header_size] = *(data_p + i);
             }
 
+            for (int i = 0; i < 64; i ++){
+                data[i + payload_header_size + 192] = 0;
+            }
+
             // package and send UDP
             xemacif_input(netif);
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);

@@ -22,7 +22,6 @@ architecture tb of tb_super_test is
    signal sck_clk  : std_logic := '0';
    signal reset    : std_logic := '0';
    signal ws       : std_logic := '0';
-   signal micID_sw : std_logic := '0';
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
@@ -111,7 +110,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => micID_sw,
+            micID_sw               => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
             chain_matrix_data_out  => chain_x16_matrix_data_in(i),
@@ -181,7 +180,7 @@ begin
                      auto_test_data(31 downto 24) := to_unsigned(row, 8);
                      auto_test_data(23 downto 16) := to_unsigned(row, 8);
                      auto_test_data(15 downto 0)  := counter_test;
-                     check(array_matrix_data_out(row) = std_logic_vector(auto_test_data), to_string(row), warning);
+                     check(array_matrix_data_out(row) = std_logic_vector(auto_test_data), "all data row: " & to_string(row) & " value data: " & to_string(array_matrix_data_out(row)) & " value expected: " & to_string(std_logic_vector(auto_test_data)), warning);
                   end loop;
                   counter_test := counter_test + 1;
                end if;
