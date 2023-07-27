@@ -40,13 +40,24 @@ begin
       variable tmp_holder : std_logic_vector(31 downto 0); -- temporary holder for incomming data, used for padding
    begin
       if rising_edge(sys_clk) then
-         chain_matrix_valid_out <= '0'; -- Set data_valid_out to LOW as defult value
-
+         chain_matrix_valid_out <= '0';                                    -- Set data_valid_out to LOW as defult value
          if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place
             tmp_holder(23 downto 0) := mic_sample_data_in;
-
             if micID_sw = '0' then
-               if (mic_sample_data_in(23) = '0') then
+
+               -- This part is not optimal but mabye necisary if we cant find a perfect delay :(
+               if tmp_holder(23) = '1' and tmp_holder(22 downto 16) = "0000000" then
+                  tmp_holder(23) := '0';
+               elsif tmp_holder(23) = '0' and tmp_holder(22 downto 16) = "1111111" then
+                  tmp_holder(23) := '1';
+               elsif tmp_holder(22) = '1' and tmp_holder(21 downto 16) = "000000" then
+                  tmp_holder(22) := '0';
+               elsif tmp_holder(22) = '0' and tmp_holder(21 downto 16) = "111111" then
+                  tmp_holder(22) := '1';
+               end if;
+               -- end of not optimal code
+
+               if (tmp_holder(23) = '0') then
                   tmp_holder(31 downto 24) := "00000000"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 0 then padding = "00000000"
                else
                   tmp_holder(31 downto 24) := "11111111"; -- Add padding according to TWO'S COMPLIMENT. if the 23:rd bit = 1 then padding = "11111111"

@@ -172,42 +172,11 @@ begin
    --         );
    --   end generate sample_gen_2;
 
-   -- port JB
+   -- port JB BitStream 0-3
+   -- port JC BitStream 4-7
+   -- port JD BitStream 8-11
+   -- port JE BitStream 12-15
    sample_gen_2 : for i in 0 to 3 generate
-   begin
-      sample_C : entity work.sample_clk
-         generic map(
-            index => 4
-         )
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            ws                   => ws,
-            bit_stream           => bit_stream_out(i),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_2;
-
-   -- port JC
-   sample_gen_3 : for i in 4 to 7 generate
-   begin
-      sample_C : entity work.sample_clk
-         generic map(
-            index => 3
-         )
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            ws                   => ws,
-            bit_stream           => bit_stream_out(i),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_3;
-
-   -- port JD
-   sample_gen_4 : for i in 8 to 11 generate
    begin
       sample_C : entity work.sample_clk
          generic map(
@@ -217,18 +186,49 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i),
+            bit_stream           => bit_stream_out(i + 8), --JD
+            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_valid_out => mic_sample_valid(i)
+         );
+   end generate sample_gen_2;
+
+   sample_gen_3 : for i in 4 to 7 generate
+   begin
+      sample_C : entity work.sample_clk
+         generic map(
+            index => 4
+         )
+         port map(
+            sys_clk              => clk,
+            reset                => reset,
+            ws                   => ws,
+            bit_stream           => bit_stream_out(i), --JC
+            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_valid_out => mic_sample_valid(i)
+         );
+   end generate sample_gen_3;
+
+   sample_gen_4 : for i in 8 to 11 generate
+   begin
+      sample_C : entity work.sample_clk
+         generic map(
+            index => 4
+         )
+         port map(
+            sys_clk              => clk,
+            reset                => reset,
+            ws                   => ws,
+            bit_stream           => bit_stream_out(i - 8), --JB
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_4;
 
-   -- port JE
    sample_gen_01 : for i in 12 to 15 generate
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 9
+            index => 4
          )
          port map(
             sys_clk              => clk,
