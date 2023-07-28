@@ -30,10 +30,10 @@ architecture structual of aw_top_lite is
    signal data : matrix_64_32_type;
 
    signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
-   signal chain_matrix_data        : matrix_16_16_32_type;
+   signal chain_matrix_data        : matrix_4_16_32_type;
 
    signal array_matrix_valid : std_logic;
-   signal array_matrix_data  : matrix_256_32_type;
+   signal array_matrix_data  : matrix_64_32_type;
 
    signal rd_en_array       : std_logic_vector(69 downto 0); -- rd_en from axi_lite
    signal rd_en_pulse_array : std_logic_vector(69 downto 0);
@@ -161,7 +161,7 @@ begin
          );
    end generate collector_gen;
 
-   full_sample_c : entity work.full_sample
+   full_sample_c : entity work.full_sample_axi_lite
       port map(
          sys_clk                 => clk,
          reset                   => reset,

@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
-entity full_sample_old is
+entity full_sample_axi_lite is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
    -- CHAIN_4X_MATRIX_DATA_IN: The diffrent data_matrixes from each chain in a 3D matrix (4x16x24)
@@ -29,8 +29,8 @@ entity full_sample_old is
       array_matrix_valid_out  : out std_logic;  -- A signal to tell the receiver to start reading the array_matrix_data_out
       sample_counter_array    : out std_logic_vector(31 downto 0)
    );
-end full_sample_old;
-architecture rtl of full_sample_old is
+end full_sample_axi_lite;
+architecture rtl of full_sample_axi_lite is
 
    signal sample_counter      : unsigned(31 downto 0) := (others => '0');
 
