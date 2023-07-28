@@ -8,11 +8,11 @@
 ################################################################
 
 namespace eval _tcl {
-proc get_script_folder {} {
-   set script_path [file normalize [info script]]
-   set script_folder [file dirname $script_path]
-   return $script_folder
-}
+   proc get_script_folder {} {
+      set script_path [file normalize [info script]]
+      set script_folder [file dirname $script_path]
+      return $script_folder
+   }
 }
 variable script_folder
 set script_folder [_tcl::get_script_folder]
@@ -89,7 +89,7 @@ if { ${design_name} eq "" } {
    set errMsg "Design <$design_name> already exists in your project, please set the variable <design_name> to another value."
    set nRet 1
 } elseif { [get_files -quiet ${design_name}.bd] ne "" } {
-   # USE CASES: 
+   # USE CASES:
    #    6) Current opened design, has components, but diff names, design_name exists in project.
    #    7) No opened design, design_name exists in project.
 
@@ -123,31 +123,31 @@ set bCheckIPsPassed 1
 ##################################################################
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
-   set list_check_ips "\ 
-xilinx.com:ip:clk_wiz:5.4\
-xilinx.com:ip:util_ds_buf:2.1\
-"
+   set list_check_ips "\
+      xilinx.com:ip:clk_wiz:5.4\
+      xilinx.com:ip:util_ds_buf:2.1\
+   "
 
-   set list_ips_missing ""
-   common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
+set list_ips_missing ""
+common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
 
-   foreach ip_vlnv $list_check_ips {
-      set ip_obj [get_ipdefs -all $ip_vlnv]
-      if { $ip_obj eq "" } {
-         lappend list_ips_missing $ip_vlnv
-      }
+foreach ip_vlnv $list_check_ips {
+   set ip_obj [get_ipdefs -all $ip_vlnv]
+   if { $ip_obj eq "" } {
+      lappend list_ips_missing $ip_vlnv
    }
+}
 
-   if { $list_ips_missing ne "" } {
-      catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
-      set bCheckIPsPassed 0
-   }
+if { $list_ips_missing ne "" } {
+   catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
+   set bCheckIPsPassed 0
+}
 
 }
 
 if { $bCheckIPsPassed != 1 } {
-  common::send_msg_id "BD_TCL-1003" "WARNING" "Will not continue with creation of design due to the error(s) above."
-  return 3
+   common::send_msg_id "BD_TCL-1003" "WARNING" "Will not continue with creation of design due to the error(s) above."
+   return 3
 }
 
 ##################################################################
@@ -160,76 +160,76 @@ if { $bCheckIPsPassed != 1 } {
 # procedure reusable. If parentCell is "", will use root.
 proc create_root_design { parentCell } {
 
-  variable script_folder
-  variable design_name
+   variable script_folder
+   variable design_name
 
-  if { $parentCell eq "" } {
-     set parentCell [get_bd_cells /]
-  }
+   if { $parentCell eq "" } {
+      set parentCell [get_bd_cells /]
+   }
 
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
+   # Get object for parentCell
+   set parentObj [get_bd_cells $parentCell]
+   if { $parentObj == "" } {
+      catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
+      return
+   }
 
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
+   # Make sure parentObj is hier blk
+   set parentType [get_property TYPE $parentObj]
+   if { $parentType ne "hier" } {
+      catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+      return
+   }
 
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
+   # Save current instance; Restore later
+   set oldCurInst [current_bd_instance .]
 
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-
-  # Create interface ports
-
-  # Create ports
-  set reset [ create_bd_port -dir I -type rst reset ]
-  set_property -dict [ list \
-   CONFIG.POLARITY {ACTIVE_HIGH} \
- ] $reset
-  set sck_in [ create_bd_port -dir I -from 0 -to 0 -type clk sck_in ]
-  set_property -dict [ list \
-   CONFIG.FREQ_HZ {25000000} \
- ] $sck_in
-  set sck_out [ create_bd_port -dir O -from 0 -to 0 -type clk sck_out ]
-
-  # Create instance: clk_wiz_0, and set properties
-  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:5.4 clk_wiz_0 ]
-
-  # Create instance: util_ds_buf_0, and set properties
-  set util_ds_buf_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf_0 ]
-  set_property -dict [ list \
-   CONFIG.C_BUF_TYPE {BUFG} \
- ] $util_ds_buf_0
-
-  # Create instance: util_ds_buf_1, and set properties
-  set util_ds_buf_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf_1 ]
-  set_property -dict [ list \
-   CONFIG.C_BUF_TYPE {BUFG} \
- ] $util_ds_buf_1
-
-  # Create port connections
-  connect_bd_net -net BUFG_I_0_1 [get_bd_ports sck_in] [get_bd_pins util_ds_buf_0/BUFG_I]
-  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins util_ds_buf_1/BUFG_I]
-  connect_bd_net -net reset_rtl_1 [get_bd_ports reset] [get_bd_pins clk_wiz_0/reset]
-  connect_bd_net -net util_ds_buf_0_BUFG_O [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins util_ds_buf_0/BUFG_O]
-  connect_bd_net -net util_ds_buf_1_BUFG_O [get_bd_ports sck_out] [get_bd_pins util_ds_buf_1/BUFG_O]
-
-  # Create address segments
+   # Set parent object as current
+   current_bd_instance $parentObj
 
 
-  # Restore current instance
-  current_bd_instance $oldCurInst
+   # Create interface ports
 
-  save_bd_design
+   # Create ports
+   set reset [ create_bd_port -dir I -type rst reset ]
+   set_property -dict [ list \
+      CONFIG.POLARITY {ACTIVE_HIGH} \
+      ] $reset
+   set sck_in [ create_bd_port -dir I -from 0 -to 0 -type clk sck_in ]
+   set_property -dict [ list \
+      CONFIG.FREQ_HZ {25000000} \
+      ] $sck_in
+   set sck_out [ create_bd_port -dir O -from 0 -to 0 -type clk sck_out ]
+
+   # Create instance: clk_wiz_0, and set properties
+   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:5.4 clk_wiz_0 ]
+
+   # Create instance: util_ds_buf_0, and set properties
+   set util_ds_buf_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf_0 ]
+   set_property -dict [ list \
+      CONFIG.C_BUF_TYPE {BUFG} \
+      ] $util_ds_buf_0
+
+   # Create instance: util_ds_buf_1, and set properties
+   set util_ds_buf_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:util_ds_buf:2.1 util_ds_buf_1 ]
+   set_property -dict [ list \
+      CONFIG.C_BUF_TYPE {BUFG} \
+      ] $util_ds_buf_1
+
+   # Create port connections
+   connect_bd_net -net BUFG_I_0_1 [get_bd_ports sck_in] [get_bd_pins util_ds_buf_0/BUFG_I]
+   connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_pins clk_wiz_0/clk_out1] [get_bd_pins util_ds_buf_1/BUFG_I]
+   connect_bd_net -net reset_rtl_1 [get_bd_ports reset] [get_bd_pins clk_wiz_0/reset]
+   connect_bd_net -net util_ds_buf_0_BUFG_O [get_bd_pins clk_wiz_0/clk_in1] [get_bd_pins util_ds_buf_0/BUFG_O]
+   connect_bd_net -net util_ds_buf_1_BUFG_O [get_bd_ports sck_out] [get_bd_pins util_ds_buf_1/BUFG_O]
+
+   # Create address segments
+
+
+   # Restore current instance
+   current_bd_instance $oldCurInst
+
+   save_bd_design
 }
 # End of create_root_design()
 

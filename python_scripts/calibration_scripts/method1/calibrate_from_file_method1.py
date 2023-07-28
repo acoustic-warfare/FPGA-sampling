@@ -18,7 +18,6 @@ from scipy.io.wavfile import write
 from scipy import signal
 from scipy.signal import butter, filtfilt, correlate, chirp, welch, periodogram
 
-
 def print_analysis(fileChooser):
 
     def load_data_FPGA():
@@ -304,7 +303,6 @@ if __name__ == '__main__':
     plt.show()
 
     # visar enskilda slingor
-
     # --- PLOT 1---
     plot_mics1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     plot_mics2 = [17, 18, 19, 20, 21, 22, 23,
@@ -374,7 +372,6 @@ if __name__ == '__main__':
         plt.legend(mic_legend)
     plt.tight_layout()
     plt.show()
-
 
 # ____________________________________________________________________________________________
 

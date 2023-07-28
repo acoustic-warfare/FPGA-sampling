@@ -289,8 +289,10 @@ begin
          else
             if (write_index_int = (C_M_AXI_BURST_LEN - 2) and wnext = '1') then --write index = 126
                axi_wlast <= '1';
+               
             else
                axi_wlast <= '0';
+
             end if;
          end if;
       end if;
@@ -305,10 +307,13 @@ begin
          else
             if (wnext = '1' and axi_wlast = '1') then
                write_index_int <= 0;
+
             elsif (wnext = '1') then
                write_index_int <= write_index_int + 1;
+
             else
                write_index_int <= write_index_int;
+
             end if;
          end if;
       end if;

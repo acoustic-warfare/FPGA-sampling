@@ -18,10 +18,10 @@ architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
-   signal clk      : std_logic := '0';
-   signal sck_clk  : std_logic := '0';
-   signal reset    : std_logic := '0';
-   signal ws       : std_logic := '0';
+   signal clk     : std_logic := '0';
+   signal sck_clk : std_logic := '0';
+   signal reset   : std_logic := '0';
+   signal ws      : std_logic := '0';
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
@@ -53,7 +53,7 @@ architecture tb of tb_super_test is
    signal sck_clk_cable   : std_logic;
    signal bitstream_cable : std_logic_vector(15 downto 0);
 
-   signal RAM_DEPTH        : natural := 32;
+   signal RAM_DEPTH        : natural := 1024;
    signal rd_en            : std_logic;
    signal data_fifo_out    : matrix_256_32_type;
    signal full_array       : std_logic_vector(255 downto 0);
@@ -129,7 +129,8 @@ begin
          sample_counter_array    => sample_counter_array
       );
 
-   --fifo_gen : for i in 0 to 256 generate
+   -- gets error when trying to use this will look in to it later 
+   --fifo_gen : for i in 0 to 255 generate
    --begin
    --   fifo : entity work.fifo_axi
    --      generic map(

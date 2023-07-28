@@ -187,7 +187,7 @@ begin
             reset                => reset,
             ws                   => ws,
             bit_stream           => bit_stream_out(i + 8), --JD
-            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_data_out  => mic_sample_data(i), --Array1 
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_2;
@@ -196,14 +196,14 @@ begin
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 4
+            index => 8
          )
          port map(
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
             bit_stream           => bit_stream_out(i), --JC
-            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_data_out  => mic_sample_data(i), --Array2
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_3;
@@ -212,14 +212,14 @@ begin
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 4
+            index => 8
          )
          port map(
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
             bit_stream           => bit_stream_out(i - 8), --JB
-            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_data_out  => mic_sample_data(i), --Array3
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_4;
@@ -228,14 +228,14 @@ begin
    begin
       sample_C : entity work.sample_clk
          generic map(
-            index => 4
+            index => 8
          )
          port map(
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i),
-            mic_sample_data_out  => mic_sample_data(i),
+            bit_stream           => bit_stream_out(i), --JD
+            mic_sample_data_out  => mic_sample_data(i), --Array4
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_01;

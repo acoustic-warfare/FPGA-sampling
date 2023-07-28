@@ -18,7 +18,6 @@ from scipy.io.wavfile import write
 from scipy import signal
 from scipy.signal import butter, filtfilt, correlate, chirp, welch, periodogram
 
-
 def print_analysis(fileChooser):
 
     def load_data_FPGA():
@@ -139,9 +138,6 @@ if __name__ == '__main__':
     # plt.xlabel('Time (s)')
     # plt.ylabel('Amplitude')
     # plt.legend(loc='upper right')
-    #
-#
-#
 
     plt.subplot(3, 1, 1)
     plt.plot(recording[:, reference], label="reference MK")

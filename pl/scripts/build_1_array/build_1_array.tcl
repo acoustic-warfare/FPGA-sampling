@@ -10,13 +10,13 @@ set options {
    {impl.arg  "1"             "Run impl (1 to run impl | 0 not run impl)"        }
    {sdk.arg   "1"             "Launch SDK (1 to launch SDK | 0 not launch SDK)"  }
 }
-# TODO: update usage to be better 
+# TODO: update usage to be better
 array set params [::cmdline::getoptions argv $options]
 
 parray params
 
 #TODO: make the auto install of boards work :)
-# Make sure boards are installed 
+# Make sure boards are installed
 #xhub::install [xhub::get_xitems $board ]
 #xhub::update  [xhub::get_xitems $board ]
 
@@ -26,7 +26,6 @@ switch $params(board) {
    20 { set board digilentinc.com:zybo-z7-20:part0:1.1 }
    default { send_msg "BuildScript-0" "ERROR" "not a supported board" }
 }
-
 
 # ------------------------------------------------------------------------------------
 # Create project
@@ -91,27 +90,27 @@ switch $params(gui) {
 ## run synth
 switch $params(synth) {
    1 { launch_runs synth_1 -jobs 4
-       wait_on_run synth_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run synth_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-## run impl
-switch $params(impl) {
+   ## run impl
+   switch $params(impl) {
    1 { launch_runs impl_1 -to_step write_bitstream -jobs 4
-       wait_on_run impl_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run impl_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-update_compile_order -fileset sources_1
+   update_compile_order -fileset sources_1
 
-## launch SDK
-switch $params(sdk) {
+   ## launch SDK
+   switch $params(sdk) {
    1 { file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-       file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_lite.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_lite.hdf]
+      file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top_lite.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_lite.hdf]
 
-       launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_lite.hdf]}
-   0 { puts "SDK not launched" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top_lite.hdf]}
+      0 { puts "SDK not launched" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }

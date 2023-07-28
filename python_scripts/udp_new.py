@@ -36,7 +36,7 @@ print("Save as txt? (y) ")
 txtInput = "y"
 # txtInput=input()
 print("Enter time to record (seconds): ")
-recordTime = 1
+recordTime = 10
 # recordTime=input()
 t_end = time.time()+int(recordTime)
 

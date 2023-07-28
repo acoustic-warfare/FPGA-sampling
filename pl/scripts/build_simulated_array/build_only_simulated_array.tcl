@@ -10,13 +10,13 @@ set options {
    {impl.arg  "1"             "Run impl (1 to run impl | 0 not run impl)"        }
    {sdk.arg   "1"             "Launch SDK (1 to launch SDK | 0 not launch SDK)"  }
 }
-# TODO: update usage to be better 
+# TODO: update usage to be better
 array set params [::cmdline::getoptions argv $options]
 
 parray params
 
 #TODO: make the auto install of boards work :)
-# Make sure boards are installed 
+# Make sure boards are installed
 #xhub::install [xhub::get_xitems $board ]
 #xhub::update  [xhub::get_xitems $board ]
 
@@ -32,7 +32,7 @@ switch $params(board) {
 # Create project
 # ------------------------------------------------------------------------------------
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
-set outputdir [file join "$ROOT" vivado_files]                   
+set outputdir [file join "$ROOT" vivado_files]
 file mkdir $outputdir
 create_project acoustic_warfare $outputdir -force
 
@@ -101,17 +101,17 @@ switch $params(gui) {
 ## run synth
 switch $params(synth) {
    1 { launch_runs synth_1 -jobs 4
-       wait_on_run synth_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run synth_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-## run impl
-switch $params(impl) {
+   ## run impl
+   switch $params(impl) {
    1 { launch_runs impl_1 -to_step write_bitstream -jobs 4
-       wait_on_run impl_1 }
-   0 { puts "synth not started" }
-   default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
-}
+      wait_on_run impl_1 }
+      0 { puts "synth not started" }
+      default { send_msg "BuildScript-0" "ERROR" "not a suported input" }
+   }
 
-update_compile_order -fileset sources_1
+   update_compile_order -fileset sources_1

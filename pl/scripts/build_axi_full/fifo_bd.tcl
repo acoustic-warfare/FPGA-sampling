@@ -1,4 +1,3 @@
-
 ################################################################
 # This is a generated script based on design: fifo_bd
 #
@@ -8,11 +7,11 @@
 ################################################################
 
 namespace eval _tcl {
-proc get_script_folder {} {
-   set script_path [file normalize [info script]]
-   set script_folder [file dirname $script_path]
-   return $script_folder
-}
+   proc get_script_folder {} {
+      set script_path [file normalize [info script]]
+      set script_folder [file dirname $script_path]
+      return $script_folder
+   }
 }
 variable script_folder
 set script_folder [_tcl::get_script_folder]
@@ -89,7 +88,7 @@ if { ${design_name} eq "" } {
    set errMsg "Design <$design_name> already exists in your project, please set the variable <design_name> to another value."
    set nRet 1
 } elseif { [get_files -quiet ${design_name}.bd] ne "" } {
-   # USE CASES: 
+   # USE CASES:
    #    6) Current opened design, has components, but diff names, design_name exists in project.
    #    7) No opened design, design_name exists in project.
 
@@ -123,118 +122,116 @@ set bCheckIPsPassed 1
 ##################################################################
 set bCheckIPs 1
 if { $bCheckIPs == 1 } {
-   set list_check_ips "\ 
-xilinx.com:ip:fifo_generator:13.2\
-"
+   set list_check_ips "\
+      xilinx.com:ip:fifo_generator:13.2\
+   "
 
-   set list_ips_missing ""
-   common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
+set list_ips_missing ""
+common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
 
-   foreach ip_vlnv $list_check_ips {
-      set ip_obj [get_ipdefs -all $ip_vlnv]
-      if { $ip_obj eq "" } {
-         lappend list_ips_missing $ip_vlnv
-      }
+foreach ip_vlnv $list_check_ips {
+   set ip_obj [get_ipdefs -all $ip_vlnv]
+   if { $ip_obj eq "" } {
+      lappend list_ips_missing $ip_vlnv
    }
+}
 
-   if { $list_ips_missing ne "" } {
-      catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
-      set bCheckIPsPassed 0
-   }
+if { $list_ips_missing ne "" } {
+   catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
+   set bCheckIPsPassed 0
+}
 
 }
 
 if { $bCheckIPsPassed != 1 } {
-  common::send_msg_id "BD_TCL-1003" "WARNING" "Will not continue with creation of design due to the error(s) above."
-  return 3
+   common::send_msg_id "BD_TCL-1003" "WARNING" "Will not continue with creation of design due to the error(s) above."
+   return 3
 }
 
 ##################################################################
 # DESIGN PROCs
 ##################################################################
 
-
-
 # Procedure to create entire design; Provide argument to make
 # procedure reusable. If parentCell is "", will use root.
 proc create_root_design { parentCell } {
 
-  variable script_folder
-  variable design_name
+   variable script_folder
+   variable design_name
 
-  if { $parentCell eq "" } {
-     set parentCell [get_bd_cells /]
-  }
+   if { $parentCell eq "" } {
+      set parentCell [get_bd_cells /]
+   }
 
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
+   # Get object for parentCell
+   set parentObj [get_bd_cells $parentCell]
+   if { $parentObj == "" } {
+      catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
+      return
+   }
 
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
+   # Make sure parentObj is hier blk
+   set parentType [get_property TYPE $parentObj]
+   if { $parentType ne "hier" } {
+      catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+      return
+   }
 
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
+   # Save current instance; Restore later
+   set oldCurInst [current_bd_instance .]
 
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-
-  # Create interface ports
-  set FIFO_READ [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:fifo_read_rtl:1.0 FIFO_READ ]
-  set FIFO_WRITE [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:fifo_write_rtl:1.0 FIFO_WRITE ]
-
-  # Create ports
-  set rd_clk [ create_bd_port -dir I -type clk rd_clk ]
-  set reset [ create_bd_port -dir I reset ]
-  set wr_clk [ create_bd_port -dir I -type clk wr_clk ]
-
-  # Create instance: fifo_generator_0, and set properties
-  set fifo_generator_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fifo_generator:13.2 fifo_generator_0 ]
-  set_property -dict [ list \
-   CONFIG.Almost_Empty_Flag {true} \
-   CONFIG.Almost_Full_Flag {true} \
-   CONFIG.Data_Count_Width {7} \
-   CONFIG.Enable_Reset_Synchronization {true} \
-   CONFIG.Enable_Safety_Circuit {true} \
-   CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
-   CONFIG.Full_Flags_Reset_Value {1} \
-   CONFIG.Full_Threshold_Assert_Value {125} \
-   CONFIG.Full_Threshold_Negate_Value {124} \
-   CONFIG.Input_Data_Width {32} \
-   CONFIG.Input_Depth {128} \
-   CONFIG.Output_Data_Width {32} \
-   CONFIG.Output_Depth {128} \
-   CONFIG.Read_Data_Count_Width {7} \
-   CONFIG.Reset_Pin {true} \
-   CONFIG.Reset_Type {Asynchronous_Reset} \
-   CONFIG.Use_Dout_Reset {true} \
-   CONFIG.Write_Data_Count_Width {7} \
- ] $fifo_generator_0
-
-  # Create interface connections
-  connect_bd_intf_net -intf_net FIFO_READ_0_1 [get_bd_intf_ports FIFO_READ] [get_bd_intf_pins fifo_generator_0/FIFO_READ]
-  connect_bd_intf_net -intf_net FIFO_WRITE_0_1 [get_bd_intf_ports FIFO_WRITE] [get_bd_intf_pins fifo_generator_0/FIFO_WRITE]
-
-  # Create port connections
-  connect_bd_net -net rd_clk_0_1 [get_bd_ports rd_clk] [get_bd_pins fifo_generator_0/rd_clk]
-  connect_bd_net -net rst_0_1 [get_bd_ports reset] [get_bd_pins fifo_generator_0/rst]
-  connect_bd_net -net wr_clk_0_1 [get_bd_ports wr_clk] [get_bd_pins fifo_generator_0/wr_clk]
-
-  # Create address segments
+   # Set parent object as current
+   current_bd_instance $parentObj
 
 
-  # Restore current instance
-  current_bd_instance $oldCurInst
+   # Create interface ports
+   set FIFO_READ [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:fifo_read_rtl:1.0 FIFO_READ ]
+   set FIFO_WRITE [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:fifo_write_rtl:1.0 FIFO_WRITE ]
 
-  save_bd_design
+   # Create ports
+   set rd_clk [ create_bd_port -dir I -type clk rd_clk ]
+   set reset [ create_bd_port -dir I reset ]
+   set wr_clk [ create_bd_port -dir I -type clk wr_clk ]
+
+   # Create instance: fifo_generator_0, and set properties
+   set fifo_generator_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:fifo_generator:13.2 fifo_generator_0 ]
+   set_property -dict [ list \
+      CONFIG.Almost_Empty_Flag {true} \
+      CONFIG.Almost_Full_Flag {true} \
+      CONFIG.Data_Count_Width {7} \
+      CONFIG.Enable_Reset_Synchronization {true} \
+      CONFIG.Enable_Safety_Circuit {true} \
+      CONFIG.Fifo_Implementation {Independent_Clocks_Block_RAM} \
+      CONFIG.Full_Flags_Reset_Value {1} \
+      CONFIG.Full_Threshold_Assert_Value {125} \
+      CONFIG.Full_Threshold_Negate_Value {124} \
+      CONFIG.Input_Data_Width {32} \
+      CONFIG.Input_Depth {128} \
+      CONFIG.Output_Data_Width {32} \
+      CONFIG.Output_Depth {128} \
+      CONFIG.Read_Data_Count_Width {7} \
+      CONFIG.Reset_Pin {true} \
+      CONFIG.Reset_Type {Asynchronous_Reset} \
+      CONFIG.Use_Dout_Reset {true} \
+      CONFIG.Write_Data_Count_Width {7} \
+      ] $fifo_generator_0
+
+   # Create interface connections
+   connect_bd_intf_net -intf_net FIFO_READ_0_1 [get_bd_intf_ports FIFO_READ] [get_bd_intf_pins fifo_generator_0/FIFO_READ]
+   connect_bd_intf_net -intf_net FIFO_WRITE_0_1 [get_bd_intf_ports FIFO_WRITE] [get_bd_intf_pins fifo_generator_0/FIFO_WRITE]
+
+   # Create port connections
+   connect_bd_net -net rd_clk_0_1 [get_bd_ports rd_clk] [get_bd_pins fifo_generator_0/rd_clk]
+   connect_bd_net -net rst_0_1 [get_bd_ports reset] [get_bd_pins fifo_generator_0/rst]
+   connect_bd_net -net wr_clk_0_1 [get_bd_ports wr_clk] [get_bd_pins fifo_generator_0/wr_clk]
+
+   # Create address segments
+
+
+   # Restore current instance
+   current_bd_instance $oldCurInst
+
+   save_bd_design
 }
 # End of create_root_design()
 
@@ -244,5 +241,3 @@ proc create_root_design { parentCell } {
 ##################################################################
 
 create_root_design ""
-
-

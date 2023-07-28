@@ -9,25 +9,16 @@ entity fifo_axi is
       RAM_DEPTH : natural := 1024
    );
    port (
-      clk : in std_logic;
-      rst : in std_logic;
-
-      -- Write port
-      wr_en   : in std_logic;
-      wr_data : in std_logic_vector(RAM_WIDTH - 1 downto 0);
-
-      -- Read port
-      rd_en : in std_logic;
-      --rd_valid : out std_logic;
-      rd_data : out std_logic_vector(RAM_WIDTH - 1 downto 0);
-
-      -- Flags
+      clk        : in std_logic;
+      rst        : in std_logic;
+      wr_en      : in std_logic;
+      wr_data    : in std_logic_vector(RAM_WIDTH - 1 downto 0);
+      rd_en      : in std_logic;
+      rd_data    : out std_logic_vector(RAM_WIDTH - 1 downto 0);
       empty      : out std_logic;
       empty_next : out std_logic;
       full       : out std_logic;
       full_next  : out std_logic;
-
-      -- The number of elements in the FIFO
       fill_count : out integer range RAM_DEPTH - 1 downto 0
    );
 end fifo_axi;
