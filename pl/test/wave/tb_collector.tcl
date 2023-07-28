@@ -11,7 +11,7 @@ for {set i 0} {$i < $nfacts} {incr i} {
    switch -glob -- $name {
 
       tb_collector.collector1.clk -
-      tb_collector.collector1.counter_mic - 
+      tb_collector.collector1.counter_mic -
       tb_collector.collector1.counter_row -
       tb_collector.collector1.data_in*    -
       tb_collector.collector1.data_valid -

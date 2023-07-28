@@ -25,6 +25,7 @@ architecture behavior of fifo_test_tb is
    signal S_AXI_RVALID        : std_logic;
    signal mic0_out            : std_logic_vector(31 downto 0);
    signal counter             : integer := 0;
+
    --entity instantiation
    component fifo_test
       port (
@@ -42,7 +43,7 @@ architecture behavior of fifo_test_tb is
 
 begin
 
-   UUT : fifo_test port map(
+   fifo : fifo_test port map(
       reset               => reset,
       clk                 => clk,
       S_AXI_ACLK          => S_AXI_ACLK,
