@@ -4,6 +4,20 @@ use ieee.std_logic_1164.all;
 -- This fifo is written and taken from VHDLwiz.com
 
 entity fifo_axi is
+         ------------------------------------------------------------------------------------------------------------------------------------------------
+   --                                                  # port information #
+   -- WR_EN: Valid signal incoming from Full Sample enabling to update header pointer of the FIFO.  
+   --
+   -- WR_DATA: 32-bit vector representing one microphone's data. 
+   --
+   -- RD_EN: Valid signal incoming from Mux enabling to update tail pointer of the FIFO. 
+   --
+   -- RD_DATA: Outgoing 32-bit vector of representing one microphone. 
+   --
+   -- EMPTY: Signals if FIFO is empty. 
+   --
+   -- FULL: Signals if FIFO is full. 
+   --------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       RAM_WIDTH : natural := 32;
       RAM_DEPTH : natural := 1024
