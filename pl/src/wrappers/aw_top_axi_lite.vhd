@@ -29,7 +29,7 @@ architecture structual of aw_top_lite is
    --signal data_collector : matrix_4_16_32_type;
    signal data : matrix_64_32_type;
 
-   signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
+   signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
    signal chain_matrix_data        : matrix_4_16_32_type;
 
    signal array_matrix_valid : std_logic;
@@ -153,7 +153,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => sw(0),
+            mic_id_sw               => sw(0),
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data(i),

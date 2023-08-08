@@ -50,7 +50,7 @@ add_files [file join "$ROOT" src axi_lite rd_en_pulse.vhd]
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
-add_files [file join "$ROOT" src sample_data full_sample.vhd]
+add_files [file join "$ROOT" src sample_data full_sample_axi_lite.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
