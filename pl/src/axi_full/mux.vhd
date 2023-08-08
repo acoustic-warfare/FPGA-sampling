@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use work.matrix_type.all;
 
-entity mux_v2 is
+entity mux is
       ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
    -- SW: Used for troubleshooting. 
@@ -25,8 +25,8 @@ entity mux_v2 is
       data       : out std_logic_vector(31 downto 0)
    );
 
-end mux_v2;
-architecture rtl of mux_v2 is
+end mux;
+architecture rtl of mux is
    signal rd_en_d : std_logic;
 
    type state_type is (idle, run);

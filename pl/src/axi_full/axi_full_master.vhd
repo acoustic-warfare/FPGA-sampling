@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity axitest_v1_0_M00_AXI is
+entity axi_v1_0_M00_AXI is
    generic (
       -- Base address of targeted slave
       C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"10000000";
@@ -100,9 +100,9 @@ entity axitest_v1_0_M00_AXI is
       -- can accept a write response.
       M_AXI_BREADY : out std_logic
    );
-end axitest_v1_0_M00_AXI;
+end axi_v1_0_M00_AXI;
 
-architecture rtl of axitest_v1_0_M00_AXI is
+architecture rtl of axi_v1_0_M00_AXI is
 
    signal axi_awvalid : std_logic;
    signal axi_wdata   : std_logic_vector(C_M_AXI_DATA_WIDTH - 1 downto 0);
