@@ -62,9 +62,9 @@ architecture tb of tb_super_test is
    signal empty_next_array : std_logic_vector(255 downto 0);
    signal fill_count       : integer range RAM_DEPTH - 1 downto 0;
 
-   signal sw : std_logic; 
-   signal rd_en_fifo : std_logic; 
-   signal data_mux_out : std_logic_vector(31 downto 0); 
+   signal sw           : std_logic;
+   signal rd_en_fifo   : std_logic;
+   signal data_mux_out : std_logic_vector(31 downto 0);
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
@@ -114,7 +114,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => '1',
+            mic_id_sw              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
             chain_matrix_data_out  => chain_x16_matrix_data_in(i),
@@ -164,7 +164,7 @@ begin
          ws          => ws,
          reset       => reset
       );
-   
+
    --mux1 : entity work.mux_v2    
    --   port map(
    --      sys_clk    => clk,

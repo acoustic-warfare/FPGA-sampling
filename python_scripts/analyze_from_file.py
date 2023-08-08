@@ -18,9 +18,7 @@ import os
 
 def print_analysis(fileChooser, microphones, source_audio):
 
-    def load_data_FPGA(filename):
-        #   FUNCTION TO LOAD DATA FROM .TXT FILE INTO NUMPY ARRAY
-        #   (RECORDED BY FPGA)
+    def load_data_FPGA():
 
         ROOT = os.getcwd()
         path = Path(ROOT + "/"+fileChooser)
@@ -32,12 +30,13 @@ def print_analysis(fileChooser, microphones, source_audio):
         micData = data2D[:, 2:]    # removes headerinformation
         # f_sampling = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
         f_sampling = 48828
-        return micData, int(f_sampling), fileChooser
+        return micData, int(f_sampling)
 
     def main():
         # choose between 'FPGA' and 'BB' (BeagelBone)
         recording_device = 'FPGA'
-        filename = 'ljud'
+        fs = 48828
+
 
         # initial samples, at startup phase of Beaglebone recording
         initial_samples = 10000
@@ -54,7 +53,7 @@ def print_analysis(fileChooser, microphones, source_audio):
 
         # Load data from .txt file
         if recording_device == 'FPGA':
-            data, fs, fileChooser = load_data_FPGA(filename)
+            data, fs = load_data_FPGA()
         total_samples = len(data[:, 0])          # Total number of samples
         # takes out initial samples of signals
         initial_data = data[0:initial_samples,]
@@ -102,8 +101,8 @@ def print_analysis(fileChooser, microphones, source_audio):
                     ok_data[start_val:start_val+plot_samples, i+j*16])
                 axs[j, i].set_title(str(i+j*16+1), fontsize=8)
                 axs[j, i].axis('off')
-                # if normalized:
-                #   axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
+                if normalized:
+                  axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
 
         fig, axs = plt.subplots(4, 16)
         fig.suptitle("Individual signals 65-128", fontsize=16)
@@ -114,8 +113,8 @@ def print_analysis(fileChooser, microphones, source_audio):
                     ok_data[start_val:start_val+plot_samples, i+j*16+64])
                 axs[j, i].set_title(str(i+j*16+1+64), fontsize=8)
                 axs[j, i].axis('off')
-                # if normalized:
-                #   axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
+                if normalized:
+                  axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
 
         fig, axs = plt.subplots(4, 16)
         fig.suptitle("Individual signals 129-192", fontsize=16)
@@ -127,8 +126,8 @@ def print_analysis(fileChooser, microphones, source_audio):
                     ok_data[start_val:start_val+plot_samples, i+j*16+128])
                 axs[j, i].set_title(str(i+j*16+1+128), fontsize=8)
                 axs[j, i].axis('off')
-                # if normalized:
-                #   axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
+                if normalized:
+                  axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
 
         fig, axs = plt.subplots(4, 16)
         fig.suptitle("Individual signals 193-256", fontsize=16)
@@ -140,8 +139,8 @@ def print_analysis(fileChooser, microphones, source_audio):
                     ok_data[start_val:start_val+plot_samples, i+j*16+192])
                 axs[j, i].set_title(str(i+j*16+1+192), fontsize=8)
                 axs[j, i].axis('off')
-                # if normalized:
-                #   axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
+                if normalized:
+                  axs[j,i].set_ylim(-max_value_ok*1.1, max_value_ok*1.1)
 
         # Show all plots
         plt.show()
@@ -151,8 +150,8 @@ def print_analysis(fileChooser, microphones, source_audio):
 
 #################################################################################################
 print("Enter a filename to samples: ")
-# fileChooser = input()
-fileChooser = "ljud"
+fileChooser = input()
+#fileChooser = "ljud"
 print("Enter the frequency of the audio source (Hz): ")
 # source_audio=input()
 source_audio = 1000
