@@ -7,13 +7,11 @@ entity simulated_array is
    -- WS: The WS puls is sent out once every 2560 clk cycles,
    -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain.
    --
-   -- BIT_STREAM: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits.
+   -- SWITCH: Signal which decides if the input bitstrem is used or the simulated bitstream. 
    --
-   -- WS_OK: LED to tell if a ws pulse is recieved, used for bugfixing.
+   -- BIT_STREAM_IN: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits.
    --
-   -- SCK_OK: LED to tell when data is collected, used for bugfixing. 
-   --
-   -- CLK: 
+   -- BIT_STREAM_OUT: The outgoing vector of 16 bits. 
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
@@ -47,8 +45,8 @@ architecture rtl of simulated_array is
    signal b     : std_logic := '0';
 
 begin
-
-   bit_stream_out <= (bit_stream_in and not switch) or (bit_stream_gen and switch);
+   --  If switch is 0, the output bit comes from bit_stream_in; if switch is 1, the output bit comes from bit_stream_gen.
+   bit_stream_out <= (bit_stream_in and not switch) or (bit_stream_gen and switch); 
 
    fill_matrix_out_p : process (clk)
       variable mic_id : unsigned(7 downto 0) := (others => '0');

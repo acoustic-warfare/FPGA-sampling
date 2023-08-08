@@ -5,13 +5,13 @@ use work.matrix_type.all;
 
 entity aw_top_simulated_array is
    port (
-      ws         : in std_logic;
-      sck_clk    : in std_logic;
-      bit_stream : out std_logic_vector(3 downto 0);
-      ws_ok      : out std_logic := '0';
-      sck_ok     : out std_logic := '0';
-      reset      : in std_logic;
-      sys_clock  : in std_logic
+      ws             : in std_logic;
+      sck_clk        : in std_logic;
+      reset          : in std_logic;
+      sys_clock      : in std_logic;
+      switch         : in std_logic;
+      bit_stream_in  : in std_logic_vector(15 downto 0);
+      bit_stream_out : out std_logic_vector(15 downto 0)
    );
 end entity;
 
@@ -23,22 +23,8 @@ architecture structual of aw_top_simulated_array is
    signal reset_out     : std_logic;
    signal reset_out_not : std_logic;
 
-   -- For bd buffers
-   -- signal sck_in : std_logic_vector ( 0 downto 0);
-   -- signal sck_out : std_logic_vector (0 downto 0);
 begin
 
-   -- For bd buffers
-   -- sck_in(0) <= sck_clk;
-   --
-   --   buffers : entity work.buffers_wrapper
-   --   port map (
-   --       reset => reset,
-   --       sck_in(0) => sck_in(0),
-   --       sck_out(0) => sck_out(0)
-   --       );
-
-   -- IP driectly to project (not bd)
    sck_in_buf <= sck_clk;
 
    mmcm : entity work.mmcm_wrapper
@@ -52,16 +38,15 @@ begin
 
    simulated_array1 : entity work.simulated_array
       port map(
-         ws         => ws,
-         sck_clk    => sck_out_buf, -- sck_out(0) for bd
-         bit_stream => bit_stream,
-         ws_ok      => ws_ok,
-         sck_ok     => sck_ok,
-         reset      => reset_out, -- reset for bd
-         clk        => clk
+         ws             => ws,
+         sck_clk        => sck_out_buf,
+         reset          => reset_out,
+         clk            => clk,
+         switch         => switch,
+         bit_stream_in  => bit_stream_in,
+         bit_stream_out => bit_stream_out
       );
 
-   -- work.clk_wiz_wrapper for bd
    clk_wiz : entity work.clk_wiz_ip_wrapper
       port map(
          clk_out   => clk,
