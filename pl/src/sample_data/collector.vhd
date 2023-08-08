@@ -24,7 +24,7 @@ entity collector is
    port (
       sys_clk                : in std_logic;
       reset                  : in std_logic;
-      mic_id_sw               : in std_logic;
+      mic_id_sw              : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
