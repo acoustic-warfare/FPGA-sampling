@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
-   -- MICID_SW: Signal to indicate if padding should be an ID for each mic or two's complement. 
+   -- MIC_ID_SW: Signal to indicate if padding should be an ID for each mic or two's complement. 
    --
    -- MIC_SAMPLE_DATA_IN: Incomming array of data. One microphone sends 32 bits.
    --
@@ -24,7 +24,7 @@ entity collector is
    port (
       sys_clk                : in std_logic;
       reset                  : in std_logic;
-      micID_sw               : in std_logic;
+      mic_id_sw               : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
@@ -43,7 +43,7 @@ begin
          chain_matrix_valid_out <= '0';                                    -- Set data_valid_out to LOW as defult value
          if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid and the shift register puts it at the first place
             tmp_holder(23 downto 0) := mic_sample_data_in;
-            if micID_sw = '0' then
+            if mic_id_sw = '0' then
 
                -- This part is not optimal but mabye necisary if we cant find a perfect delay :(
                if tmp_holder(23) = '1' and tmp_holder(22 downto 16) = "0000000" then

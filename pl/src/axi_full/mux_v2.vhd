@@ -3,6 +3,18 @@ use IEEE.std_logic_1164.all;
 use work.matrix_type.all;
 
 entity mux_v2 is
+      ------------------------------------------------------------------------------------------------------------------------------------------------
+   --                                                  # port information #
+   -- SW: Used for troubleshooting. 
+   --
+   -- RD_EN: The AXI Full block will send a valid signal to the Mux to allow it to sent its data. 
+   --
+   -- FIFO: Incoming matrix of data from 4 arrays each with 32 bits of data (256x32)
+   --
+   -- RD_EN_FIFO: Valid signal sent to the FIFO, enabling it to send data to the Mux 
+   --
+   -- DATA: The 32-bit output array of data from each microphone. 
+   --------------------------------------------------------------------------------------------------------------------------------------------------
    port (
       sw         : in std_logic;
       sys_clk    : in std_logic;

@@ -62,6 +62,10 @@ architecture tb of tb_super_test is
    signal empty_next_array : std_logic_vector(255 downto 0);
    signal fill_count       : integer range RAM_DEPTH - 1 downto 0;
 
+   signal sw : std_logic; 
+   signal rd_en_fifo : std_logic; 
+   signal data_mux_out : std_logic_vector(31 downto 0); 
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
@@ -160,6 +164,17 @@ begin
          ws          => ws,
          reset       => reset
       );
+   
+   --mux1 : entity work.mux_v2    
+   --   port map(
+   --      sys_clk    => clk,
+   --      reset      => reset,
+   --      sw         => sw,
+   --      rd_en      => rd_en,
+   --      rd_en_fifo => rd_en_fifo,
+   --      data       => data_mux_out,
+   --      fifo       => data_fifo_out
+   --   );
 
    main : process
       variable auto_test_data : unsigned(31 downto 0) := (others => '0');

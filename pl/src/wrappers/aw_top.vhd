@@ -260,7 +260,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            micID_sw               => sw(0),
+            mic_id_sw               => sw(0),
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
