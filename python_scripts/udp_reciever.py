@@ -68,7 +68,7 @@ class Data(Structure):
         ("mic_49", c_int32), ("mic_50", c_int32), ("mic_51", c_int32), ("mic_52", c_int32), ("mic_53", c_int32), ("mic_54", c_int32), ("mic_55", c_int32), ("mic_56", c_int32), (
             "mic_57", c_int32), ("mic_58", c_int32), ("mic_59", c_int32), ("mic_60", c_int32), ("mic_61", c_int32), ("mic_62", c_int32), ("mic_63", c_int32), ("mic_64", c_int32),
         ("mic_65", c_int32), ("mic_66", c_int32), ("mic_67", c_int32), ("mic_68", c_int32), ("mic_69", c_int32), ("mic_70", c_int32), ("mic_71", c_int32), ("mic_72", c_int32), (
-            "mic_73", c_int32), ("mic_74", c_int32), ("mic_75", c_int32), ("mic_76", c_int32), ("mic_77", c_int32), ("mic_78", c_int32), ("mic_79", c_int32), ("mic_70", c_int32),
+            "mic_73", c_int32), ("mic_74", c_int32), ("mic_75", c_int32), ("mic_76", c_int32), ("mic_77", c_int32), ("mic_78", c_int32), ("mic_79", c_int32), ("mic_80", c_int32),
         ("mic_81", c_int32), ("mic_82", c_int32), ("mic_83", c_int32), ("mic_84", c_int32), ("mic_85", c_int32), ("mic_86", c_int32), ("mic_87", c_int32), ("mic_88", c_int32), (
             "mic_89", c_int32), ("mic_90", c_int32), ("mic_91", c_int32), ("mic_92", c_int32), ("mic_93", c_int32), ("mic_94", c_int32), ("mic_95", c_int32), ("mic_96", c_int32),
         ("mic_97", c_int32), ("mic_98", c_int32), ("mic_99", c_int32), ("mic_100", c_int32), ("mic_101", c_int32), ("mic_102", c_int32), ("mic_103", c_int32), ("mic_104", c_int32), (
@@ -81,7 +81,7 @@ class Data(Structure):
             "mic_153", c_int32), ("mic_154", c_int32), ("mic_155", c_int32), ("mic_156", c_int32), ("mic_157", c_int32), ("mic_158", c_int32), ("mic_159", c_int32), ("mic_160", c_int32),
         ("mic_161", c_int32), ("mic_162", c_int32), ("mic_163", c_int32), ("mic_164", c_int32), ("mic_165", c_int32), ("mic_166", c_int32), ("mic_167", c_int32), ("mic_168", c_int32), (
             "mic_169", c_int32), ("mic_170", c_int32), ("mic_171", c_int32), ("mic_172", c_int32), ("mic_173", c_int32), ("mic_174", c_int32), ("mic_175", c_int32), ("mic_176", c_int32),
-        ("mic_177", c_int32), ("mic_178", c_int32), ("mic_179", c_int32), ("mic_170", c_int32), ("mic_181", c_int32), ("mic_182", c_int32), ("mic_183", c_int32), ("mic_184", c_int32), (
+        ("mic_177", c_int32), ("mic_178", c_int32), ("mic_179", c_int32), ("mic_180", c_int32), ("mic_181", c_int32), ("mic_182", c_int32), ("mic_183", c_int32), ("mic_184", c_int32), (
             "mic_185", c_int32), ("mic_186", c_int32), ("mic_187", c_int32), ("mic_188", c_int32), ("mic_189", c_int32), ("mic_190", c_int32), ("mic_191", c_int32), ("mic_192", c_int32),
         ("mic_193", c_int32), ("mic_194", c_int32), ("mic_195", c_int32), ("mic_196", c_int32), ("mic_197", c_int32), ("mic_198", c_int32), ("mic_199", c_int32), ("mic_200", c_int32), (
             "mic_201", c_int32), ("mic_202", c_int32), ("mic_203", c_int32), ("mic_204", c_int32), ("mic_205", c_int32), ("mic_206", c_int32), ("mic_207", c_int32), ("mic_208", c_int32),
@@ -98,11 +98,11 @@ UDP_IP = "0.0.0.0"
 UDP_PORT = 21844
 
 print("Enter a filename for the recording: ")
-# fileChooser = input()
-fileChooser = "ljud"
+fileChooser = input()
+#fileChooser = "ljud"
 print("Save as txt? (y) ")
-# txtInput = input()
-txtInput = 'n'
+txtInput = input()
+#txtInput = 'n'
 print("Enter time to record (seconds): ")
 recordTime = input()
 t_end = time.time()+int(recordTime)

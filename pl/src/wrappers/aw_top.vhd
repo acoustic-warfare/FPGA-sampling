@@ -240,7 +240,6 @@ begin
          );
    end generate sample_gen_01;
 
-   -- last three arrays (normal sampling)
    --sample_gen_01 : for i in 0 to 15 generate
    --begin
    --   sample_C : entity work.sample
