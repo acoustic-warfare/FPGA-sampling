@@ -16,15 +16,15 @@ end tb_mux;
 architecture tb of tb_mux is
    constant C_CLK_CYKLE : time := 8 ns; -- 125 MHz
 
-   signal clk    : std_logic := '0';
+   signal clk        : std_logic := '0';
    signal reset      : std_logic := '0';
    signal sw         : std_logic := '0';
    signal rd_en      : std_logic := '0';
    signal rd_en_fifo : std_logic := '0';
-   signal data       : std_logic_vector(31 downto 0);
-   signal fifo       : matrix_256_32_type;
+   signal data_out   : std_logic_vector(31 downto 0);
+   signal data_in    : matrix_256_32_type;
 
-   signal counter_tb : integer   := 0;
+   signal counter_tb : integer := 0;
 
 begin
    clk <= not(clk) after C_CLK_CYKLE/2;
@@ -36,8 +36,8 @@ begin
          sw         => sw,
          rd_en      => rd_en,
          rd_en_fifo => rd_en_fifo,
-         data       => data,
-         fifo       => fifo
+         data_in    => data_in,
+         data_out   => data_out
       );
 
    ws_process : process (clk)

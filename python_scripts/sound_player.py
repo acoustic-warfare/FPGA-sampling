@@ -32,7 +32,7 @@ fs = 48828
 data2D = data2D[:, 2:]    # removes headerinformation
 
 if (mic.lower() == "y"):
-    for i in range(0, 192):
+    for i in range(0, 256):
         mic_data = data2D[:, int(i)]
         # normalize mic data
         sound_scaled = data2D[:, int(i)]/np.max(np.abs(data2D[:, int(i)]))

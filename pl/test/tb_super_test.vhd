@@ -53,17 +53,15 @@ architecture tb of tb_super_test is
    signal sck_clk_cable   : std_logic;
    signal bitstream_cable : std_logic_vector(15 downto 0);
 
-   signal RAM_DEPTH        : natural := 1024;
+   signal RAM_DEPTH        : natural := 128;
    signal rd_en            : std_logic;
-   signal data_fifo_out    : matrix_256_32_type;
+   signal data_fifo_out    : matrix_256_32_type := (others => (others => '0'));
    signal full_array       : std_logic_vector(255 downto 0);
    signal empty_array      : std_logic_vector(255 downto 0);
    signal full_next_array  : std_logic_vector(255 downto 0);
    signal empty_next_array : std_logic_vector(255 downto 0);
-   signal fill_count       : integer range RAM_DEPTH - 1 downto 0;
 
    signal sw           : std_logic;
-   signal rd_en_fifo   : std_logic;
    signal data_mux_out : std_logic_vector(31 downto 0);
 
 begin
@@ -134,27 +132,37 @@ begin
       );
 
    -- gets error when trying to use this will look in to it later 
-   --fifo_gen : for i in 0 to 255 generate
-   --begin
-   --   fifo : entity work.fifo_axi
-   --      generic map(
-   --         RAM_WIDTH => 32,
-   --         RAM_DEPTH => RAM_DEPTH
-   --      )
-   --      port map(
-   --         clk        => clk,
-   --         rst        => reset,
-   --         wr_en      => array_matrix_valid_out,
-   --         wr_data    => array_matrix_data_out(i),
-   --         rd_en      => rd_en,
-   --         rd_data    => data_fifo_out(i),
-   --         empty      => empty_array(i),
-   --         empty_next => empty_next_array(i),
-   --         full       => full_array(i),
-   --         full_next  => full_next_array(i),
-   --         fill_count => fill_count
-   --      );
-   --end generate fifo_gen;
+   fifo_gen : for i in 0 to 63 generate
+   begin
+      fifo_0 : entity work.fifo_axi
+         generic map(
+            RAM_WIDTH => 32,
+            RAM_DEPTH => RAM_DEPTH
+         )
+         port map(
+            clk        => clk,
+            rst        => reset,
+            wr_en      => array_matrix_valid_out,
+            wr_data    => array_matrix_data_out(i),
+            rd_en      => rd_en,
+            rd_data    => data_fifo_out(i),
+            empty      => empty_array(i),
+            empty_next => empty_next_array(i),
+            full       => full_array(i),
+            full_next  => full_next_array(i)
+         );
+   end generate fifo_gen;
+
+   mux1 : entity work.mux
+      port map(
+         sys_clk    => clk,
+         reset      => reset,
+         sw         => sw,
+         rd_en      => not empty_next_array(0),
+         rd_en_fifo => rd_en,
+         data_in    => data_fifo_out,
+         data_out   => data_mux_out
+      );
 
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
@@ -163,17 +171,6 @@ begin
          ws          => ws,
          reset       => reset
       );
-
-   --mux1 : entity work.mux_v2    
-   --   port map(
-   --      sys_clk    => clk,
-   --      reset      => reset,
-   --      sw         => sw,
-   --      rd_en      => rd_en,
-   --      rd_en_fifo => rd_en_fifo,
-   --      data       => data_mux_out,
-   --      fifo       => data_fifo_out
-   --   );
 
    main : process
       variable auto_test_data : unsigned(31 downto 0) := (others => '0');
@@ -184,7 +181,7 @@ begin
       while test_suite loop
          if run("wave") then
             -- test 1 is so far only meant for gktwave
-            wait for 1000000 ns; -- duration of test 1
+            wait for 3000000 ns; -- duration of test 1
 
          elsif run("auto") then
             for i in 0 to 100000 loop

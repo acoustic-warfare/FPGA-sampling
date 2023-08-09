@@ -33,7 +33,7 @@ architecture behavior of tb_fifo_axi is
    signal full_next  : std_logic;
 
    -- The number of elements in the FIFO
-   signal fill_count : integer range 256 - 1 downto 0;
+   signal fill_count : integer range 128 - 1 downto 0;
 
    signal counter : integer := 0;
 
@@ -54,16 +54,13 @@ begin
 
          -- Read port
          rd_en    => rd_en,
-         rd_valid => rd_valid,
          rd_data  => rd_data,
 
          -- Flags
          empty      => empty,
          empty_next => empty_next,
          full       => full,
-         full_next  => full_next,
-
-         fill_count => fill_count
+         full_next  => full_next
       );
    clk <= not(clk) after C_CLK_CYKLE/2;
    --S_AXI_ACLK <= not(clk) after AXI_clk_cyckle/2;

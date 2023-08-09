@@ -129,7 +129,7 @@ if (txtInput.lower() == "y"):
                     int_to_twos_complement_string_16bit(d.sampelCounter) + "        ")
 
             # Printing each mic data as integers
-            for i in range(1, 256):
+            for i in range(1, 200):
                 field_name = f"mic_{i}"
                 mic_data = int_to_twos_complement_string(
                     getattr(d, field_name))

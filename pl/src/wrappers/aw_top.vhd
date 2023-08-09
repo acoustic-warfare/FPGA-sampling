@@ -26,7 +26,7 @@ architecture structual of aw_top is
    signal sck_clk : std_logic;
    signal ws      : std_logic;
 
-   signal data_test : std_logic_vector(31 downto 0);
+   signal data_stream : std_logic_vector(31 downto 0);
 
    signal bit_stream_out : std_logic_vector(15 downto 0);
 
@@ -38,18 +38,14 @@ architecture structual of aw_top is
 
    signal sample_counter : std_logic_vector(31 downto 0);
 
-   signal rd_valid           : std_logic_vector(255 downto 0);
    signal full_array         : std_logic_vector(255 downto 0);
    signal empty_array        : std_logic_vector(255 downto 0);
    signal almost_full_array  : std_logic_vector(255 downto 0);
    signal almost_empty_array : std_logic_vector(255 downto 0);
-   signal fill_count         : integer;
 
-   signal array_matrix_data : matrix_256_32_type;
-   signal data_fifo_256_out : matrix_256_32_type;
-
-   signal array_matrix_valid      : std_logic;
-   signal array_matrix_valid_fifo : std_logic;
+   signal array_matrix_data  : matrix_256_32_type;
+   signal data_fifo_256_out  : matrix_256_32_type;
+   signal array_matrix_valid : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -60,8 +56,6 @@ architecture structual of aw_top is
    signal counter_led : integer := 0;
 
 begin
-   array_matrix_valid_fifo <= array_matrix_valid and (not almost_full_array(0));
-
    ws_out <= (others => ws);
 
    sck_clk_out(0) <= sck_clk;
@@ -235,16 +229,14 @@ begin
          port map(
             clk        => clk,
             rst        => reset,
-            wr_en      => array_matrix_valid_fifo,
+            wr_en      => array_matrix_valid,
             wr_data    => array_matrix_data(i),
             rd_en      => rd_en_fifo,
-            rd_valid   => rd_valid(i),
             rd_data    => data_fifo_256_out(i),
             empty      => empty_array(i),
             empty_next => almost_empty_array(i),
             full       => full_array(i),
-            full_next  => almost_full_array(i),
-            fill_count => fill_count
+            full_next  => almost_full_array(i)
          );
    end generate fifo_axi_0;
 
@@ -272,9 +264,9 @@ begin
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
-         fifo       => data_fifo_256_out,
+         data_in    => data_fifo_256_out,
          rd_en_fifo => rd_en_fifo,
-         data       => data_test
+         data_out   => data_stream
       );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
@@ -283,7 +275,7 @@ begin
          clk_25    => sck_clk,
          sys_clock => sys_clock,
          reset_rtl => reset_rtl,
-         axi_data  => data_test,
+         axi_data  => data_stream,
          axi_empty => almost_empty_array(0),
          axi_rd_en => rd_en_pulse
       );
