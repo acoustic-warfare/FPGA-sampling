@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 use work.matrix_type.all;
 
 entity mux is
-      ------------------------------------------------------------------------------------------------------------------------------------------------
+   ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
    -- SW: Used for troubleshooting. 
    --
@@ -24,8 +24,8 @@ entity mux is
       rd_en_fifo : out std_logic;
       data       : out std_logic_vector(31 downto 0)
    );
-
 end mux;
+
 architecture rtl of mux is
    signal rd_en_d : std_logic;
 
@@ -33,11 +33,13 @@ architecture rtl of mux is
    signal state : state_type := idle;
 
    signal counter : integer := 0;
+
 begin
 
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
+         -- For debugging purposes, if sw is on then the predetermined sequence of bits is sent through
          if (sw = '1') then
             data <= "11111101010101010101010101010101";
             if (counter >= 256) then
@@ -47,18 +49,23 @@ begin
                rd_en_fifo <= '0';
                counter    <= counter + 1;
             end if;
+
+         -- Normal case where array data is sent through
          else
             case state is
                when idle =>
+
                   rd_en_fifo <= '0';
                   data       <= fifo(0);
-                  if (rd_en = '1' and rd_en_d = '0') then -- rising_edge rd_en
+                  if (rd_en = '1' and rd_en_d = '0') then -- Rising_edge rd_en
                      counter <= - 1;
                      state   <= run;
                      data    <= fifo(1);
                   end if;
+
                when run =>
                   rd_en_fifo <= '0';
+
                   if (counter >= 256) then
                      counter    <= 0;
                      state      <= idle;
@@ -73,7 +80,7 @@ begin
                   end if;
 
                when others =>
-                  -- should never get here
+                  -- Should never get here
                   state <= idle;
             end case;
 
@@ -82,7 +89,9 @@ begin
                rd_en_fifo <= '0';
                counter    <= 0;
             end if;
+            
             rd_en_d <= rd_en;
+
          end if;
       end if;
    end process;

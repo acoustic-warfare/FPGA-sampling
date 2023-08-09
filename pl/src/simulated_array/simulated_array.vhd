@@ -28,6 +28,7 @@ entity simulated_array is
    );
 
 end simulated_array;
+
 architecture rtl of simulated_array is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state : state_type;
@@ -50,6 +51,7 @@ begin
 
    fill_matrix_out_p : process (clk)
       variable mic_id : unsigned(7 downto 0) := (others => '0');
+
    begin
       if rising_edge(clk) then
          sck_d <= sck_clk;
@@ -61,7 +63,8 @@ begin
             mic_id := to_unsigned(mic_counter, 8);
 
             case state is
-               when idle                 =>
+               when idle =>
+
                bit_stream_gen <= (others => '1');
 
                   if (ws = '1') then
@@ -95,8 +98,10 @@ begin
                   bit_counter <= bit_counter + 1;
 
                when pause =>
+
                   bit_counter    <= bit_counter + 1;
                   bit_stream_gen <= (others => '1');
+
                   if (mic_counter = 16) then
                      counter     <= counter + 1;
                      bit_counter <= 0;
@@ -108,6 +113,7 @@ begin
                      bit_counter <= 0;
                      state       <= run;
                   end if;
+                  
                when others =>
                   -- should never get here
                   report("error_1");

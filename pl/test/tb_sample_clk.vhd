@@ -85,7 +85,7 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then
-            -- test 1 is so far only ment for gktwave
+            -- test 1 is so far only meant for gktwave
 
             wait for 100000 ns; -- duration of test 1
 

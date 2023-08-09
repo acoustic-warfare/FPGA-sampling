@@ -99,10 +99,10 @@ UDP_PORT = 21844
 
 print("Enter a filename for the recording: ")
 fileChooser = input()
-#fileChooser = "ljud"
+
 print("Save as txt? (y) ")
 txtInput = input()
-#txtInput = 'n'
+
 print("Enter time to record (seconds): ")
 recordTime = input()
 t_end = time.time()+int(recordTime)
@@ -140,7 +140,7 @@ if (txtInput.lower() == "y"):
 else:
     print("Recording")
     with open(fileChooser, "wb") as f:
-        # for count in itertools.count():
+        # For count in itertools.count():
         while time.time() < t_end:
             data = sock.recv(1458)
 

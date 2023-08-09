@@ -490,9 +490,6 @@ begin
       slv_reg(65) <= reg_65;
 
       slv_reg(66) <= reg_66;
-      slv_reg(67) <= reg_67; --kommetera ut detta
-      --slv_reg(68) <= reg_mic_;
-      --slv_reg(69) <= reg_mic_;
+      slv_reg(67) <= reg_67; 
    end process;
-
 end rtl;

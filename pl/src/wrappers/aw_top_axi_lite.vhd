@@ -17,6 +17,7 @@ entity aw_top_lite is
       led_rgb_6   : out std_logic_vector(2 downto 0)
    );
 end entity;
+
 architecture structual of aw_top_lite is
    signal rst_axi : std_logic_vector (0 to 0);
    signal clk     : std_logic;
@@ -26,7 +27,6 @@ architecture structual of aw_top_lite is
    signal mic_sample_data_out_internal  : matrix_4_24_type;
    signal mic_sample_valid_out_internal : std_logic_vector(3 downto 0);
 
-   --signal data_collector : matrix_4_16_32_type;
    signal data : matrix_64_32_type;
 
    signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
@@ -50,8 +50,8 @@ architecture structual of aw_top_lite is
    signal sample_counter_out : std_logic_vector(31 downto 0);
    signal rst_cnt            : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int            : std_logic             := '1';
-begin
 
+begin
    ws_out      <= (others => ws_internal);
    sck_clk_out <= (others => sck_clk_internal);
 
@@ -72,7 +72,6 @@ begin
       elsif sys_clock'event and sys_clock = '1' then
 
          if rst_cnt = x"01ffffff" then --about 3 sec
-            --  if rst_cnt =  x"00000fff" then
             rst_int <= '0';
          else
             rst_cnt <= rst_cnt + 1;
@@ -80,6 +79,7 @@ begin
 
       end if;
    end process;
+   
    fifo_bd_wrapper_gen : for i in 0 to 63 generate
    begin
       fifo_gen : entity work.fifo_bd_wrapper
@@ -126,7 +126,6 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_startup => '1',
          sck_clk     => sck_clk_internal,
          reset       => reset,
          ws          => ws_internal
@@ -142,7 +141,6 @@ begin
             bit_stream           => bit_stream(i),
             mic_sample_data_out  => mic_sample_data_out_internal(i),
             mic_sample_valid_out => mic_sample_valid_out_internal(i)
-
          );
    end generate sample_gen;
 
@@ -153,7 +151,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw               => sw(0),
+            mic_id_sw              => sw(0),
             mic_sample_data_in     => mic_sample_data_out_internal(i),
             mic_sample_valid_in    => mic_sample_valid_out_internal(i),
             chain_matrix_data_out  => chain_matrix_data(i),

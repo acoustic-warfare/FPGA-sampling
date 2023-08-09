@@ -38,7 +38,7 @@ VENV_NAME="venv"
 # TODO: trigger on changes to requirements.txt to stay up to date.
 # NOTE: to slow to always run
 if [ ! -d "$VENV_NAME" ]; then
-    echo -e "Python environemnt setup"
+    echo -e "Python environment setup"
     python3 -m venv $VENV_NAME
     $VENV_NAME/bin/python -m pip install setuptools wheel
     $VENV_NAME/bin/python -m pip install -r requirements.txt
@@ -90,7 +90,7 @@ echo -e '
 Welcome to Acustic Warfare!
    To run a test bench for a HDL-file write: vunit "*HDL_file_name.auto"
    To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave"
-   To create and lanch the Vivado project write: gen_all
+   To create and launch the Vivado project write: gen_all
 \033[4mCommands:\033[0m
 \033[1m  gtkwave\033[0m    Run PL auto-tests (example for tb_super_test: gtkwave "*tb_super_test.wave*")
 \033[1m    vunit\033[0m    Run PL wave-tests (example for tb_super_test: vunit "*tb_super_test.auto*")

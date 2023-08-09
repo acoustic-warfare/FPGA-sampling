@@ -1,6 +1,3 @@
-
-
-
 ## This file is a general .xdc for the Zybo Z7 Rev. B
 ## It is compatible with the Zybo Z7-20 and Zybo Z7-10
 ## To use it in a project:

@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
 entity simulated_array_independent is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    --                                                  # port information #
@@ -15,7 +16,6 @@ entity simulated_array_independent is
       G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
    );
    port (
-
       ws         : in std_logic;
       sck_clk    : in std_logic;
       clk        : in std_logic;
@@ -23,6 +23,7 @@ entity simulated_array_independent is
       reset      : in std_logic
    );
 end simulated_array_independent;
+
 architecture rtl of simulated_array_independent is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state : state_type;
@@ -39,7 +40,6 @@ architecture rtl of simulated_array_independent is
    signal b     : std_logic := '0';
 
 begin
-
    fill_matrix_out_p : process (clk)
       variable mic_id : unsigned(7 downto 0) := (others => '0');
 
@@ -55,7 +55,8 @@ begin
             mic_id := to_unsigned(mic_counter, 8);
 
             case state is
-               when idle             =>
+               when idle=>
+
                   bit_stream <= (others => '1');
 
                   if (ws = '1') then
@@ -68,6 +69,7 @@ begin
                   end if;
 
                when run =>
+
                   if (bit_counter < 8) then --send ID
                      for i in 0 to 3 loop
                         bit_stream(i) <= mic_id(7 - bit_counter);
@@ -91,6 +93,7 @@ begin
 
                   bit_counter <= bit_counter + 1;
                   bit_stream  <= (others => '1');
+                  
                   if (mic_counter = 16) then
                      counter     <= counter + 1;
                      bit_counter <= 0;

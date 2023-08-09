@@ -23,28 +23,28 @@ entity sample_clk is
       bit_stream           : in std_logic;
       ws                   : in std_logic;
       mic_sample_data_out  : inout std_logic_vector(23 downto 0);
-      mic_sample_valid_out : out std_logic := '0'
+      mic_sample_valid_out : out std_logic := '0' -- A signal to tell the receiver to start reading the mic_sample_data_out
    );
 end entity;
 
 architecture rtl of sample_clk is
-   type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
+   type state_type is (idle, run, pause); -- Three states for the state-machine. See State-diagram for more information
    signal state        : state_type;
+   signal state_1      : integer range 0 to 2;       -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+
    signal counter_bit  : integer range 0 to 60 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 7  := 0; -- Counts number of samples per TDM-slot   (0-4)
    signal counter_mic  : integer range 0 to 17 := 0; -- Counts number of microphones per chain  (0-15)
-   --signal counter_1s   : integer range 0 to 5  := 0; -- Counts how many times a 1 is sampled out of the five counter_samp
-   signal state_1 : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal idle_counter : integer := 0; -- Creates a delay for staying in idle until data is transmitted from array
 
 begin
-   main_state_p : process (sys_clk) -- main process for the statemachine. Starts in IDLE
+   main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin
       if rising_edge(sys_clk) then
 
          case state is
-            when idle => -- after a complete sample of all mics (only exit on ws high)
+            when idle => -- After a complete sample of all mics (only exit on ws high)
                ------------------------------------------------------------------------------------------------------------------------------------------
                -- Starting state.
                -- wait here until a WS pulse is received, which progress the machine to enter the RUN state.
@@ -58,7 +58,7 @@ begin
                   idle_counter <= idle_counter + 1;
                end if;
 
-               -- this waits for the sck to have a rising_edge
+               -- This waits for the sck to have a rising_edge
                if (idle_counter = index) then
                   idle_counter <= 0;
                   state        <= run;
@@ -71,33 +71,30 @@ begin
                -- The parallel process count_p samples the incomming bits,
                -- and enters the following IF-statements after sampling a bit five times(counter_samp = 4).
                --
-               -- counter_1s is counting how many of the five samples was a 1,
-               -- if the majority of the five samples is 1:s then it is determined that the sampled bit is a 1.
-               -- Else the determined bit is a 0.
-               --
-               -- when a bit is determined it is then shifted in to a register,
+               -- When a bit is determined it is then shifted in to a register,
                -- and this process is repeated for all 24 TDM bits which now represents a full microphone sample.
                --
                -- When 24 bits have been sampled the machine change state to PAUSE.
                -----------------------------------------------------------------------------------------------------------
+
                counter_samp <= counter_samp + 1;
                if counter_samp = 4 then
                   counter_samp <= 0;
 
                   if bit_stream = '1' then
-                     -- sampled bit = 1
+                     -- Sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';
                      counter_bit                      <= counter_bit + 1;
                   else
-                     -- sampled bit = 0
+                     -- Sampled bit = 0
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '0';
                      counter_bit                      <= counter_bit + 1;
                   end if;
 
                   if counter_bit = 23 then
-                     -- if the last bit of the mic, go to PAUSE
+                     -- If the last bit of the mic, go to PAUSE
                      mic_sample_valid_out <= '1';
                      state                <= pause;
                   end if;
@@ -105,7 +102,7 @@ begin
 
             when pause =>
                -------------------------------------------------------------------------------------------------------------------
-               -- a Microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
+               -- A microphone output from the a array is a 32 Bit, and only 24 bit out of the 32 bit is actual data.
                -- This state is used to wait and let those 8 empty TDM-slots bits pass by.
                --
                -- After the 8 empty bits the machine returns to the RUN state to start to sample the next microphone in the chain
@@ -125,7 +122,7 @@ begin
                   end if;
 
                   if counter_mic = 15 then
-                     -- all mic are sampled
+                     -- All mic are sampled
                      counter_bit <= 0;
                      counter_mic <= 0;
                      state       <= idle;
@@ -133,7 +130,7 @@ begin
                end if;
 
             when others =>
-               -- should never get here
+               -- Should never get here
                report("error_1");
                state <= idle;
          end case;
@@ -143,7 +140,7 @@ begin
       end if;
    end process;
 
-   state_num : process (state) -- only for findig buggs in gtkwave
+   state_num : process (state) -- Only for findig buggs in gtkwave
    begin
       if state = idle then
          state_1 <= 0;

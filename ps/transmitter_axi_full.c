@@ -59,10 +59,10 @@ int main() {
 
     u16_t Port = 21844;
 
-    // 1458 bytse is max that can fit in a udp frame from the zynq (probebly some unknown overhead)
+    // 1458 bytes is max that can fit in a udp frame from the zynq
     int buflen = 1458;
 
-    /* The MAC address of the board. this should be unique per board */
+    /* The MAC address of the board. This should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 
     netif = &server_netif;

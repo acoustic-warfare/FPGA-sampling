@@ -159,7 +159,6 @@ begin
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
       port map(
-         sck_startup => '1',
          sck_clk     => sck_clk,
          ws          => ws,
          reset       => reset
@@ -184,7 +183,7 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then
-            -- test 1 is so far only ment for gktwave
+            -- test 1 is so far only meant for gktwave
             wait for 1000000 ns; -- duration of test 1
 
          elsif run("auto") then

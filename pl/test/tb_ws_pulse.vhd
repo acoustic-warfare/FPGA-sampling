@@ -38,7 +38,6 @@ begin
    ws_pulse_1 : entity work.ws_pulse
       generic map(startup_length => startup_length)
       port map(
-         sck_startup => '1',
          sck_clk     => sck_clk,
          ws          => ws,
          reset       => reset

@@ -27,9 +27,10 @@ end entity;
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- Three states for the state-machine. See State-diagram for more information
    signal state       : state_type;
+   signal state_1     : integer range 0 to 2;       -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+
    signal counter_bit : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_mic : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
-   signal state_1     : integer range 0 to 2;       -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
    signal idle_start   : std_logic := '0'; -- Part of the delay to make it more flexible
@@ -43,7 +44,7 @@ begin
             when idle => -- After a complete sample of all mics (only exit on ws high)
                ------------------------------------------------------------------------------------------------------------------------------------------
                -- Starting state.
-               -- wait here until a WS pulse is received, which progress the machine to enter the RUN state.
+               -- Wait here until a WS pulse is received, which progress the machine to enter the RUN state.
                --
                -- When all the 16 microphones in a chain have been sampled and determined the machine return to this state and waits for a new WS pulse
                ------------------------------------------------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ begin
                end if;
 
                if counter_bit = 23 then
-                  -- if the last bit of the mic, go to PAUSE
+                  -- If the last bit of the mic, go to PAUSE
                   mic_sample_valid_out <= '1';
                   state                <= pause;
                end if;
@@ -94,19 +95,19 @@ begin
                counter_bit          <= counter_bit + 1;
 
                if counter_mic = 15 then
-                  -- all mic are sampled
+                  -- All mic are sampled
                   state       <= idle;
                   counter_mic <= 0;
                   counter_bit <= 0;
                elsif counter_bit = 31 then
-                  -- return to RUN to sample next mic
+                  -- Return to RUN to sample next mic
                   state       <= run;
                   counter_mic <= counter_mic + 1;
                   counter_bit <= 0;
                end if;
 
             when others =>
-               -- should never get here
+               -- Should never get here
                report("error_1");
                state <= idle;
          end case;
@@ -120,7 +121,7 @@ begin
       end if;
    end process;
 
-   state_num : process (state) -- only for findig buggs in gtkwave
+   state_num : process (state) -- Only for findig buggs in gtkwave
    begin
       if state = idle then
          state_1 <= 0;

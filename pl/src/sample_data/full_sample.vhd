@@ -25,7 +25,7 @@ entity full_sample is
       reset                   : in std_logic;
       chain_x4_matrix_data_in : in matrix_16_16_32_type;
       chain_matrix_valid_in   : in std_logic_vector(15 downto 0);
-      array_matrix_data_out   : out matrix_256_32_type; --S AMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_data_out   : out matrix_256_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
       array_matrix_valid_out  : out std_logic;          -- A signal to tell the receiver to start reading the array_matrix_data_out
       sample_counter_array    : out std_logic_vector(31 downto 0)
    );
@@ -37,36 +37,32 @@ architecture rtl of full_sample is
 
 begin
 
-   fill_matrix_out_p : process (sys_clk) -- This proccess fills an matrix with samples from all four collectors
-
+   fill_matrix_out_p : process (sys_clk) -- This proccess fills a matrix with samples from all four collectors
       variable temp_chain_matrix : matrix_16_32_type;
+
    begin
       if rising_edge(sys_clk) then
 
          for i in 0 to 15 loop
-
             if (chain_matrix_valid_in(i) = '1') then
                save_valid_array(i) <= '1';
                temp_chain_matrix := chain_x4_matrix_data_in(i);
-
                for a in 0 to 15 loop
                   array_matrix_data_out(a + 16 * i) <= temp_chain_matrix(a);
                end loop;
-
             end if;
-
          end loop;
 
          if save_valid_array = x"FFFF" then
             save_valid_array       <= (others => '0');
             array_matrix_valid_out <= '1';                              -- Set the valid signal to High, so the next component can read the samples
-            sample_counter         <= sample_counter + 1;               --increment the sample counter
-            sample_counter_array   <= std_logic_vector(sample_counter); -- convert INT to a vector
+            sample_counter         <= sample_counter + 1;               -- Increment the sample counter
+            sample_counter_array   <= std_logic_vector(sample_counter); -- Convert INT to a vector
          else
             array_matrix_valid_out <= '0';
          end if;
 
-         if reset = '1' then -- resets data_valid_out to low and
+         if reset = '1' then -- Resets data_valid_out to low 
             array_matrix_valid_out <= '0';
          end if;
       end if;

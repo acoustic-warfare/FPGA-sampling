@@ -85,24 +85,6 @@ begin
    led(1) <= almost_full_array(0) and sw(3);
    led(0) <= full_array(0) and sw(3);
 
-   -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
-   process (clk)
-   begin
-      if (rising_edge(clk)) then
-         if (rd_en_pulse = '1') then
-            counter_led  <= 1;
-            led_rgb_5(1) <= sw(3);
-         end if;
-
-         if (counter_led = 2000) then
-            counter_led  <= 0;
-            led_rgb_5(1) <= '0';
-         elsif (counter_led > 0) then
-            counter_led <= counter_led + 1;
-         end if;
-      end if;
-   end process;
-
    process (sys_clock, reset_rtl)
    begin
       if reset_rtl = '1' then
@@ -119,13 +101,12 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_startup => '1', --remove this since not used any more
-         sck_clk     => sck_clk,
-         reset       => reset,
-         ws          => ws
+         sck_clk => sck_clk,
+         reset   => reset,
+         ws      => ws
       );
 
-   simulated_array_c : entity work.simulated_array
+   simulated_array : entity work.simulated_array
       port map(
          clk            => clk,
          sck_clk        => sck_clk,
@@ -136,10 +117,7 @@ begin
          bit_stream_out => bit_stream_out
       );
 
-   -- port JB BitStream 0-3
-   -- port JC BitStream 4-7
-   -- port JD BitStream 8-11
-   -- port JE BitStream 12-15
+   -- PMOD port JE, BitStream 12-15: Array 1
    sample_gen_2 : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample_clk
@@ -150,12 +128,13 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i + 12), --JE(12-15)
-            mic_sample_data_out  => mic_sample_data(i),     --Array1 
+            bit_stream           => bit_stream_out(i + 12),
+            mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_2;
 
+   -- PMOD port JB, BitStream 0-3: Array 2
    sample_gen_3 : for i in 4 to 7 generate
    begin
       sample_C : entity work.sample_clk
@@ -166,12 +145,13 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4), --JB(0-3)
-            mic_sample_data_out  => mic_sample_data(i),    --Array2
+            bit_stream           => bit_stream_out(i - 4),
+            mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_3;
 
+   -- PMOD port JC, BitStream 4-7: Array 3
    sample_gen_4 : for i in 8 to 11 generate
    begin
       sample_C : entity work.sample_clk
@@ -182,12 +162,13 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4), --JC(4-7)
-            mic_sample_data_out  => mic_sample_data(i),    --Array3
+            bit_stream           => bit_stream_out(i - 4),
+            mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_4;
 
+   -- PMOD port JD, BitStream 8-11: Array 4
    sample_gen_01 : for i in 12 to 15 generate
    begin
       sample_C : entity work.sample_clk
@@ -198,12 +179,13 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4), --JD(8-11) 
-            mic_sample_data_out  => mic_sample_data(i),    --Array4
+            bit_stream           => bit_stream_out(i - 4),
+            mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_01;
 
+   -- Samplng with sck_clk, does not work because of hardware complications with arrays
    --sample_gen_01 : for i in 0 to 15 generate
    --begin
    --   sample_C : entity work.sample

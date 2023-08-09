@@ -95,7 +95,7 @@ begin
             if wr_en = '1' and full_i = '0' then
                incr(head);
             end if;
-
+            
          end if;
       end if;
    end process;
