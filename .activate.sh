@@ -88,11 +88,12 @@ alias open_sdk_project='vivado -notrace -mode batch -source $(git rev-parse --sh
 
 echo -e '
 Welcome to Acustic Warfare!
-   To run a test bench for a HDL-file write: vunit "*HDL_file_name*"
+   To run a test bench for a HDL-file write: vunit "*HDL_file_name.auto"
    To run a test in a waveform viewer write: gtkwave "*HDL_file_name.wave"
    To create and lanch the Vivado project write: gen_all
 \033[4mCommands:\033[0m
-\033[1m    vunit\033[0m    Run PL tests ("vunit --help" for usage)
+\033[1m  gtkwave\033[0m    Run PL auto-tests (example for tb_super_test: gtkwave "*tb_super_test.wave*")
+\033[1m    vunit\033[0m    Run PL wave-tests (example for tb_super_test: vunit "*tb_super_test.auto*")
 \033[1m    build\033[0m    Build PL ("build -help" for usage)
 \033[1m    clean\033[0m    Clean project (interactive) (excluding venv)
 '

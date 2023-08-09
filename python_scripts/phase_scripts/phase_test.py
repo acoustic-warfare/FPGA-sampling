@@ -24,7 +24,7 @@ import os
 
 
 
-def collect_samples(filename,recordTime):
+def collect_samples(filename,recordtime):
    # NOTE: Check if big-endian or little-endian as this is often flipped
    # use:
    # from ctypes import LittleEndianStructure, BigEndianStructure
@@ -73,7 +73,7 @@ def collect_samples(filename,recordTime):
    UDP_PORT = 21844
 
    
-   t_end = time.time()+int(recordTime)
+   t_end = time.time()+int(recordtime)
 
 
    """Receive packages forever"""
@@ -94,7 +94,7 @@ def collect_samples(filename,recordTime):
    f.close
    sys.stdout.flush()
 
-def print_analysis(fileChooser,microphones,source_audio,recordTime):
+def print_analysis(fileChooser,microphones,source_audio,recordtime):
 
 
    def load_data_FPGA(filename):
@@ -117,11 +117,7 @@ def print_analysis(fileChooser,microphones,source_audio,recordTime):
       ## Data2D[n][3] = array sample counter
       ## Data2D[n][4] to  Data2D[n][67] = is microphone 1 to 64
 
-      #### Check the sample counter to see if theres samples missing ####
-      for i in range(len(data2D[:,3])):
-         if(i>0):
-            if((data2D[i-1,3]+1)!=data2D[i,3]):
-               print("missing samples... jumpes from "+str(data2D[i-1,3])+ " to "+str(data2D[i,3]))
+      
 
       micData = data2D[:,4:] #An array with only mic data. i.e removes (Array id, protocol version, freq and counter)
       f_sampling = np.fromfile(path,dtype=c_int32,count=1,offset=8) # get sampling frequency from the file
@@ -188,33 +184,37 @@ def print_analysis(fileChooser,microphones,source_audio,recordTime):
       max_value_ok = np.max(np.max(ok_data[0:4000,],axis=0)) # maximum value of data, to use for axis scaling in plots
 
       print('sample frequency: '+ str(int(fs)))
-
-   
+      
+      
       #### EXPECTED PHASE DIFF ####
       t_diff = 0.02/340
       expected_phase_diff = 360*t_diff*int(source_audio)
-      
-      #### CALCULATE THE PHASE ####
+      #expected_phase_diff = np.round(expected_phase_diff,2)
+
+      #### CALCULATE THE REAL PHASE DIFF ####
       mics_FFT = microphones
       arr_mics_FFT = np.array(mics_FFT,dtype=int)-1
       tmp=0                         # empty list that should hold legends for plot
 
-      N=len(ok_data[:,0]) ## takes out how many individual samples there is to one mic. is basically an integer of fs*record_time 
+      N=N=len(ok_data[:,0]) 
       phase_diff_collection = ["" for x in range(len(arr_mics_FFT))]
+      first_mic = np.fft.fft(ok_data[0:N,int(arr_mics_FFT[0])])
+      index=np.round(int(source_audio)*N/fs)
+      first_mic_fft = first_mic[int(index)]
 
       for i in range(len(arr_mics_FFT)):
         micdata=np.fft.fft(ok_data[0:N,int(arr_mics_FFT[i])])
         
-        index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
+        #index=np.round(int(source_audio)*N/fs)  # calculate the correct bin from FFT 
         y=micdata[int(index)]
 
-        if(i>0):
-           phase_diff = np.angle(tmp/y)
+        if(i>=0):
+           phase_diff = np.angle(first_mic_fft/y)
            phase_diff = (phase_diff*180)/np.pi
            phase_diff=round(phase_diff,2)
-           mic_nr = str(arr_mics_FFT[i-1]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
-           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected("+str(np.round(expected_phase_diff,2))+")."
-        tmp=y
+           mic_nr = str(arr_mics_FFT[0]+1)+", "+str(arr_mics_FFT[i]+1)  # creates a str like this: (1,2)
+           phase_diff_collection[i]= "\u0394\u03c6("+mic_nr+") = "+str(phase_diff)+"\u00b0.   expected ("+str(np.round(expected_phase_diff*i,2))+"\u00b0)"
+        #tmp=y
             
             # --- PLOT 3---
       #   of selected microphones
@@ -247,7 +247,7 @@ def print_analysis(fileChooser,microphones,source_audio,recordTime):
 print("Enter a filename to samples: ")
 fileChooser = input()
 print("Enter time to record (seconds): ")
-recordTime=input()
+recordtime=input()
 print("Enter the frequency of the audio source (Hz): ")
 source_audio=input()
 while(True):
@@ -280,7 +280,7 @@ while(True):
             #25,26,27,28,29,30,31,32
             #40,39,38,37,36,35,34,33
             #56,55,54,53,52,51,50,49
-            #57,58,59,69,61,62,63,64
+            #57,58,59,60,61,62,63,64
             microphones=[8, 7, 6, 5, 4, 3, 2, 1]
             break
          elif(l=="l2"):
@@ -364,6 +364,6 @@ input("press ENTER to start")
    
 
 while(1):
-   collect_samples(fileChooser,recordTime)
-   print_analysis(fileChooser,microphones,source_audio,recordTime)
+   collect_samples(fileChooser,recordtime)
+   print_analysis(fileChooser,microphones,source_audio,recordtime)
      

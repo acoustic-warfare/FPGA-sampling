@@ -1,39 +1,45 @@
 library ieee;
 use ieee.std_logic_1164.all;
-
--- This fifo is written and taken from VHDLwiz.com
-
+------------------------------------------------------------------------------------------------------------------------------------------------
+--                                                  # port information #
+-- WR_EN: Valid signal incoming from Full Sample enabling to update header pointer of the FIFO.  
+--
+-- WR_DATA: 32-bit vector representing one microphone's data. 
+--
+-- RD_EN: Valid signal incoming from Mux enabling to update tail pointer of the FIFO. 
+--
+-- RD_DATA: Outgoing 32-bit vector of representing one microphone. 
+--
+-- EMPTY: Signals if FIFO is empty. 
+--
+-- FULL: Signals if FIFO is full. 
+--------------------------------------------------------------------------------------------------------------------------------------------------
 entity fifo_axi is
-         ------------------------------------------------------------------------------------------------------------------------------------------------
-   --                                                  # port information #
-   -- WR_EN: Valid signal incoming from Full Sample enabling to update header pointer of the FIFO.  
-   --
-   -- WR_DATA: 32-bit vector representing one microphone's data. 
-   --
-   -- RD_EN: Valid signal incoming from Mux enabling to update tail pointer of the FIFO. 
-   --
-   -- RD_DATA: Outgoing 32-bit vector of representing one microphone. 
-   --
-   -- EMPTY: Signals if FIFO is empty. 
-   --
-   -- FULL: Signals if FIFO is full. 
-   --------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
-      RAM_WIDTH : natural := 32;
-      RAM_DEPTH : natural := 1024
+      RAM_WIDTH : natural;
+      RAM_DEPTH : natural
    );
    port (
-      clk        : in std_logic;
-      rst        : in std_logic;
-      wr_en      : in std_logic;
-      wr_data    : in std_logic_vector(RAM_WIDTH - 1 downto 0);
-      rd_en      : in std_logic;
-      rd_data    : out std_logic_vector(RAM_WIDTH - 1 downto 0);
+      clk : in std_logic;
+      rst : in std_logic;
+
+      -- Write port
+      wr_en   : in std_logic;
+      wr_data : in std_logic_vector(RAM_WIDTH - 1 downto 0);
+
+      -- Read port
+      rd_en    : in std_logic;
+      rd_valid : out std_logic;
+      rd_data  : out std_logic_vector(RAM_WIDTH - 1 downto 0);
+
+      -- Flags
       empty      : out std_logic;
       empty_next : out std_logic;
       full       : out std_logic;
       full_next  : out std_logic;
-      fill_count : out integer range RAM_DEPTH - 1 downto 0
+
+      -- The number of elements in the FIFO
+      fill_count : out integer
    );
 end fifo_axi;
 
@@ -49,8 +55,8 @@ architecture rtl of fifo_axi is
 
    signal empty_i      : std_logic;
    signal full_i       : std_logic;
-   signal fill_count_i : integer range RAM_DEPTH - 1 downto 0;
-   signal tmp          : std_logic := '0';
+   signal fill_count_i : integer;
+
    -- Increment and wrap
    procedure incr(signal index : inout index_type) is
    begin
@@ -99,14 +105,14 @@ begin
    begin
       if rising_edge(clk) then
          if rst = '1' then
-            tail <= 0;
-            --rd_valid <= '0';
+            tail     <= 0;
+            rd_valid <= '0';
          else
-            --rd_valid <= '0';
+            rd_valid <= '0';
 
             if rd_en = '1' and empty_i = '0' then
                incr(tail);
-               --rd_valid <= '1';
+               rd_valid <= '1';
             end if;
 
          end if;
@@ -118,18 +124,9 @@ begin
    begin
       if rising_edge(clk) then
          ram(head) <= wr_data;
-         --tmp <= not tmp;
-         rd_data <= ram(tail);
-
-         --if(tmp='1') then
-         -- rd_data <= (others => '0'); 
-         --else 
-         -- rd_data <= (others => '1'); 
-         -- end if;
+         rd_data   <= ram(tail);
       end if;
    end process;
-
-   --rd_data <= (others=>'1');
 
    -- Update the fill count
    PROC_COUNT : process (head, tail)

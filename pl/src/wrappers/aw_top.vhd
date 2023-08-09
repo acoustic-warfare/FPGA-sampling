@@ -54,25 +54,24 @@ architecture structual of aw_top is
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
 
-   signal counter_led         : integer                      := 0;
-   signal counter_sck_startup : unsigned(31 downto 0)        := (others => '0');
-   signal sck_startup         : std_logic_vector(3 downto 0) := (others => '0');
+   signal counter_led : integer := 0;
+   --signal counter_sck_startup : unsigned(31 downto 0)        := (others => '0');
 
 begin
 
    ws_out <= (others => ws);
 
-   sck_clk_out(0) <= sck_clk and sck_startup(0);
-   sck_clk_out(1) <= sck_clk and sck_startup(0);
+   sck_clk_out(0) <= sck_clk;
+   sck_clk_out(1) <= sck_clk;
 
-   sck_clk_out(2) <= sck_clk and sck_startup(1);
-   sck_clk_out(3) <= sck_clk and sck_startup(1);
+   sck_clk_out(2) <= sck_clk;
+   sck_clk_out(3) <= sck_clk;
 
-   sck_clk_out(4) <= sck_clk and sck_startup(2);
-   sck_clk_out(5) <= sck_clk and sck_startup(2);
+   sck_clk_out(4) <= sck_clk;
+   sck_clk_out(5) <= sck_clk;
 
-   sck_clk_out(6) <= sck_clk and sck_startup(3);
-   sck_clk_out(7) <= sck_clk and sck_startup(3);
+   sck_clk_out(6) <= sck_clk;
+   sck_clk_out(7) <= sck_clk;
 
    led_rgb_6(0) <= sw(0) and sw(3);
    led_rgb_6(1) <= sw(1) and sw(3);
@@ -82,27 +81,6 @@ begin
    led(2) <= almost_empty_array(0) and sw(3);
    led(1) <= almost_full_array(0) and sw(3);
    led(0) <= full_array(0) and sw(3);
-
-   process (clk)
-   begin
-      if (rising_edge(clk)) then
-         counter_sck_startup <= counter_sck_startup + 1;
-         if counter_sck_startup = x"00ffffff" then -- 0.1 seconds
-            sck_startup(0) <= '1';
-
-         elsif counter_sck_startup = x"04ffffff" then -- 0.7 seconds
-            sck_startup(1) <= '1';
-
-         elsif counter_sck_startup = x"08ffffff" then -- 1.2 seconds
-            sck_startup(2) <= '1';
-
-         elsif counter_sck_startup = x"0bffffff" then -- 1.6 seconds
-            sck_startup(3)      <= '1';
-            counter_sck_startup <= (others => '0');
-
-         end if;
-      end if;
-   end process;
 
    -- indecates rd_en mabe move to own vhd file or remove when debugging done. 
    process (clk)
@@ -138,7 +116,7 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_startup => sck_startup(3),
+         sck_startup => '1', --remove this probebly since not used any more
          sck_clk     => sck_clk,
          reset       => reset,
          ws          => ws
@@ -186,8 +164,8 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i + 8), --JD
-            mic_sample_data_out  => mic_sample_data(i), --Array1 
+            bit_stream           => bit_stream_out(i + 12), --JE(12-15)
+            mic_sample_data_out  => mic_sample_data(i),     --Array1 
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_2;
@@ -202,8 +180,8 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i), --JC
-            mic_sample_data_out  => mic_sample_data(i), --Array2
+            bit_stream           => bit_stream_out(i - 4), --JB(0-3)
+            mic_sample_data_out  => mic_sample_data(i),    --Array2
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_3;
@@ -218,8 +196,8 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 8), --JB
-            mic_sample_data_out  => mic_sample_data(i), --Array3
+            bit_stream           => bit_stream_out(i - 4), --JC(4-7)
+            mic_sample_data_out  => mic_sample_data(i),    --Array3
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_4;
@@ -234,8 +212,8 @@ begin
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i), --JD
-            mic_sample_data_out  => mic_sample_data(i), --Array4
+            bit_stream           => bit_stream_out(i - 4), --JD(8-11) 
+            mic_sample_data_out  => mic_sample_data(i),    --Array4
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_01;
@@ -260,7 +238,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw               => sw(0),
+            mic_id_sw              => sw(0),
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -278,6 +256,27 @@ begin
          array_matrix_valid_out  => array_matrix_valid,
          sample_counter_array    => sample_counter
       );
+
+   --fifo_axi_0 : for i in 0 to 255 generate
+   --begin
+   --   fifo_gen : entity work.fifo_axi
+   --      generic map(
+   --         RAM_WIDTH => 32,
+   --         RAM_DEPTH => 128
+   --      )
+   --      port map(
+   --         clk        => clk,
+   --         rst        => reset,
+   --         wr_en      => array_matrix_valid,
+   --         wr_data    => array_matrix_data(i),
+   --         rd_en      => rd_en_fifo,
+   --         rd_data    => data_fifo_256_out(i),
+   --         empty      => empty_array(i),
+   --         empty_next => almost_empty_array(i),
+   --         full       => full_array(i),
+   --         full_next  => almost_full_array(i)
+   --      );
+   --end generate fifo_axi_0;
 
    fifo_bd_wrapper_gen : for i in 0 to 255 generate
    begin

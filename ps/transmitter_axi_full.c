@@ -59,7 +59,7 @@ int main() {
 
     u16_t Port = 21844;
 
-    // 1458 bytse is max that can fit in a udp frame from the zynq
+    // 1458 bytse is max that can fit in a udp frame from the zynq (probebly some unknown overhead)
     int buflen = 1458;
 
     /* The MAC address of the board. this should be unique per board */
@@ -157,10 +157,6 @@ int main() {
 
             for (int i = 0; i < 256; i++) {
                 data[i + payload_header_size] = *(data_p + i);
-            }
-
-            for (int i = 0; i < 64; i ++){
-                data[i + payload_header_size + 192] = 0;
             }
 
             // package and send UDP
