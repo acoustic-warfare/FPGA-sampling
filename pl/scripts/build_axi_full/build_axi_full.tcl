@@ -44,16 +44,11 @@ set top_module [file join "$ROOT" src wrappers aw_top.vhd]
 
 add_files [file join "$ROOT" src wrappers aw_top.vhd]
 
-add_files [file join "$ROOT" src axi_full axitest_MASTER.vhd]
-add_files [file join "$ROOT" src axi_full axitest_SLAVE.vhd]
-add_files [file join "$ROOT" src axi_full axitest_TOP_v1_0.vhd]
-add_files [file join "$ROOT" src axi_full mux_v2.vhd]
-add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
-
 add_files [file join "$ROOT" src axi_full axi_full_master.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
 add_files [file join "$ROOT" src axi_full mux.vhd]
+add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
