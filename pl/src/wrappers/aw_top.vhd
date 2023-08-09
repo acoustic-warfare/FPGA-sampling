@@ -38,15 +38,18 @@ architecture structual of aw_top is
 
    signal sample_counter : std_logic_vector(31 downto 0);
 
+   signal rd_valid           : std_logic_vector(255 downto 0);
    signal full_array         : std_logic_vector(255 downto 0);
    signal empty_array        : std_logic_vector(255 downto 0);
    signal almost_full_array  : std_logic_vector(255 downto 0);
    signal almost_empty_array : std_logic_vector(255 downto 0);
+   signal fill_count         : integer;
 
    signal array_matrix_data : matrix_256_32_type;
    signal data_fifo_256_out : matrix_256_32_type;
 
-   signal array_matrix_valid : std_logic;
+   signal array_matrix_valid      : std_logic;
+   signal array_matrix_valid_fifo : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -55,9 +58,9 @@ architecture structual of aw_top is
    signal rst_int : std_logic             := '1';
 
    signal counter_led : integer := 0;
-   --signal counter_sck_startup : unsigned(31 downto 0)        := (others => '0');
 
 begin
+   array_matrix_valid_fifo <= array_matrix_valid and (not almost_full_array(0));
 
    ws_out <= (others => ws);
 
@@ -116,7 +119,7 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_startup => '1', --remove this probebly since not used any more
+         sck_startup => '1', --remove this since not used any more
          sck_clk     => sck_clk,
          reset       => reset,
          ws          => ws
@@ -124,7 +127,6 @@ begin
 
    simulated_array_c : entity work.simulated_array
       port map(
-
          clk            => clk,
          sck_clk        => sck_clk,
          ws             => ws,
@@ -133,22 +135,6 @@ begin
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
-   --first array (delayed sampling)
-   --   sample_gen_2 : for i in 0 to 15 generate
-   --   begin
-   --      sample_C : entity work.sample_clk
-   --         generic map(
-   --            index => i
-   --         )
-   --         port map(
-   --            sys_clk              => clk,
-   --            reset                => reset,
-   --            ws                   => ws,
-   --            bit_stream           => bit_stream_out(i),
-   --            mic_sample_data_out  => mic_sample_data(i),
-   --            mic_sample_valid_out => mic_sample_valid(i)
-   --         );
-   --   end generate sample_gen_2;
 
    -- port JB BitStream 0-3
    -- port JC BitStream 4-7
@@ -257,44 +243,46 @@ begin
          sample_counter_array    => sample_counter
       );
 
-   --fifo_axi_0 : for i in 0 to 255 generate
-   --begin
-   --   fifo_gen : entity work.fifo_axi
-   --      generic map(
-   --         RAM_WIDTH => 32,
-   --         RAM_DEPTH => 128
-   --      )
-   --      port map(
-   --         clk        => clk,
-   --         rst        => reset,
-   --         wr_en      => array_matrix_valid,
-   --         wr_data    => array_matrix_data(i),
-   --         rd_en      => rd_en_fifo,
-   --         rd_data    => data_fifo_256_out(i),
-   --         empty      => empty_array(i),
-   --         empty_next => almost_empty_array(i),
-   --         full       => full_array(i),
-   --         full_next  => almost_full_array(i)
-   --      );
-   --end generate fifo_axi_0;
-
-   fifo_bd_wrapper_gen : for i in 0 to 255 generate
+   fifo_axi_0 : for i in 0 to 255 generate
    begin
-      fifo_gen : entity work.fifo_bd_wrapper
+      fifo_gen : entity work.fifo_axi
+         generic map(
+            RAM_WIDTH => 32,
+            RAM_DEPTH => 128
+         )
          port map(
-            rd_clk                 => clk,
-            wr_clk                 => clk,
-            reset                  => reset,
-            FIFO_WRITE_full        => full_array(i),
-            FIFO_READ_empty        => empty_array(i),
-            FIFO_WRITE_almost_full => almost_full_array(i),
-            FIFO_READ_almost_empty => almost_empty_array(i),
-            FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
-            FIFO_WRITE_wr_en       => array_matrix_valid,
-            FIFO_READ_rd_en        => rd_en_fifo,
-            FIFO_READ_rd_data      => data_fifo_256_out(i) --data out
+            clk        => clk,
+            rst        => reset,
+            wr_en      => array_matrix_valid_fifo,
+            wr_data    => array_matrix_data(i),
+            rd_en      => rd_en_fifo,
+            rd_valid   => rd_valid(i),
+            rd_data    => data_fifo_256_out(i),
+            empty      => empty_array(i),
+            empty_next => almost_empty_array(i),
+            full       => full_array(i),
+            full_next  => almost_full_array(i),
+            fill_count => fill_count
          );
-   end generate fifo_bd_wrapper_gen;
+   end generate fifo_axi_0;
+
+   --fifo_bd_wrapper_gen : for i in 0 to 255 generate
+   --begin
+   --   fifo_gen : entity work.fifo_bd_wrapper
+   --      port map(
+   --         rd_clk                 => clk,
+   --         wr_clk                 => clk,
+   --         reset                  => reset,
+   --         FIFO_WRITE_full        => full_array(i),
+   --         FIFO_READ_empty        => empty_array(i),
+   --         FIFO_WRITE_almost_full => almost_full_array(i),
+   --         FIFO_READ_almost_empty => almost_empty_array(i),
+   --         FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
+   --         FIFO_WRITE_wr_en       => array_matrix_valid,
+   --         FIFO_READ_rd_en        => rd_en_fifo,
+   --         FIFO_READ_rd_data      => data_fifo_256_out(i) --data out
+   --      );
+   --end generate fifo_bd_wrapper_gen;
 
    mux_v2 : entity work.mux_v2
       port map(
@@ -314,7 +302,7 @@ begin
          sys_clock => sys_clock,
          reset_rtl => reset_rtl,
          axi_data  => data_test,
-         axi_empty => empty_array(0),
+         axi_empty => almost_empty_array(0),
          axi_rd_en => rd_en_pulse
       );
 

@@ -48,7 +48,7 @@ add_files [file join "$ROOT" src axi_full axitest_MASTER.vhd]
 add_files [file join "$ROOT" src axi_full axitest_SLAVE.vhd]
 add_files [file join "$ROOT" src axi_full axitest_TOP_v1_0.vhd]
 add_files [file join "$ROOT" src axi_full mux_v2.vhd]
-#add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
+add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
@@ -76,13 +76,13 @@ set_property file_type {VHDL} [ get_files *axitest_TOP_v1_0.vhd]
 
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_axi_full zynq_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
 
 set_property top aw_top [current_fileset]
 
 # Make wrapper fifo
-make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
-add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd fifo_bd hdl fifo_bd_wrapper.vhd]
+#make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
+#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd fifo_bd hdl fifo_bd_wrapper.vhd]
 
 # Make wrapper zynq
 make_wrapper -inst_template [ get_files {zynq_bd.bd} ]

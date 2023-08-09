@@ -13,78 +13,82 @@ end tb_fifo_axi;
 
 architecture behavior of tb_fifo_axi is
 
-    constant C_CLK_CYKLE : time := 10 ns;
-    signal clk : std_logic;
-    signal rst :  std_logic;
+   constant C_CLK_CYKLE : time      := 10 ns;
+   signal clk           : std_logic := '1';
+   signal rst           : std_logic;
 
-     -- Write port
-    signal wr_en :  std_logic;
-    signal wr_data :  std_logic_vector(32 - 1 downto 0);
+   -- Write port
+   signal wr_en   : std_logic := '0';
+   signal wr_data : std_logic_vector(32 - 1 downto 0);
 
-    -- Read port
-    signal rd_en : std_logic;
-         --rd_valid : out std_logic;
-    signal rd_data :  std_logic_vector(32 - 1 downto 0);
+   -- Read port
+   signal rd_en    : std_logic := '0';
+   signal rd_valid : std_logic;
+   signal rd_data  : std_logic_vector(32 - 1 downto 0);
 
-    -- Flags
-    signal empty :  std_logic;
-    signal empty_next : std_logic;
-    signal full : std_logic;
-    signal full_next : std_logic;
+   -- Flags
+   signal empty      : std_logic;
+   signal empty_next : std_logic;
+   signal full       : std_logic;
+   signal full_next  : std_logic;
 
-    -- The number of elements in the FIFO
-    signal fill_count :integer range 256 - 1 downto 0;
+   -- The number of elements in the FIFO
+   signal fill_count : integer range 256 - 1 downto 0;
 
-    signal counter : integer := 0;
+   signal counter : integer := 0;
 
 begin
 
-   --UUT : entity work.fifo_axi
-   --  port map(
-   --     clk => clk,
-   --     rst => rst,
---
-   --     -- Write port
-   --     wr_en => wr_en,
-   --     wr_data => wr_data,
---
-   --     -- Read port
-   --     rd_en => rd_en,
-   --     --rd_valid : out std_logic;
-   --     rd_data => rd_data,
---
-   --     -- Flags
-   --     empty => empty,
-   --     empty_next => empty_next,
-   --     full => full,
-   --     full_next => full_next,
---
-   --     fill_count => fill_count
-   --);
+   fifo_0 : entity work.fifo_axi
+      generic map(
+         RAM_WIDTH => 32,
+         RAM_DEPTH => 128
+      )
+      port map(
+         clk => clk,
+         rst => rst,
 
+         -- Write port
+         wr_en   => wr_en,
+         wr_data => wr_data,
 
+         -- Read port
+         rd_en    => rd_en,
+         rd_valid => rd_valid,
+         rd_data  => rd_data,
 
-   clk        <= not(clk) after C_CLK_CYKLE/2;
+         -- Flags
+         empty      => empty,
+         empty_next => empty_next,
+         full       => full,
+         full_next  => full_next,
+
+         fill_count => fill_count
+      );
+   clk <= not(clk) after C_CLK_CYKLE/2;
    --S_AXI_ACLK <= not(clk) after AXI_clk_cyckle/2;
 
    rst <= '0';
 
-   wr_data <= std_logic_vector(to_unsigned(counter,32));
+   wr_data <= std_logic_vector(to_unsigned(counter, 32));
+
    process (clk)
    begin
       if rising_edge(clk) then
          counter <= counter + 1;
-         wr_en <= '1';
-      else
-        wr_en <= '0';
-
+         wr_en   <= not(wr_en);
+         if (counter > 270) then
+            wr_en <= '0';
+         end if;
       end if;
    end process;
+
    rd_enable_p : process (clk)
    begin
       if rising_edge(clk) then
-
+         if (counter > 270) then
             rd_en <= '1';
+         end if;
       end if;
    end process;
 
