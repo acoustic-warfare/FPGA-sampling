@@ -5,13 +5,12 @@ use work.matrix_type.all;
 
 entity aw_top_simulated_array is
    port (
-      ws             : in std_logic;
-      sck_clk        : in std_logic;
-      reset          : in std_logic;
-      sys_clock      : in std_logic;
-      switch         : in std_logic;
-      bit_stream_in  : in std_logic_vector(15 downto 0);
-      bit_stream_out : out std_logic_vector(15 downto 0)
+      ws         : in std_logic;
+      sck_clk    : in std_logic;
+      reset      : in std_logic;
+      sys_clock  : in std_logic;
+      switch     : in std_logic;
+      bit_stream : out std_logic_vector(3 downto 0)
    );
 end entity;
 
@@ -36,15 +35,13 @@ begin
          rst_25_n => reset_out_not
       );
 
-   simulated_array1 : entity work.simulated_array
+   simulated_array1 : entity work.simulated_array_independent
       port map(
-         ws             => ws,
-         sck_clk        => sck_out_buf,
-         reset          => reset_out,
-         clk            => clk,
-         switch         => switch,
-         bit_stream_in  => bit_stream_in,
-         bit_stream_out => bit_stream_out
+         ws         => ws,
+         sck_clk    => sck_out_buf,
+         reset      => reset_out,
+         clk        => clk,
+         bit_stream => bit_stream
       );
 
    clk_wiz : entity work.clk_wiz_ip_wrapper

@@ -50,6 +50,10 @@ add_files [file join "$ROOT" src axi_full axitest_TOP_v1_0.vhd]
 add_files [file join "$ROOT" src axi_full mux_v2.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 
+add_files [file join "$ROOT" src axi_full axi_full_master.vhd]
+add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
+add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
+add_files [file join "$ROOT" src axi_full mux.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
@@ -70,9 +74,9 @@ import_files -force
 # set VHDL 2008 as default
 set_property file_type {VHDL 2008} [get_files  *.vhd]
 
-set_property file_type {VHDL} [ get_files *axitest_MASTER.vhd]
-set_property file_type {VHDL} [ get_files *axitest_SLAVE.vhd]
-set_property file_type {VHDL} [ get_files *axitest_TOP_v1_0.vhd]
+set_property file_type {VHDL} [ get_files *axi_full_master.vhd]
+set_property file_type {VHDL} [ get_files *axi_full_slave.vhd]
+set_property file_type {VHDL} [ get_files *axi_full_top.vhd]
 
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_axi_full zynq_bd.tcl ] ]

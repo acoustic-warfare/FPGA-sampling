@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity axitest_v1_0 is
+entity axi_v1_0 is
    generic (
       -- Users to add parameters here
 
@@ -79,9 +79,9 @@ entity axitest_v1_0 is
       m00_axi_bvalid  : in std_logic;
       m00_axi_bready  : out std_logic
    );
-end axitest_v1_0;
+end axi_v1_0;
 
-architecture rtl of axitest_v1_0 is
+architecture rtl of axi_v1_0 is
    signal m00_axi_init_axi_txn : std_logic;
    signal m00_axi_txn_done     : std_logic;
    signal m00_axi_error        : std_logic;
@@ -92,7 +92,7 @@ architecture rtl of axitest_v1_0 is
    signal read_done_internal : std_logic;
 
    -- component declaration
-   component axitest_v1_0_S00_AXI is
+   component axi_v1_0_S00_AXI is
       generic (
          C_S_AXI_DATA_WIDTH : integer := 32;
          C_S_AXI_ADDR_WIDTH : integer := 4
@@ -127,9 +127,9 @@ architecture rtl of axitest_v1_0 is
          S_AXI_RVALID  : out std_logic;
          S_AXI_RREADY  : in std_logic
       );
-   end component axitest_v1_0_S00_AXI;
+   end component axi_v1_0_S00_AXI;
 
-   component axitest_v1_0_M00_AXI is
+   component axi_v1_0_M00_AXI is
       generic (
          C_M_TARGET_SLAVE_BASE_ADDR : std_logic_vector := x"10000000";
          C_M_AXI_BURST_LEN          : integer          := 128;
@@ -178,12 +178,12 @@ architecture rtl of axitest_v1_0 is
          M_AXI_BUSER  : in std_logic_vector(C_M_AXI_BUSER_WIDTH - 1 downto 0);
          M_AXI_BREADY : out std_logic
       );
-   end component axitest_v1_0_M00_AXI;
+   end component axi_v1_0_M00_AXI;
 
 begin
 
    -- Instantiation of Axi Bus Interface S00_AXI
-   axitest_v1_0_S00_AXI_inst : axitest_v1_0_S00_AXI
+   axi_v1_0_S00_AXI_inst : axi_v1_0_S00_AXI
    generic map(
       C_S_AXI_DATA_WIDTH => C_S00_AXI_DATA_WIDTH,
       C_S_AXI_ADDR_WIDTH => C_S00_AXI_ADDR_WIDTH
@@ -222,7 +222,7 @@ begin
    );
 
    -- Instantiation of Axi Bus Interface M00_AXI
-   axitest_v1_0_M00_AXI_inst : axitest_v1_0_M00_AXI
+   axi_v1_0_M00_AXI_inst : axi_v1_0_M00_AXI
    generic map(
       C_M_TARGET_SLAVE_BASE_ADDR => C_M00_AXI_TARGET_SLAVE_BASE_ADDR,
       C_M_AXI_BURST_LEN          => C_M00_AXI_BURST_LEN,

@@ -284,7 +284,7 @@ begin
    --      );
    --end generate fifo_bd_wrapper_gen;
 
-   mux_v2 : entity work.mux_v2
+   mux : entity work.mux
       port map(
          sw         => sw(2),
          sys_clk    => clk,

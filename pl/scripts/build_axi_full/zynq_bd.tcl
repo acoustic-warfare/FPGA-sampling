@@ -144,7 +144,7 @@ if { $list_ips_missing ne "" } {
 set bCheckModules 1
 if { $bCheckModules == 1 } {
    set list_check_mods "\
-      axitest_v1_0\
+      axi_v1_0\
    "
 
 set list_mods_missing ""
@@ -236,13 +236,13 @@ proc create_root_design { parentCell } {
       CONFIG.NUM_SI {1} \
       ] $axi_smc
 
-   # Create instance: axitest_v1_0_0, and set properties
-   set block_name axitest_v1_0
-   set block_cell_name axitest_v1_0_0
-   if { [catch {set axitest_v1_0_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+   # Create instance: axi_v1_0_0, and set properties
+   set block_name axi_v1_0
+   set block_cell_name axi_v1_0_0
+   if { [catch {set axi_v1_0_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
       catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
       return 1
-   } elseif { $axitest_v1_0_0 eq "" } {
+   } elseif { $axi_v1_0_0 eq "" } {
       catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
       return 1
    }
@@ -252,14 +252,14 @@ proc create_root_design { parentCell } {
       CONFIG.NUM_READ_OUTSTANDING {2} \
       CONFIG.NUM_WRITE_OUTSTANDING {2} \
       CONFIG.MAX_BURST_LENGTH {256} \
-      ] [get_bd_intf_pins /axitest_v1_0_0/m00_axi]
+      ] [get_bd_intf_pins /axi_v1_0_0/m00_axi]
 
    set_property -dict [ list \
       CONFIG.SUPPORTS_NARROW_BURST {0} \
       CONFIG.NUM_READ_OUTSTANDING {1} \
       CONFIG.NUM_WRITE_OUTSTANDING {1} \
       CONFIG.MAX_BURST_LENGTH {1} \
-      ] [get_bd_intf_pins /axitest_v1_0_0/s00_axi]
+      ] [get_bd_intf_pins /axi_v1_0_0/s00_axi]
 
    # Create instance: clk_wiz_0, and set properties
    set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:5.4 clk_wiz_0 ]
@@ -786,28 +786,28 @@ proc create_root_design { parentCell } {
 
    # Create interface connections
    connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
-   connect_bd_intf_net -intf_net axitest_v1_0_0_m00_axi [get_bd_intf_pins axi_smc/S00_AXI] [get_bd_intf_pins axitest_v1_0_0/m00_axi]
+   connect_bd_intf_net -intf_net axi_v1_0_0_m00_axi [get_bd_intf_pins axi_smc/S00_AXI] [get_bd_intf_pins axi_v1_0_0/m00_axi]
    connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
    connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
    connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins ps7_0_axi_periph/S00_AXI]
-   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_pins axitest_v1_0_0/s00_axi] [get_bd_intf_pins ps7_0_axi_periph/M00_AXI]
+   connect_bd_intf_net -intf_net ps7_0_axi_periph_M00_AXI [get_bd_intf_pins axi_v1_0_0/s00_axi] [get_bd_intf_pins ps7_0_axi_periph/M00_AXI]
 
    # Create port connections
-   connect_bd_net -net axitest_v1_0_0_rd_en [get_bd_ports axi_rd_en] [get_bd_pins axitest_v1_0_0/rd_en]
+   connect_bd_net -net axi_v1_0_0_rd_en [get_bd_ports axi_rd_en] [get_bd_pins axi_v1_0_0/rd_en]
    connect_bd_net -net clk_in1_0_1 [get_bd_ports sys_clock] [get_bd_pins clk_wiz_0/clk_in1]
    connect_bd_net -net clk_wiz_0_clk_25 [get_bd_ports clk_25] [get_bd_pins clk_wiz_0/clk_25]
-   connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axitest_v1_0_0/m00_axi_aclk] [get_bd_pins axitest_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
-   connect_bd_net -net data_0_1 [get_bd_ports axi_data] [get_bd_pins axitest_v1_0_0/data]
-   connect_bd_net -net empty_0_1 [get_bd_ports axi_empty] [get_bd_pins axitest_v1_0_0/empty]
+   connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axi_v1_0_0/m00_axi_aclk] [get_bd_pins axi_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
+   connect_bd_net -net data_0_1 [get_bd_ports axi_data] [get_bd_pins axi_v1_0_0/data]
+   connect_bd_net -net empty_0_1 [get_bd_ports axi_empty] [get_bd_pins axi_v1_0_0/empty]
    connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in] [get_bd_pins rst_ps7_0_50M_1/ext_reset_in]
    connect_bd_net -net reset_0_1 [get_bd_ports reset_rtl] [get_bd_pins clk_wiz_0/reset]
-   connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axitest_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]
+   connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axi_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]
    connect_bd_net -net rst_ps7_0_50M_interconnect_aresetn [get_bd_pins ps7_0_axi_periph/ARESETN] [get_bd_pins rst_ps7_0_50M/interconnect_aresetn]
-   connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins axi_smc/aresetn] [get_bd_pins axitest_v1_0_0/s00_axi_aresetn] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps7_0_50M/peripheral_aresetn]
+   connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins axi_smc/aresetn] [get_bd_pins axi_v1_0_0/s00_axi_aresetn] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps7_0_50M/peripheral_aresetn]
 
    # Create address segments
-   create_bd_addr_seg -range 0x40000000 -offset 0x00000000 [get_bd_addr_spaces axitest_v1_0_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] SEG_processing_system7_0_HP0_DDR_LOWOCM
-   create_bd_addr_seg -range 0x00010000 -offset 0x43C00000 [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axitest_v1_0_0/s00_axi/reg0] SEG_axitest_v1_0_0_reg0
+   create_bd_addr_seg -range 0x40000000 -offset 0x00000000 [get_bd_addr_spaces axi_v1_0_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] SEG_processing_system7_0_HP0_DDR_LOWOCM
+   create_bd_addr_seg -range 0x00010000 -offset 0x43C00000 [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_v1_0_0/s00_axi/reg0] SEG_axi_v1_0_0_reg0
 
 
    # Restore current instance
