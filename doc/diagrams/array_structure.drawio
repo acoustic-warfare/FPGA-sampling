@@ -72,11 +72,11 @@
                         <mxPoint x="1030" y="800" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="572" value="Ethernet" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;" parent="1" vertex="1">
+                <mxCell id="572" value="Ethernet" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;fontSize=14;fillColor=default;" parent="1" vertex="1">
                     <mxGeometry x="960" y="770" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="573" value="5V Power" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;" parent="1" vertex="1">
-                    <mxGeometry x="1011.11" y="800" width="60" height="30" as="geometry"/>
+                <mxCell id="573" value="5V Power" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;fontSize=14;fillColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="1011.11" y="800" width="68.89" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="557" value="" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;endFill=0;strokeWidth=10;curved=1;fillColor=#d80073;strokeColor=#A50040;" parent="1" edge="1">
                     <mxGeometry width="80" relative="1" as="geometry">
@@ -120,16 +120,16 @@
                 <mxCell id="584" value="&lt;font color=&quot;#ff0000&quot;&gt;JE&lt;/font&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="980" y="500" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="548" value="Version 1 (extra green)" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=default;" parent="1" vertex="1">
+                <mxCell id="548" value="Version 1 (extra green)" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=none;fillColor=default;fontSize=15;" parent="1" vertex="1">
                     <mxGeometry x="160" y="130" width="192.22" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="549" value="PCBA 2" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=default;" parent="1" vertex="1">
+                <mxCell id="549" value="PCBA 2" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=none;fillColor=default;fontSize=15;" parent="1" vertex="1">
                     <mxGeometry x="375.55999999999995" y="130" width="192.22" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="550" value="PCBA 1" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=default;" parent="1" vertex="1">
+                <mxCell id="550" value="PCBA 1" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=none;fillColor=default;fontSize=15;" parent="1" vertex="1">
                     <mxGeometry x="590" y="132" width="192.22" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="551" value="PCBA 2 DEFECTIVE" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=default;" parent="1" vertex="1">
+                <mxCell id="551" value="PCBA 2 DEFECTIVE" style="text;align=center;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FFFFFF;labelBackgroundColor=none;fillColor=default;fontSize=15;" parent="1" vertex="1">
                     <mxGeometry x="813.89" y="130" width="192.22" height="30" as="geometry"/>
                 </mxCell>
             </root>
