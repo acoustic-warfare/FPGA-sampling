@@ -171,10 +171,10 @@ def print_analysis(fileChooser,microphones,source_audio,recordTime):
       print("total nr samples in file: "+str(len(new_lab_data)))
       
 
-      lab_test_mic = 1;
-      initial_lab_test_sample = 10000;
-      lab_test_samples = 5000;
-      lab_test_data = data[initial_lab_test_sample:initial_lab_test_sample+lab_test_samples,lab_test_mic];
+      lab_test_mic = 1
+      initial_lab_test_sample = 10000
+      lab_test_samples = 5000
+      lab_test_data = data[initial_lab_test_sample:initial_lab_test_sample+lab_test_samples,lab_test_mic]
       lab_test_power = np.sum(np.abs(lab_test_data)* np.abs(lab_test_data))/lab_test_samples /pow(2,23)
       print("power: "+str(lab_test_power))
 
@@ -300,7 +300,7 @@ while(True):
             #55,41,42,43,56,55,54,57,58,59 
             #53,43,44,45,54,53,52,59,60,61 -- #
             #51,45,46,47,52,51,50,61,62,63 -- #
-            #50,46,47,48,51,50,49,62,63,64 -- #=gör åt rätt håll igen
+            #50,46,47,48,51,50,49,62,63,64 -- #=går åt rätt håll igen
             microphones=[50,46,47,48,51,50,49,62,63,64]
             break
          if(l=="la"):

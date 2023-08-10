@@ -50,7 +50,7 @@ begin
                counter    <= counter + 1;
             end if;
 
-         -- Normal case where array data is sent through
+            -- Normal case where array data is sent through
          else
             case state is
                when idle =>

@@ -47,7 +47,7 @@ architecture rtl of simulated_array is
 
 begin
    --  If switch is 0, the output bit comes from bit_stream_in; if switch is 1, the output bit comes from bit_stream_gen.
-   bit_stream_out <= (bit_stream_in and not switch) or (bit_stream_gen and switch); 
+   bit_stream_out <= (bit_stream_in and not switch) or (bit_stream_gen and switch);
 
    fill_matrix_out_p : process (clk)
       variable mic_id : unsigned(7 downto 0) := (others => '0');
@@ -65,7 +65,7 @@ begin
             case state is
                when idle =>
 
-               bit_stream_gen <= (others => '1');
+                  bit_stream_gen <= (others => '1');
 
                   if (ws = '1') then
                      for i in 0 to 15 loop
@@ -113,7 +113,7 @@ begin
                      bit_counter <= 0;
                      state       <= run;
                   end if;
-                  
+
                when others =>
                   -- should never get here
                   report("error_1");

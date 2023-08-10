@@ -36,11 +36,9 @@ int main() {
 
     // constants that will be sent in payload_header
     u32 protocol_ver = 2;
-
     u32 frequency = 48828;
-
+    
     u32 data[payload_header_size + nr_arrays * 64];
-
     u32 start_addr = AD0;
 
     u32 empty;

@@ -19,9 +19,9 @@
 ----------------------------------------------------------------------------------
 
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_1164.all;
 use IEEE.numeric_std.all;
-Library UNISIM;
+library UNISIM;
 use UNISIM.vcomponents.all;
 
 -- Uncomment the following library declaration if using
@@ -34,36 +34,35 @@ use UNISIM.vcomponents.all;
 --use UNISIM.VComponents.all;
 
 entity clk_wiz_ip_wrapper is
-  port (
-  clk_out : out STD_LOGIC;
-  reset_rtl : in STD_LOGIC;
-  sys_clock : in STD_LOGIC
-);
+   port (
+      clk_out   : out std_logic;
+      reset_rtl : in std_logic;
+      sys_clock : in std_logic
+   );
 end clk_wiz_ip_wrapper;
 
 architecture Behavioral of clk_wiz_ip_wrapper is
 
-component clk_wiz_ip
-port
- (-- Clock in ports
-  -- Clock out ports
-  clk_out1          : out    std_logic;
-  -- Status and control signals
-  reset             : in     std_logic;
-  clk_in1           : in     std_logic
- );
-end component;
+   component clk_wiz_ip
+      port (-- Clock in ports
+         -- Clock out ports
+         clk_out1 : out std_logic;
+         -- Status and control signals
+         reset   : in std_logic;
+         clk_in1 : in std_logic
+      );
+   end component;
 
 begin
 
-clk_wiz1 : clk_wiz_ip
-   port map ( 
-  -- Clock out ports  
-   clk_out1 => clk_out,
-  -- Status and control signals                
-   reset => reset_rtl,
-   -- Clock in ports
-   clk_in1 => sys_clock
- );
+   clk_wiz1 : clk_wiz_ip
+   port map(
+      -- Clock out ports  
+      clk_out1 => clk_out,
+      -- Status and control signals                
+      reset => reset_rtl,
+      -- Clock in ports
+      clk_in1 => sys_clock
+   );
 
 end Behavioral;

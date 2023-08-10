@@ -289,7 +289,7 @@ begin
          else
             if (write_index_int = (C_M_AXI_BURST_LEN - 2) and wnext = '1') then --write index = 126
                axi_wlast <= '1';
-               
+
             else
                axi_wlast <= '0';
 

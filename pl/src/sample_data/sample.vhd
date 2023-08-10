@@ -26,8 +26,8 @@ end entity;
 
 architecture rtl of sample is
    type state_type is (idle, run, pause); -- Three states for the state-machine. See State-diagram for more information
-   signal state       : state_type;
-   signal state_1     : integer range 0 to 2;       -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+   signal state   : state_type;
+   signal state_1 : integer range 0 to 2; -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal counter_bit : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_mic : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
