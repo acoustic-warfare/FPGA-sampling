@@ -79,38 +79,43 @@ begin
 
       end if;
    end process;
-   
-   fifo_bd_wrapper_gen : for i in 0 to 63 generate
-   begin
-      fifo_gen : entity work.fifo_bd_wrapper
-         port map(
-            FIFO_WRITE_full        => full_array(i),
-            FIFO_READ_empty        => empty_array(i),
-            FIFO_WRITE_almost_full => almost_full_array(i),
-            FIFO_READ_almost_empty => almost_empty_array(i),
-            FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
-            FIFO_WRITE_wr_en       => array_matrix_valid,
-            FIFO_READ_rd_en        => rd_en_pulse_array(i), --- from pulse
-            FIFO_READ_rd_data      => data(i),              --data out
-            rd_clk                 => clk_axi,
-            wr_clk                 => clk,
-            reset                  => reset
-         );
-   end generate fifo_bd_wrapper_gen;
 
-   fifo_sample_counter : entity work.fifo_bd_wrapper
+   fifo_axi_0 : for i in 0 to 63 generate
+   begin
+      fifo_gen : entity work.fifo_axi
+         generic map(
+            RAM_WIDTH => 32,
+            RAM_DEPTH => 128
+         )
+         port map(
+            clk        => clk,
+            rst        => reset,
+            wr_en      => array_matrix_valid,
+            wr_data    => array_matrix_data(i),
+            rd_en      => rd_en_pulse_array(i),
+            rd_data    => data(i),
+            empty      => empty_array(i),
+            empty_next => almost_empty_array(i),
+            full       => full_array(i),
+            full_next  => almost_full_array(i)
+         );
+   end generate fifo_axi_0;
+   fifo_gen : entity work.fifo_axi
+      generic map(
+         RAM_WIDTH => 32,
+         RAM_DEPTH => 128
+      )
       port map(
-         FIFO_WRITE_full        => full_array(66),
-         FIFO_READ_empty        => empty_array(66),
-         FIFO_WRITE_almost_full => almost_full_array(66),
-         FIFO_READ_almost_empty => almost_empty_array(66),
-         FIFO_WRITE_wr_data     => sample_counter, --data in
-         FIFO_WRITE_wr_en       => array_matrix_valid,
-         FIFO_READ_rd_en        => rd_en_pulse_array(66), --- from pulse
-         FIFO_READ_rd_data      => sample_counter_out,    --data out
-         rd_clk                 => clk_axi,
-         wr_clk                 => clk,
-         reset                  => reset
+         clk        => clk,
+         rst        => reset,
+         wr_en      => array_matrix_valid,
+         wr_data    => sample_counter,
+         rd_en      => rd_en_pulse_array(66),
+         rd_data    => sample_counter_out,
+         empty      => empty_array(66),
+         empty_next => almost_empty_array(66),
+         full       => full_array(66),
+         full_next  => almost_full_array(66)
       );
 
    rd_en_pulse_gen : for i in 0 to 69 generate
@@ -126,9 +131,9 @@ begin
 
    ws_pulse : entity work.ws_pulse
       port map(
-         sck_clk     => sck_clk_internal,
-         reset       => reset,
-         ws          => ws_internal
+         sck_clk => sck_clk_internal,
+         reset   => reset,
+         ws      => ws_internal
       );
 
    sample_gen : for i in 0 to 3 generate

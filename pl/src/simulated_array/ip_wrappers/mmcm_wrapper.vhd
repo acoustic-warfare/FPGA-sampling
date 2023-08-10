@@ -54,9 +54,9 @@ architecture rtl of mmcm_wrapper is
    component mmcm
       port (
          clk_out1 : out std_logic;
-         reset   : in std_logic;
-         locked  : out std_logic;
-         clk_in1 : in std_logic
+         reset    : in std_logic;
+         locked   : out std_logic;
+         clk_in1  : in std_logic
       );
    end component;
 

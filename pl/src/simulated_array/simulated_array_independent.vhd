@@ -55,7 +55,7 @@ begin
             mic_id := to_unsigned(mic_counter, 8);
 
             case state is
-               when idle=>
+               when idle =>
 
                   bit_stream <= (others => '1');
 
@@ -93,7 +93,7 @@ begin
 
                   bit_counter <= bit_counter + 1;
                   bit_stream  <= (others => '1');
-                  
+
                   if (mic_counter = 16) then
                      counter     <= counter + 1;
                      bit_counter <= 0;

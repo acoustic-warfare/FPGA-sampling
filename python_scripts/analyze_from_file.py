@@ -15,7 +15,6 @@ from ctypes import Structure, c_byte, c_int32, sizeof
 # import config
 import os
 
-
 def print_analysis(fileChooser, microphones, source_audio):
 
     def load_data_FPGA():
@@ -89,8 +88,7 @@ def print_analysis(fileChooser, microphones, source_audio):
 
         print('sample frequency: ' + str(int(fs)))
 
-        # --- PLOT 1---
-        #   of all individual signals in subplots, two periods
+        # Plot of all individual signals in subplots, two periods
         fig, axs = plt.subplots(4, 16)
         fig.suptitle("Individual signals 1-64", fontsize=16)
         start_val = 4000

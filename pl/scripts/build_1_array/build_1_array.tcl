@@ -44,6 +44,8 @@ set top_module [file join "$ROOT" src wrappers aw_top_axi_lite.vhd]
 
 add_files [file join "$ROOT" src wrappers aw_top_axi_lite.vhd]
 
+add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
+
 add_files [file join "$ROOT" src axi_lite axi_lite_slave.vhd]
 add_files [file join "$ROOT" src axi_lite rd_en_pulse.vhd]
 
@@ -68,11 +70,11 @@ set_property file_type {VHDL 2008} [get_files  *.vhd]
 set_property file_type {VHDL} [ get_files *axi_lite_slave.vhd]
 # Import Block Designs
 source [ file normalize [ file join $ROOT scripts build_1_array zynq_bd.tcl ] ]
-source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
+#source [ file normalize [ file join $ROOT scripts build_axi_full fifo_bd.tcl ] ]
 
 # Make wrapper fifo
-make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
-add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd fifo_bd hdl fifo_bd_wrapper.vhd]
+#make_wrapper -inst_template [ get_files {fifo_bd.bd} ]
+#add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd fifo_bd hdl fifo_bd_wrapper.vhd]
 
 # Make wrapper zynq
 make_wrapper -inst_template [ get_files {zynq_bd.bd} ]

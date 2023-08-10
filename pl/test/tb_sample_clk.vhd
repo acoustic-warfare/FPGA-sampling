@@ -74,7 +74,6 @@ begin
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
       port map(
-         sck_startup => '1',
          sck_clk     => sck_clk,
          ws          => ws,
          reset       => reset
@@ -90,6 +89,7 @@ begin
             wait for 100000 ns; -- duration of test 1
 
          elsif run("auto") then
+            -- not implemented auto tests for this tb
 
             wait for 11 ns;
 

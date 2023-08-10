@@ -15,10 +15,10 @@ entity aw_top_simulated_array is
 end entity;
 
 architecture structual of aw_top_simulated_array is
-   signal clk           : std_logic;
+   signal clk : std_logic;
 
-   signal sck_in_buf    : std_logic;
-   signal sck_out_buf   : std_logic;
+   signal sck_in_buf  : std_logic;
+   signal sck_out_buf : std_logic;
 
    signal reset_out     : std_logic;
    signal reset_out_not : std_logic;

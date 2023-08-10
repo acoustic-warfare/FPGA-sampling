@@ -6,16 +6,13 @@ import math
 from pathlib import Path
 from ctypes import Structure, c_byte, c_int32, sizeof
 
-
 def Average(l):
     avg = sum(l) / len(l)
     return avg
 
-
 print("Enter file: ")
 fileChooser = input()
 #fileChooser = "ljud"
-
 
 ROOT = os.getcwd()
 path = Path(ROOT + "/"+fileChooser)
