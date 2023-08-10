@@ -12,6 +12,3 @@ All test and results were done on PCB-A1 version one (the version without buffer
 
 The following block diagram showcase a overwiev of the flow from the microphone array to a receiving PC
 ![ ](/doc/pictures/full_diagram_axi_full.png)
-
-Order of how how microphones is received on a CPU and their actual position on the array
-![ ](/doc/pictures/array_instruction.png)
