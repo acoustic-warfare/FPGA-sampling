@@ -1,14 +1,14 @@
-# Welcome to the Acoustic Warfare FPGA-sampling github  
-  
-Information about the project and user guide on how to build and run the project is found under the [Project Wiki](../../wiki).
+# Welcome to the Acoustic Warfare FPGA Sampling GitHub
 
-A more comprehencive discription of all the diffrent components of the project can be found in the Project Report. <!--[Project Report](). -->
+Information about the project and a user guide on how to build and run the project can be found under the [Project Wiki](../../wiki).
 
-A shotcut to the [User Manual](https://github.com/acoustic-warfare/FPGA-sampling/wiki/User-Manual) can be found here.  
+A more comprehensive description of all the different components of the project can be found in the Project Report. <!--[Project Report](). -->
 
-How to test the arrays, see the [Test Manual](/doc/testing_manual/Testing_the_arrays_version_1.pdf). Download the Test Manual to see the included links at page 2.  
+A shortcut to the [User Manual](https://github.com/acoustic-warfare/FPGA-sampling/wiki/User-Manual) can be found here.
 
-All test and results were done on PCB-A1 version one (the version without buffers).  
+To learn how to test the arrays, refer to the [Test Manual](/doc/testing_manual/Testing_the_arrays_version_1.pdf). Download the Test Manual to see the included links on page 2.
 
-The following block diagram showcase a overwiev of the flow from the microphone array to a receiving PC
-![ ](/doc/pictures/full_diagram_axi_full.png)
+All tests and results were done on PCBA-1 version one (the version without buffers).
+
+The following block diagram showcases an overview of the flow from the microphone array to a receiving PC:
+![Block Diagram](/doc/pictures/full_diagram_axi_full.png)
