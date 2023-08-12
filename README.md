@@ -2,7 +2,7 @@
 
 Information about the project and a user guide on how to build and run the project can be found under the [Project Wiki](../../wiki).
 
-A more comprehensive description of all the different components of the project can be found in the Project Report. <!--[Project Report](). -->
+A more comprehensive description of all the different components of the project can be found in the [Project Report](https://github.com/acoustic-warfare/Beamforming/blob/main/Ljudkriget.pdf). 
 
 A shortcut to the [User Manual](https://github.com/acoustic-warfare/FPGA-sampling/wiki/User-Manual) can be found here.
 
