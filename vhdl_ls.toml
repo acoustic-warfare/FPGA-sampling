@@ -54,3 +54,9 @@ vunit_lib.files = [
     "venv/lib/python3.*/site-packages/vunit/vhdl/vunit_context.vhd",
     "venv/lib/python3.*/site-packages/vunit/vhdl/check/src/check.vhd"
 ]
+
+ljudkriget.files = [
+    "pl/src/*.vhd",
+    "pl/src/*/*.vhd",
+    "pl/test/*.vhd"
+]
