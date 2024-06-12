@@ -5,6 +5,7 @@
 *.debug
 .Xil
 venv
+.venv
 vunit_out
 vivado_files
 .metadata/

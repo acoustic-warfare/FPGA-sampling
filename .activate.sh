@@ -34,7 +34,7 @@ fi
 # Python
 #
 # 'venv' setup and activation
-VENV_NAME="venv"
+VENV_NAME=".venv"
 # TODO: trigger on changes to requirements.txt to stay up to date.
 # NOTE: to slow to always run
 if [ ! -d "$VENV_NAME" ]; then
@@ -44,7 +44,7 @@ if [ ! -d "$VENV_NAME" ]; then
     $VENV_NAME/bin/python3 -m pip install -r requirements.txt
 fi
 # TODO: Add explicit python min version and check
-.$VENV_NAME/bin/activate    
+source $VENV_NAME/bin/activate    
 python3 --version
 
 
@@ -69,9 +69,8 @@ python3 --version
 # TODO: Check if build with 2008 libraries
 GHDL_REQUIRED_VERSION="2.0.0"
 GHDL_PATH="$ "/usr/lib/ghdl""
-#GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
-
-#echo "GHDL $GHDL_VERSION"
+GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
+echo "GHDL $GHDL_VERSION"
 
 
 #
