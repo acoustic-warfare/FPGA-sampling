@@ -18,7 +18,7 @@ set script_folder [_tcl::get_script_folder]
 ################################################################
 # Check if script is running in correct Vivado version.
 ################################################################
-set scripts_vivado_version 2017.4
+set scripts_vivado_version 2022.1
 set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
@@ -117,7 +117,7 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\
       xilinx.com:ip:smartconnect:1.0\
-      xilinx.com:ip:clk_wiz:5.4\
+      xilinx.com:ip:clk_wiz:6.0\
       xilinx.com:ip:processing_system7:5.5\
       xilinx.com:ip:proc_sys_reset:5.0\
    "
@@ -262,7 +262,7 @@ proc create_root_design { parentCell } {
       ] [get_bd_intf_pins /axi_v1_0_0/s00_axi]
 
    # Create instance: clk_wiz_0, and set properties
-   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:5.4 clk_wiz_0 ]
+   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
    set_property -dict [ list \
       CONFIG.CLKIN1_JITTER_PS {80.0} \
       CONFIG.CLKIN2_JITTER_PS {166.66} \

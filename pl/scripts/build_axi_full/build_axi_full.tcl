@@ -23,7 +23,7 @@ parray params
 # Setup Board
 switch $params(board) {
    10 { set board digilentinc.com:zybo-z7-10:part0:1.1 }
-   20 { set board digilentinc.com:zybo-z7-20:part0:1.1 }
+   20 { set board digilentinc.com:zybo-z7-20:part0:1.2 }
    default { send_msg "BuildScript-0" "ERROR" "not a supported board" }
 }
 
