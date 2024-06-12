@@ -38,10 +38,14 @@ architecture rtl of sample_clk is
 
    signal idle_counter : integer := 0; -- Creates a delay for staying in idle until data is transmitted from array
 
+   signal bit_stream_d : std_logic;
+
 begin
    main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin
       if rising_edge(sys_clk) then
+
+         bit_stream_d <= bit_stream;
 
          case state is
             when idle => -- After a complete sample of all mics (only exit on ws high)
@@ -81,7 +85,7 @@ begin
                if counter_samp = 4 then
                   counter_samp <= 0;
 
-                  if bit_stream = '1' then
+                  if bit_stream_d = '1' then
                      -- Sampled bit = 1
                      mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
                      mic_sample_data_out(0)           <= '1';

@@ -32,9 +32,6 @@ architecture rtl of sample is
    signal counter_bit : integer range 0 to 32 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_mic : integer range 0 to 16 := 0; -- Counts number of microphones per chain  (0-15)
 
-   signal idle_counter : integer   := 0;   -- Creates a delay for staying in idle until data is transmitted from array
-   signal idle_start   : std_logic := '0'; -- Part of the delay to make it more flexible
-
 begin
    main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin

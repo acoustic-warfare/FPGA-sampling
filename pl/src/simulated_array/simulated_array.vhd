@@ -15,7 +15,8 @@ entity simulated_array is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
+      G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
+      index      : integer := 4
    );
    port (
       clk            : in std_logic;
@@ -42,94 +43,94 @@ architecture rtl of simulated_array is
    signal bit_stream_gen : std_logic_vector(15 downto 0);
 
    signal sck_d : std_logic;
-   signal a     : std_logic := '0';
-   signal b     : std_logic := '0';
+
+   signal ws_d : std_logic_vector(index downto 0);
 
 begin
+
    --  If switch is 0, the output bit comes from bit_stream_in; if switch is 1, the output bit comes from bit_stream_gen.
    bit_stream_out <= (bit_stream_in and not switch) or (bit_stream_gen and switch);
 
    fill_matrix_out_p : process (clk)
       variable mic_id : unsigned(7 downto 0) := (others => '0');
-
    begin
       if rising_edge(clk) then
-         sck_d <= sck_clk;
-
-         -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
-            a <= '1';
-
-            mic_id := to_unsigned(mic_counter, 8);
-
-            case state is
-               when idle =>
-
-                  bit_stream_gen <= (others => '1');
-
-                  if (ws = '1') then
-                     for i in 0 to 15 loop
-                        bit_stream_gen(i) <= mic_id(7);
-                        mic_id := mic_id + 16;
-                     end loop;
-                     bit_counter <= bit_counter + 1;
-                     state       <= run;
-                  end if;
-
-               when run =>
-
-                  if (bit_counter < 8) then --send ID
-                     for i in 0 to 15 loop
-                        bit_stream_gen(i) <= mic_id(7 - bit_counter);
-                        mic_id := mic_id + 16;
-                     end loop;
-
-                  else -- send counter
-                     for i in 0 to 15 loop
-                        bit_stream_gen(i) <= counter(23 - bit_counter);
-                     end loop;
-                  end if;
-
-                  if (bit_counter = 23) then
-                     mic_counter <= mic_counter + 1;
-                     state       <= pause;
-                  end if;
-
-                  bit_counter <= bit_counter + 1;
-
-               when pause =>
-
-                  bit_counter    <= bit_counter + 1;
-                  bit_stream_gen <= (others => '1');
-
-                  if (mic_counter = 16) then
-                     counter     <= counter + 1;
-                     bit_counter <= 0;
-                     mic_counter <= 0;
-                     state       <= idle;
-                  end if;
-
-                  if (bit_counter = 31) then
-                     bit_counter <= 0;
-                     state       <= run;
-                  end if;
-
-               when others =>
-                  -- should never get here
-                  report("error_1");
-                  state <= idle;
-            end case;
-
-         else
-            a <= '0';
-            b <= a;
-         end if;
-
          if reset = '1' then
             state       <= idle;
             counter     <= (others => '0');
             bit_counter <= 0;
             mic_counter <= 0;
+            ws_d        <= (others => '0');
+         else
+
+            sck_d <= sck_clk;
+
+            ws_d(0) <= ws;
+            for i in 0 to index - 1 loop
+               ws_d(i + 1) <= ws_d(i);
+            end loop;
+
+            if sck_clk = '1' and sck_d = '0' then
+
+               mic_id := to_unsigned(mic_counter, 8);
+
+               case state is
+                  when idle =>
+
+                     bit_stream_gen <= (others => '1');
+
+                     if (ws_d(index) = '1') then
+                        for i in 0 to 15 loop
+                           bit_stream_gen(i) <= mic_id(7);
+                           mic_id := mic_id + 16;
+                        end loop;
+                        bit_counter <= bit_counter + 1;
+                        state       <= run;
+                     end if;
+
+                  when run =>
+                     if (bit_counter < 8) then --send ID
+                        for i in 0 to 15 loop
+                           bit_stream_gen(i) <= mic_id(7 - bit_counter);
+                           mic_id := mic_id + 16;
+                        end loop;
+
+                     else -- send counter
+                        for i in 0 to 15 loop
+                           bit_stream_gen(i) <= counter(23 - bit_counter);
+                        end loop;
+                     end if;
+
+                     if (bit_counter = 23) then
+                        mic_counter <= mic_counter + 1;
+                        state       <= pause;
+                     end if;
+
+                     bit_counter <= bit_counter + 1;
+
+                  when pause =>
+                     bit_counter    <= bit_counter + 1;
+                     bit_stream_gen <= (others => '1');
+
+                     if (mic_counter = 16) then
+                        counter     <= counter + 1;
+                        bit_counter <= 0;
+                        mic_counter <= 0;
+                        state       <= idle;
+                     end if;
+
+                     if (bit_counter = 31) then
+                        bit_counter <= 0;
+                        state       <= run;
+                     end if;
+
+                  when others =>
+                     -- should never get here
+                     report("error_1");
+                     state <= idle;
+               end case;
+            end if;
+
          end if;
       end if;
    end process;
