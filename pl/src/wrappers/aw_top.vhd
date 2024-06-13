@@ -230,7 +230,7 @@ begin
       fifo_gen : entity work.fifo_axi
          generic map(
             RAM_WIDTH => 32,
-            RAM_DEPTH => 128
+            RAM_DEPTH => 16 --lowerd from 128
          )
          port map(
             clk        => clk,

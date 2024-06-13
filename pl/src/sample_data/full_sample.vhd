@@ -39,7 +39,6 @@ begin
 
    fill_matrix_out_p : process (sys_clk) -- This proccess fills a matrix with samples from all four collectors
       variable temp_chain_matrix : matrix_16_32_type;
-
    begin
       if rising_edge(sys_clk) then
 

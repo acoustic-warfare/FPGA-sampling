@@ -25,10 +25,10 @@ architecture tb of tb_super_test is
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
-   signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream_in        : std_logic_vector(15 downto 0);
-   signal bit_stream_out       : std_logic_vector(15 downto 0);
-   signal switch               : std_logic := '1';
+   -- signal ws_error             : std_logic_vector(3 downto 0);
+   signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
+   signal bit_stream_out : std_logic_vector(15 downto 0);
+   signal switch         : std_logic := '1';
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
@@ -46,8 +46,8 @@ architecture tb of tb_super_test is
    signal array_matrix_valid_out   : std_logic;
    signal sample_counter_array     : std_logic_vector(31 downto 0);
 
-   signal ws_ok  : std_logic;
-   signal sck_ok : std_logic;
+   -- signal ws_ok  : std_logic;
+   -- signal sck_ok : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
@@ -82,6 +82,9 @@ begin
    tb_look_fullsample_data_out_63 <= array_matrix_data_out(63);
 
    simulated_array1 : entity work.simulated_array
+      generic map(
+         index => 5 -- 2 less than index for sample
+      )
       port map(
          clk            => clk,
          sck_clk        => sck_clk_cable,
@@ -92,18 +95,22 @@ begin
          bit_stream_out => bit_stream_out
       );
 
-   sample_gen : for i in 0 to 3 generate
+   -- PMOD port JE, BitStream 12-15: Array 1
+   sample_gen_2 : for i in 0 to 3 generate
    begin
-      sample : entity work.sample
+      sample_C : entity work.sample_clk
+         generic map(
+            index => 8 -- 2-6
+         )
          port map(
-            sys_clk              => sck_clk,
+            sys_clk              => clk,
             reset                => reset,
-            bit_stream           => bitstream_cable(i),
             ws                   => ws,
+            bit_stream           => bit_stream_out(i),
             mic_sample_data_out  => mic_sample_data_out(i),
             mic_sample_valid_out => mic_sample_valid_out(i)
          );
-   end generate sample_gen;
+   end generate sample_gen_2;
 
    collector_gen : for i in 0 to 3 generate
    begin
@@ -167,9 +174,9 @@ begin
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
       port map(
-         sck_clk     => sck_clk,
-         ws          => ws,
-         reset       => reset
+         sck_clk => sck_clk,
+         ws      => ws,
+         reset   => reset
       );
 
    main : process
@@ -180,12 +187,18 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then
+            reset <= '1';
+            wait for (C_CLK_CYKLE * 10); -- duration of test 1
+            reset <= '0';
             -- test 1 is so far only meant for gktwave
-            wait for 3000000 ns; -- duration of test 1
+            wait for 300000 ns; -- duration of test 1
 
          elsif run("auto") then
-            for i in 0 to 100000 loop
+            reset <= '1';
+            wait for (C_CLK_CYKLE * 10); -- duration of test 1
+            reset <= '0';
 
+            for i in 0 to 100000 loop
                if (array_matrix_valid_out = '1') then
                   --info("test");
                   for row in 0 to 63 loop

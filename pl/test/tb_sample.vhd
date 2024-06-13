@@ -23,9 +23,9 @@ architecture tb of tb_sample is
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
-   signal ws_error             : std_logic;
+   -- signal ws_error             : std_logic;
 
-   signal sim_counter : integer := 0;
+   -- signal sim_counter : integer := 0;
    signal counter_tb  : integer := 0;
 
 begin

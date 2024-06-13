@@ -23,7 +23,7 @@ architecture behavior of tb_fifo_axi is
 
    -- Read port
    signal rd_en    : std_logic := '0';
-   signal rd_valid : std_logic;
+   -- signal rd_valid : std_logic;
    signal rd_data  : std_logic_vector(32 - 1 downto 0);
 
    -- Flags
@@ -33,7 +33,7 @@ architecture behavior of tb_fifo_axi is
    signal full_next  : std_logic;
 
    -- The number of elements in the FIFO
-   signal fill_count : integer range 128 - 1 downto 0;
+   -- signal fill_count : integer range 128 - 1 downto 0;
 
    signal counter : integer := 0;
 
