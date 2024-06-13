@@ -15,8 +15,7 @@ entity aw_top is
       bit_stream  : in std_logic_vector(15 downto 0);
       ws_out      : out std_logic_vector(7 downto 0);
       sck_clk_out : out std_logic_vector(7 downto 0);
-      led         : out std_logic_vector(3 downto 0);
-      led_rgb_5   : out std_logic_vector(2 downto 0);
+      led         : out std_logic_vector(3 downto 0); -- for delay adjusting
       led_rgb_6   : out std_logic_vector(2 downto 0)
    );
 end entity;
@@ -70,14 +69,21 @@ begin
    sck_clk_out(6) <= sck_clk;
    sck_clk_out(7) <= sck_clk;
 
-   led_rgb_6(0) <= sw(0) and sw(3);
-   led_rgb_6(1) <= sw(1) and sw(3);
-   led_rgb_6(2) <= sw(2) and sw(3);
-
    led(3) <= empty_array(0) and sw(3);
    led(2) <= almost_empty_array(0) and sw(3);
    led(1) <= almost_full_array(0) and sw(3);
    led(0) <= full_array(0) and sw(3);
+
+   process (empty_array, full_array, almost_empty_array, almost_full_array)
+      begin
+      if empty_array(0) = '1' then
+         led_rgb_6 <= (others => '0');  
+      else
+         led_rgb_6(0) <= full_array(0); 
+         led_rgb_6(1) <= almost_empty_array(0); 
+         led_rgb_6(2) <= almost_full_array(0); 
+      end if; 
+   end process; 
 
    process (sys_clock, reset_rtl)
    begin
