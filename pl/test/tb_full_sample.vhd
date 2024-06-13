@@ -28,7 +28,7 @@ architecture tb of tb_full_sample is
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
 
-   signal temp_matrix_16_24 : matrix_16_32_type;
+   -- signal temp_matrix_16_24 : matrix_16_32_type;
 
    signal sample_counter_array : std_logic_vector(31 downto 0);
 

@@ -30,8 +30,8 @@ architecture behave of tb_sample_clk is
    signal mic_sample_data_out_2  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out_2 : std_logic;
 
-   signal sim_counter : integer := 0;
-   signal counter_tb  : integer := 0;
+   -- signal sim_counter : integer := 0;
+   -- signal counter_tb  : integer := 0;
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;

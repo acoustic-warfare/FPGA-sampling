@@ -25,10 +25,10 @@ architecture tb of tb_super_test is
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
-   signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream_in        : std_logic_vector(15 downto 0);
-   signal bit_stream_out       : std_logic_vector(15 downto 0);
-   signal switch               : std_logic := '1';
+   -- signal ws_error             : std_logic_vector(3 downto 0);
+   signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
+   signal bit_stream_out : std_logic_vector(15 downto 0);
+   signal switch         : std_logic := '1';
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
@@ -46,8 +46,8 @@ architecture tb of tb_super_test is
    signal array_matrix_valid_out   : std_logic;
    signal sample_counter_array     : std_logic_vector(31 downto 0);
 
-   signal ws_ok  : std_logic;
-   signal sck_ok : std_logic;
+   -- signal ws_ok  : std_logic;
+   -- signal sck_ok : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
@@ -187,6 +187,9 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then
+            reset <= '1';
+            wait for (C_CLK_CYKLE * 10); -- duration of test 1
+            reset <= '0';
             -- test 1 is so far only meant for gktwave
             wait for 300000 ns; -- duration of test 1
 

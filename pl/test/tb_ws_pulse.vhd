@@ -22,15 +22,15 @@ architecture tb of tb_ws_pulse is
    signal sck_counter : integer := 0; -- counter for the number of fsck_clk cycles
    signal ws_counter  : integer := 0; -- counter for the number of fs_clk cykles
 
-   signal auto              : std_logic := '0';
-   signal sck_counter_start : integer;
+   -- signal auto              : std_logic := '0';
+   -- signal sck_counter_start : integer;
 
-   procedure clk_wait (nr_of_cykles : in integer) is
-   begin
-      for i in 0 to nr_of_cykles loop
-         wait for C_SCK_CYKLE;
-      end loop;
-   end procedure;
+   -- procedure clk_wait (nr_of_cykles : in integer) is
+   -- begin
+   --    for i in 0 to nr_of_cykles loop
+   --       wait for C_SCK_CYKLE;
+   --    end loop;
+   -- end procedure;
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;

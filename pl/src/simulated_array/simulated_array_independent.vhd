@@ -12,8 +12,9 @@ entity simulated_array_independent is
    --
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
+      -- G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      -- G_NR_MICS  : integer := 16  -- Number of chains in the Matrix
+      index : integer := 4
    );
    port (
       ws         : in std_logic;
@@ -28,30 +29,40 @@ architecture rtl of simulated_array_independent is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
    signal state : state_type;
 
-   signal paus_bit : std_logic             := '1';
-   signal counter  : unsigned(15 downto 0) := (others => '0');
+   signal counter : unsigned(15 downto 0);
 
-   signal bit_counter : integer range 0 to 33 := 0;
-   signal mic_counter : integer range 0 to 17 := 0;
-   signal state_1     : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+   signal bit_counter : integer range 0 to 33;
+   signal mic_counter : integer range 0 to 17;
+   signal ws_d        : std_logic_vector(index downto 0);
 
-   signal sck_d : std_logic;
-   signal a     : std_logic := '0';
-   signal b     : std_logic := '0';
+   -- signal state_1     : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
 begin
-   fill_matrix_out_p : process (clk)
-      variable mic_id : unsigned(7 downto 0) := (others => '0');
 
+   ws_delay : process (clk)
    begin
       if rising_edge(clk) then
+         if reset = '1' then
+            ws_d <= (others => '0');
+         else
+            ws_d(0) <= ws;
+            for i in 0 to index - 1 loop
+               ws_d(i + 1) <= ws_d(i);
+            end loop;
+         end if;
+      end if;
+   end process;
 
-         sck_d <= sck_clk;
-
-         -- delays 2 clk cycles before collecting data
-         if sck_clk = '1' and sck_d = '0' and a = '0' and b = '0' then
-            a <= '1';
-
+   fill_data : process (sck_clk)
+      variable mic_id : unsigned(7 downto 0) := (others => '0');
+   begin
+      if rising_edge(sck_clk) then
+         if reset = '1' then
+            state       <= idle;
+            bit_counter <= 0;
+            mic_counter <= 0;
+            counter     <= (others => '0');
+         else
             mic_id := to_unsigned(mic_counter, 8);
 
             case state is
@@ -111,22 +122,18 @@ begin
                   report("error_1");
                   state <= idle;
             end case;
-
-         else
-            a <= '0';
-            b <= a;
          end if;
       end if;
    end process;
 
-   state_num : process (state) -- only for findig buggs in gtkwave
-   begin
-      if state = idle then
-         state_1 <= 0;
-      elsif state = run then
-         state_1 <= 1;
-      elsif state = pause then
-         state_1 <= 2;
-      end if;
-   end process;
+   -- state_num : process (state) -- only for findig buggs in gtkwave
+   -- begin
+   --    if state = idle then
+   --       state_1 <= 0;
+   --    elsif state = run then
+   --       state_1 <= 1;
+   --    elsif state = pause then
+   --       state_1 <= 2;
+   --    end if;
+   -- end process;
 end rtl;
