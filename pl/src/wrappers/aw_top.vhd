@@ -5,24 +5,36 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      num_arrays : integer := 4 -- not in use yet
+      --num_arrays : integer := 4 -- not in use yet
+      fifo_buffer_lenght : integer := 16 --lowerd from 128
    );
    port (
-      sys_clock   : in std_logic;
-      btn         : in std_logic_vector(3 downto 0);
-      sw          : in std_logic_vector(3 downto 0);
-      bit_stream  : in std_logic_vector(15 downto 0);
-      ws_out      : out std_logic_vector(7 downto 0);
-      sck_clk_out : out std_logic_vector(7 downto 0);
-      led         : out std_logic_vector(3 downto 0); -- for delay adjusting
-      led_rgb_6   : out std_logic_vector(2 downto 0)
+      sys_clock     : in std_logic;
+      btn           : in std_logic_vector(3 downto 0);
+      sw            : in std_logic_vector(3 downto 0);
+      bit_stream    : in std_logic_vector(15 downto 0);
+      ws_out        : out std_logic_vector(7 downto 0);
+      sck_clk_out   : out std_logic_vector(7 downto 0);
+      led_out       : out std_logic_vector(3 downto 0); -- for delay adjusting
+      led_rgb_5_out : out std_logic_vector(2 downto 0);
+      led_rgb_6_out : out std_logic_vector(2 downto 0)
    );
 end entity;
 architecture structual of aw_top is
 
-   signal clk     : std_logic;
-   signal sck_clk : std_logic;
-   signal ws      : std_logic;
+   signal clk           : std_logic;
+   signal sck_clk       : std_logic;
+   signal ws            : std_logic;
+   signal ws_array      : std_logic_vector(7 downto 0);
+   signal sck_clk_array : std_logic_vector(7 downto 0);
+
+   signal led_in       : std_logic_vector(3 downto 0);
+   signal led_rgb_5_in : std_logic_vector(2 downto 0);
+   signal led_rgb_6_in : std_logic_vector(2 downto 0);
+
+   signal btn_ff        : std_logic_vector(3 downto 0);
+   signal sw_ff         : std_logic_vector(3 downto 0);
+   signal bit_stream_ff : std_logic_vector(15 downto 0);
 
    signal reset     : std_logic;
    signal reset_rtl : std_logic;
@@ -58,45 +70,52 @@ architecture structual of aw_top is
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
 
-   signal counter_led : integer := 0;
-
 begin
-   ws_out <= (others => ws);
+   ws_array      <= (others => ws);
+   sck_clk_array <= (others => sck_clk);
+   sck_clk_out   <= sck_clk_array;
 
-   sck_clk_out(0) <= sck_clk;
-   sck_clk_out(1) <= sck_clk;
+   led_in(3) <= index(3);
+   led_in(2) <= index(2);
+   led_in(1) <= index(1);
+   led_in(0) <= index(0);
 
-   sck_clk_out(2) <= sck_clk;
-   sck_clk_out(3) <= sck_clk;
+   reset_rtl <= btn_ff(0);
+   reset     <= btn_ff(1);
 
-   sck_clk_out(4) <= sck_clk;
-   sck_clk_out(5) <= sck_clk;
+   btn_up   <= btn_ff(2);
+   btn_down <= btn_ff(3);
 
-   sck_clk_out(6) <= sck_clk;
-   sck_clk_out(7) <= sck_clk;
+   led_rgb_6_in(0) <= '0';
+   led_rgb_5_in(1) <= '0';
 
-   led(3) <= index(3);
-   led(2) <= index(2);
-   led(1) <= index(1);
-   led(0) <= index(0);
-
-   reset_rtl <= btn(0);
-   reset     <= btn(1);
-
-   btn_up   <= btn(2);
-   btn_down <= btn(3);
-
-
-   process (empty_array, full_array, almost_empty_array, almost_full_array)
-      begin
-      if empty_array(0) = '1' then
-         led_rgb_6 <= (others => '0');  
+   process (empty_array, almost_empty_array, almost_full_array, full_array)
+   begin
+      if (empty_array(0) = '1') then
+         led_rgb_6_in(2) <= '1';
       else
-         led_rgb_6(0) <= full_array(0); 
-         led_rgb_6(1) <= almost_empty_array(0); 
-         led_rgb_6(2) <= almost_full_array(0); 
-      end if; 
-   end process; 
+         led_rgb_6_in(2) <= '0';
+      end if;
+
+      if (almost_empty_array(0) = '1') then
+         led_rgb_6_in(1) <= '1';
+      else
+         led_rgb_6_in(1) <= '0';
+      end if;
+
+      if (almost_full_array(0) = '1') then
+         led_rgb_5_in(0) <= '1';
+      else
+         led_rgb_5_in(0) <= '0';
+      end if;
+
+      if (full_array(0) = '1') then
+         led_rgb_5_in(2) <= '1';
+      else
+         led_rgb_5_in(2) <= '0';
+      end if;
+
+   end process;
 
    process (sys_clock, reset_rtl)
    begin
@@ -112,6 +131,27 @@ begin
       end if;
    end process;
 
+   double_ff : entity work.double_ff
+      port map(
+         sys_clk       => clk,
+         btn_in        => btn,
+         sw_in         => sw,
+         bit_stream_in => bit_stream,
+         ws_in         => ws_array,
+         -- sck_clk_in     => sck_clk_array,
+         led_in         => led_in,
+         led_rgb_5_in   => led_rgb_5_in,
+         led_rgb_6_in   => led_rgb_6_in,
+         btn_out        => btn_ff,
+         sw_out         => sw_ff,
+         bit_stream_out => bit_stream_ff,
+         ws_out         => ws_out,
+         -- sck_clk_out    => sck_clk_out,
+         led_out       => led_out,
+         led_rgb_5_out => led_rgb_5_out,
+         led_rgb_6_out => led_rgb_6_out
+      );
+
    ws_pulse : entity work.ws_pulse
       port map(
          sck_clk => sck_clk,
@@ -125,14 +165,14 @@ begin
          sck_clk        => sck_clk,
          ws             => ws,
          reset          => reset,
-         switch         => sw(1),
+         switch         => sw_ff(1),
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
 
    button_index_select_inst : entity work.button_index_select
       port map(
-         sys_clk     => sys_clock,
+         sys_clk     => clk,
          reset       => reset,
          button_up   => btn_up,
          button_down => btn_down,
@@ -220,7 +260,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw              => sw(0),
+            mic_id_sw              => sw_ff(0),
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -244,43 +284,25 @@ begin
       fifo_gen : entity work.fifo_axi
          generic map(
             RAM_WIDTH => 32,
-            RAM_DEPTH => 16 --lowerd from 128
+            RAM_DEPTH => fifo_buffer_lenght
          )
          port map(
-            clk        => clk,
-            rst        => reset,
-            wr_en      => array_matrix_valid,
-            wr_data    => array_matrix_data(i),
-            rd_en      => rd_en_fifo,
-            rd_data    => data_fifo_256_out(i),
-            empty      => empty_array(i),
-            empty_next => almost_empty_array(i),
-            full       => full_array(i),
-            full_next  => almost_full_array(i)
+            clk          => clk,
+            rst          => reset,
+            wr_en        => array_matrix_valid,
+            wr_data      => array_matrix_data(i),
+            rd_en        => rd_en_fifo,
+            rd_data      => data_fifo_256_out(i),
+            empty        => empty_array(i),
+            almost_empty => almost_empty_array(i),
+            almost_full  => full_array(i),
+            full         => almost_full_array(i)
          );
    end generate fifo_axi_0;
 
-   --fifo_bd_wrapper_gen : for i in 0 to 255 generate
-   --begin
-   --   fifo_gen : entity work.fifo_bd_wrapper
-   --      port map(
-   --         rd_clk                 => clk,
-   --         wr_clk                 => clk,
-   --         reset                  => reset,
-   --         FIFO_WRITE_full        => full_array(i),
-   --         FIFO_READ_empty        => empty_array(i),
-   --         FIFO_WRITE_almost_full => almost_full_array(i),
-   --         FIFO_READ_almost_empty => almost_empty_array(i),
-   --         FIFO_WRITE_wr_data     => array_matrix_data(i), --data in
-   --         FIFO_WRITE_wr_en       => array_matrix_valid,
-   --         FIFO_READ_rd_en        => rd_en_fifo,
-   --         FIFO_READ_rd_data      => data_fifo_256_out(i) --data out
-   --      );
-   --end generate fifo_bd_wrapper_gen;
-
    mux : entity work.mux
       port map(
-         sw         => sw(2),
+         sw         => sw_ff(2),
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
@@ -296,7 +318,7 @@ begin
          sys_clock => sys_clock,
          reset_rtl => reset_rtl,
          axi_data  => data_stream,
-         axi_empty => almost_empty_array(0),
+         axi_empty => empty_array(0),
          axi_rd_en => rd_en_pulse
       );
 

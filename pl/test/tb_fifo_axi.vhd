@@ -22,15 +22,15 @@ architecture behavior of tb_fifo_axi is
    signal wr_data : std_logic_vector(32 - 1 downto 0);
 
    -- Read port
-   signal rd_en    : std_logic := '0';
+   signal rd_en : std_logic := '0';
    -- signal rd_valid : std_logic;
-   signal rd_data  : std_logic_vector(32 - 1 downto 0);
+   signal rd_data : std_logic_vector(32 - 1 downto 0);
 
    -- Flags
-   signal empty      : std_logic;
-   signal empty_next : std_logic;
-   signal full       : std_logic;
-   signal full_next  : std_logic;
+   signal empty        : std_logic;
+   signal almost_empty : std_logic;
+   signal almost_full  : std_logic;
+   signal full         : std_logic;
 
    -- The number of elements in the FIFO
    -- signal fill_count : integer range 128 - 1 downto 0;
@@ -53,14 +53,14 @@ begin
          wr_data => wr_data,
 
          -- Read port
-         rd_en    => rd_en,
-         rd_data  => rd_data,
+         rd_en   => rd_en,
+         rd_data => rd_data,
 
          -- Flags
-         empty      => empty,
-         empty_next => empty_next,
-         full       => full,
-         full_next  => full_next
+         empty        => empty,
+         almost_empty => almost_empty,
+         almost_full  => almost_full,
+         full         => full
       );
    clk <= not(clk) after C_CLK_CYKLE/2;
    --S_AXI_ACLK <= not(clk) after AXI_clk_cyckle/2;
