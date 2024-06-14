@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity sample_clk is
    ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -14,14 +15,12 @@ entity sample_clk is
    --
    --MIC_SAMPLE_VALID_OUT: When the vector MIC_SAMPLE_DATA_OUT is full this signal goes high and allows the next block "Collector" to read the data.
    --------------------------------------------------------------------------------------------------------------------------------------------------
-   generic (
-      index : integer := 4
-   );
    port (
       sys_clk              : in std_logic;
       reset                : in std_logic;
       bit_stream           : in std_logic;
       ws                   : in std_logic;
+      index                : in std_logic_vector(3 downto 0);
       mic_sample_data_out  : inout std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0' -- A signal to tell the receiver to start reading the mic_sample_data_out
    );
@@ -40,10 +39,28 @@ architecture rtl of sample_clk is
 
    signal bit_stream_d : std_logic;
 
+   signal index_d        : std_logic_vector(3 downto 0);
+   signal index_dd       : std_logic_vector(3 downto 0);
+   signal index_ddd      : std_logic_vector(3 downto 0);
+   signal index_dddd     : std_logic_vector(3 downto 0);
+   signal index_ddddd    : std_logic_vector(3 downto 0);
+   signal index_dddddd   : std_logic_vector(3 downto 0);
+   signal index_ddddddd  : std_logic_vector(3 downto 0);
+   signal index_dddddddd : std_logic_vector(3 downto 0);
+
 begin
    main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin
       if rising_edge(sys_clk) then
+
+         index_d        <= index;
+         index_dd       <= index_d;
+         index_ddd      <= index_dd;
+         index_dddd     <= index_ddd;
+         index_ddddd    <= index_dddd;
+         index_dddddd   <= index_ddddd;
+         index_ddddddd  <= index_dddddd;
+         index_dddddddd <= index_ddddddd;
 
          bit_stream_d <= bit_stream;
 
@@ -57,13 +74,13 @@ begin
                ------------------------------------------------------------------------------------------------------------------------------------------
 
                if ws = '1' then
-                  idle_counter <= idle_counter + 1;
-               elsif idle_counter /= 0 then
+                  idle_counter <= 1;
+               elsif idle_counter > 0 then
                   idle_counter <= idle_counter + 1;
                end if;
 
                -- This waits for the sck to have a rising_edge
-               if (idle_counter = index) then
+               if (idle_counter = to_integer(unsigned(index_dddddddd))) then
                   idle_counter <= 0;
                   state        <= run;
                end if;

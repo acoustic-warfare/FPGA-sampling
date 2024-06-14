@@ -23,6 +23,7 @@ add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
 add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
+add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data full_sample.vhd]
 

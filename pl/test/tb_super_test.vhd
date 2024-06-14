@@ -64,6 +64,8 @@ architecture tb of tb_super_test is
    signal sw           : std_logic;
    signal data_mux_out : std_logic_vector(31 downto 0);
 
+   signal index : std_logic_vector(3 downto 0) := "1000";
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
@@ -99,13 +101,11 @@ begin
    sample_gen_2 : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample_clk
-         generic map(
-            index => 8 -- 2-6
-         )
          port map(
             sys_clk              => clk,
             reset                => reset,
             ws                   => ws,
+            index                => index,
             bit_stream           => bit_stream_out(i),
             mic_sample_data_out  => mic_sample_data_out(i),
             mic_sample_valid_out => mic_sample_valid_out(i)

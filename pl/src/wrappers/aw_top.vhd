@@ -9,8 +9,7 @@ entity aw_top is
    );
    port (
       sys_clock   : in std_logic;
-      reset_rtl   : in std_logic;
-      reset       : in std_logic;
+      btn         : in std_logic_vector(3 downto 0);
       sw          : in std_logic_vector(3 downto 0);
       bit_stream  : in std_logic_vector(15 downto 0);
       ws_out      : out std_logic_vector(7 downto 0);
@@ -25,6 +24,13 @@ architecture structual of aw_top is
    signal clk     : std_logic;
    signal sck_clk : std_logic;
    signal ws      : std_logic;
+
+   signal reset     : std_logic;
+   signal reset_rtl : std_logic;
+   signal btn_up    : std_logic;
+   signal btn_down  : std_logic;
+
+   signal index : std_logic_vector(3 downto 0);
 
    signal data_stream : std_logic_vector(31 downto 0);
 
@@ -74,10 +80,16 @@ begin
    led_rgb_6(1) <= sw(1) and sw(3);
    led_rgb_6(2) <= sw(2) and sw(3);
 
-   led(3) <= empty_array(0) and sw(3);
-   led(2) <= almost_empty_array(0) and sw(3);
-   led(1) <= almost_full_array(0) and sw(3);
-   led(0) <= full_array(0) and sw(3);
+   led(3) <= index(3);
+   led(2) <= index(2);
+   led(1) <= index(1);
+   led(0) <= index(0);
+
+   reset_rtl <= btn(0);
+   reset     <= btn(1);
+
+   btn_up   <= btn(2);
+   btn_down <= btn(3);
 
    process (sys_clock, reset_rtl)
    begin
@@ -111,16 +123,23 @@ begin
          bit_stream_out => bit_stream_out
       );
 
+   button_index_select_inst : entity work.button_index_select
+      port map(
+         sys_clk     => sys_clock,
+         reset       => reset,
+         button_up   => btn_up,
+         button_down => btn_down,
+         index_out   => index
+      );
+
    -- PMOD port JE, BitStream 12-15: Array 1
    sample_gen_2 : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample_clk
-         generic map(
-            index => 8
-         )
          port map(
             sys_clk              => clk,
             reset                => reset,
+            index                => index,
             ws                   => ws,
             bit_stream           => bit_stream_out(i + 12),
             mic_sample_data_out  => mic_sample_data(i),
@@ -132,12 +151,10 @@ begin
    sample_gen_3 : for i in 4 to 7 generate
    begin
       sample_C : entity work.sample_clk
-         generic map(
-            index => 8
-         )
          port map(
             sys_clk              => clk,
             reset                => reset,
+            index                => index,
             ws                   => ws,
             bit_stream           => bit_stream_out(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
@@ -149,12 +166,10 @@ begin
    sample_gen_4 : for i in 8 to 11 generate
    begin
       sample_C : entity work.sample_clk
-         generic map(
-            index => 8
-         )
          port map(
             sys_clk              => clk,
             reset                => reset,
+            index                => index,
             ws                   => ws,
             bit_stream           => bit_stream_out(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
@@ -166,12 +181,10 @@ begin
    sample_gen_01 : for i in 12 to 15 generate
    begin
       sample_C : entity work.sample_clk
-         generic map(
-            index => 8
-         )
          port map(
             sys_clk              => clk,
             reset                => reset,
+            index                => index,
             ws                   => ws,
             bit_stream           => bit_stream_out(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
