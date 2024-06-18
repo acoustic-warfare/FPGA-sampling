@@ -9,6 +9,7 @@ entity zynq_bd_wrapper is
       axi_data  : in std_logic_vector(31 downto 0);
       axi_empty : in std_logic;
       axi_rd_en : in std_logic;
+      axi_sys_id : in std_logic_vector(1 downto 0); 
       clk_125   : out std_logic;
       clk_25    : out std_logic
    );

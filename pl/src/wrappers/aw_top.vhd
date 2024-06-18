@@ -69,6 +69,8 @@ architecture structual of aw_top is
 
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
+   
+   signal system_ids       : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
 
 begin
    ws_array      <= (others => ws);
@@ -88,6 +90,8 @@ begin
 
    led_rgb_6_in(0) <= '0';
    led_rgb_5_in(1) <= '0';
+
+   system_ids <= sw_ff(3 downto 2); 
 
    process (empty_array, almost_empty_array, almost_full_array, full_array)
    begin
@@ -318,7 +322,8 @@ begin
          reset_rtl => reset_rtl,
          axi_data  => data_stream,
          axi_empty => empty_array(0),
-         axi_rd_en => rd_en_pulse
+         axi_rd_en => rd_en_pulse, 
+         axi_sys_id => system_ids
       );
 
 end structual;
