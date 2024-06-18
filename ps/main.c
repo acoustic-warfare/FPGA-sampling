@@ -83,7 +83,7 @@ int main() {
     Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
 
     u32 reg_data_out = *(slaveaddr_p + 1);  
-    u32 sys_id = (reg_data_out >> 1) & 0x3; // System ID based on board switches
+    u32 sys_id = (reg_data_out >> 1) & 0x3; // ID of FPGA
     xil_printf("System ID: %x\r\n", sys_id);
 
     // Sets ipaddr based on the system id

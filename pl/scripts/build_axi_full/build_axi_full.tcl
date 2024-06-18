@@ -21,11 +21,12 @@ add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
-add_files [file join "$ROOT" src sample_data sample.vhd]
+#add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data full_sample.vhd]
+add_files [file join "$ROOT" src sample_data double_ff.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
