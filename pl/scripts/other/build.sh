@@ -47,13 +47,17 @@ done
 
 if [ "$skip_vivado" = false ]; then
    source /tools/Xilinx/Vivado/2022.1/settings64.sh
-   rm $GIT_ROOT/pl/vivado_files -r
+   if [ -d "$GIT_ROOT/pl/vivado_files" ]; then
+      rm -r "$GIT_ROOT/pl/vivado_files"
+   fi
    vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
 fi
 
 if [ "$skip_sdk" = false ]; then
    source /tools/Xilinx/SDK/2017.4/settings64.sh
-   rm $GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk -r # remove folder first
+   if [ -d "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" ]; then
+      rm -r "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" # remove folder if it exists
+   fi   
    xsct $GIT_ROOT/pl/scripts/build_axi_full/launch_sdk.tcl
 fi
 
