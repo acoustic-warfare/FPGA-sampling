@@ -1,5 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.matrix_type.all;
 
 entity mux is
@@ -23,46 +24,79 @@ entity mux is
       rd_en_fifo : out std_logic;
       data_out   : out std_logic_vector(31 downto 0)
    );
-end mux;
+end entity;
 
 architecture rtl of mux is
-   signal rd_en_d : std_logic;
-
+   signal rd_en_d    : std_logic;
+   signal rd_en_edge : std_logic;
    type state_type is (idle, run);
-   signal state : state_type := idle;
+   signal state : state_type;
 
-   signal counter : integer := 0;
+   signal counter : unsigned(7 downto 0);
 
+   signal data_in_d    : matrix_256_32_type;
+   signal data_in_dd   : matrix_256_32_type;
+   signal data_in_ddd  : matrix_256_32_type;
+   signal data_in_dddd : matrix_256_32_type;
+
+   --signal tb_data_in_d    : std_logic_vector(31 downto 0);
+   --signal tb_data_in_dd   : std_logic_vector(31 downto 0);
+   --signal tb_data_in_ddd  : std_logic_vector(31 downto 0);
+   --signal tb_data_in_dddd : std_logic_vector(31 downto 0);
 begin
+
+   rd_en_edge <= (not rd_en_d) and rd_en;
+
+   -- only to view signals in tb
+   --tb : process (data_in_d, data_in_dd, data_in_ddd, data_in_dddd)
+   --begin
+   --   tb_data_in_d    <= data_in_d(0);
+   --   tb_data_in_dd   <= data_in_dd(0);
+   --   tb_data_in_ddd  <= data_in_ddd(0);
+   --   tb_data_in_dddd <= data_in_dddd(0);
+   --end process;
 
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
+         rd_en_d <= rd_en;
+
+         data_in_d    <= data_in;
+         data_in_dd   <= data_in_d;
+         data_in_ddd  <= data_in_dd;
+         data_in_dddd <= data_in_ddd;
+
+         if (reset = '1') then
+            state      <= idle;
+            data_out   <= (others => '0');
+            rd_en_fifo <= '0';
+            counter    <= (others => '0');
+         else
+
+            rd_en_fifo <= '0';
+
             case state is
                when idle =>
-
-                  rd_en_fifo <= '0';
-                  data_out   <= data_in(0);
-                  if (rd_en = '1' and rd_en_d = '0') then -- Rising_edge rd_en
-                     counter  <= - 1;
+                  if (rd_en_edge) then           -- Rising_edge rd_en
+                     counter  <= to_unsigned(2, 8); -- set value to 2
                      state    <= run;
-                     data_out <= data_in(1);
+                     data_out <= data_in_dddd(1);
+                  else
+                     counter  <= (others => '0');
+                     data_out <= data_in_dddd(0);
                   end if;
 
                when run =>
-                  rd_en_fifo <= '0';
+                  data_out <= data_in_dddd(to_integer(counter));
 
-                  if (counter >= 256) then
-                     counter    <= 0;
-                     state      <= idle;
-                     data_out   <= (others => '1');
+                  if (counter = 0) then
+                     counter <= (others => '0');
+                     state   <= idle;
+                  elsif (counter = 255 - 4) then
                      rd_en_fifo <= '1';
-                  elsif (counter < 2) then
-                     data_out <= "01010101010101010101010101010101";
-                     counter  <= counter + 1;
+                     counter    <= counter + 1;
                   else
-                     data_out <= data_in(counter);
-                     counter  <= counter + 1;
+                     counter <= counter + 1;
                   end if;
 
                when others =>
@@ -70,14 +104,7 @@ begin
                   state <= idle;
             end case;
 
-            if (reset = '1') then
-               data_out   <= (others => '0');
-               rd_en_fifo <= '0';
-               counter    <= 0;
-            end if;
-
-            rd_en_d <= rd_en;
-
+         end if;
       end if;
    end process;
-end rtl;
+end architecture;

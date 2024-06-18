@@ -18,7 +18,7 @@ architecture tb of tb_mux is
    constant C_CLK_CYKLE : time := 8 ns; -- 125 MHz
 
    signal clk   : std_logic := '1';
-   signal reset : std_logic := '0';
+   signal reset : std_logic := '1';
    --signal sw         : std_logic := '0';
    signal rd_en      : std_logic := '0';
    signal rd_en_fifo : std_logic := '0';
@@ -26,6 +26,8 @@ architecture tb of tb_mux is
    signal data_in    : matrix_256_32_type;
 
    signal counter_tb : integer := 0;
+
+   signal rd_en_fifo_latch : std_logic := '0';
 
 begin
    clk <= not(clk) after C_CLK_CYKLE/2;
@@ -52,11 +54,21 @@ begin
       end if;
    end process;
 
-   gen_data_in : process (clk)
+   gen_data_in : process (clk, rd_en_fifo, rd_en_fifo_latch)
    begin
-      for i in 0 to 255 loop
-         data_in(i) <= std_logic_vector(to_unsigned(i, 32));
-      end loop;
+      if (rd_en_fifo = '1') then
+         rd_en_fifo_latch <= '1';
+      end if;
+
+      if (rd_en_fifo_latch = '1') then
+         for i in 0 to 255 loop
+            data_in(i) <= std_logic_vector(to_unsigned(10, 32));
+         end loop;
+      else
+         for i in 0 to 255 loop
+            data_in(i) <= std_logic_vector(to_unsigned(i, 32));
+         end loop;
+      end if;
    end process;
 
    main : process
@@ -65,8 +77,9 @@ begin
       while test_suite loop
          if run("wave") then
             -- test 1 is so far only meant for gktwave
-
-            wait for 20000 ns; -- duration of test 1
+            wait for (2 * C_CLK_CYKLE);
+            reset <= '0';
+            wait for (2000 * C_CLK_CYKLE); -- duration of test 1
 
          elsif run("auto") then
 

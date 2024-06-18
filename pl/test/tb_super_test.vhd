@@ -61,7 +61,7 @@ architecture tb of tb_super_test is
    signal almost_full_array  : std_logic_vector(255 downto 0);
    signal full_array         : std_logic_vector(255 downto 0);
 
-   signal sw           : std_logic;
+   --signal sw           : std_logic;
    signal data_mux_out : std_logic_vector(31 downto 0);
 
    constant delay_sample : integer                      := 3;
@@ -164,7 +164,6 @@ begin
       port map(
          sys_clk    => clk,
          reset      => reset,
-         sw         => sw,
          rd_en      => not empty_array(0),
          rd_en_fifo => rd_en,
          data_in    => data_fifo_out,
