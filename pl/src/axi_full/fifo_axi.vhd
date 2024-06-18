@@ -42,7 +42,7 @@ entity fifo_axi is
       -- The number of elements in the FIFO
       --fill_count : out integer range RAM_DEPTH - 1 downto 0
    );
-end fifo_axi;
+end entity;
 
 architecture rtl of fifo_axi is
 

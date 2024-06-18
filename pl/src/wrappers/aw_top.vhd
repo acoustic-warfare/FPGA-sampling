@@ -302,7 +302,6 @@ begin
 
    mux : entity work.mux
       port map(
-         sw         => sw_ff(2),
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
