@@ -11,8 +11,6 @@ vivado_files
 .metadata/
 ip_repo
 .project
-ps/server
-ps/mic_data
 bat
 data*
 ljud*
@@ -20,3 +18,4 @@ clk_sample*
 ljud
 .vscode/settings.json
 .vscode
+recorded_mic_data

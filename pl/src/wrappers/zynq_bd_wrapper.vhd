@@ -16,8 +16,22 @@ entity zynq_bd_wrapper is
 end entity;
 architecture rtl of zynq_bd_wrapper is
 
+   signal reset_rtl_internal  : std_logic;
+   signal axi_data_internal   : std_logic_vector(31 downto 0);
+   signal axi_empty_internal  : std_logic;
+   signal axi_rd_en_internal  : std_logic;
+   signal axi_sys_id_internal : std_logic_vector(1 downto 0);
+   signal clk_25_internal     : std_logic;
+
 begin
 
    clk_125 <= sys_clock;
+
+   reset_rtl_internal  <= reset_rtl;
+   axi_data_internal   <= axi_data;
+   axi_empty_internal  <= axi_empty;
+   axi_rd_en_internal  <= axi_rd_en;
+   axi_sys_id_internal <= axi_sys_id;
+   clk_25_internal     <= clk_25;
 
 end architecture;

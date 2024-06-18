@@ -17,8 +17,8 @@ entity collector is
    ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       -- TODO: implement generics
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
+      --G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      --G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
       chainID    : integer := 0   -- Identifier for a specific chain
    );
    port (

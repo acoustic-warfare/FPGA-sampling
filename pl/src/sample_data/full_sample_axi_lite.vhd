@@ -15,11 +15,11 @@ entity full_sample_axi_lite is
    --
    -- SAMPLE_COUNTER_ARRAY: Counter for how many samples that gone through the component, 16 bit
    ------------------------------------------------------------------------------------------------------------------------------------------------
-   generic (
-      -- TODO: implement generics
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
-   );
+   -- generic (
+   --    -- TODO: implement generics
+   --    G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+   --    G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+   -- );
    port (
       sys_clk                 : in std_logic;
       reset                   : in std_logic;
