@@ -8,7 +8,7 @@ RESET=$(tput sgr0)
 # TODO: make this better and add some nice prints and flags
 
 
-rm_vivado_dir = false
+rm_vivado_dir=false
 
 # for flags
 for arg in "$@"; do
@@ -25,7 +25,7 @@ for arg in "$@"; do
     esac
 done
 
-if [ "$rm_txt" = true ]; then
+if [ "$rm_vivado_dir" = true ]; then
    rm pl/vivado_files -r
 fi
 

@@ -78,8 +78,8 @@ echo "GHDL $GHDL_VERSION"
 #
 alias vunit='python3 $(git rev-parse --show-toplevel)/pl/run.py -v '
 alias gtkwave='python3 $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
-alias build='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_axi_full/build_axi_full.tcl'
-alias build_axi_lite='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_1_array/build_1_array.tcl'
+alias build='sh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
+#alias build_axi_lite='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_1_array/build_1_array.tcl'
 alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias open_vivado_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_vivado_project.tcl'
 alias open_sdk_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_sdk_project.tcl'

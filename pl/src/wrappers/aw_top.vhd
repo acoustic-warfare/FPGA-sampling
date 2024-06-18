@@ -6,7 +6,7 @@ use work.matrix_type.all;
 entity aw_top is
    generic (
       --num_arrays : integer := 4 -- not in use yet
-      fifo_buffer_lenght : integer := 16 --lowerd from 128
+      fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
       sys_clock     : in std_logic;
