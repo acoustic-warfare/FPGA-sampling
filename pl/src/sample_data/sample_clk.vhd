@@ -21,7 +21,7 @@ entity sample_clk is
       bit_stream           : in std_logic;
       ws                   : in std_logic;
       index                : in std_logic_vector(3 downto 0);
-      mic_sample_data_out  : inout std_logic_vector(23 downto 0);
+      mic_sample_data_out  : out std_logic_vector(23 downto 0);
       mic_sample_valid_out : out std_logic := '0' -- A signal to tell the receiver to start reading the mic_sample_data_out
    );
 end entity;
@@ -30,6 +30,8 @@ architecture rtl of sample_clk is
    type state_type is (idle, run, pause); -- Three states for the state-machine. See State-diagram for more information
    signal state   : state_type;
    signal state_1 : integer range 0 to 2; -- Only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
+
+   signal mic_sample_data_out_internal : std_logic_vector(23 downto 0);
 
    signal counter_bit  : integer range 0 to 60 := 0; -- Counts the TDM-slots for a microphone   (0-31)
    signal counter_samp : integer range 0 to 7  := 0; -- Counts number of samples per TDM-slot   (0-4)
@@ -47,6 +49,9 @@ architecture rtl of sample_clk is
    signal index_dddddddd : std_logic_vector(3 downto 0);
 
 begin
+
+   mic_sample_data_out <= mic_sample_data_out_internal;
+
    main_state_p : process (sys_clk) -- Main process for the statemachine. Starts in IDLE
    begin
       if rising_edge(sys_clk) then
@@ -100,14 +105,14 @@ begin
 
                   if bit_stream = '1' then
                      -- Sampled bit = 1
-                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0)           <= '1';
-                     counter_bit                      <= counter_bit + 1;
+                     mic_sample_data_out_internal(23 downto 1) <= mic_sample_data_out_internal(22 downto 0);
+                     mic_sample_data_out_internal(0)           <= '1';
+                     counter_bit                               <= counter_bit + 1;
                   else
                      -- Sampled bit = 0
-                     mic_sample_data_out(23 downto 1) <= mic_sample_data_out(22 downto 0);
-                     mic_sample_data_out(0)           <= '0';
-                     counter_bit                      <= counter_bit + 1;
+                     mic_sample_data_out_internal(23 downto 1) <= mic_sample_data_out_internal(22 downto 0);
+                     mic_sample_data_out_internal(0)           <= '0';
+                     counter_bit                               <= counter_bit + 1;
                   end if;
 
                   if counter_bit = 23 then
