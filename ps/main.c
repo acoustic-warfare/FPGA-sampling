@@ -5,12 +5,16 @@
 #include "netif/xadapter.h"
 #include "platform.h"
 #include "platform_config.h"
+#include "xbasic_types.h"
 #include "xil_io.h"
+#include "xil_printf.h"
+#include "xparameters.h"
 
 void platform_enable_interrupts();
 void lwip_init(void);
 
-#define AD0 0x40000000
+void Xil_DCacheFlush(void);
+void Xil_DCacheFlushRange(u32 *adr, u32 len);
 
 void print_ip(char *msg, struct ip_addr *ip) {
     print(msg);
@@ -29,7 +33,7 @@ void PayloadID(u32 data[]) {}
 
 int main() {
     // set number of arrays used
-    u32 nr_arrays = 1;
+    u32 nr_arrays = 4;
 
     // set number of 32bit slots in payload_header
     u32 payload_header_size = 2;
@@ -37,9 +41,8 @@ int main() {
     // constants that will be sent in payload_header
     u32 protocol_ver = 2;
     u32 frequency = 48828;
-    
+
     u32 data[payload_header_size + nr_arrays * 64];
-    u32 start_addr = AD0;
 
     u32 empty;
 
@@ -55,9 +58,10 @@ int main() {
 
     u16_t Port = 21844;
 
+    // 1458 bytes is max that can fit in a udp frame from the zynq
     int buflen = 1458;
 
-    /* The MAC address of the board. this should be unique per board */
+    /* The MAC address of the board. This should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
 
     netif = &server_netif;
@@ -69,16 +73,44 @@ int main() {
 
     /* initliaze IP addresses to be used */
 #if (LWIP_DHCP == 1 || LWIP_DHCP == 0)
-    IP4_ADDR(&ipaddr, 192, 168, 1, 75);
+    IP4_ADDR(&ipaddr, 192, 168, 1, 75); // Init/default IP address
     IP4_ADDR(&netmask, 0, 0, 0, 0);
     IP4_ADDR(&gw, 192, 168, 1, 1);
 
     print_ip_settings(&ipaddr, &netmask, &gw);
 #endif
 
+    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
+
+    u32 reg_data_out = *(slaveaddr_p + 1);  
+    u32 sys_id = (reg_data_out >> 1) & 0x3; // ID of FPGA
+    xil_printf("System ID: %x\r\n", sys_id);
+
+    // Sets ipaddr based on the system id
+    switch (sys_id) {
+       case 0:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 75);
+          break;
+       case 1:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 76);
+          break;
+       case 2:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 77);
+          break;
+       case 3:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 78);
+          break;
+       default:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 75); 
+          break;
+    } 
+
+    print_ip_settings(&ipaddr, &netmask, &gw);
+
     lwip_init();
 
-    if (!xemac_add(netif, &ipaddr, &netmask, &gw, mac_ethernet_address, PLATFORM_EMAC_BASEADDR)) {
+    if (!xemac_add(netif, &ipaddr, &netmask, &gw, mac_ethernet_address,
+                   PLATFORM_EMAC_BASEADDR)) {
         xil_printf("Error adding N/W interface\r\n");
         return -1;
     }
@@ -93,7 +125,7 @@ int main() {
 
     xil_printf("Setup Done!\r\n");
 
-    // ip of reciving pc
+    // ip of receiving pc
     IP4_ADDR(&ip_remote, 10, 0, 0, 1);
 
     udp_1 = udp_new();
@@ -101,49 +133,64 @@ int main() {
     error = udp_bind(udp_1, IP_ADDR_ANY, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }else if (error == 0) {
+    } else if (error == 0) {
         xil_printf("Success in UDP binding \r\n");
     }
 
     error = udp_connect(udp_1, &ip_remote, Port);
     if (error != 0) {
         xil_printf("Failed %d\r\n", error);
-    }else if (error == 0) {
+    } else if (error == 0) {
         xil_printf("Success in UDP connect \r\n");
     }
 
     xil_printf("\r\n");
     xil_printf("----------Acoustic-Warfare Sending UDP!----------\r\n");
+    xil_printf("-------------Bursts using AXI_FULL!--------------\r\n");
+    xil_printf("\r\n");
+
+    Xil_DCacheFlush();  // important to make the zynq not cache the data
+    // Xil_L2CacheDisable();
+
+    // pointer to memory start address where data will be sent 0x10000000
+    Xuint32 *data_p = (Xuint32 *)0x10000000;
+
+    // start AXI4 write/read burst transaction (axi_init_pulse)
+    *(slaveaddr_p + 0) = 0x00000001;
+    *(slaveaddr_p + 0) = 0x00000000;
 
     // add 32-bit payload_headder
     data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
     data[0] += nr_arrays << 16;    // second 8-bits of header: Number of Arrays
     data[0] += frequency;          // last 16-bits of header: Frequency
-    // data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 12);  // read
-    // frequency from axi
 
     while (1) {
-        empty = Xil_In32(start_addr + nr_arrays * 64 * 4);
+        // check if fifo are empty
+        empty = *(slaveaddr_p + 3);
         if (empty == 0) {
-            data[1] = Xil_In32(start_addr + nr_arrays * 64 * 4 + 8);  // counter for header
-            for (int i = 0; i < 64 * nr_arrays; i++) {
-                data[payload_header_size + i] = Xil_In32(start_addr + 4 * i);
+            // flush the cache from old data
+            Xil_DCacheFlushRange(data_p, 2048);
+
+            // send read_done to AXI (read_done_pulse)
+            *(slaveaddr_p + 0) = 0x00000002;
+            *(slaveaddr_p + 0) = 0x00000000;
+
+            // recive data from AXI
+            data[1] = 100;  // FIX sample counter
+
+            for (int i = 0; i < 256; i++) {
+                data[i + payload_header_size] = *(data_p + i);
             }
 
+            // package and send UDP
             xemacif_input(netif);
-
             p = pbuf_alloc(PBUF_TRANSPORT, buflen, PBUF_POOL);
-
-            if (!p) {
-                xil_printf("error allocating pbuf \r\n");
-                return ERR_MEM;
-            }
-
             memcpy(p->payload, data, buflen);
-
             udp_send(udp_1, p);
-
             pbuf_free(p);
         }
     }
+
+    cleanup_platform();
+    return 0;
 }

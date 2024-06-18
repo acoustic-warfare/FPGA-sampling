@@ -34,15 +34,15 @@ entity fifo_axi is
       rd_data : out std_logic_vector(RAM_WIDTH - 1 downto 0);
 
       -- Flags
-      empty      : out std_logic;
-      empty_next : out std_logic;
-      full       : out std_logic;
-      full_next  : out std_logic
+      empty        : out std_logic;
+      almost_empty : out std_logic;
+      almost_full  : out std_logic;
+      full         : out std_logic
 
       -- The number of elements in the FIFO
       --fill_count : out integer range RAM_DEPTH - 1 downto 0
    );
-end fifo_axi;
+end entity;
 
 architecture rtl of fifo_axi is
 
@@ -54,9 +54,11 @@ architecture rtl of fifo_axi is
    signal head : index_type;
    signal tail : index_type;
 
-   signal empty_i      : std_logic;
-   signal full_i       : std_logic;
-   signal fill_count_i : integer;
+   signal empty_i        : std_logic;
+   signal almost_empty_i : std_logic;
+   signal almost_full_i  : std_logic;
+   signal full_i         : std_logic;
+   signal fill_count_i   : integer;
 
    -- Increment and wrap
    procedure incr(signal index : inout index_type) is
@@ -71,17 +73,19 @@ architecture rtl of fifo_axi is
 begin
 
    -- Copy internal signals to output
-   empty <= empty_i;
-   full  <= full_i;
+   empty        <= empty_i;
+   almost_empty <= almost_empty_i;
+   almost_full  <= almost_full_i;
+   full         <= full_i;
 
    -- Set the flags
    empty_i <= '1' when fill_count_i = 0 else
       '0';
-   empty_next <= '1' when fill_count_i <= 1 else
+   almost_empty_i <= '1' when fill_count_i < 4 else -- less than 4 in buffer
       '0';
-   full_i <= '1' when fill_count_i >= RAM_DEPTH - 1 else
+   almost_full_i <= '1' when fill_count_i > RAM_DEPTH - 4 - 2 else -- more than RAM_DEPTH - 4
       '0';
-   full_next <= '1' when fill_count_i >= RAM_DEPTH - 2 else
+   full_i <= '1' when fill_count_i > RAM_DEPTH - 2 else
       '0';
 
    -- Update the head pointer in write

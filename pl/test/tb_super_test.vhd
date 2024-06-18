@@ -25,10 +25,10 @@ architecture tb of tb_super_test is
 
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
-   signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream_in        : std_logic_vector(15 downto 0);
-   signal bit_stream_out       : std_logic_vector(15 downto 0);
-   signal switch               : std_logic := '1';
+   -- signal ws_error             : std_logic_vector(3 downto 0);
+   signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
+   signal bit_stream_out : std_logic_vector(15 downto 0);
+   signal switch         : std_logic := '1';
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
@@ -46,23 +46,26 @@ architecture tb of tb_super_test is
    signal array_matrix_valid_out   : std_logic;
    signal sample_counter_array     : std_logic_vector(31 downto 0);
 
-   signal ws_ok  : std_logic;
-   signal sck_ok : std_logic;
+   -- signal ws_ok  : std_logic;
+   -- signal sck_ok : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
    signal bitstream_cable : std_logic_vector(15 downto 0);
 
-   signal RAM_DEPTH        : natural := 128;
-   signal rd_en            : std_logic;
-   signal data_fifo_out    : matrix_256_32_type := (others => (others => '0'));
-   signal full_array       : std_logic_vector(255 downto 0);
-   signal empty_array      : std_logic_vector(255 downto 0);
-   signal full_next_array  : std_logic_vector(255 downto 0);
-   signal empty_next_array : std_logic_vector(255 downto 0);
+   signal RAM_DEPTH          : natural := 128;
+   signal rd_en              : std_logic;
+   signal data_fifo_out      : matrix_256_32_type := (others => (others => '0'));
+   signal empty_array        : std_logic_vector(255 downto 0);
+   signal almost_empty_array : std_logic_vector(255 downto 0);
+   signal almost_full_array  : std_logic_vector(255 downto 0);
+   signal full_array         : std_logic_vector(255 downto 0);
 
-   signal sw           : std_logic;
+   --signal sw           : std_logic;
    signal data_mux_out : std_logic_vector(31 downto 0);
+
+   constant delay_sample : integer                      := 3;
+   signal index          : std_logic_vector(3 downto 0) := std_logic_vector(to_unsigned(delay_sample, 4));
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
@@ -82,6 +85,9 @@ begin
    tb_look_fullsample_data_out_63 <= array_matrix_data_out(63);
 
    simulated_array1 : entity work.simulated_array
+      generic map(
+         index => delay_sample + 8 -- currently +4 to +8
+      )
       port map(
          clk            => clk,
          sck_clk        => sck_clk_cable,
@@ -94,12 +100,13 @@ begin
 
    sample_gen : for i in 0 to 3 generate
    begin
-      sample : entity work.sample
+      sample_C : entity work.sample_clk
          port map(
-            sys_clk              => sck_clk,
+            sys_clk              => clk,
             reset                => reset,
-            bit_stream           => bitstream_cable(i),
             ws                   => ws,
+            index                => index,
+            bit_stream           => bit_stream_out(i),
             mic_sample_data_out  => mic_sample_data_out(i),
             mic_sample_valid_out => mic_sample_valid_out(i)
          );
@@ -140,16 +147,16 @@ begin
             RAM_DEPTH => RAM_DEPTH
          )
          port map(
-            clk        => clk,
-            rst        => reset,
-            wr_en      => array_matrix_valid_out,
-            wr_data    => array_matrix_data_out(i),
-            rd_en      => rd_en,
-            rd_data    => data_fifo_out(i),
-            empty      => empty_array(i),
-            empty_next => empty_next_array(i),
-            full       => full_array(i),
-            full_next  => full_next_array(i)
+            clk          => clk,
+            rst          => reset,
+            wr_en        => array_matrix_valid_out,
+            wr_data      => array_matrix_data_out(i),
+            rd_en        => rd_en,
+            rd_data      => data_fifo_out(i),
+            empty        => empty_array(i),
+            almost_empty => almost_empty_array(i),
+            almost_full  => almost_full_array(i),
+            full         => full_array(i)
          );
    end generate fifo_gen;
 
@@ -157,8 +164,7 @@ begin
       port map(
          sys_clk    => clk,
          reset      => reset,
-         sw         => sw,
-         rd_en      => not empty_next_array(0),
+         rd_en      => not empty_array(0),
          rd_en_fifo => rd_en,
          data_in    => data_fifo_out,
          data_out   => data_mux_out
@@ -167,9 +173,9 @@ begin
    ws_pulse1 : entity work.ws_pulse
       generic map(startup_length => 10)
       port map(
-         sck_clk     => sck_clk,
-         ws          => ws,
-         reset       => reset
+         sck_clk => sck_clk,
+         ws      => ws,
+         reset   => reset
       );
 
    main : process
@@ -180,12 +186,20 @@ begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
          if run("wave") then
+            wait for (C_CLK_CYKLE * 1);
+            reset <= '1';
+            wait for (C_CLK_CYKLE * 10);
+            reset <= '0';
             -- test 1 is so far only meant for gktwave
-            wait for 3000000 ns; -- duration of test 1
+            wait for 300000 ns; -- duration of test 1
 
          elsif run("auto") then
-            for i in 0 to 100000 loop
+            wait for (C_CLK_CYKLE * 1);
+            reset <= '1';
+            wait for (C_CLK_CYKLE * 10); -- duration of test 1
+            reset <= '0';
 
+            for i in 0 to 100000 loop
                if (array_matrix_valid_out = '1') then
                   --info("test");
                   for row in 0 to 63 loop

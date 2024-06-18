@@ -15,11 +15,11 @@ entity full_sample is
    --
    -- SAMPLE_COUNTER_ARRAY: Counter for how many samples that gone through the component, 16 bit
    ------------------------------------------------------------------------------------------------------------------------------------------------
-   generic (
-      -- TODO: implement generics
-      G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
-   );
+   --generic (
+   --   -- TODO: implement generics
+   --   G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+   --   G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+   --);
    port (
       sys_clk                 : in std_logic;
       reset                   : in std_logic;
@@ -39,7 +39,6 @@ begin
 
    fill_matrix_out_p : process (sys_clk) -- This proccess fills a matrix with samples from all four collectors
       variable temp_chain_matrix : matrix_16_32_type;
-
    begin
       if rising_edge(sys_clk) then
 

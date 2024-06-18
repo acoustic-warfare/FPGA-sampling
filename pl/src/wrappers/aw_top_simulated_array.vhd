@@ -5,11 +5,11 @@ use work.matrix_type.all;
 
 entity aw_top_simulated_array is
    port (
-      ws         : in std_logic;
-      sck_clk    : in std_logic;
-      reset      : in std_logic;
-      sys_clock  : in std_logic;
-      switch     : in std_logic;
+      ws        : in std_logic;
+      sck_clk   : in std_logic;
+      reset     : in std_logic;
+      sys_clock : in std_logic;
+      --   switch     : in std_logic;
       bit_stream : out std_logic_vector(3 downto 0)
    );
 end entity;

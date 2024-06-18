@@ -34,28 +34,28 @@ fi
 # Python
 #
 # 'venv' setup and activation
-VENV_NAME="venv"
+VENV_NAME=".venv"
 # TODO: trigger on changes to requirements.txt to stay up to date.
 # NOTE: to slow to always run
 if [ ! -d "$VENV_NAME" ]; then
     echo -e "Python environment setup"
     python3 -m venv $VENV_NAME
-    $VENV_NAME/bin/python -m pip install setuptools wheel
-    $VENV_NAME/bin/python -m pip install -r requirements.txt
+    $VENV_NAME/bin/python3 -m pip install setuptools wheel
+    $VENV_NAME/bin/python3 -m pip install -r requirements.txt
 fi
 # TODO: Add explicit python min version and check
-. $VENV_NAME/bin/activate    
-python --version
+source $VENV_NAME/bin/activate    
+python3 --version
 
 
 #
 # Vivado
 #
-VIVADO_VERSION="2017.4"
-XILINX_PATH="$ "/opt/Xilinx/Vivado/$VIVADO_VERSION""
+#VIVADO_VERSION="2017.4"
+#XILINX_PATH="$ "/opt/Xilinx/Vivado/$VIVADO_VERSION""
 #echo -e "$\033[1;33m $XILINX_PATH \033[0m" #print path
-[ $? -eq 0 ] && . "/opt/Xilinx/Vivado/2017.4/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m" 
-echo "Vivado $VIVADO_VERSION"
+#[ $? -eq 0 ] && . "/opt/Xilinx/Vivado/2017.4/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m" 
+#echo "Vivado $VIVADO_VERSION"
 
 # TODO: set up simlibs and path to them
 # NOTE: xsim will be needed for ip simulations if needed as most are verilog based
@@ -70,21 +70,22 @@ echo "Vivado $VIVADO_VERSION"
 GHDL_REQUIRED_VERSION="2.0.0"
 GHDL_PATH="$ "/usr/lib/ghdl""
 GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
-
 echo "GHDL $GHDL_VERSION"
 
 
 #
 # Useful aliases
 #
-alias clean="git clean -xdie $VENV_NAME"
-alias vunit='python $(git rev-parse --show-toplevel)/pl/run.py -v '
-alias gtkwave='python $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
-alias build='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_axi_full/build_axi_full.tcl'
-alias build_axi_lite='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_1_array/build_1_array.tcl'
+alias vunit='python3 $(git rev-parse --show-toplevel)/pl/run.py -v '
+alias gtkwave='python3 $(git rev-parse --show-toplevel)/pl/run.py --gtkwave-fmt vcd --gui'
+alias build='sh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
+#alias build_axi_lite='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_1_array/build_1_array.tcl'
 alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias open_vivado_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_vivado_project.tcl'
 alias open_sdk_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_sdk_project.tcl'
+
+alias clean="git clean -xdie $VENV_NAME"
+alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
 
 echo -e '
 Welcome to Acustic Warfare!
