@@ -211,6 +211,7 @@ proc create_root_design { parentCell } {
    # Create ports
    set axi_data [ create_bd_port -dir I -from 31 -to 0 axi_data ]
    set axi_empty [ create_bd_port -dir I axi_empty ]
+   set axi_sys_id [ create_bd_port -dir I -from 1 -to 0 axi_sys_id ]
    set axi_rd_en [ create_bd_port -dir O axi_rd_en ]
    set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
    set_property -dict [ list \
@@ -799,6 +800,7 @@ proc create_root_design { parentCell } {
    connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axi_v1_0_0/m00_axi_aclk] [get_bd_pins axi_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
    connect_bd_net -net data_0_1 [get_bd_ports axi_data] [get_bd_pins axi_v1_0_0/data]
    connect_bd_net -net empty_0_1 [get_bd_ports axi_empty] [get_bd_pins axi_v1_0_0/empty]
+   connect_bd_net -net sys_id_0_1 [get_bd_ports axi_sys_id] [get_bd_pins axi_v1_0_0/sys_id]
    connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in] [get_bd_pins rst_ps7_0_50M_1/ext_reset_in]
    connect_bd_net -net reset_0_1 [get_bd_ports reset_rtl] [get_bd_pins clk_wiz_0/reset]
    connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axi_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]

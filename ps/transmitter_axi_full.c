@@ -73,12 +73,39 @@ int main() {
 
     /* initliaze IP addresses to be used */
 #if (LWIP_DHCP == 1 || LWIP_DHCP == 0)
-    IP4_ADDR(&ipaddr, 192, 168, 1, 75);
+    IP4_ADDR(&ipaddr, 192, 168, 1, 75); // Init/default IP address
     IP4_ADDR(&netmask, 0, 0, 0, 0);
     IP4_ADDR(&gw, 192, 168, 1, 1);
 
     print_ip_settings(&ipaddr, &netmask, &gw);
 #endif
+
+    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
+
+    u32 reg_data_out = *(slaveaddr_p + 1);  
+    u32 sys_id = (reg_data_out >> 1) & 0x3; // System ID based on board switches
+    xil_printf("System ID: %x\r\n", sys_id);
+
+    // Sets ipaddr based on the system id
+    switch (sys_id) {
+       case 0:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 75);
+          break;
+       case 1:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 76);
+          break;
+       case 2:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 77);
+          break;
+       case 3:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 78);
+          break;
+       default:
+          IP4_ADDR(&ipaddr, 192, 168, 1, 75); 
+          break;
+    } 
+
+    print_ip_settings(&ipaddr, &netmask, &gw);
 
     lwip_init();
 
@@ -124,9 +151,6 @@ int main() {
 
     Xil_DCacheFlush();  // important to make the zynq not cache the data
     // Xil_L2CacheDisable();
-
-    // pointer to address the AXI4-Lite slave
-    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
 
     // pointer to memory start address where data will be sent 0x10000000
     Xuint32 *data_p = (Xuint32 *)0x10000000;

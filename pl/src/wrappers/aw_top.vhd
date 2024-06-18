@@ -59,6 +59,8 @@ architecture structual of aw_top is
    signal rst_int : std_logic             := '1';
 
    signal counter_led : integer := 0;
+   
+   signal system_ids       : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
 
 begin
    ws_out <= (others => ws);
@@ -86,6 +88,7 @@ begin
    btn_up   <= btn(2);
    btn_down <= btn(3);
 
+   system_ids <= sw(3 downto 2); 
 
    process (empty_array, full_array, almost_empty_array, almost_full_array)
       begin
@@ -280,7 +283,6 @@ begin
 
    mux : entity work.mux
       port map(
-         sw         => sw(2),
          sys_clk    => clk,
          reset      => reset,
          rd_en      => rd_en_pulse,
@@ -297,7 +299,8 @@ begin
          reset_rtl => reset_rtl,
          axi_data  => data_stream,
          axi_empty => almost_empty_array(0),
-         axi_rd_en => rd_en_pulse
+         axi_rd_en => rd_en_pulse, 
+         axi_sys_id => system_ids
       );
 
 end structual;

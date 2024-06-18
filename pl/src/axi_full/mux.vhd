@@ -16,7 +16,6 @@ entity mux is
    -- DATA: The 32-bit output array of data from each microphone. 
    --------------------------------------------------------------------------------------------------------------------------------------------------
    port (
-      sw         : in std_logic;
       sys_clk    : in std_logic;
       reset      : in std_logic;
       rd_en      : in std_logic;
@@ -39,19 +38,6 @@ begin
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
-         -- For debugging purposes, if sw is on then the predetermined sequence of bits is sent through
-         if (sw = '1') then
-            data_out <= "11111101010101010101010101010101";
-            if (counter >= 256) then
-               rd_en_fifo <= '1';
-               counter    <= 0;
-            else
-               rd_en_fifo <= '0';
-               counter    <= counter + 1;
-            end if;
-
-            -- Normal case where array data is sent through
-         else
             case state is
                when idle =>
 
@@ -92,7 +78,6 @@ begin
 
             rd_en_d <= rd_en;
 
-         end if;
       end if;
    end process;
 end rtl;
