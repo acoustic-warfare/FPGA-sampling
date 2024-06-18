@@ -18,5 +18,5 @@ data*
 ljud*
 clk_sample*
 ljud
-.vscode/*
+.vscode/settings.json
 .vscode
