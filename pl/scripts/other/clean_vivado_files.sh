@@ -1,32 +1,35 @@
+#!/bin/sh
+
+# FONTS
 BOLD=$(tput bold)
 UNDERLINE=$(tput smul)
 RESET_UNDERLINE=$(tput rmul)
 RESET=$(tput sgr0)
 
-## simple script to remove vivado files
-
-# TODO: make this better and add some nice prints and flags
-
-
+# FLAGS
 rm_vivado_dir=false
-
-# for flags
 for arg in "$@"; do
     case $arg in
     --rm_vivado_dir)
         rm_vivado_dir=true
         ;;
     -h | --help)
+        echo "Usage: cleanup.sh [--rm_vivado_dir]"
+        echo "  --rm_vivado_dir   Removes Vivado directory"
+        exit 0
         ;;
-    # Add more flags here if needed
     *)
-        # Ignore unrecognized flags, mabe print warning and help here
+        printf "%b\n" "${BOLD}${RED}Unknown option: $arg${RESET}"
+        echo "Use --help or -h for usage instructions."
+        exit 1
         ;;
     esac
 done
 
+## simple script to remove vivado files
+
 if [ "$rm_vivado_dir" = true ]; then
-   rm pl/vivado_files -r
+    rm -r pl/vivado_files
 fi
 
 rm vivado.jou
@@ -36,4 +39,4 @@ rm vivado_*.log
 rm vivado_*.jou
 rm hs_err_pid*.log
 rm vivado_*.zip
-rm .Xil -r
+rm -r .Xil

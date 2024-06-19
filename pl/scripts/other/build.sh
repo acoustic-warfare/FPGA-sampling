@@ -38,7 +38,7 @@ for arg in "$@"; do
       ;;
    *)
       printf "%b\n" "${BOLD}${RED}Unknown option: $arg${RESET}"
-      echo "Use --help for usage instructions."
+      echo "Use --help or -h for usage instructions."
       exit 1
       ;;
    esac
@@ -57,7 +57,7 @@ if [ "$skip_sdk" = false ]; then
    source /tools/Xilinx/SDK/2017.4/settings64.sh
    if [ -d "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" ]; then
       rm -r "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" # remove folder if it exists
-   fi   
+   fi
    xsct $GIT_ROOT/pl/scripts/build_axi_full/launch_sdk.tcl
 fi
 
