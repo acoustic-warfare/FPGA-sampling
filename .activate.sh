@@ -70,7 +70,7 @@ echo "GHDL $GHDL_VERSION"
 # Useful aliases
 #
 alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.sh'
-alias build='sh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
+alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
 alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias open_vivado_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_vivado_project.tcl'
 alias open_sdk_project='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/other/open_sdk_project.tcl'
