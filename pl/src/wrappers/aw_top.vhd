@@ -28,10 +28,6 @@ architecture structual of aw_top is
    signal ws_array      : std_logic_vector(7 downto 0);
    signal sck_clk_array : std_logic_vector(7 downto 0);
 
-   signal led_in       : std_logic_vector(3 downto 0);
-   signal led_rgb_5_in : std_logic_vector(2 downto 0);
-   signal led_rgb_6_in : std_logic_vector(2 downto 0);
-
    signal btn_ff        : std_logic_vector(3 downto 0);
    signal sw_ff         : std_logic_vector(3 downto 0);
    signal bit_stream_ff : std_logic_vector(15 downto 0);
@@ -69,18 +65,18 @@ architecture structual of aw_top is
 
    signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
    signal rst_int : std_logic             := '1';
-   
-   signal system_ids       : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
+
+   signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
 
 begin
    ws_array      <= (others => ws);
    sck_clk_array <= (others => sck_clk);
    sck_clk_out   <= sck_clk_array;
 
-   led_in(3) <= index(3);
-   led_in(2) <= index(2);
-   led_in(1) <= index(1);
-   led_in(0) <= index(0);
+   led_out(3) <= index(3);
+   led_out(2) <= index(2);
+   led_out(1) <= index(1);
+   led_out(0) <= index(0);
 
    reset_rtl <= btn_ff(0);
    reset     <= btn_ff(1);
@@ -88,35 +84,35 @@ begin
    btn_up   <= btn_ff(2);
    btn_down <= btn_ff(3);
 
-   led_rgb_6_in(0) <= '0';
-   led_rgb_5_in(1) <= '0';
+   led_rgb_6_out(0) <= '0';
+   led_rgb_5_out(1) <= '0';
 
-   system_ids <= sw_ff(3 downto 2); 
+   system_ids <= sw_ff(3 downto 2);
 
    process (empty_array, almost_empty_array, almost_full_array, full_array)
    begin
       if (empty_array(0) = '1') then
-         led_rgb_6_in(2) <= '1';
+         led_rgb_6_out(2) <= '1';
       else
-         led_rgb_6_in(2) <= '0';
+         led_rgb_6_out(2) <= '0';
       end if;
 
       if (almost_empty_array(0) = '1') then
-         led_rgb_6_in(1) <= '1';
+         led_rgb_6_out(1) <= '1';
       else
-         led_rgb_6_in(1) <= '0';
+         led_rgb_6_out(1) <= '0';
       end if;
 
       if (almost_full_array(0) = '1') then
-         led_rgb_5_in(0) <= '1';
+         led_rgb_5_out(0) <= '1';
       else
-         led_rgb_5_in(0) <= '0';
+         led_rgb_5_out(0) <= '0';
       end if;
 
       if (full_array(0) = '1') then
-         led_rgb_5_in(2) <= '1';
+         led_rgb_5_out(2) <= '1';
       else
-         led_rgb_5_in(2) <= '0';
+         led_rgb_5_out(2) <= '0';
       end if;
 
    end process;
@@ -137,23 +133,15 @@ begin
 
    double_ff : entity work.double_ff
       port map(
-         sys_clk       => clk,
-         btn_in        => btn,
-         sw_in         => sw,
-         bit_stream_in => bit_stream,
-         ws_in         => ws_array,
-         -- sck_clk_in     => sck_clk_array,
-         led_in         => led_in,
-         led_rgb_5_in   => led_rgb_5_in,
-         led_rgb_6_in   => led_rgb_6_in,
+         sys_clk        => clk,
+         btn_in         => btn,
+         sw_in          => sw,
+         bit_stream_in  => bit_stream,
+         ws_in          => ws_array,
          btn_out        => btn_ff,
          sw_out         => sw_ff,
          bit_stream_out => bit_stream_ff,
-         ws_out         => ws_out,
-         -- sck_clk_out    => sck_clk_out,
-         led_out       => led_out,
-         led_rgb_5_out => led_rgb_5_out,
-         led_rgb_6_out => led_rgb_6_out
+         ws_out         => ws_out
       );
 
    ws_pulse : entity work.ws_pulse
@@ -243,20 +231,6 @@ begin
          );
    end generate sample_gen_01;
 
-   -- Samplng with sck_clk, does not work because of hardware complications with arrays
-   --sample_gen_01 : for i in 0 to 15 generate
-   --begin
-   --   sample_C : entity work.sample
-   --      port map(
-   --         sys_clk              => sck_clk,
-   --         reset                => reset,
-   --         ws                   => ws,
-   --         bit_stream           => bit_stream_out(i),
-   --         mic_sample_data_out  => mic_sample_data(i),
-   --         mic_sample_valid_out => mic_sample_valid(i)
-   --      );
-   --end generate sample_gen_01;
-
    collector_gen : for i in 0 to 15 generate
    begin
       collector_c : entity work.collector
@@ -316,14 +290,14 @@ begin
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
-         clk_125   => clk,
-         clk_25    => sck_clk,
-         sys_clock => sys_clock,
-         reset_rtl => reset_rtl,
-         axi_data  => data_stream,
-         axi_empty => empty_array(0),
-         axi_rd_en => rd_en_pulse, 
+         clk_125    => clk,
+         clk_25     => sck_clk,
+         sys_clock  => sys_clock,
+         reset_rtl  => reset_rtl,
+         axi_data   => data_stream,
+         axi_empty  => empty_array(0),
+         axi_rd_en  => rd_en_pulse,
          axi_sys_id => system_ids
       );
 
-end structual;
+end architecture;
