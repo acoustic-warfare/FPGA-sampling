@@ -27,6 +27,7 @@ add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data full_sample.vhd]
 add_files [file join "$ROOT" src sample_data double_ff.vhd]
+add_files [file join "$ROOT" src sample_data simulated_array_select.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 
