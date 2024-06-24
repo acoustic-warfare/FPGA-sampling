@@ -32,10 +32,12 @@ architecture structual of aw_top is
    signal sw_ff         : std_logic_vector(3 downto 0);
    signal bit_stream_ff : std_logic_vector(15 downto 0);
 
-   signal reset     : std_logic;
-   signal reset_rtl : std_logic;
-   signal btn_up    : std_logic;
-   signal btn_down  : std_logic;
+   signal reset    : std_logic;
+   signal btn_up   : std_logic;
+   signal btn_down : std_logic;
+
+   signal sw_simulated_array : std_logic;
+   signal sw_mic_id          : std_logic;
 
    signal index : std_logic_vector(3 downto 0);
 
@@ -63,8 +65,8 @@ architecture structual of aw_top is
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
-   signal rst_cnt : unsigned(31 downto 0) := (others => '0'); --125 mhz, 8 ns,
-   signal rst_int : std_logic             := '1';
+   signal reset_count : unsigned(31 downto 0); --125 mhz, 8 ns,
+   signal reset_init  : std_logic;
 
    signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
 
@@ -78,57 +80,81 @@ begin
    led_out(1) <= index(1);
    led_out(0) <= index(0);
 
-   reset_rtl <= btn_ff(0);
-   reset     <= btn_ff(1);
+   reset <= btn_ff(0);
 
    btn_up   <= btn_ff(2);
    btn_down <= btn_ff(3);
 
-   led_rgb_6_out(0) <= '0';
-   led_rgb_5_out(1) <= '0';
-
    system_ids <= sw_ff(3 downto 2);
 
-   process (empty_array, almost_empty_array, almost_full_array, full_array)
+   process (empty_array, almost_empty_array, almost_full_array, full_array, sw_simulated_array, sw_mic_id)
    begin
-      if (empty_array(0) = '1') then
-         led_rgb_6_out(2) <= '1';
-      else
-         led_rgb_6_out(2) <= '0';
-      end if;
 
-      if (almost_empty_array(0) = '1') then
-         led_rgb_6_out(1) <= '1';
-      else
+      if (sw_simulated_array = '1' and sw_mic_id = '1') then
+         -- mic id and simulated array
+         led_rgb_6_out(0) <= '1';
          led_rgb_6_out(1) <= '0';
-      end if;
-
-      if (almost_full_array(0) = '1') then
+         led_rgb_6_out(2) <= '0';
          led_rgb_5_out(0) <= '1';
-      else
-         led_rgb_5_out(0) <= '0';
-      end if;
-
-      if (full_array(0) = '1') then
-         led_rgb_5_out(2) <= '1';
-      else
+         led_rgb_5_out(1) <= '0';
          led_rgb_5_out(2) <= '0';
+
+      elsif (sw_simulated_array = '0' and sw_mic_id = '1') then
+         -- mic id and mic data
+         led_rgb_6_out(0) <= '1';
+         led_rgb_6_out(1) <= '1';
+         led_rgb_6_out(2) <= '0';
+         led_rgb_5_out(0) <= '1';
+         led_rgb_5_out(1) <= '1';
+         led_rgb_5_out(2) <= '0';
+
+      else
+         -- default mic data
+         led_rgb_6_out(0) <= '0';
+         led_rgb_5_out(1) <= '0';
+
+         if (empty_array(0) = '1') then
+            led_rgb_6_out(2) <= '1';
+         else
+            led_rgb_6_out(2) <= '0';
+         end if;
+
+         if (almost_empty_array(0) = '1') then
+            led_rgb_6_out(1) <= '1';
+         else
+            led_rgb_6_out(1) <= '0';
+         end if;
+
+         if (almost_full_array(0) = '1') then
+            led_rgb_5_out(0) <= '1';
+         else
+            led_rgb_5_out(0) <= '0';
+         end if;
+
+         if (full_array(0) = '1') then
+            led_rgb_5_out(2) <= '1';
+         else
+            led_rgb_5_out(2) <= '0';
+         end if;
       end if;
 
    end process;
 
-   process (sys_clock, reset_rtl)
+   process (sys_clock)
    begin
-      if reset_rtl = '1' then
-         rst_cnt <= (others => '0');
-         rst_int <= '1';
-      elsif rising_edge(sys_clock) then
-         if rst_cnt = x"03ffffff" then --about 2.7 seconds
-            rst_int <= '0';
+      if rising_edge(sys_clock) then
+         if reset = '1' then
+            reset_count <= (others => '0');
+            reset_init  <= '1';
          else
-            rst_cnt <= rst_cnt + 1;
+            if reset_count = x"03ffffff" then --about 2.7 seconds
+               reset_init <= '0';
+            else
+               reset_count <= reset_count + 1;
+            end if;
          end if;
       end if;
+
    end process;
 
    double_ff : entity work.double_ff
@@ -144,6 +170,15 @@ begin
          ws_out         => ws_out
       );
 
+   simulated_array_select_inst : entity work.simulated_array_select
+      port map(
+         sys_clk            => clk,
+         reset              => reset,
+         btn_state_select   => btn_ff(1),
+         sw_simulated_array => sw_simulated_array,
+         sw_mic_id          => sw_mic_id
+      );
+
    ws_pulse : entity work.ws_pulse
       port map(
          sck_clk => sck_clk,
@@ -157,7 +192,7 @@ begin
          sck_clk        => sck_clk,
          ws             => ws,
          reset          => reset,
-         switch         => sw_ff(1),
+         switch         => sw_simulated_array,
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
@@ -238,7 +273,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw              => sw_ff(0),
+            mic_id_sw              => sw_mic_id,
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -293,7 +328,7 @@ begin
          clk_125    => clk,
          clk_25     => sck_clk,
          sys_clock  => sys_clock,
-         reset_rtl  => reset_rtl,
+         reset_rtl  => reset_init,
          axi_data   => data_stream,
          axi_empty  => empty_array(0),
          axi_rd_en  => rd_en_pulse,
