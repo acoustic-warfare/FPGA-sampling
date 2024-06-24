@@ -64,7 +64,7 @@ int main() {
     u16_t Port = 21844;
 
     // 1458 bytes is max that can fit in a udp frame from the zynq
-    int buflen = 1458;
+    int buflen = (payload_header_size + nr_arrays * 64) * 4; //1458;
 
     /* The MAC address of the board. This should be unique per board */
     unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -165,11 +165,14 @@ int main() {
     data[0] = protocol_ver << 24;  // first 8-bits of header: Protocol Version
     data[0] += nr_arrays << 16;    // second 8-bits of header: Number of Arrays
     data[0] += frequency;          // last 16-bits of header: Frequency
-
+   
+    u32 counter = 0; 
+    
     while (1) {
         // check if fifo are empty
         empty = *(slaveaddr_p + 3);
         if (empty == 0) {
+            counter++; 
             // flush the cache from old data
             Xil_DCacheFlushRange(data_p, 2048);
 
@@ -178,7 +181,7 @@ int main() {
             *(slaveaddr_p + 0) = 0x00000000;
 
             // recive data from AXI
-            data[1] = 100;  // FIX sample counter
+            data[1] = counter;  // FIX sample counter
 
             for (int i = 0; i < nr_arrays * 64; i++) {
                 data[i + payload_header_size] = *(data_p + i);
