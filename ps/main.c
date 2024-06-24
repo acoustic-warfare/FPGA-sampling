@@ -32,8 +32,13 @@ void print_ip_settings(struct ip_addr *ip, struct ip_addr *mask,
 void PayloadID(u32 data[]) {}
 
 int main() {
-    // set number of arrays used
-    u32 nr_arrays = 4;
+    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
+
+    u32 reg_data_out = *(slaveaddr_p + 1);  
+
+    // set number of arrays used based on switches
+    u32 nr_arrays = ((reg_data_out >> 3) & 0x3 ) + 1; // Nr of arrays
+    xil_printf("Nr of arrays: %x\r\n", nr_arrays);
 
     // set number of 32bit slots in payload_header
     u32 payload_header_size = 2;
@@ -80,9 +85,6 @@ int main() {
     print_ip_settings(&ipaddr, &netmask, &gw);
 #endif
 
-    Xuint32 *slaveaddr_p = (Xuint32 *)0x43C00000;  // AXI_slave start addr
-
-    u32 reg_data_out = *(slaveaddr_p + 1);  
     u32 sys_id = (reg_data_out >> 1) & 0x3; // ID of FPGA
     xil_printf("System ID: %x\r\n", sys_id);
 
@@ -178,7 +180,7 @@ int main() {
             // recive data from AXI
             data[1] = 100;  // FIX sample counter
 
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < nr_arrays * 64; i++) {
                 data[i + payload_header_size] = *(data_p + i);
             }
 

@@ -25,7 +25,8 @@ entity axi_v1_0_S00_AXI is
 
       empty : in std_logic;
 
-      sys_id : in std_logic_vector(1 downto 0); 
+      sys_id    : in std_logic_vector(1 downto 0);
+      nr_arrays : in std_logic_vector(1 downto 0);
 
       -- Optional User-defined signal in the write data channel.
       --S_AXI_WUSER : out std_logic_vector(0 downto 0);
@@ -370,7 +371,7 @@ begin
       -- Address decoding for reading registers
       case axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB) is
          when "00" => reg_data_out   <= slv_reg0;
-         when "01" => reg_data_out   <= (31 downto 3 => '0') & sys_id & txn_done; -- txn_done = bit 0, sys_id = bit 2-1
+         when "01" => reg_data_out   <= (31 downto 5 => '0') & nr_arrays & sys_id & txn_done; -- txn_done = bit 0, sys_id = bit 2-1, nr_arrays = bit 4-3
          when "10" => reg_data_out   <= (31 downto 1 => '0') & txn_error;
          when "11" => reg_data_out   <= (31 downto 1 => '0') & empty;
          when others => reg_data_out <= (others => '0');

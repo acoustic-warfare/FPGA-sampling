@@ -66,6 +66,7 @@ architecture structual of aw_top is
    signal rst_int : std_logic             := '1';
 
    signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
+   signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
 
 begin
    ws_array      <= (others => ws);
@@ -86,6 +87,7 @@ begin
    led_rgb_5_out(1) <= '0';
 
    system_ids <= sw_ff(3 downto 2);
+   nr_arrays  <= sw_ff(1 downto 0);
 
    process (empty_array, almost_empty_array, almost_full_array, full_array)
    begin
@@ -155,7 +157,7 @@ begin
          sck_clk        => sck_clk,
          ws             => ws,
          reset          => reset,
-         switch         => sw_ff(1),
+         switch         => sw_ff(1), 
          bit_stream_in  => bit_stream,
          bit_stream_out => bit_stream_out
       );
@@ -288,14 +290,15 @@ begin
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper
       port map(
-         clk_125    => clk,
-         clk_25     => sck_clk,
-         sys_clock  => sys_clock,
-         reset_rtl  => reset,
-         axi_data   => data_stream,
-         axi_empty  => empty_array(0),
-         axi_rd_en  => rd_en_pulse,
-         axi_sys_id => system_ids
+         clk_125       => clk,
+         clk_25        => sck_clk,
+         sys_clock     => sys_clock,
+         reset_rtl     => reset,
+         axi_data      => data_stream,
+         axi_empty     => empty_array(0),
+         axi_rd_en     => rd_en_pulse,
+         axi_sys_id    => system_ids,
+         axi_nr_arrays => nr_arrays
       );
 
 end architecture;

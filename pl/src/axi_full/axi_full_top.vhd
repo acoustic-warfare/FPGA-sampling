@@ -26,10 +26,11 @@ entity axi_v1_0 is
       C_M00_AXI_BUSER_WIDTH : integer := 1 -- ändrat denna
    );
    port (
-      rd_en : out std_logic;
-      empty : in std_logic;
-      data  : in std_logic_vector(31 downto 0);
-      sys_id : in std_logic_vector(1 downto 0); 
+      rd_en     : out std_logic;
+      empty     : in std_logic;
+      data      : in std_logic_vector(31 downto 0);
+      sys_id    : in std_logic_vector(1 downto 0);
+      nr_arrays : in std_logic_vector(1 downto 0);
       -- Ports of Axi Slave Bus Interface S00_AXI
       s00_axi_aclk    : in std_logic;
       s00_axi_aresetn : in std_logic;
@@ -102,7 +103,8 @@ architecture rtl of axi_v1_0 is
          read_done     : out std_logic;
          init_txn      : out std_logic;
          empty         : in std_logic;
-         sys_id        : in std_logic_vector(1 downto 0); 
+         sys_id        : in std_logic_vector(1 downto 0);
+         nr_arrays     : in std_logic_vector(1 downto 0);
          txn_done      : in std_logic;
          txn_error     : in std_logic;
          S_AXI_ACLK    : in std_logic;
@@ -195,6 +197,7 @@ begin
       read_done => read_done_internal,
       empty     => empty,
       sys_id    => sys_id,
+      nr_arrays => nr_arrays,
 
       S_AXI_ACLK    => s00_axi_aclk,
       S_AXI_ARESETN => s00_axi_aresetn,
