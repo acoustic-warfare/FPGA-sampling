@@ -32,10 +32,9 @@ architecture structual of aw_top is
    signal sw_ff         : std_logic_vector(3 downto 0);
    signal bit_stream_ff : std_logic_vector(15 downto 0);
 
-   signal reset     : std_logic;
-   signal reset_rtl : std_logic;
-   signal btn_up    : std_logic;
-   signal btn_down  : std_logic;
+   signal reset    : std_logic;
+   signal btn_up   : std_logic;
+   signal btn_down : std_logic;
 
    signal index : std_logic_vector(3 downto 0);
 
@@ -78,8 +77,7 @@ begin
    led_out(1) <= index(1);
    led_out(0) <= index(0);
 
-   reset_rtl <= btn_ff(0);
-   reset     <= btn_ff(1);
+   reset <= btn_ff(0);
 
    btn_up   <= btn_ff(2);
    btn_down <= btn_ff(3);
@@ -117,9 +115,9 @@ begin
 
    end process;
 
-   process (sys_clock, reset_rtl)
+   process (sys_clock, reset)
    begin
-      if reset_rtl = '1' then
+      if reset = '1' then
          rst_cnt <= (others => '0');
          rst_int <= '1';
       elsif rising_edge(sys_clock) then
@@ -293,7 +291,7 @@ begin
          clk_125    => clk,
          clk_25     => sck_clk,
          sys_clock  => sys_clock,
-         reset_rtl  => reset_rtl,
+         reset_rtl  => reset,
          axi_data   => data_stream,
          axi_empty  => empty_array(0),
          axi_rd_en  => rd_en_pulse,
