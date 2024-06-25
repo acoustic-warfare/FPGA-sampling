@@ -24,6 +24,7 @@ TFTP_DIR="$GIT_ROOT/../beamforming-lk/boot/tftp"
 # FLAGS
 skip_vivado=false
 skip_sdk=false
+skip_docker=false
 vivado_gui=false
 sdk_gui=false
 for arg in "$@"; do
@@ -34,6 +35,9 @@ for arg in "$@"; do
    --skip_sdk)
       skip_sdk=true
       ;;
+   --skip_docker)
+      skip_docker=true
+      ;;
    --vivado_gui)
       vivado_gui=true
       ;;
@@ -42,10 +46,11 @@ for arg in "$@"; do
       ;;
    -h | --help)
       echo "Usage: ./script.sh [--skip_vivado] [--skip_sdk]"
-      echo "  --skip_vivado   Skip Vivado tasks"
-      echo "  --skip_sdk      Skip SDK tasks"
-      echo "  --vivado_gui      Open Vivado gui"
-      echo "  --sdk_gui      Open SDK gui"
+      echo "  --skip_vivado      Skip Vivado tasks"
+      echo "  --skip_sdk         Skip SDK tasks"
+      echo "  --skip_docker      Skip setting up Docker"
+      echo "  --vivado_gui       Open Vivado gui"
+      echo "  --sdk_gui          Open SDK gui"
       exit 0
       ;;
    *)
@@ -90,20 +95,22 @@ fi
 IMAGE_NAME="tftpd"
 CONTAINER_NAME="tftp-server"
 
-# Check if the Docker image exists
-if [ -z "$(sudo docker images -q $IMAGE_NAME)" ]; then
-   echo "Docker image $IMAGE_NAME does not exist. Building the image..."
-   sudo docker build -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
-else
-   echo "Docker image $IMAGE_NAME already exists. Skipping build."
-fi
+if [ "$skip_docker" = false ]; then
+   # Check if the Docker image exists
+   if [ -z "$(sudo docker images -q $IMAGE_NAME)" ]; then
+      echo "Docker image $IMAGE_NAME does not exist. Building the image..."
+      sudo docker build -t $IMAGE_NAME -f $DOCKERFILE_DIR/Dockerfile .
+   else
+      echo "Docker image $IMAGE_NAME already exists. Skipping build."
+   fi
 
-# Check if the Docker container is running
-if sudo docker ps --filter "name=$CONTAINER_NAME" --format "{{.Names}}" | grep -w $CONTAINER_NAME >/dev/null; then
-   echo "Docker container $CONTAINER_NAME is already running."
-else
-   echo "Docker container $CONTAINER_NAME is not running. Starting the container..."
-   sudo docker run -it -d --rm --network=host -v $TFTP_DIR:/var/lib/tftpboot --name $CONTAINER_NAME $IMAGE_NAME
+   # Check if the Docker container is running
+   if sudo docker ps --filter "name=$CONTAINER_NAME" --format "{{.Names}}" | grep -w $CONTAINER_NAME >/dev/null; then
+      echo "Docker container $CONTAINER_NAME is already running."
+   else
+      echo "Docker container $CONTAINER_NAME is not running. Starting the container..."
+      sudo docker run -it -d --rm --network=host -v $TFTP_DIR:/var/lib/tftpboot --name $CONTAINER_NAME $IMAGE_NAME
+   fi
 fi
 
 printf "%b\n" "${BOLD}${GREEN}done!${RESET}"
