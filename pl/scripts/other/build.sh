@@ -53,6 +53,8 @@ if [ "$skip_vivado" = false ]; then
       rm -r "$GIT_ROOT/pl/vivado_files"
    fi
    vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
+   printf "%b\n" "${BOLD}copying bitstream...${RESET}"
+   cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
 fi
 
 if [ "$skip_sdk" = false ]; then
@@ -61,11 +63,9 @@ if [ "$skip_sdk" = false ]; then
       rm -r "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" # remove folder if it exists
    fi
    xsct $GIT_ROOT/pl/scripts/build_axi_full/launch_sdk.tcl
+   printf "%b\n" "${BOLD}copying ps.elf...${RESET}"
+   cp "$ELF_PATH" "$DEST_DIR/ps.elf"
 fi
-
-printf "%b\n" "${BOLD}copying files...${RESET}"
-cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
-cp "$ELF_PATH" "$DEST_DIR/ps.elf"
 
 IMAGE_NAME="tftpd"
 CONTAINER_NAME="tftp-server"

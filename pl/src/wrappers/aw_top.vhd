@@ -65,9 +65,6 @@ architecture structual of aw_top is
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
-   signal reset_count : unsigned(31 downto 0); --125 mhz, 8 ns,
-   signal reset_init  : std_logic;
-
    signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
    signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
 
@@ -137,23 +134,6 @@ begin
             led_rgb_5_out(2) <= '1';
          else
             led_rgb_5_out(2) <= '0';
-         end if;
-      end if;
-
-   end process;
-
-   process (sys_clock)
-   begin
-      if rising_edge(sys_clock) then
-         if reset = '1' then
-            reset_count <= (others => '0');
-            reset_init  <= '1';
-         else
-            if reset_count = x"03ffffff" then --about 2.7 seconds
-               reset_init <= '0';
-            else
-               reset_count <= reset_count + 1;
-            end if;
          end if;
       end if;
 
@@ -330,7 +310,6 @@ begin
          clk_125       => clk,
          clk_25        => sck_clk,
          sys_clock     => sys_clock,
-         reset_rtl     => reset_init,
          axi_data      => data_stream,
          axi_empty     => empty_array(0),
          axi_rd_en     => rd_en_pulse,

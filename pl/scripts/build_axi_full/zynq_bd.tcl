@@ -222,10 +222,6 @@ proc create_root_design { parentCell } {
    set_property -dict [ list \
       CONFIG.FREQ_HZ {125000000} \
       ] $clk_125
-   set reset_rtl [ create_bd_port -dir I -type rst reset_rtl ]
-   set_property -dict [ list \
-      CONFIG.POLARITY {ACTIVE_HIGH} \
-      ] $reset_rtl
    set sys_clock [ create_bd_port -dir I -type clk sys_clock ]
    set_property -dict [ list \
       CONFIG.FREQ_HZ {125000000} \
@@ -804,7 +800,6 @@ proc create_root_design { parentCell } {
    connect_bd_net -net sys_id_0_1 [get_bd_ports axi_sys_id] [get_bd_pins axi_v1_0_0/sys_id]
    connect_bd_net -net nr_arrays_0_1 [get_bd_ports axi_nr_arrays] [get_bd_pins axi_v1_0_0/nr_arrays]
    connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in] [get_bd_pins rst_ps7_0_50M_1/ext_reset_in]
-   connect_bd_net -net reset_0_1 [get_bd_ports reset_rtl] [get_bd_pins clk_wiz_0/reset]
    connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axi_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]
    connect_bd_net -net rst_ps7_0_50M_interconnect_aresetn [get_bd_pins ps7_0_axi_periph/ARESETN] [get_bd_pins rst_ps7_0_50M/interconnect_aresetn]
    connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins axi_smc/aresetn] [get_bd_pins axi_v1_0_0/s00_axi_aresetn] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps7_0_50M/peripheral_aresetn]
