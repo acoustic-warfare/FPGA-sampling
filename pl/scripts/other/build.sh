@@ -24,6 +24,8 @@ TFTP_DIR="$GIT_ROOT/../beamforming-lk/boot/tftp"
 # FLAGS
 skip_vivado=false
 skip_sdk=false
+vivado_gui=false
+sdk_gui=false
 for arg in "$@"; do
    case $arg in
    --skip_vivado)
@@ -32,10 +34,18 @@ for arg in "$@"; do
    --skip_sdk)
       skip_sdk=true
       ;;
+   --vivado_gui)
+      vivado_gui=true
+      ;;
+   --sdk_gui)
+      sdk_gui=true
+      ;;
    -h | --help)
       echo "Usage: ./script.sh [--skip_vivado] [--skip_sdk]"
       echo "  --skip_vivado   Skip Vivado tasks"
       echo "  --skip_sdk      Skip SDK tasks"
+      echo "  --vivado_gui      Open Vivado gui"
+      echo "  --sdk_gui      Open SDK gui"
       exit 0
       ;;
    *)
@@ -57,6 +67,10 @@ if [ "$skip_vivado" = false ]; then
    cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
 fi
 
+if [ "$vivado_gui" = true ]; then
+   vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/other/open_vivado_project.tcl
+fi
+
 if [ "$skip_sdk" = false ]; then
    source /tools/Xilinx/SDK/2017.4/settings64.sh
    if [ -d "$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk" ]; then
@@ -65,6 +79,12 @@ if [ "$skip_sdk" = false ]; then
    xsct $GIT_ROOT/pl/scripts/build_axi_full/launch_sdk.tcl
    printf "%b\n" "${BOLD}copying ps.elf...${RESET}"
    cp "$ELF_PATH" "$DEST_DIR/ps.elf"
+fi
+
+if [ "$sdk_gui" = true ]; then
+   source /tools/Xilinx/SDK/2017.4/settings64.sh
+   WORKSPACE_PATH="pl/vivado_files/acoustic_warfare.sdk"
+   xsdk -workspace $WORKSPACE_PATH &
 fi
 
 IMAGE_NAME="tftpd"
