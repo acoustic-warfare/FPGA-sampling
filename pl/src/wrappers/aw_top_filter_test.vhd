@@ -62,6 +62,9 @@ architecture structual of aw_top is
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
 
+   signal array_matrix_data_fir  : matrix_256_32_type;
+   signal array_matrix_valid_fir : std_logic_vector(255 downto 0);
+
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
@@ -212,7 +215,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => bit_stream_out(i + 8),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -227,7 +230,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => '0',
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -242,7 +245,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => '0',
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -274,6 +277,32 @@ begin
          sample_counter_array    => sample_counter
       );
 
+   fir_filter_dummy_gen : for i in 0 to 63 generate
+   begin
+      fir_filter_c : entity work.fir_filter_dummy
+         port map(
+            clk            => clk,
+            reset          => reset,
+            data_in        => array_matrix_data(i),
+            data_in_valid  => array_matrix_valid,
+            data_out       => array_matrix_data_fir(i),
+            data_out_valid => array_matrix_valid_fir(i)
+         );
+   end generate fir_filter_dummy_gen;
+
+   fir_filter_gen : for i in 64 to 255 generate
+   begin
+      fir_filter_c : entity work.fir_filter
+         port map(
+            clk            => clk,
+            reset          => reset,
+            data_in        => array_matrix_data(i),
+            data_in_valid  => array_matrix_valid,
+            data_out       => array_matrix_data_fir(i),
+            data_out_valid => array_matrix_valid_fir(i)
+         );
+   end generate fir_filter_gen;
+
    fifo_axi_0 : for i in 0 to 255 generate
    begin
       fifo_gen : entity work.fifo_axi
@@ -284,10 +313,10 @@ begin
          port map(
             clk          => clk,
             rst          => reset,
-            wr_en        => array_matrix_valid,
-            wr_data      => array_matrix_data(i),
-            rd_en        => rd_en_fifo,
+            wr_data      => array_matrix_data_fir(i),
+            wr_en        => array_matrix_valid_fir(0),
             rd_data      => data_fifo_256_out(i),
+            rd_en        => rd_en_fifo,
             empty        => empty_array(i),
             almost_empty => almost_empty_array(i),
             almost_full  => full_array(i),
