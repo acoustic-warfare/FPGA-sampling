@@ -62,6 +62,9 @@ architecture structual of aw_top is
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
 
+   signal array_matrix_data_fir  : matrix_256_32_type;
+   signal array_matrix_valid_fir : std_logic;
+
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
@@ -274,6 +277,16 @@ begin
          sample_counter_array    => sample_counter
       );
 
+   fir_filter_controller_c : entity work.fir_filter_controller
+      port map(
+         clk              => clk,
+         reset            => reset,
+         matrix_in        => array_matrix_data,
+         matrix_in_valid  => array_matrix_valid,
+         matrix_out       => array_matrix_data_fir,
+         matrix_out_valid => array_matrix_valid_fir
+      );
+
    fifo_axi_0 : for i in 0 to 255 generate
    begin
       fifo_gen : entity work.fifo_axi
@@ -284,8 +297,8 @@ begin
          port map(
             clk          => clk,
             rst          => reset,
-            wr_en        => array_matrix_valid,
-            wr_data      => array_matrix_data(i),
+            wr_en        => array_matrix_valid_fir,
+            wr_data      => array_matrix_data_fir(i),
             rd_en        => rd_en_fifo,
             rd_data      => data_fifo_256_out(i),
             empty        => empty_array(i),

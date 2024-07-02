@@ -67,7 +67,7 @@ if [ "$skip_vivado" = false ]; then
    if [ -d "$GIT_ROOT/pl/vivado_files" ]; then
       rm -r "$GIT_ROOT/pl/vivado_files"
    fi
-   vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_fir_test.tcl
+   vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
    printf "%b\n" "${BOLD}copying bitstream...${RESET}"
    cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
 fi

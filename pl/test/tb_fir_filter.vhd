@@ -21,17 +21,17 @@ architecture Behavioral of tb_fir_filter is
     --signal loop_enable    : boolean   := true;
 
     signal int_input_s    : integer                       := 0;
-    signal data_in        : signed(31 downto 0)           := (others => '0');
+    signal data_in        : std_logic_vector(23 downto 0) := (others => '0');
     signal data_out       : std_logic_vector(31 downto 0) := (others => '0');
-    signal data_out_valid : std_logic;
-    signal mem_out        : matrix_128_24_type;
+    --signal data_out_valid : std_logic;
+    --signal mem_out        : matrix_128_24_type;
 begin
 
     Filter_inst : entity work.fir_filter
         port map(
             --clk            => clk,
             -- reset          => '0',
-            -- data_in_valid  => '1',
+            data_in  => data_in,
             data_out => data_out,
             mem_in => (others => (others => '0'))
         );
@@ -63,7 +63,7 @@ begin
                 file_close(output_file);
                 assert (false) report "Reading operation completed!" severity warning;
             end if;
-            data_in <= to_signed(int_input_s, 32);
+            data_in <= std_logic_vector(to_signed(int_input_s, 32));
         end if;
     end process;
 

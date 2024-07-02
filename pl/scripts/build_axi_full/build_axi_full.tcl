@@ -21,6 +21,9 @@ add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
+add_files [file join "$ROOT" src filter fir_filter_controller.vhd]
+add_files [file join "$ROOT" src filter fir_filter.vhd]
+
 #add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
@@ -55,7 +58,7 @@ make_wrapper -inst_template [ get_files {zynq_bd.bd} ]
 add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd zynq_bd hdl zynq_bd_wrapper.vhd]
 
 ## start gui
-#start_gui
+start_gui
 update_compile_order -fileset sources_1
 
 ## run synth
@@ -64,7 +67,7 @@ update_compile_order -fileset sources_1
 #update_compile_order -fileset sources_1
 
 ## run synth, impl and write bitstream
-launch_runs impl_1 -to_step write_bitstream -jobs 4
+launch_runs impl_1 -to_step write_bitstream -jobs 2
 wait_on_run impl_1
 
 ## launch SDK

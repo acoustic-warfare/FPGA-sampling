@@ -9,18 +9,21 @@ fs = 48828.125  # New sampling frequency in Hz
 # Generate bandpass filter coefficients using firwin
 coefficients = signal.firwin(num_taps, passband, fs=fs, pass_zero=False)
 
-# Scale coefficients to integer values
-Max = (2**15) - 1  # Assuming 16-bit coefficients
+# Scale coefficients to 8-bit signed integer values
+Max = (2**7) - 1  # Maximum value for 8-bit signed integer
 coefficients_scaled = np.round(coefficients * Max).astype(int)
+
+# Convert coefficients to 8-bit signed values
+coefficients_signed_8bit = np.clip(coefficients_scaled, -128, 127).astype(np.int8)
 
 # Convert coefficients to hexadecimal strings for Python format
 coefficients_hex_python = [
-    f"{val & 0xFFFF:04X}" for val in coefficients_scaled
+    f"{int(val) & 0xFF:02X}" for val in coefficients_signed_8bit
 ]
 
 # Convert coefficients to hexadecimal strings for VHDL format
 coefficients_hex_vhdl = [
-    f"x\"{val & 0xFFFF:04X}\"" for val in coefficients_scaled
+    f"x\"{int(val) & 0xFF:02X}\"" for val in coefficients_signed_8bit
 ]
 
 # Print or use the coefficients in hexadecimal format

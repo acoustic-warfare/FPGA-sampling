@@ -19,7 +19,7 @@ architecture behavioral of tb_fir_filter_controller is
     signal reset         : std_logic := '0';
 
     signal matrix_in        : matrix_256_32_type;
-    signal matrix_in_valid  : std_logic;
+    signal matrix_in_valid  : std_logic := '0';
     signal matrix_out       : matrix_256_32_type;
     signal matrix_out_valid : std_logic;
 
@@ -43,6 +43,15 @@ begin
         end loop;
     end process;
 
+    check_matrix : process (matrix_out_valid)
+    begin
+        if (matrix_out_valid = '1') then
+            for i in 0 to 255 loop
+                info("matrix_out" & to_string(i) & " " & to_string(matrix_out(i)));
+            end loop;
+        end if;
+    end process;
+
     main_p : process
     begin
         test_runner_setup(runner, runner_cfg);
@@ -52,7 +61,13 @@ begin
                 reset <= '1';
                 wait for C_CLK_CYKLE * 2;
                 reset <= '0';
+
                 wait for C_CLK_CYKLE * 5;
+                matrix_in_valid <= '1';
+                wait for C_CLK_CYKLE;
+                matrix_in_valid <= '0';
+
+                wait for C_CLK_CYKLE * 270;
                 matrix_in_valid <= '1';
                 wait for C_CLK_CYKLE;
                 matrix_in_valid <= '0';
@@ -60,6 +75,21 @@ begin
                 wait for C_CLK_CYKLE * 2000;
 
             elsif run("auto") then
+
+                wait for C_CLK_CYKLE;
+                reset <= '1';
+                wait for C_CLK_CYKLE * 2;
+                reset <= '0';
+
+                wait for C_CLK_CYKLE * 5;
+                matrix_in_valid <= '1';
+                wait for C_CLK_CYKLE;
+                matrix_in_valid <= '0';
+
+                wait for C_CLK_CYKLE * 270;
+                matrix_in_valid <= '1';
+                wait for C_CLK_CYKLE;
+                matrix_in_valid <= '0';
 
                 wait for C_CLK_CYKLE * 2000;
 
