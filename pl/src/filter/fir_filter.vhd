@@ -57,7 +57,6 @@ begin
 
     process (mem_in, data_in, mem_mul)
     begin
-
         for i in 0 to FILTER_TAPS - 1 loop
             mem_mul(i) <= signed(data_in) * coefficients(i);
         end loop;

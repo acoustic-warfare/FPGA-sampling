@@ -36,11 +36,12 @@ begin
             matrix_out_valid => matrix_out_valid
         );
 
-    process (all)
+    process (reset)
     begin
         for i in 0 to 255 loop
             matrix_in(i) <= std_logic_vector(to_unsigned(i, 32));
         end loop;
+        matrix_in(1) <= std_logic_vector(to_unsigned(0, 32));
     end process;
 
     check_matrix : process (matrix_out_valid)
@@ -61,18 +62,17 @@ begin
                 reset <= '1';
                 wait for C_CLK_CYKLE * 2;
                 reset <= '0';
-
                 wait for C_CLK_CYKLE * 5;
-                matrix_in_valid <= '1';
-                wait for C_CLK_CYKLE;
-                matrix_in_valid <= '0';
 
-                wait for C_CLK_CYKLE * 270;
-                matrix_in_valid <= '1';
-                wait for C_CLK_CYKLE;
-                matrix_in_valid <= '0';
+                for iteration in 0 to 64 loop
+                    matrix_in_valid <= '1';
+                    wait for C_CLK_CYKLE;
+                    matrix_in_valid <= '0';
+                    wait for C_CLK_CYKLE * 270;
 
-                wait for C_CLK_CYKLE * 2000;
+                end loop;
+
+                wait for C_CLK_CYKLE * 100;
 
             elsif run("auto") then
 
