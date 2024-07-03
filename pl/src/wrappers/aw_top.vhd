@@ -53,10 +53,10 @@ architecture structual of aw_top is
 
    signal sample_counter : std_logic_vector(31 downto 0);
 
-   signal full_array         : std_logic_vector(255 downto 0);
-   signal empty_array        : std_logic_vector(255 downto 0);
-   signal almost_full_array  : std_logic_vector(255 downto 0);
-   signal almost_empty_array : std_logic_vector(255 downto 0);
+   signal full_array         : std_logic;
+   signal empty_array        : std_logic;
+   signal almost_full_array  : std_logic;
+   signal almost_empty_array : std_logic;
 
    signal array_matrix_data  : matrix_256_32_type;
    signal data_fifo_256_out  : matrix_256_32_type;
@@ -115,25 +115,25 @@ begin
          led_rgb_6_out(0) <= '0';
          led_rgb_5_out(1) <= '0';
 
-         if (empty_array(0) = '1') then
+         if (empty_array = '1') then
             led_rgb_6_out(2) <= '1';
          else
             led_rgb_6_out(2) <= '0';
          end if;
 
-         if (almost_empty_array(0) = '1') then
+         if (almost_empty_array = '1') then
             led_rgb_6_out(1) <= '1';
          else
             led_rgb_6_out(1) <= '0';
          end if;
 
-         if (almost_full_array(0) = '1') then
+         if (almost_full_array = '1') then
             led_rgb_5_out(0) <= '1';
          else
             led_rgb_5_out(0) <= '0';
          end if;
 
-         if (full_array(0) = '1') then
+         if (full_array = '1') then
             led_rgb_5_out(2) <= '1';
          else
             led_rgb_5_out(2) <= '0';
@@ -277,36 +277,33 @@ begin
          sample_counter_array    => sample_counter
       );
 
-   fir_filter_controller_c : entity work.fir_filter_controller
-      port map(
-         clk              => clk,
-         reset            => reset,
-         matrix_in        => array_matrix_data,
-         matrix_in_valid  => array_matrix_valid,
-         matrix_out       => array_matrix_data_fir,
-         matrix_out_valid => array_matrix_valid_fir
-      );
+   --fir_filter_controller_c : entity work.fir_filter_controller
+   --   port map(
+   --      clk              => clk,
+   --      reset            => reset,
+   --      matrix_in        => array_matrix_data,
+   --      matrix_in_valid  => array_matrix_valid,
+   --      matrix_out       => array_matrix_data_fir,
+   --      matrix_out_valid => array_matrix_valid_fir
+   --   );
 
-   fifo_axi_0 : for i in 0 to 255 generate
-   begin
-      fifo_gen : entity work.fifo_axi
-         generic map(
-            RAM_WIDTH => 32,
-            RAM_DEPTH => fifo_buffer_lenght
-         )
-         port map(
-            clk          => clk,
-            rst          => reset,
-            wr_en        => array_matrix_valid_fir,
-            wr_data      => array_matrix_data_fir(i),
-            rd_en        => rd_en_fifo,
-            rd_data      => data_fifo_256_out(i),
-            empty        => empty_array(i),
-            almost_empty => almost_empty_array(i),
-            almost_full  => full_array(i),
-            full         => almost_full_array(i)
-         );
-   end generate fifo_axi_0;
+   fifo_axi : entity work.fifo_axi
+      generic map(
+         RAM_WIDTH => 32,
+         RAM_DEPTH => fifo_buffer_lenght
+      )
+      port map(
+         clk          => clk,
+         rst          => reset,
+         wr_en        => array_matrix_valid,
+         wr_data      => array_matrix_data,
+         rd_en        => rd_en_fifo,
+         rd_data      => data_fifo_256_out,
+         empty        => empty_array,
+         almost_empty => almost_empty_array,
+         almost_full  => full_array,
+         full         => almost_full_array
+      );
 
    mux : entity work.mux
       port map(
@@ -324,7 +321,7 @@ begin
          clk_25        => sck_clk,
          sys_clock     => sys_clock,
          axi_data      => data_stream,
-         axi_empty     => empty_array(0),
+         axi_empty     => empty_array,
          axi_rd_en     => rd_en_pulse,
          axi_sys_id    => system_ids,
          axi_nr_arrays => nr_arrays

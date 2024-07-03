@@ -39,29 +39,26 @@ architecture behavior of tb_fifo_axi is
 
 begin
 
-   fifo_0 : entity work.fifo_axi
-      generic map(
-         RAM_WIDTH => 32,
-         RAM_DEPTH => 128
-      )
-      port map(
-         clk => clk,
-         rst => rst,
-
-         -- Write port
-         wr_en   => wr_en,
-         wr_data => wr_data,
-
-         -- Read port
-         rd_en   => rd_en,
-         rd_data => rd_data,
-
-         -- Flags
-         empty        => empty,
-         almost_empty => almost_empty,
-         almost_full  => almost_full,
-         full         => full
-      );
+   --fifo_0 : entity work.fifo_axi
+   --   generic map(
+   --      RAM_WIDTH => 32,
+   --      RAM_DEPTH => 128
+   --   )
+   --   port map(
+   --      clk => clk,
+   --      rst => rst,
+   --      -- Write port
+   --      wr_en   => wr_en,
+   --      wr_data => wr_data,
+   --      -- Read port
+   --      rd_en   => rd_en,
+   --      rd_data => rd_data,
+   --      -- Flags
+   --      empty        => empty,
+   --      almost_empty => almost_empty,
+   --      almost_full  => almost_full,
+   --      full         => full
+   --   );
    clk <= not(clk) after C_CLK_CYKLE/2;
    --S_AXI_ACLK <= not(clk) after AXI_clk_cyckle/2;
 

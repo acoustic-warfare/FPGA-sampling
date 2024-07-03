@@ -56,10 +56,10 @@ architecture tb of tb_super_test is
    signal RAM_DEPTH          : natural := 128;
    signal rd_en              : std_logic;
    signal data_fifo_out      : matrix_256_32_type := (others => (others => '0'));
-   signal empty_array        : std_logic_vector(255 downto 0);
-   signal almost_empty_array : std_logic_vector(255 downto 0);
-   signal almost_full_array  : std_logic_vector(255 downto 0);
-   signal full_array         : std_logic_vector(255 downto 0);
+   signal empty_array        : std_logic;
+   signal almost_empty_array : std_logic;
+   signal almost_full_array  : std_logic;
+   signal full_array         : std_logic;
 
    --signal sw           : std_logic;
    signal data_mux_out : std_logic_vector(31 downto 0);
@@ -139,32 +139,30 @@ begin
       );
 
    -- gets error when trying to use this will look in to it later 
-   fifo_gen : for i in 0 to 63 generate
-   begin
-      fifo_0 : entity work.fifo_axi
-         generic map(
-            RAM_WIDTH => 32,
-            RAM_DEPTH => RAM_DEPTH
-         )
-         port map(
-            clk          => clk,
-            rst          => reset,
-            wr_en        => array_matrix_valid_out,
-            wr_data      => array_matrix_data_out(i),
-            rd_en        => rd_en,
-            rd_data      => data_fifo_out(i),
-            empty        => empty_array(i),
-            almost_empty => almost_empty_array(i),
-            almost_full  => almost_full_array(i),
-            full         => full_array(i)
-         );
-   end generate fifo_gen;
+
+   fifo_0 : entity work.fifo_axi
+      generic map(
+         RAM_WIDTH => 32,
+         RAM_DEPTH => RAM_DEPTH
+      )
+      port map(
+         clk          => clk,
+         rst          => reset,
+         wr_en        => array_matrix_valid_out,
+         wr_data      => array_matrix_data_out,
+         rd_en        => rd_en,
+         rd_data      => data_fifo_out,
+         empty        => empty_array,
+         almost_empty => almost_empty_array,
+         almost_full  => almost_full_array,
+         full         => full_array
+      );
 
    mux1 : entity work.mux
       port map(
          sys_clk    => clk,
          reset      => reset,
-         rd_en      => not empty_array(0),
+         rd_en      => not empty_array,
          rd_en_fifo => rd_en,
          data_in    => data_fifo_out,
          data_out   => data_mux_out

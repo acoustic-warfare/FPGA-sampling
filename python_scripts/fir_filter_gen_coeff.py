@@ -2,7 +2,7 @@ import numpy as np
 from scipy import signal
 
 # Filter settings
-num_taps = 32  # Number of filter taps (coefficients)
+num_taps = 8  # Number of filter taps (coefficients)
 passband = [300, 9000]  # Passband frequencies in Hz
 fs = 48828.125  # New sampling frequency in Hz
 
