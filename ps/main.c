@@ -61,7 +61,7 @@ int main() {
     struct udp_pcb *udp_1;
     struct pbuf *p;
 
-    u16_t Port = 21844;
+    u16_t Port = 21875;
 
     // 1458 bytes is max that can fit in a udp frame from the zynq
     int buflen = (payload_header_size + nr_arrays * 64) * 4; //1458;
