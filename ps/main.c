@@ -92,18 +92,23 @@ int main() {
     switch (sys_id) {
        case 0:
           IP4_ADDR(&ipaddr, 192, 168, 1, 75);
+          Port = 21875;
           break;
        case 1:
           IP4_ADDR(&ipaddr, 192, 168, 1, 76);
+          Port = 21876;
           break;
        case 2:
           IP4_ADDR(&ipaddr, 192, 168, 1, 77);
+          Port = 21877;
           break;
        case 3:
           IP4_ADDR(&ipaddr, 192, 168, 1, 78);
+          Port = 21878;
           break;
        default:
           IP4_ADDR(&ipaddr, 192, 168, 1, 75); 
+          Port = 21875;
           break;
     } 
 
