@@ -294,7 +294,7 @@ begin
       )
       port map(
          clk          => clk,
-         rst          => reset,
+         reset          => reset,
          wr_en        => array_matrix_valid,
          wr_data      => array_matrix_data,
          rd_en        => rd_en_fifo,

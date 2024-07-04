@@ -147,7 +147,7 @@ begin
       )
       port map(
          clk          => clk,
-         rst          => reset,
+         reset        => reset,
          wr_en        => array_matrix_valid_out,
          wr_data      => array_matrix_data_out,
          rd_en        => rd_en,

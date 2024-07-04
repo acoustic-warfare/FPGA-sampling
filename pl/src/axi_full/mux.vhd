@@ -92,7 +92,9 @@ begin
                   if (counter = 0) then
                      counter <= (others => '0');
                      state   <= idle;
-                  elsif (counter = 255 - 4) then
+                     
+                     -- minus 4 from _dddd and minus 4 from fifo read cycles
+                  elsif (counter = 255 - 4 - 4) then
                      rd_en_fifo <= '1';
                      counter    <= counter + 1;
                   else

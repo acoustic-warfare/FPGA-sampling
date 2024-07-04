@@ -18,6 +18,8 @@ add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
 add_files [file join "$ROOT" src axi_full mux.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
+add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
+
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 

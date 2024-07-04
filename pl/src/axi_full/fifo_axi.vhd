@@ -11,10 +11,10 @@ entity fifo_axi is
    );
    port (
       clk          : in std_logic;
-      rst          : in std_logic;
-      wr_en        : in std_logic;-- Write port
+      reset        : in std_logic;
+      wr_en        : in std_logic; -- Write port
       wr_data      : in matrix_256_32_type;
-      rd_en        : in std_logic;-- Read port
+      rd_en        : in std_logic; -- Read port
       rd_data      : out matrix_256_32_type;
       empty        : out std_logic; -- Flags
       almost_empty : out std_logic;
@@ -27,36 +27,107 @@ architecture Behavioral of fifo_axi is
    constant ALMOST_EMPTY_THRESHOLD : integer := 2;
    constant ALMOST_FULL_THRESHOLD  : integer := RAM_DEPTH - 2;
 
-   type ram_type is array (0 to RAM_DEPTH - 1) of std_logic_vector(RAM_WIDTH - 1 downto 0);
-   type ram_array_type is array (0 to 255) of ram_type;
-   signal ram : ram_array_type := (others => (others => (others => '0')));
+   signal write_ptr  : integer range 0 to 31        := 0;
+   signal read_ptr   : integer range 0 to 31        := 0;
+   signal fifo_count : integer range 0 to RAM_DEPTH := 0;
 
-   signal write_ptr  : integer range 0 to RAM_DEPTH - 1 := 0;
-   signal read_ptr   : integer range 0 to RAM_DEPTH - 1 := 0;
-   signal fifo_count : integer range 0 to RAM_DEPTH     := 0;
+   signal wr_start : std_logic;
+   signal wr_count : integer range 0 to 64;
+
+   signal rd_start : std_logic;
+   signal rd_count : integer range 0 to 64;
+
+   signal wr_en_ram : std_logic;
+   signal rd_en_ram : std_logic;
+
+   type ram_type is array (3 downto 0) of std_logic_vector(31 downto 0);
+   signal wr_data_ram : ram_type;
+   signal rd_data_ram : ram_type;
+
+   signal wr_ram_addr : integer range 0 to 2047;
+   signal rd_ram_addr : integer range 0 to 2047;
+
+   signal rd_data_buffer : matrix_256_32_type;
 
 begin
+
+   fifo_bram_gen : for i in 0 to 3 generate
+   begin
+      fifo_bram_inst : entity work.fifo_bram
+         port map(
+            clk     => clk,
+            wr_addr => std_logic_vector(TO_UNSIGNED(wr_ram_addr, 11)),
+            wr_en   => wr_en_ram,
+            wr_data => wr_data_ram(i),
+            rd_addr => std_logic_vector(TO_UNSIGNED(rd_ram_addr, 11)),
+            rd_en   => rd_en_ram,
+            rd_data => rd_data_ram(i)
+         );
+   end generate fifo_bram_gen;
+
    process (clk)
    begin
       if rising_edge(clk) then
-         if rst = '1' then
+         if reset = '1' then
             write_ptr  <= 0;
             read_ptr   <= 0;
             fifo_count <= 0;
             rd_data    <= (others => (others => '0'));
+
+            wr_start <= '0';
+            wr_count <= 0;
+            rd_start <= '0';
+            rd_count <= 0;
+
+            wr_en_ram <= '0';
+            rd_en_ram <= '0';
+
+            wr_ram_addr <= 0;
+            rd_ram_addr <= 0;
          else
+            -- Write
             if wr_en = '1' and full = '0' then
-               for i in 0 to 255 loop
-                  ram(i)(write_ptr) <= wr_data(i);
-               end loop;
-               write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
+               wr_start  <= '1';
+               wr_count  <= 0;
+               wr_en_ram <= '1';
             end if;
 
+            if wr_start = '1' and wr_count < 64 then
+               wr_data_ram(0) <= wr_data(wr_count + 0);
+               wr_data_ram(1) <= wr_data(wr_count + 64);
+               wr_data_ram(2) <= wr_data(wr_count + 128);
+               wr_data_ram(3) <= wr_data(wr_count + 192);
+
+               wr_ram_addr <= write_ptr * 64 + wr_count + 1;
+               wr_count    <= wr_count + 1;
+            elsif wr_start = '1' then
+               wr_count  <= 0;
+               wr_en_ram <= '0';
+               write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
+               wr_start  <= '0';
+            end if;
+
+            -- read
             if rd_en = '1' and empty = '0' then
-               for i in 0 to 255 loop
-                  rd_data(i) <= ram(i)(read_ptr);
-               end loop;
-               read_ptr <= (read_ptr + 1) mod RAM_DEPTH;
+               rd_start  <= '1';
+               rd_count  <= 0;
+               rd_en_ram <= '1';
+            end if;
+
+            if rd_start = '1' and rd_count < 64 then
+               rd_data(rd_count + 0)   <= rd_data_ram(0);
+               rd_data(rd_count + 64)  <= rd_data_ram(1);
+               rd_data(rd_count + 128) <= rd_data_ram(2);
+               rd_data(rd_count + 192) <= rd_data_ram(3);
+
+               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_count    <= rd_count + 1;
+
+            elsif rd_start = '1' then
+               rd_count  <= 0;
+               rd_en_ram <= '0';
+               read_ptr  <= (read_ptr + 1) mod RAM_DEPTH;
+               rd_start  <= '0';
             end if;
 
             if wr_en = '1' and rd_en = '0' and full = '0' then
@@ -66,6 +137,7 @@ begin
             elsif wr_en = '1' and rd_en = '1' then
                -- No change in count
             end if;
+
          end if;
       end if;
    end process;
