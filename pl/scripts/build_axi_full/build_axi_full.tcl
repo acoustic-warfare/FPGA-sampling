@@ -20,10 +20,10 @@ add_files [file join "$ROOT" src axi_full mux.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
 
-
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
 add_files [file join "$ROOT" src filter fir_filter_controller.vhd]
+add_files [file join "$ROOT" src filter fir_bram.vhd]
 
 #add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]

@@ -142,7 +142,6 @@ begin
 
    fifo_0 : entity work.fifo_axi
       generic map(
-         RAM_WIDTH => 32,
          RAM_DEPTH => RAM_DEPTH
       )
       port map(

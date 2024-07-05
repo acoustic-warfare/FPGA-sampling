@@ -289,12 +289,11 @@ begin
 
    fifo_axi : entity work.fifo_axi
       generic map(
-         RAM_WIDTH => 32,
          RAM_DEPTH => fifo_buffer_lenght
       )
       port map(
          clk          => clk,
-         reset          => reset,
+         reset        => reset,
          wr_en        => array_matrix_valid,
          wr_data      => array_matrix_data,
          rd_en        => rd_en_fifo,

@@ -6,7 +6,6 @@ use work.matrix_type.all;
 
 entity fifo_axi is
    generic (
-      RAM_WIDTH : natural := 32;
       RAM_DEPTH : natural := 32
    );
    port (
@@ -35,7 +34,7 @@ architecture Behavioral of fifo_axi is
    signal wr_count : integer range 0 to 64;
 
    signal rd_start : std_logic;
-   signal rd_count : integer range 0 to 64;
+   signal rd_count : integer range 0 to 68;
 
    signal wr_en_ram : std_logic;
    signal rd_en_ram : std_logic;
@@ -46,8 +45,6 @@ architecture Behavioral of fifo_axi is
 
    signal wr_ram_addr : integer range 0 to 2047;
    signal rd_ram_addr : integer range 0 to 2047;
-
-   signal rd_data_buffer : matrix_256_32_type;
 
 begin
 
@@ -114,14 +111,26 @@ begin
                rd_en_ram <= '1';
             end if;
 
-            if rd_start = '1' and rd_count < 64 then
-               rd_data(rd_count + 0)   <= rd_data_ram(0);
-               rd_data(rd_count + 64)  <= rd_data_ram(1);
-               rd_data(rd_count + 128) <= rd_data_ram(2);
-               rd_data(rd_count + 192) <= rd_data_ram(3);
+            if rd_start = '1' and rd_count < 3 then
+               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_count    <= rd_count + 1;
+
+            elsif rd_start = '1' and rd_count < 64 then
+               rd_data(rd_count + 0 - 3)   <= rd_data_ram(0);
+               rd_data(rd_count + 64 - 3)  <= rd_data_ram(1);
+               rd_data(rd_count + 128 - 3) <= rd_data_ram(2);
+               rd_data(rd_count + 192 - 3) <= rd_data_ram(3);
 
                rd_ram_addr <= read_ptr * 64 + rd_count + 1;
                rd_count    <= rd_count + 1;
+
+            elsif rd_start = '1' and rd_count < 67 then
+               rd_data(rd_count + 0 - 3)   <= rd_data_ram(0);
+               rd_data(rd_count + 64 - 3)  <= rd_data_ram(1);
+               rd_data(rd_count + 128 - 3) <= rd_data_ram(2);
+               rd_data(rd_count + 192 - 3) <= rd_data_ram(3);
+
+               rd_count <= rd_count + 1;
 
             elsif rd_start = '1' then
                rd_count  <= 0;
