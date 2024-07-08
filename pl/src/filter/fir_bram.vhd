@@ -6,10 +6,9 @@ use ieee.numeric_std.all;
 entity fir_bram is
     port (
         clk     : in std_logic;
-        wr_addr : in std_logic_vector(7 downto 0);
+        addr    : in std_logic_vector(7 downto 0);
         wr_en   : in std_logic;
         wr_data : in std_logic_vector(31 downto 0);
-        rd_addr : in std_logic_vector(7 downto 0);
         rd_en   : in std_logic;
         rd_data : out std_logic_vector(31 downto 0)
     );
@@ -25,7 +24,7 @@ begin
     begin
         if rising_edge(clk) then
             if wr_en = '1' then
-                ram(to_integer(unsigned(wr_addr))) <= wr_data;
+                ram(to_integer(unsigned(addr))) <= wr_data;
             end if;
         end if;
     end process;
@@ -34,7 +33,7 @@ begin
     begin
         if rising_edge(clk) then
             if rd_en = '1' then
-                rd_data_internal <= ram(to_integer(unsigned(rd_addr)));
+                rd_data_internal <= ram(to_integer(unsigned(addr)));
             end if;
         end if;
     end process;

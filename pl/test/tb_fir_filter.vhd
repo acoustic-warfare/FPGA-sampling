@@ -27,15 +27,14 @@ architecture Behavioral of tb_fir_filter is
     --signal mem_out        : matrix_128_24_type;
 begin
 
-    Filter_inst : entity work.fir_filter
-        port map(
-            --clk            => clk,
-            -- reset          => '0',
-            data_in  => data_in,
-            data_out => data_out,
-            mem_in => (others => (others => '0'))
-        );
-
+    Filter_inst: entity work.fir_filter
+    port map(
+        clk    => clk,
+        reset  => '0',
+        data_i => std_logic_vector(data_in),
+        data_o => data_out 
+    );
+    
     clk <= not(clk) after C_CLK_CYKLE/2;
 
     read_write : process (clk)
@@ -63,7 +62,7 @@ begin
                 file_close(output_file);
                 assert (false) report "Reading operation completed!" severity warning;
             end if;
-            data_in <= std_logic_vector(to_signed(int_input_s, 32));
+            data_in <= std_logic_vector(to_signed(int_input_s, 24));
         end if;
     end process;
 

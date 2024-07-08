@@ -6,7 +6,7 @@ use work.matrix_type.all;
 
 entity fir_filter_controller is
     generic (
-        FILTER_TAPS : integer := 512
+        FILTER_TAPS : integer := 127
     );
     port (
         clk              : in std_logic;
@@ -23,37 +23,14 @@ architecture rtl of fir_filter_controller is
     type coefficients_type is array (0 to FILTER_TAPS - 1) of signed(7 downto 0);
     constant coefficients : coefficients_type := (
         x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"01", x"00", x"00", x"00",
-        x"00", x"01", x"00", x"00", x"00", x"00", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"01", x"00", x"00",
-        x"01", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"01", x"01", x"01", x"00", x"00",
-        x"00", x"01", x"01", x"01", x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"00", x"00",
-        x"00", x"01", x"01", x"01", x"00", x"FF", x"00", x"01", x"01", x"00", x"FF", x"00", x"01", x"01", x"00", x"FF",
-        x"FF", x"00", x"01", x"01", x"FF", x"FE", x"FF", x"01", x"01", x"FF", x"FE", x"FE", x"00", x"01", x"00", x"FE",
-        x"FD", x"FF", x"00", x"00", x"FE", x"FD", x"FD", x"FF", x"00", x"FF", x"FD", x"FC", x"FE", x"00", x"FF", x"FD",
-        x"FB", x"FD", x"FF", x"00", x"FE", x"FB", x"FB", x"FE", x"00", x"FF", x"FB", x"FA", x"FC", x"FF", x"00", x"FC",
-        x"F9", x"FA", x"FE", x"00", x"FE", x"F9", x"F8", x"FC", x"00", x"00", x"FB", x"F6", x"F8", x"FF", x"02", x"FE",
-        x"F6", x"F4", x"FC", x"05", x"03", x"F7", x"EF", x"F6", x"06", x"0D", x"FD", x"E4", x"E0", x"07", x"4B", x"7F",
-        x"7F", x"4B", x"07", x"E0", x"E4", x"FD", x"0D", x"06", x"F6", x"EF", x"F7", x"03", x"05", x"FC", x"F4", x"F6",
-        x"FE", x"02", x"FF", x"F8", x"F6", x"FB", x"00", x"00", x"FC", x"F8", x"F9", x"FE", x"00", x"FE", x"FA", x"F9",
-        x"FC", x"00", x"FF", x"FC", x"FA", x"FB", x"FF", x"00", x"FE", x"FB", x"FB", x"FE", x"00", x"FF", x"FD", x"FB",
-        x"FD", x"FF", x"00", x"FE", x"FC", x"FD", x"FF", x"00", x"FF", x"FD", x"FD", x"FE", x"00", x"00", x"FF", x"FD",
-        x"FE", x"00", x"01", x"00", x"FE", x"FE", x"FF", x"01", x"01", x"FF", x"FE", x"FF", x"01", x"01", x"00", x"FF",
-        x"FF", x"00", x"01", x"01", x"00", x"FF", x"00", x"01", x"01", x"00", x"FF", x"00", x"01", x"01", x"01", x"00",
-        x"00", x"00", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"01", x"01", x"01", x"00",
-        x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"01",
-        x"00", x"00", x"01", x"01", x"01", x"00", x"00", x"00", x"01", x"01", x"00", x"00", x"00", x"00", x"01", x"00",
-        x"00", x"00", x"00", x"01", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00"
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FD", x"FD",
+               x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", 
+        x"7F",
+        x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD", x"FD",
+        x"FD", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FE", x"FF",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"00",
+        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00"
     );
 
     type state_type is (idle, load, mul, stall, sum, store, done);
@@ -73,10 +50,9 @@ architecture rtl of fir_filter_controller is
     signal wr_data_ram : ram_type;
     signal rd_data_ram : ram_type;
 
-    signal wr_ram_addr : integer range 0 to 255;
+    signal ram_addr : integer range 0 to 255;
     signal wr_en_ram   : std_logic;
 
-    signal rd_ram_addr : integer range 0 to 255;
     signal rd_en_ram   : std_logic;
 
     --signal TB_state1 : integer;
@@ -158,10 +134,9 @@ begin
         fir_bram_inst : entity work.fir_bram
             port map(
                 clk     => clk,
-                wr_addr => std_logic_vector(TO_UNSIGNED(wr_ram_addr, 8)),
+                addr => std_logic_vector(TO_UNSIGNED(ram_addr, 8)),
                 wr_en   => wr_en_ram,
                 wr_data => wr_data_ram(i),
-                rd_addr => std_logic_vector(TO_UNSIGNED(rd_ram_addr, 8)),
                 rd_en   => rd_en_ram,
                 rd_data => rd_data_ram(i)
             );
@@ -176,9 +151,8 @@ begin
                 matrix_reg       <= (others => (others => '0'));
                 matrix_out_valid <= '0';
 
-                wr_ram_addr <= 0;
+                ram_addr <= 0;
                 wr_en_ram   <= '0';
-                rd_ram_addr <= 0;
                 rd_en_ram   <= '0';
             else
                 matrix_out_valid <= '0';
@@ -197,8 +171,7 @@ begin
                         if fir_counter < 256 then
                             state       <= mul;
                             rd_en_ram   <= '1';
-                            wr_ram_addr <= fir_counter;
-                            rd_ram_addr <= fir_counter;
+                            ram_addr <= fir_counter;
                             data_in     <= signed(matrix_reg(fir_counter)(23 downto 0));
                         else
                             state <= done;

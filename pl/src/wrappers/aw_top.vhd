@@ -277,15 +277,15 @@ begin
          sample_counter_array    => sample_counter
       );
 
-   --fir_filter_controller_c : entity work.fir_filter_controller
-   --   port map(
-   --      clk              => clk,
-   --      reset            => reset,
-   --      matrix_in        => array_matrix_data,
-   --      matrix_in_valid  => array_matrix_valid,
-   --      matrix_out       => array_matrix_data_fir,
-   --      matrix_out_valid => array_matrix_valid_fir
-   --   );
+   fir_filter_controller_c : entity work.fir_filter_controller
+      port map(
+         clk              => clk,
+         reset            => reset,
+         matrix_in        => array_matrix_data,
+         matrix_in_valid  => array_matrix_valid,
+         matrix_out       => array_matrix_data_fir,
+         matrix_out_valid => array_matrix_valid_fir
+      );
 
    fifo_axi : entity work.fifo_axi
       generic map(
@@ -294,8 +294,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => array_matrix_valid,
-         wr_data      => array_matrix_data,
+         wr_en        => array_matrix_valid_fir,
+         wr_data      => array_matrix_data_fir,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,
