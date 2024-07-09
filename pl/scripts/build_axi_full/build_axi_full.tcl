@@ -59,7 +59,7 @@ make_wrapper -inst_template [ get_files {zynq_bd.bd} ]
 add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1 bd zynq_bd hdl zynq_bd_wrapper.vhd]
 
 ## start gui
-start_gui
+#start_gui
 update_compile_order -fileset sources_1
 
 ## run synth
