@@ -18,8 +18,12 @@ add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
 add_files [file join "$ROOT" src axi_full mux.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
+add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
 
 add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
+
+add_files [file join "$ROOT" src filter fir_filter_controller.vhd]
+add_files [file join "$ROOT" src filter fir_bram.vhd]
 
 #add_files [file join "$ROOT" src sample_data sample.vhd]
 add_files [file join "$ROOT" src sample_data sample_clk.vhd]
@@ -64,7 +68,7 @@ update_compile_order -fileset sources_1
 #update_compile_order -fileset sources_1
 
 ## run synth, impl and write bitstream
-launch_runs impl_1 -to_step write_bitstream -jobs 4
+launch_runs impl_1 -to_step write_bitstream -jobs 2
 wait_on_run impl_1
 
 ## launch SDK

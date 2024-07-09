@@ -19,3 +19,5 @@ ljud
 .vscode/settings.json
 .vscode
 recorded_mic_data
+filter_coefficients/filter_output.txt
+filter_coefficients/filter_input.txt

@@ -95,7 +95,7 @@ class Data(Structure):
 
 
 UDP_IP = "0.0.0.0"
-UDP_PORT = 21844
+UDP_PORT = 21875
 
 print("Enter a filename for the recording: ")
 fileChooser = input()

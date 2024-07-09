@@ -73,7 +73,7 @@ if [ "$auto_test" = true ]; then
         exit 1
     else
         printf "%b\n" "${BOLD}Running auto test${RESET}"
-        python3 "$GIT_ROOT/pl/run.py" -v "*$test_name.wave*"
+        python3 "$GIT_ROOT/pl/run.py" -v "*$test_name.auto*"
     fi
 fi
 

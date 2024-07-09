@@ -53,14 +53,17 @@ architecture structual of aw_top is
 
    signal sample_counter : std_logic_vector(31 downto 0);
 
-   signal full_array         : std_logic_vector(255 downto 0);
-   signal empty_array        : std_logic_vector(255 downto 0);
-   signal almost_full_array  : std_logic_vector(255 downto 0);
-   signal almost_empty_array : std_logic_vector(255 downto 0);
+   signal full_array         : std_logic;
+   signal empty_array        : std_logic;
+   signal almost_full_array  : std_logic;
+   signal almost_empty_array : std_logic;
 
    signal array_matrix_data  : matrix_256_32_type;
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
+
+   signal array_matrix_data_fir  : matrix_256_32_type;
+   signal array_matrix_valid_fir : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -112,25 +115,25 @@ begin
          led_rgb_6_out(0) <= '0';
          led_rgb_5_out(1) <= '0';
 
-         if (empty_array(0) = '1') then
+         if (empty_array = '1') then
             led_rgb_6_out(2) <= '1';
          else
             led_rgb_6_out(2) <= '0';
          end if;
 
-         if (almost_empty_array(0) = '1') then
+         if (almost_empty_array = '1') then
             led_rgb_6_out(1) <= '1';
          else
             led_rgb_6_out(1) <= '0';
          end if;
 
-         if (almost_full_array(0) = '1') then
+         if (almost_full_array = '1') then
             led_rgb_5_out(0) <= '1';
          else
             led_rgb_5_out(0) <= '0';
          end if;
 
-         if (full_array(0) = '1') then
+         if (full_array = '1') then
             led_rgb_5_out(2) <= '1';
          else
             led_rgb_5_out(2) <= '0';
@@ -189,7 +192,7 @@ begin
       );
 
    -- PMOD port JE, BitStream 12-15: Array 1
-   sample_gen_2 : for i in 0 to 3 generate
+   sample_gen_1 : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample_clk
          port map(
@@ -201,10 +204,25 @@ begin
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
-   end generate sample_gen_2;
+   end generate sample_gen_1;
 
    -- PMOD port JB, BitStream 0-3: Array 2
-   sample_gen_3 : for i in 4 to 7 generate
+   sample_gen_2 : for i in 4 to 7 generate
+   begin
+      sample_C : entity work.sample_clk
+         port map(
+            sys_clk              => clk,
+            reset                => reset,
+            index                => index,
+            ws                   => ws,
+            bit_stream           => bit_stream_out(i - 4),
+            mic_sample_data_out  => mic_sample_data(i),
+            mic_sample_valid_out => mic_sample_valid(i)
+         );
+   end generate sample_gen_2;
+
+   -- PMOD port JC, BitStream 4-7: Array 3
+   sample_gen_3 : for i in 8 to 11 generate
    begin
       sample_C : entity work.sample_clk
          port map(
@@ -218,8 +236,8 @@ begin
          );
    end generate sample_gen_3;
 
-   -- PMOD port JC, BitStream 4-7: Array 3
-   sample_gen_4 : for i in 8 to 11 generate
+   -- PMOD port JD, BitStream 8-11: Array 4
+   sample_gen_4 : for i in 12 to 15 generate
    begin
       sample_C : entity work.sample_clk
          port map(
@@ -232,21 +250,6 @@ begin
             mic_sample_valid_out => mic_sample_valid(i)
          );
    end generate sample_gen_4;
-
-   -- PMOD port JD, BitStream 8-11: Array 4
-   sample_gen_01 : for i in 12 to 15 generate
-   begin
-      sample_C : entity work.sample_clk
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            index                => index,
-            ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_01;
 
    collector_gen : for i in 0 to 15 generate
    begin
@@ -274,26 +277,32 @@ begin
          sample_counter_array    => sample_counter
       );
 
-   fifo_axi_0 : for i in 0 to 255 generate
-   begin
-      fifo_gen : entity work.fifo_axi
-         generic map(
-            RAM_WIDTH => 32,
-            RAM_DEPTH => fifo_buffer_lenght
-         )
-         port map(
-            clk          => clk,
-            rst          => reset,
-            wr_en        => array_matrix_valid,
-            wr_data      => array_matrix_data(i),
-            rd_en        => rd_en_fifo,
-            rd_data      => data_fifo_256_out(i),
-            empty        => empty_array(i),
-            almost_empty => almost_empty_array(i),
-            almost_full  => full_array(i),
-            full         => almost_full_array(i)
-         );
-   end generate fifo_axi_0;
+   fir_filter_controller_c : entity work.fir_filter_controller
+      port map(
+         clk              => clk,
+         reset            => reset,
+         matrix_in        => array_matrix_data,
+         matrix_in_valid  => array_matrix_valid,
+         matrix_out       => array_matrix_data_fir,
+         matrix_out_valid => array_matrix_valid_fir
+      );
+
+   fifo_axi : entity work.fifo_axi
+      generic map(
+         RAM_DEPTH => fifo_buffer_lenght
+      )
+      port map(
+         clk          => clk,
+         reset        => reset,
+         wr_en        => array_matrix_valid_fir,
+         wr_data      => array_matrix_data_fir,
+         rd_en        => rd_en_fifo,
+         rd_data      => data_fifo_256_out,
+         empty        => empty_array,
+         almost_empty => almost_empty_array,
+         almost_full  => full_array,
+         full         => almost_full_array
+      );
 
    mux : entity work.mux
       port map(
@@ -311,7 +320,7 @@ begin
          clk_25        => sck_clk,
          sys_clock     => sys_clock,
          axi_data      => data_stream,
-         axi_empty     => empty_array(0),
+         axi_empty     => empty_array,
          axi_rd_en     => rd_en_pulse,
          axi_sys_id    => system_ids,
          axi_nr_arrays => nr_arrays

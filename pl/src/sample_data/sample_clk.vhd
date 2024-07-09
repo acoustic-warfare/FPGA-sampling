@@ -39,14 +39,21 @@ architecture rtl of sample_clk is
 
    signal idle_counter : integer := 0; -- Creates a delay for staying in idle until data is transmitted from array
 
-   signal index_d        : std_logic_vector(3 downto 0);
-   signal index_dd       : std_logic_vector(3 downto 0);
-   signal index_ddd      : std_logic_vector(3 downto 0);
-   signal index_dddd     : std_logic_vector(3 downto 0);
-   signal index_ddddd    : std_logic_vector(3 downto 0);
-   signal index_dddddd   : std_logic_vector(3 downto 0);
-   signal index_ddddddd  : std_logic_vector(3 downto 0);
-   signal index_dddddddd : std_logic_vector(3 downto 0);
+   signal index_d               : std_logic_vector(3 downto 0);
+   signal index_dd              : std_logic_vector(3 downto 0);
+   signal index_ddd             : std_logic_vector(3 downto 0);
+   signal index_dddd            : std_logic_vector(3 downto 0);
+   signal index_ddddd           : std_logic_vector(3 downto 0);
+   signal index_dddddd          : std_logic_vector(3 downto 0);
+   signal index_ddddddd         : std_logic_vector(3 downto 0);
+   signal index_dddddddd        : std_logic_vector(3 downto 0);
+   signal index_ddddddddd       : std_logic_vector(3 downto 0);
+   signal index_dddddddddd      : std_logic_vector(3 downto 0);
+   signal index_ddddddddddd     : std_logic_vector(3 downto 0);
+   signal index_dddddddddddd    : std_logic_vector(3 downto 0);
+   signal index_ddddddddddddd   : std_logic_vector(3 downto 0);
+   signal index_dddddddddddddd  : std_logic_vector(3 downto 0);
+   signal index_ddddddddddddddd : std_logic_vector(3 downto 0);
 
 begin
 
@@ -56,14 +63,21 @@ begin
    begin
       if rising_edge(sys_clk) then
 
-         index_d        <= index;
-         index_dd       <= index_d;
-         index_ddd      <= index_dd;
-         index_dddd     <= index_ddd;
-         index_ddddd    <= index_dddd;
-         index_dddddd   <= index_ddddd;
-         index_ddddddd  <= index_dddddd;
-         index_dddddddd <= index_ddddddd;
+         index_d               <= index;
+         index_dd              <= index_d;
+         index_ddd             <= index_dd;
+         index_dddd            <= index_ddd;
+         index_ddddd           <= index_dddd;
+         index_dddddd          <= index_ddddd;
+         index_ddddddd         <= index_dddddd;
+         index_dddddddd        <= index_ddddddd;
+         index_ddddddddd       <= index_dddddddd;
+         index_dddddddddd      <= index_ddddddddd;
+         index_ddddddddddd     <= index_dddddddddd;
+         index_dddddddddddd    <= index_ddddddddddd;
+         index_ddddddddddddd   <= index_dddddddddddd;
+         index_dddddddddddddd  <= index_ddddddddddddd;
+         index_ddddddddddddddd <= index_dddddddddddddd;
 
          case state is
             when idle => -- After a complete sample of all mics (only exit on ws high)
@@ -81,7 +95,7 @@ begin
                end if;
 
                -- This waits for the sck to have a rising_edge
-               if (idle_counter = to_integer(unsigned(index_dddddddd))) then
+               if (idle_counter = to_integer(unsigned(index_ddddddddddddddd))) then
                   idle_counter <= 0;
                   state        <= run;
                end if;

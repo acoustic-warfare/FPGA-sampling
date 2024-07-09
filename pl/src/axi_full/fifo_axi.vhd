@@ -1,141 +1,163 @@
-library ieee;
-use ieee.std_logic_1164.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.NUMERIC_STD.all;
 
-------------------------------------------------------------------------------------------------------------------------------------------------
---                                                  # port information #
--- WR_EN: Valid signal incoming from Full Sample enabling to update header pointer of the FIFO.  
---
--- WR_DATA: 32-bit vector representing one microphone's data. 
---
--- RD_EN: Valid signal incoming from Mux enabling to update tail pointer of the FIFO. 
---
--- RD_DATA: Outgoing 32-bit vector of representing one microphone. 
---
--- EMPTY: Signals if FIFO is empty. 
---
--- FULL: Signals if FIFO is full. 
---------------------------------------------------------------------------------------------------------------------------------------------------
+use work.matrix_type.all;
 
 entity fifo_axi is
    generic (
-      RAM_WIDTH : natural;
-      RAM_DEPTH : natural
+      RAM_DEPTH : natural := 32
    );
    port (
-      clk : in std_logic;
-      rst : in std_logic;
-
-      -- Write port
-      wr_en   : in std_logic;
-      wr_data : in std_logic_vector(RAM_WIDTH - 1 downto 0);
-
-      -- Read port
-      rd_en   : in std_logic;
-      rd_data : out std_logic_vector(RAM_WIDTH - 1 downto 0);
-
-      -- Flags
-      empty        : out std_logic;
+      clk          : in std_logic;
+      reset        : in std_logic;
+      wr_en        : in std_logic; -- Write port
+      wr_data      : in matrix_256_32_type;
+      rd_en        : in std_logic; -- Read port
+      rd_data      : out matrix_256_32_type;
+      empty        : out std_logic; -- Flags
       almost_empty : out std_logic;
       almost_full  : out std_logic;
       full         : out std_logic
-
-      -- The number of elements in the FIFO
-      --fill_count : out integer range RAM_DEPTH - 1 downto 0
    );
 end entity;
 
-architecture rtl of fifo_axi is
+architecture Behavioral of fifo_axi is
+   constant ALMOST_EMPTY_THRESHOLD : integer := 2;
+   constant ALMOST_FULL_THRESHOLD  : integer := RAM_DEPTH - 2;
 
-   type ram_type is array (0 to RAM_DEPTH - 1) of
-   std_logic_vector(wr_data'range);
-   signal ram : ram_type;
+   signal write_ptr  : integer range 0 to 31        := 0;
+   signal read_ptr   : integer range 0 to 31        := 0;
+   signal fifo_count : integer range 0 to RAM_DEPTH := 0;
 
-   subtype index_type is integer range ram_type'range;
-   signal head : index_type;
-   signal tail : index_type;
+   signal wr_start : std_logic;
+   signal wr_count : integer range 0 to 64;
 
-   signal empty_i        : std_logic;
-   signal almost_empty_i : std_logic;
-   signal almost_full_i  : std_logic;
-   signal full_i         : std_logic;
-   signal fill_count_i   : integer;
+   signal rd_start : std_logic;
+   signal rd_count : integer range 0 to 68;
 
-   -- Increment and wrap
-   procedure incr(signal index : inout index_type) is
-   begin
-      if index = index_type'high then
-         index <= index_type'low;
-      else
-         index <= index + 1;
-      end if;
-   end procedure;
+   signal wr_en_ram : std_logic;
+   signal rd_en_ram : std_logic;
+
+   type ram_type is array (3 downto 0) of std_logic_vector(31 downto 0);
+   signal wr_data_ram : ram_type;
+   signal rd_data_ram : ram_type;
+
+   signal wr_ram_addr : integer range 0 to 2047;
+   signal rd_ram_addr : integer range 0 to 2047;
 
 begin
 
-   -- Copy internal signals to output
-   empty        <= empty_i;
-   almost_empty <= almost_empty_i;
-   almost_full  <= almost_full_i;
-   full         <= full_i;
+   fifo_bram_gen : for i in 0 to 3 generate
+   begin
+      fifo_bram_inst : entity work.fifo_bram
+         port map(
+            clk     => clk,
+            wr_addr => std_logic_vector(TO_UNSIGNED(wr_ram_addr, 11)),
+            wr_en   => wr_en_ram,
+            wr_data => wr_data_ram(i),
+            rd_addr => std_logic_vector(TO_UNSIGNED(rd_ram_addr, 11)),
+            rd_en   => rd_en_ram,
+            rd_data => rd_data_ram(i)
+         );
+   end generate fifo_bram_gen;
 
-   -- Set the flags
-   empty_i <= '1' when fill_count_i = 0 else
-      '0';
-   almost_empty_i <= '1' when fill_count_i < 4 else -- less than 4 in buffer
-      '0';
-   almost_full_i <= '1' when fill_count_i > RAM_DEPTH - 4 - 2 else -- more than RAM_DEPTH - 4
-      '0';
-   full_i <= '1' when fill_count_i > RAM_DEPTH - 2 else
-      '0';
-
-   -- Update the head pointer in write
-   PROC_HEAD : process (clk)
+   process (clk)
    begin
       if rising_edge(clk) then
-         if rst = '1' then
-            head <= 0;
-         else
+         if reset = '1' then
+            write_ptr  <= 0;
+            read_ptr   <= 0;
+            fifo_count <= 0;
+            rd_data    <= (others => (others => '0'));
 
-            if wr_en = '1' and full_i = '0' then
-               incr(head);
+            wr_start <= '0';
+            wr_count <= 0;
+            rd_start <= '0';
+            rd_count <= 0;
+
+            wr_en_ram <= '0';
+            rd_en_ram <= '0';
+
+            wr_ram_addr <= 0;
+            rd_ram_addr <= 0;
+         else
+            -- Write
+            if wr_en = '1' and full = '0' then
+               wr_start  <= '1';
+               wr_count  <= 0;
+               wr_en_ram <= '1';
+            end if;
+
+            if wr_start = '1' and wr_count < 64 then
+               wr_data_ram(0) <= wr_data(wr_count + 0);
+               wr_data_ram(1) <= wr_data(wr_count + 64);
+               wr_data_ram(2) <= wr_data(wr_count + 128);
+               wr_data_ram(3) <= wr_data(wr_count + 192);
+
+               wr_ram_addr <= write_ptr * 64 + wr_count + 1;
+               wr_count    <= wr_count + 1;
+            elsif wr_start = '1' then
+               wr_count  <= 0;
+               wr_en_ram <= '0';
+               write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
+               wr_start  <= '0';
+            end if;
+
+            -- read
+            if rd_en = '1' and empty = '0' then
+               rd_start  <= '1';
+               rd_count  <= 0;
+               rd_en_ram <= '1';
+            end if;
+
+            if rd_start = '1' and rd_count < 3 then
+               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_count    <= rd_count + 1;
+
+            elsif rd_start = '1' and rd_count < 64 then
+               rd_data(rd_count + 0 - 3)   <= rd_data_ram(0);
+               rd_data(rd_count + 64 - 3)  <= rd_data_ram(1);
+               rd_data(rd_count + 128 - 3) <= rd_data_ram(2);
+               rd_data(rd_count + 192 - 3) <= rd_data_ram(3);
+
+               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_count    <= rd_count + 1;
+
+            elsif rd_start = '1' and rd_count < 67 then
+               rd_data(rd_count + 0 - 3)   <= rd_data_ram(0);
+               rd_data(rd_count + 64 - 3)  <= rd_data_ram(1);
+               rd_data(rd_count + 128 - 3) <= rd_data_ram(2);
+               rd_data(rd_count + 192 - 3) <= rd_data_ram(3);
+
+               rd_count <= rd_count + 1;
+
+            elsif rd_start = '1' then
+               rd_count  <= 0;
+               rd_en_ram <= '0';
+               read_ptr  <= (read_ptr + 1) mod RAM_DEPTH;
+               rd_start  <= '0';
+            end if;
+
+            if wr_en = '1' and rd_en = '0' and full = '0' then
+               fifo_count <= fifo_count + 1;
+            elsif wr_en = '0' and rd_en = '1' and empty = '0' then
+               fifo_count <= fifo_count - 1;
+            elsif wr_en = '1' and rd_en = '1' then
+               -- No change in count
             end if;
 
          end if;
       end if;
    end process;
 
-   -- Update the tail pointer on read and pulse valid
-   PROC_TAIL : process (clk)
-   begin
-      if rising_edge(clk) then
-         if rst = '1' then
-            tail <= 0;
-         else
-            if rd_en = '1' and empty_i = '0' then
-               incr(tail);
-            end if;
+   empty <= '1' when fifo_count = 0 else
+      '0';
+   almost_empty <= '1' when fifo_count <= ALMOST_EMPTY_THRESHOLD else
+      '0';
+   almost_full <= '1' when fifo_count >= ALMOST_FULL_THRESHOLD else
+      '0';
+   full <= '1' when fifo_count = RAM_DEPTH else
+      '0';
 
-         end if;
-      end if;
-   end process;
-
-   -- Write to and read from the RAM
-   PROC_RAM : process (clk)
-   begin
-      if rising_edge(clk) then
-         ram(head) <= wr_data;
-         rd_data   <= ram(tail);
-      end if;
-   end process;
-
-   -- Update the fill count
-   PROC_COUNT : process (head, tail)
-   begin
-      if head < tail then
-         fill_count_i <= head - tail + RAM_DEPTH;
-      else
-         fill_count_i <= head - tail;
-      end if;
-   end process;
-
-end architecture;
+end Behavioral;
