@@ -119,7 +119,29 @@ begin
                 wait for C_CLK_CYKLE * 20;
             elsif run("auto") then
 
-                wait for C_CLK_CYKLE * 2000;
+                wait for C_CLK_CYKLE;
+                reset <= '1';
+                wait for C_CLK_CYKLE * 2;
+                reset <= '0';
+                wait for C_CLK_CYKLE * 5;
+
+                while tb_read_data = '1' loop
+                    data_i_valid <= '1';
+                    wait for C_CLK_CYKLE;
+                    data_i_valid <= '0';
+                    wait for C_CLK_CYKLE * 10;
+                end loop;
+
+                for iteration in 0 to 10 loop
+                    data_i_valid <= '1';
+                    wait for C_CLK_CYKLE;
+                    data_i_valid <= '0';
+                    wait for C_CLK_CYKLE * 10;
+                end loop;
+
+                wait for C_CLK_CYKLE * 20;
+                tb_end <= '1';
+                wait for C_CLK_CYKLE * 20;
 
             end if;
         end loop;

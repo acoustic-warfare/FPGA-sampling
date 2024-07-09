@@ -11,6 +11,7 @@ nr_bits = 8
 # Step 1: Design the FIR high-pass filter and get the coefficients
 coefficients = signal.firwin(num_taps, cutoff, fs=fs, pass_zero=False)
 print("1", coefficients)
+
 # Step 2: Scale coefficients to 8-bit signed integer values
 Max = (2 ** (nr_bits - 1)) - 1  # Maximum value for 8-bit signed integer
 coefficients = coefficients * Max

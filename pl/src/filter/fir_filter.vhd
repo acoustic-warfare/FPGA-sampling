@@ -31,15 +31,15 @@ architecture rtl of fir_filter is
     );
 
     type state_type is (idle, load, mul, stall, sum, store, done);
-    signal state  : state_type;
-    signal state1 : integer;
+    signal state : state_type;
+    --signal state1 : integer;
 
     signal fir_end : std_logic;
 
     signal data_i_reg : std_logic_vector(23 downto 0);
 
     -- make te 39 dependent of the coef_size
-    type mul_type is array (FILTER_TAPS - 1 downto 0) of signed(31 downto 0);
+    type mul_type is array (FILTER_TAPS - 1 downto 0) of signed(23 + COEF_SIZE downto 0);
     signal mul_reg : mul_type;
 
     type sum_type is array (FILTER_TAPS - 3 downto 0) of signed(31 downto 0);
@@ -51,78 +51,7 @@ architecture rtl of fir_filter is
     type ram_type is array (0 to FILTER_TAPS - 1) of std_logic_vector(31 downto 0);
     signal ram : ram_type;
 
-    signal TB_mul_reg_0     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_1     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_2     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_3     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_4     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_5     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_6     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_7     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_8     : std_logic_vector(31 downto 0);
-    signal TB_mul_reg_9     : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_0 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_1 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_2 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_3 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_4 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_5 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_6 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_7 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_8 : std_logic_vector(31 downto 0);
-    signal TB_rd_data_ram_9 : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_0     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_1     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_2     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_3     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_4     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_5     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_6     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_7     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_8     : std_logic_vector(31 downto 0);
-    signal TB_sum_reg_9     : std_logic_vector(31 downto 0);
-
 begin
-
-    TB_rd_data_ram : process (ram)
-    begin
-        TB_rd_data_ram_0 <= ram(0);
-        TB_rd_data_ram_1 <= ram(1);
-        TB_rd_data_ram_2 <= ram(2);
-        TB_rd_data_ram_3 <= ram(3);
-        TB_rd_data_ram_4 <= ram(4);
-        TB_rd_data_ram_5 <= ram(5);
-        TB_rd_data_ram_6 <= ram(6);
-        TB_rd_data_ram_7 <= ram(7);
-        --TB_rd_data_ram_8 <= ram(8);
-        --TB_rd_data_ram_9 <= ram(9);
-    end process;
-    TB_mul_reg : process (mul_reg)
-    begin
-        TB_mul_reg_0 <= std_logic_vector(mul_reg(0));
-        TB_mul_reg_1 <= std_logic_vector(mul_reg(1));
-        TB_mul_reg_2 <= std_logic_vector(mul_reg(2));
-        TB_mul_reg_3 <= std_logic_vector(mul_reg(3));
-        TB_mul_reg_4 <= std_logic_vector(mul_reg(4));
-        TB_mul_reg_5 <= std_logic_vector(mul_reg(5));
-        TB_mul_reg_6 <= std_logic_vector(mul_reg(6));
-        TB_mul_reg_7 <= std_logic_vector(mul_reg(7));
-        --TB_mul_reg_8 <= std_logic_vector(mul_reg(8));
-        --TB_mul_reg_9 <= std_logic_vector(mul_reg(9));
-    end process;
-    TB_sum_reg : process (sum_reg)
-    begin
-        TB_sum_reg_0 <= std_logic_vector(sum_reg(0));
-        TB_sum_reg_1 <= std_logic_vector(sum_reg(1));
-        TB_sum_reg_2 <= std_logic_vector(sum_reg(2));
-        TB_sum_reg_3 <= std_logic_vector(sum_reg(3));
-        TB_sum_reg_4 <= std_logic_vector(sum_reg(4));
-        TB_sum_reg_5 <= std_logic_vector(sum_reg(5));
-        --TB_sum_reg_6 <= std_logic_vector(sum_reg(6));
-        --TB_sum_reg_7 <= std_logic_vector(sum_reg(7));
-        --TB_sum_reg_8 <= std_logic_vector(sum_reg(8));
-        --TB_sum_reg_9 <= std_logic_vector(sum_reg(9));
-    end process;
 
     process (clk)
     begin
@@ -164,15 +93,15 @@ begin
                         state <= store;
 
                         for i in 0 to FILTER_TAPS - 3 loop
-                            sum_reg(i) <= signed(ram(i)) + mul_reg(i + 1)(31 downto 0);
+                            sum_reg(i) <= signed(ram(i)) + mul_reg(i + 1)(23 + COEF_SIZE downto COEF_SIZE - 8);
                         end loop;
 
-                        data_out <= signed(ram(FILTER_TAPS - 2)) + mul_reg(FILTER_TAPS - 1)(31 downto 0);
+                        data_out <= signed(ram(FILTER_TAPS - 2)) + mul_reg(FILTER_TAPS - 1)(23 + COEF_SIZE downto COEF_SIZE - 8);
 
                     when store =>
                         state <= load;
 
-                        ram(0) <= std_logic_vector(mul_reg(0)(31 downto 0));
+                        ram(0) <= std_logic_vector(mul_reg(0)(23 + COEF_SIZE downto COEF_SIZE - 8));
                         for i in 0 to FILTER_TAPS - 3 loop
                             ram(i + 1) <= std_logic_vector(sum_reg(i));
                         end loop;
@@ -192,24 +121,24 @@ begin
         end if;
     end process;
 
-    process (state)
-    begin
-        if state = idle then
-            state1 <= 0;
-        elsif state = load then
-            state1 <= 1;
-        elsif state = mul then
-            state1 <= 2;
-        elsif state = stall then
-            state1 <= 3;
-        elsif state = sum then
-            state1 <= 4;
-        elsif state = store then
-            state1 <= 5;
-        elsif state = done then
-            state1 <= 6;
-        else
-            state1 <= - 1;
-        end if;
-    end process;
+    --process (state)
+    --begin
+    --    if state = idle then
+    --        state1 <= 0;
+    --    elsif state = load then
+    --        state1 <= 1;
+    --    elsif state = mul then
+    --        state1 <= 2;
+    --    elsif state = stall then
+    --        state1 <= 3;
+    --    elsif state = sum then
+    --        state1 <= 4;
+    --    elsif state = store then
+    --        state1 <= 5;
+    --    elsif state = done then
+    --        state1 <= 6;
+    --    else
+    --        state1 <= - 1;
+    --    end if;
+    --end process;
 end architecture;
