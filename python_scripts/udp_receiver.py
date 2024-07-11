@@ -93,7 +93,7 @@ if txtInput.lower() == "y":
             )
             for i in range(min(num_mics, 212)):  # max 212 mic in txt file
                 mic_data = int_to_twos_complement_string(d.mic[i])
-                f.write(f"mic_{i+1}: {mic_data}    ")
+                f.write(f"mic_{i}: {mic_data}    ")
             f.write("\n")
 else:
     print("Recording")

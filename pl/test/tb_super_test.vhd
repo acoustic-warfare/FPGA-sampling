@@ -11,8 +11,7 @@ entity tb_super_test is
    generic (
       runner_cfg : string
    );
-
-end tb_super_test;
+end entity;
 
 architecture tb of tb_super_test is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
@@ -44,7 +43,6 @@ architecture tb of tb_super_test is
    signal chain_x16_matrix_data_in : matrix_16_16_32_type;
    signal array_matrix_data_out    : matrix_256_32_type;
    signal array_matrix_valid_out   : std_logic;
-   signal sample_counter_array     : std_logic_vector(31 downto 0);
 
    -- signal ws_ok  : std_logic;
    -- signal sck_ok : std_logic;
@@ -53,7 +51,6 @@ architecture tb of tb_super_test is
    signal sck_clk_cable   : std_logic;
    signal bitstream_cable : std_logic_vector(15 downto 0);
 
-   signal RAM_DEPTH          : natural := 128;
    signal rd_en              : std_logic;
    signal data_fifo_out      : matrix_256_32_type := (others => (others => '0'));
    signal empty_array        : std_logic;
@@ -119,7 +116,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw              => '1',
+            sw_mic_id              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
             chain_matrix_data_out  => chain_x16_matrix_data_in(i),
@@ -134,15 +131,14 @@ begin
          chain_x4_matrix_data_in => chain_x16_matrix_data_in,
          chain_matrix_valid_in   => chain_matrix_valid_out,
          array_matrix_data_out   => array_matrix_data_out,
-         array_matrix_valid_out  => array_matrix_valid_out,
-         sample_counter_array    => sample_counter_array
+         array_matrix_valid_out  => array_matrix_valid_out
       );
 
    -- gets error when trying to use this will look in to it later 
 
    fifo_0 : entity work.fifo_axi
       generic map(
-         RAM_DEPTH => RAM_DEPTH
+         RAM_DEPTH => 32
       )
       port map(
          clk          => clk,
@@ -185,15 +181,15 @@ begin
          if run("wave") then
             wait for (C_CLK_CYKLE * 1);
             reset <= '1';
-            wait for (C_CLK_CYKLE * 10);
+            wait for (C_CLK_CYKLE * 20);
             reset <= '0';
             -- test 1 is so far only meant for gktwave
-            wait for 300000 ns; -- duration of test 1
+            wait for C_CLK_CYKLE * 100000; -- duration of test 1
 
          elsif run("auto") then
             wait for (C_CLK_CYKLE * 1);
             reset <= '1';
-            wait for (C_CLK_CYKLE * 10); -- duration of test 1
+            wait for (C_CLK_CYKLE * 20); -- duration of test 1
             reset <= '0';
 
             for i in 0 to 100000 loop

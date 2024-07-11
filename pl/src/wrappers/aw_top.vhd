@@ -38,6 +38,7 @@ architecture structual of aw_top is
 
    signal sw_simulated_array : std_logic;
    signal sw_mic_id          : std_logic;
+   signal sw_fir_off         : std_logic;
 
    signal index : std_logic_vector(3 downto 0);
 
@@ -50,8 +51,6 @@ architecture structual of aw_top is
 
    signal chain_matrix_data        : matrix_16_16_32_type;
    signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
-
-   signal sample_counter : std_logic_vector(31 downto 0);
 
    signal full_array         : std_logic;
    signal empty_array        : std_logic;
@@ -88,6 +87,8 @@ begin
 
    system_ids <= sw_ff(3 downto 2);
    nr_arrays  <= sw_ff(1 downto 0);
+
+   sw_fir_off <= sw_simulated_array or sw_mic_id; -- if sim_array or mic_id on fir filter have to be turned off
 
    process (empty_array, almost_empty_array, almost_full_array, full_array, sw_simulated_array, sw_mic_id)
    begin
@@ -258,7 +259,7 @@ begin
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            mic_id_sw              => sw_mic_id,
+            sw_mic_id              => sw_mic_id,
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -273,14 +274,13 @@ begin
          chain_x4_matrix_data_in => chain_matrix_data,
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
-         array_matrix_valid_out  => array_matrix_valid,
-         sample_counter_array    => sample_counter
-      );
+         array_matrix_valid_out  => array_matrix_valid);
 
    fir_filter_controller_c : entity work.fir_filter_controller
       port map(
          clk              => clk,
          reset            => reset,
+         sw_fir_off       => sw_fir_off,
          matrix_in        => array_matrix_data,
          matrix_in_valid  => array_matrix_valid,
          matrix_out       => array_matrix_data_fir,

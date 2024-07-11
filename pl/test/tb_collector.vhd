@@ -11,7 +11,7 @@ entity tb_collector is
    generic (
       runner_cfg : string
    );
-end tb_collector;
+end entity;
 
 architecture tb of tb_collector is
    constant C_CLK_CYKLE : time := 10 ns;
@@ -38,7 +38,7 @@ begin
    collector1 : entity work.collector port map(
       sys_clk                => clk,
       reset                  => reset,
-      mic_id_sw              => mic_id_sw,
+      sw_mic_id              => mic_id_sw,
       mic_sample_data_in     => mic_sample_data_in,
       mic_sample_valid_in    => mic_sample_valid_in,
       chain_matrix_data_out  => chain_matrix_data_out,
