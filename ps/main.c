@@ -291,8 +291,8 @@ int main() {
         for (int i = 0; i < 8; i++) { // mic 48-55 (136-143)
           data[i + payload_header_size + 48] = *(data_p + 136 + i);
         }
-        for (int i = 0; i < 8; i++) { // mic 56-63 (128-135)
-          data[i + payload_header_size + 56] = *(data_p + 128 - i);
+        for (int i = 0; i < 8; i++) { // mic 56-63 (135-128)
+          data[i + payload_header_size + 56] = *(data_p + 135 - i);
         }
 
         // ARRAY 2
