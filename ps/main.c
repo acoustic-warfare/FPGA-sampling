@@ -42,7 +42,7 @@ int main() {
   u32 payload_header_size = 2;
 
   // constants that will be sent in payload_header
-  u32 protocol_ver = 2;
+  u32 protocol_ver = 3;
   u32 frequency = 48828;
 
   u32 data[payload_header_size + nr_arrays * 64];
@@ -323,28 +323,28 @@ int main() {
 
         // ARRAY 1
         for (int i = 0; i < 8; i++) { // mic 128-135 (56-63)
-          data[i + payload_header_size + 64] = *(data_p + 56 + i);
+          data[i + payload_header_size + 128] = *(data_p + 56 + i);
         }
         for (int i = 0; i < 8; i++) { // mic 136-143 (55-48)
-          data[i + payload_header_size + 72] = *(data_p + 55 - i);
+          data[i + payload_header_size + 136] = *(data_p + 55 - i);
         }
         for (int i = 0; i < 8; i++) { // mic 144-151 (40-47)
-          data[i + payload_header_size + 80] = *(data_p + 40 + i);
+          data[i + payload_header_size + 144] = *(data_p + 40 + i);
         }
         for (int i = 0; i < 8; i++) { // mic 152-159 (39-32)
-          data[i + payload_header_size + 88] = *(data_p + 39 - i);
+          data[i + payload_header_size + 152] = *(data_p + 39 - i);
         }
         for (int i = 0; i < 8; i++) { // mic 160-167 (24-31)
-          data[i + payload_header_size + 96] = *(data_p + 24 + i);
+          data[i + payload_header_size + 160] = *(data_p + 24 + i);
         }
         for (int i = 0; i < 8; i++) { // mic 168-175 (23-16)
-          data[i + payload_header_size + 104] = *(data_p + 23 - i);
+          data[i + payload_header_size + 168] = *(data_p + 23 - i);
         }
         for (int i = 0; i < 8; i++) { // mic 176-183 (8-15)
-          data[i + payload_header_size + 112] = *(data_p + 8 + i);
+          data[i + payload_header_size + 176] = *(data_p + 8 + i);
         }
         for (int i = 0; i < 8; i++) { // mic 184-191 (7-0)
-          data[i + payload_header_size + 120] = *(data_p + 7 - i);
+          data[i + payload_header_size + 184] = *(data_p + 7 - i);
         }
       } else if (nr_arrays == 4) {
         // ARRAY 4
