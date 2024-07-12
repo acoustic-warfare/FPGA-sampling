@@ -51,6 +51,14 @@ class Data:
             header=data["header"], sampelCounter=data["sampelCounter"], mic=data["mic"]
         )
 
+    def to_bytes(self):
+        header_bytes = int(self.header).to_bytes(4, byteorder="little", signed=True)
+        sampelCounter_bytes = int(self.sampelCounter).to_bytes(
+            4, byteorder="little", signed=True
+        )
+        mic_bytes = self.mic.tobytes()
+        return header_bytes + sampelCounter_bytes + mic_bytes
+
 
 UDP_IP = "0.0.0.0"
 UDP_PORT = 21875
@@ -100,6 +108,7 @@ else:
     with open(fileChooser, "wb") as f:
         while time.time() < t_end:
             data = sock.recv(1458)
-            f.write(data)
+            d = Data.from_buffer_copy(data, nr_arrays)
+            f.write(d.to_bytes())
 
 print("Done!")

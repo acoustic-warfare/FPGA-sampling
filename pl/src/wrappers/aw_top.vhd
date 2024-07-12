@@ -173,6 +173,9 @@ begin
       );
 
    simulated_array : entity work.simulated_array
+      generic map(
+         index => 14 --14-19
+      )
       port map(
          clk            => clk,
          sck_clk        => sck_clk,

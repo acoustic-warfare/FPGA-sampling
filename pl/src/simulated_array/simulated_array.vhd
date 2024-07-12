@@ -1,18 +1,19 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+--                                                  # port information #
+-- WS: The WS puls is sent out once every 2560 clk cycles,
+-- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain.
+--
+-- SWITCH: Signal which decides if the input bitstrem is used or the simulated bitstream. 
+--
+-- BIT_STREAM_IN: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits.
+--
+-- BIT_STREAM_OUT: The outgoing vector of 16 bits. 
+------------------------------------------------------------------------------------------------------------------------------------------------
 entity simulated_array is
-   ------------------------------------------------------------------------------------------------------------------------------------------------
-   --                                                  # port information #
-   -- WS: The WS puls is sent out once every 2560 clk cycles,
-   -- which means after 2560 clk cycles the microphone array will restart and send data from the first mic in the chain.
-   --
-   -- SWITCH: Signal which decides if the input bitstrem is used or the simulated bitstream. 
-   --
-   -- BIT_STREAM_IN: Incomming TDM-bits from one of the chains on the microphone array. One microphone sends 32 bits.
-   --
-   -- BIT_STREAM_OUT: The outgoing vector of 16 bits. 
-   ------------------------------------------------------------------------------------------------------------------------------------------------
    generic (
       -- G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
       -- G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
@@ -28,17 +29,17 @@ entity simulated_array is
       bit_stream_out : out std_logic_vector(15 downto 0)
    );
 
-end simulated_array;
+end entity;
 
 architecture rtl of simulated_array is
    type state_type is (idle, run, pause); -- three states for the state-machine. See State-diagram for more information
-   signal state : state_type;
+   signal state   : state_type;
+   signal state_1 : integer; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal counter : unsigned(15 downto 0);
 
    signal bit_counter : integer range 0 to 33;
    signal mic_counter : integer range 0 to 17;
-   -- signal state_1     : integer range 0 to 2; -- only for buggfixing (0 is IDLE, 1 is RUN, 2 is PAUSE)
 
    signal bit_stream_gen : std_logic_vector(15 downto 0);
    signal ws_d           : std_logic_vector(index downto 0);
@@ -94,7 +95,6 @@ begin
                         bit_stream_gen(i) <= mic_id(7 - bit_counter);
                         mic_id := mic_id + 16;
                      end loop;
-
                   else -- send counter
                      for i in 0 to 15 loop
                         bit_stream_gen(i) <= counter(23 - bit_counter);
@@ -133,14 +133,15 @@ begin
       end if;
    end process;
 
-   -- state_num : process (state) -- only for findig buggs in gtkwave
-   -- begin
-   --    if state = idle then
-   --       state_1 <= 0;
-   --    elsif state = run then
-   --       state_1 <= 1;
-   --    elsif state = pause then
-   --       state_1 <= 2;
-   --    end if;
-   -- end process;
-end rtl;
+   state_num : process (state) -- only for findig buggs in gtkwave
+   begin
+      if state = idle then
+         state_1 <= 0;
+      elsif state = run then
+         state_1 <= 1;
+      elsif state = pause then
+         state_1 <= 2;
+      end if;
+   end process;
+
+end architecture;

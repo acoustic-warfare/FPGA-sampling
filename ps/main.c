@@ -176,21 +176,10 @@ int main() {
     empty = *(slaveaddr_p + 3);
     if (empty == 0) {
 
-      // flush the cache from old data
-      Xil_DCacheFlushRange(data_p, 2048); // 256*4*
-
-      // send read_done to AXI (read_done_pulse)
-      *(slaveaddr_p + 0) = 0x00000002;
-      *(slaveaddr_p + 0) = 0x00000000;
-
       data[1] = counter;
       counter++;
 
       // recive data from AXI
-      // for (int i = 0; i < nr_arrays * 64; i++) {
-      //  data[i + payload_header_size] = *(data_p + i);
-      //}
-
       if (nr_arrays == 1) {
         for (int i = 0; i < 8; i++) { // mic 0-7 (56-63)
           data[i + payload_header_size + 0] = *(data_p + 56 + i);
@@ -451,6 +440,12 @@ int main() {
           data[i + payload_header_size + 248] = *(data_p + 7 - i);
         }
       }
+
+      // flush the cache from old data
+      Xil_DCacheFlushRange(data_p, 2048); // 256*4*
+      // send read_done to AXI (read_done_pulse)
+      *(slaveaddr_p + 0) = 0x00000002;
+      *(slaveaddr_p + 0) = 0x00000000;
 
       // package and send UDP
       xemacif_input(netif);
