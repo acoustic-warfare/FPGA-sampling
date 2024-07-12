@@ -1,10 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import sounddevice
 import os
-import math
 from pathlib import Path
-from ctypes import Structure, c_byte, c_int32, sizeof
+from ctypes import c_int32
 
 
 def Average(l):
@@ -22,7 +20,7 @@ path = Path(ROOT + "/" + fileChooser)
 data = np.fromfile(path, dtype=c_int32, count=-1, offset=0)  # Read the whole file
 # reshapes into a Numpy array which is N*68 in dimensions
 
-nr_arrays = 2 # todo: make this find the nr_arrays from the header :)
+nr_arrays = 2  # todo: make this find the nr_arrays from the header :)
 expected_columns = nr_arrays * 64 + 2
 data2D = data.reshape(-1, expected_columns)
 
@@ -38,7 +36,7 @@ if mic.lower() == "y":
         # normalize mic data
         sound_scaled = data2D[:, int(i)] / np.max(np.abs(data2D[:, int(i)]))
         # sound_scaled = data2D[:, int(i)]/(2**24)
-        print(i + 1)
+        print(i)
         sounddevice.play(sound_scaled, fs, blocking=True)
 else:
     mic_data = data2D[:, int(mic)]
