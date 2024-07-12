@@ -12,25 +12,27 @@ entity fir_filter_controller is
     port (
         clk              : in std_logic;
         reset            : in std_logic;
+        sw_fir_off       : in std_logic;
         matrix_in        : in matrix_256_32_type;
         matrix_in_valid  : in std_logic;
         matrix_out       : out matrix_256_32_type;
         matrix_out_valid : out std_logic
     );
-end fir_filter_controller;
+end entity;
 
 architecture rtl of fir_filter_controller is
 
     type coefficients_type is array (0 to FILTER_TAPS - 1) of signed(COEF_SIZE - 1 downto 0);
     constant coefficients : coefficients_type := (
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
         x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
-        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"7E",
         x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
-        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00",
-        x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00"
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"7F",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF",
+        x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF", x"FF"
     );
 
     type state_type is (idle, load, mul, stall, sum, store, done);
@@ -57,7 +59,12 @@ architecture rtl of fir_filter_controller is
 
     signal rd_en_ram : std_logic;
 
+    signal matrix_out_internal : matrix_256_32_type;
+
 begin
+
+    matrix_out <= matrix_out_internal when sw_fir_off = '0' else
+        matrix_in;
 
     fir_bram_gen : for i in 0 to FILTER_TAPS - 1 generate
     begin
@@ -134,7 +141,7 @@ begin
                         end loop;
                         wr_en_ram <= '1';
 
-                        matrix_out(fir_counter) <= std_logic_vector(data_out);
+                        matrix_out_internal(fir_counter) <= std_logic_vector(data_out);
 
                         fir_counter <= fir_counter + 1;
 

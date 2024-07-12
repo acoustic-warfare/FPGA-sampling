@@ -11,7 +11,7 @@ entity tb_full_sample is
    generic (
       runner_cfg : string
    );
-end tb_full_sample;
+end entity;
 
 architecture tb of tb_full_sample is
    constant C_CLK_CYKLE : time := 10 ns;
@@ -20,7 +20,7 @@ architecture tb of tb_full_sample is
    signal reset : std_logic := '0';
 
    signal chain_x16_matrix_data_in : matrix_16_16_32_type          := (others => (others => (others => '0')));
-   signal chain_matrix_valid_in   : std_logic_vector(15 downto 0) := (others => '0');
+   signal chain_matrix_valid_in    : std_logic_vector(15 downto 0) := (others => '0');
 
    signal array_matrix_valid_out : std_logic;
    signal array_matrix_data_out  : matrix_256_32_type;
@@ -29,8 +29,6 @@ architecture tb of tb_full_sample is
    signal data_valid_in_counter : integer := 0;
 
    -- signal temp_matrix_16_24 : matrix_16_32_type;
-
-   signal sample_counter_array : std_logic_vector(31 downto 0);
 
    signal temp_arrays0     : std_logic_vector(31 downto 0);
    signal temp_arrays16    : std_logic_vector(31 downto 0);
@@ -47,8 +45,7 @@ begin
       chain_x4_matrix_data_in => chain_x16_matrix_data_in,
       chain_matrix_valid_in   => chain_matrix_valid_in,
       array_matrix_data_out   => array_matrix_data_out,
-      array_matrix_valid_out  => array_matrix_valid_out,
-      sample_counter_array    => sample_counter_array
+      array_matrix_valid_out  => array_matrix_valid_out
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;

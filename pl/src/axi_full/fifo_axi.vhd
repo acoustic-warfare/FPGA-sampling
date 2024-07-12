@@ -95,7 +95,7 @@ begin
                wr_data_ram(2) <= wr_data(wr_count + 128);
                wr_data_ram(3) <= wr_data(wr_count + 192);
 
-               wr_ram_addr <= write_ptr * 64 + wr_count + 1;
+               wr_ram_addr <= write_ptr * 64 + wr_count;
                wr_count    <= wr_count + 1;
             elsif wr_start = '1' then
                wr_count  <= 0;
@@ -112,7 +112,7 @@ begin
             end if;
 
             if rd_start = '1' and rd_count < 3 then
-               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_ram_addr <= read_ptr * 64 + rd_count;
                rd_count    <= rd_count + 1;
 
             elsif rd_start = '1' and rd_count < 64 then
@@ -121,7 +121,7 @@ begin
                rd_data(rd_count + 128 - 3) <= rd_data_ram(2);
                rd_data(rd_count + 192 - 3) <= rd_data_ram(3);
 
-               rd_ram_addr <= read_ptr * 64 + rd_count + 1;
+               rd_ram_addr <= read_ptr * 64 + rd_count;
                rd_count    <= rd_count + 1;
 
             elsif rd_start = '1' and rd_count < 67 then

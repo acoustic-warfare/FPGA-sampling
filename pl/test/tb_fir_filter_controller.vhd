@@ -11,7 +11,7 @@ entity tb_fir_filter_controller is
     generic (
         runner_cfg : string
     );
-end tb_fir_filter_controller;
+end entity;
 
 architecture behavioral of tb_fir_filter_controller is
     signal clk           : std_logic := '0';
@@ -30,6 +30,7 @@ begin
         port map(
             clk              => clk,
             reset            => reset,
+            sw_fir_off       => '0',
             matrix_in        => matrix_in,
             matrix_in_valid  => matrix_in_valid,
             matrix_out       => matrix_out,
