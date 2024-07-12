@@ -1,27 +1,27 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample.gtkw
-
-set nfacts [ gtkwave::getNumFacs ]
+set nfacts [gtkwave::getNumFacs]
 puts "$nfacts"
 
-
-for {set i 2} {$i < $nfacts} {incr i} {
-   set name [gtkwave::getFacName $i]
-   puts "$name"
-
-   switch -glob -- $name {
-      tb_sample.sample1.bit_stream -
-      tb_sample.sample1.counter_bit -
-      tb_sample.sample1.counter_mic -
-      tb_sample.sample1.reg* -
-      tb_sample.sample1.reset -
-      tb_sample.sample1.state_1 -
-      tb_sample.sample1.ws -
-      tb_sample.sample1.sck_clk - 
-      tb_sample.ws -
-      tb_tb.a* {
-         gtkwave::addSignalsFromList "$name"
-      }
+proc addSignal {signal} {
+   set result [catch {gtkwave::addSignalsFromList "$signal"} error_message]
+   if {$result != 0} {
+      puts "Error adding signal $signal: $error_message"
    }
+}
+
+# List of signals to add
+set signals {
+   tb_sample.sck_clk -
+   tb_sample.ws -
+   tb_sample.reset -
+   tb_sample.sample_inst.bit_stream -
+   tb_sample.sample_inst.counter_bit -
+   tb_sample.sample_inst.counter_mic -
+   tb_sample.sample_inst.state_1 -
+}
+
+foreach signal $signals {
+   addSignal $signal
+   gtkwave::/Edit/Data_Format/Decimal
 }
 
 # zoom full

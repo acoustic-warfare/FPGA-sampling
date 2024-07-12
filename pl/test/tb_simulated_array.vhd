@@ -27,7 +27,7 @@ begin
    clk     <= not (clk) after C_CLK_CYKLE / 2;
    sck_clk <= not(sck_clk) after C_CLK_CYKLE * 5/2;
 
-   simulated_array1 : entity work.simulated_array
+   simulated_array_inst : entity work.simulated_array
       port map(
          clk            => clk,
          sck_clk        => sck_clk,

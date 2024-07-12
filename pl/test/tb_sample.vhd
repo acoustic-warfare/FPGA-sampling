@@ -26,12 +26,12 @@ architecture tb of tb_sample is
    -- signal ws_error             : std_logic;
 
    -- signal sim_counter : integer := 0;
-   signal counter_tb  : integer := 0;
+   signal counter_tb : integer := 0;
 
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
 
-   sample1 : entity work.sample
+   sample_inst : entity work.sample
       port map(
          sys_clk              => sck_clk,
          reset                => reset,

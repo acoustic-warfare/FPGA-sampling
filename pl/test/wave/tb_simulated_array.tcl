@@ -1,23 +1,25 @@
-#python ../run.py --gtkwave-fmt vcd --gui lib.tb_sample.gtkw
-
-set nfacts [ gtkwave::getNumFacs ]
+set nfacts [gtkwave::getNumFacs]
 puts "$nfacts"
 
-
-for {set i 2} {$i < $nfacts} {incr i} {
-   set name [gtkwave::getFacName $i]
-   puts "$name"
-
-   switch -glob -- $name {
-      tb_simulated_array.simulated_array1.bit_stream -
-      tb_simulated_array.simulated_array1.ws -
-      tb_simulated_array.simulated_array1.sck_clk -
-      tb_simulated_array.simulated_array2.clk -
-      tb_simulated_array.simulated_array2.counter_tb -
-      tb_tb.a* {
-         gtkwave::addSignalsFromList "$name"
-      }
+proc addSignal {signal} {
+   set result [catch {gtkwave::addSignalsFromList "$signal"} error_message]
+   if {$result != 0} {
+      puts "Error adding signal $signal: $error_message"
    }
+}
+
+# List of signals to add
+set signals {
+   tb_simulated_array.simulated_array_inst.clk -
+   tb_simulated_array.simulated_array_inst.sck_clk -
+   tb_simulated_array.simulated_array_inst.ws -
+   tb_simulated_array.simulated_array_inst.bit_stream_in -
+   tb_simulated_array.simulated_array_inst.bit_stream_out -
+}
+
+foreach signal $signals {
+   addSignal $signal
+   #gtkwave::/Edit/Data_Format/Decimal
 }
 
 # zoom full

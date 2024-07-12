@@ -35,7 +35,7 @@ architecture tb of tb_collector is
 
 begin
 
-   collector1 : entity work.collector port map(
+   collector_inst : entity work.collector port map(
       sys_clk                => clk,
       reset                  => reset,
       sw_mic_id              => mic_id_sw,

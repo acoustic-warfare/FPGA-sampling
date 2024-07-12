@@ -31,7 +31,6 @@ architecture Behavioral of tb_fir_filter is
     signal tb_end       : std_logic := '0';
     signal tb_read_data : std_logic := '1';
     --signal data_out_valid : std_logic;
-    --signal mem_out        : matrix_128_24_type;
 begin
 
     Filter_inst : entity work.fir_filter
