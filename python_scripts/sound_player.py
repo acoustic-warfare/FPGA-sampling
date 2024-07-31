@@ -20,7 +20,7 @@ path = Path(ROOT + "/" + fileChooser)
 data = np.fromfile(path, dtype=c_int32, count=-1, offset=0)  # Read the whole file
 # reshapes into a Numpy array which is N*68 in dimensions
 
-nr_arrays = 2  # todo: make this find the nr_arrays from the header :)
+nr_arrays = 1  # todo: make this find the nr_arrays from the header :)
 expected_columns = nr_arrays * 64 + 2
 data2D = data.reshape(-1, expected_columns)
 

@@ -39,7 +39,7 @@ sample_rate = 48828.125  # Example sample rate in Hz, adjust as necessary
 frequencies = np.fft.fftfreq(min_length, 1 / sample_rate)
 
 # Select frequencies within 0-10000 Hz
-max_freq = 10000
+max_freq = 20000
 indices = np.where((frequencies >= 0) & (frequencies <= max_freq))
 selected_frequencies = frequencies[indices]
 

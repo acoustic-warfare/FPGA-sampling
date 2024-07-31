@@ -6,11 +6,11 @@ from pathlib import Path
 from ctypes import c_int32
 import os
 
-nr_arrays = 2  # todo: make this find the nr_arrays from the header :)
+nr_arrays = 1  # todo: make this find the nr_arrays from the header :)
 expected_columns = nr_arrays * 64 + 2
 
 
-def print_analysis(fileChooser, microphones, source_audio):
+def print_analysis(fileChooser, source_audio):
 
     def load_data_FPGA():
 
@@ -158,6 +158,5 @@ fileChooser = input()
 print("Enter the frequency of the audio source (Hz): ")
 # source_audio=input()
 source_audio = 440
-microphones = [0]
 
-print_analysis(fileChooser, microphones, source_audio)
+print_analysis(fileChooser, source_audio)
