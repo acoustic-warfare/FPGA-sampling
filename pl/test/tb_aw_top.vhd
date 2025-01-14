@@ -39,6 +39,7 @@ begin
       );
 
    sys_clock <= not(sys_clock) after C_CLK_CYKLE/2;
+
    btn(0)    <= reset;
 
    main_p : process
@@ -50,7 +51,7 @@ begin
             reset <= '1';
             wait for (C_CLK_CYKLE * 10);
             reset <= '0';
-            wait for (C_CLK_CYKLE * 1000);
+            wait for (C_CLK_CYKLE * 10000);
 
          elsif run("auto") then
             wait for (C_CLK_CYKLE * 1000);

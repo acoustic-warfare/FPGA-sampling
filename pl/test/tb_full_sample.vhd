@@ -39,13 +39,17 @@ architecture tb of tb_full_sample is
 
 begin
 
-   full_sample_1 : entity work.full_sample port map(
-      sys_clk                 => clk,
-      reset                   => reset,
-      chain_x4_matrix_data_in => chain_x16_matrix_data_in,
-      chain_matrix_valid_in   => chain_matrix_valid_in,
-      array_matrix_data_out   => array_matrix_data_out,
-      array_matrix_valid_out  => array_matrix_valid_out
+   full_sample_1 : entity work.full_sample
+      generic map(
+         number_of_arrays => 4
+      )
+      port map(
+         sys_clk                 => clk,
+         reset                   => reset,
+         chain_x4_matrix_data_in => chain_x16_matrix_data_in,
+         chain_matrix_valid_in   => chain_matrix_valid_in,
+         array_matrix_data_out   => array_matrix_data_out,
+         array_matrix_valid_out  => array_matrix_valid_out
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;

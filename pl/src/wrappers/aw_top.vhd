@@ -5,7 +5,7 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      --num_arrays : integer := 4 -- not in use yet
+      number_of_arrays : integer := 4; -- not in use yet
       fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
@@ -271,13 +271,15 @@ begin
    end generate collector_gen;
 
    full_sample_c : entity work.full_sample
+      generic map(number_of_arrays => number_of_arrays)
       port map(
          sys_clk                 => clk,
          reset                   => reset,
          chain_x4_matrix_data_in => chain_matrix_data,
          chain_matrix_valid_in   => chain_matrix_valid_array,
          array_matrix_data_out   => array_matrix_data,
-         array_matrix_valid_out  => array_matrix_valid);
+         array_matrix_valid_out  => array_matrix_valid
+      );
 
    fir_filter_controller_c : entity work.fir_filter_controller
       port map(

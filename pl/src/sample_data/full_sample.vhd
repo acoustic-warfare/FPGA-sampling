@@ -13,11 +13,12 @@ use work.matrix_type.all;
 -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
 ------------------------------------------------------------------------------------------------------------------------------------------------
 entity full_sample is
-   --generic (
-   --   -- TODO: implement generics
-   --   G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-   --   G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
-   --);
+   generic (
+      --   -- TODO: implement generics
+      --   G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+      --   G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+      number_of_arrays : integer
+   );
    port (
       sys_clk                 : in std_logic;
       reset                   : in std_logic;
@@ -29,37 +30,30 @@ entity full_sample is
 end entity;
 architecture rtl of full_sample is
 
-   --signal sample_counter   : unsigned(31 downto 0)         := (others => '0');
-   signal save_valid_array : std_logic_vector(15 downto 0) := (others => '0');
-
 begin
-
-   fill_matrix_out_p : process (sys_clk) -- This proccess fills a matrix with samples from all four collectors
-      variable temp_chain_matrix : matrix_16_32_type;
+   seq : process (sys_clk)
    begin
       if rising_edge(sys_clk) then
-
-         for i in 0 to 15 loop
-            if (chain_matrix_valid_in(i) = '1') then
-               save_valid_array(i) <= '1';
-               temp_chain_matrix := chain_x4_matrix_data_in(i);
-               for a in 0 to 15 loop
-                  array_matrix_data_out(a + 16 * i) <= temp_chain_matrix(a);
-               end loop;
-            end if;
-         end loop;
-
-         if save_valid_array = x"FFFF" then
-            save_valid_array       <= (others => '0');
-            array_matrix_valid_out <= '1'; -- Set the valid signal to High, so the next component can read the samples
+         if (reset = '1') then
+            array_matrix_valid_out <= '0';
          else
-            array_matrix_valid_out <= '0';
-         end if;
+            if (chain_matrix_valid_in = x"FFFF") then
+               array_matrix_valid_out <= '1';
+            else
+               array_matrix_valid_out <= '0';
+            end if;
 
-         if reset = '1' then -- Resets data_valid_out to low 
-            array_matrix_valid_out <= '0';
          end if;
       end if;
+   end process;
+
+   comb : process (chain_x4_matrix_data_in)
+   begin
+      for chain in 0 to 15 loop
+         for mic in 0 to 15 loop
+            array_matrix_data_out(chain * 16 + mic) <= chain_x4_matrix_data_in(chain)(mic);
+         end loop;
+      end loop;
    end process;
 
 end architecture;

@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import sys
 user = os.getenv('USER')
-path = f"/home/{user}/vunit/"
+path = f"/home/{user}/Utilities/vunit/"
 sys.path.append(path)
 
 from vunit import VUnit
