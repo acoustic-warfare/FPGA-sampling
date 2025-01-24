@@ -5,7 +5,7 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      number_of_arrays : integer := 4; -- not in use yet
+      number_of_arrays   : integer := 4; -- not in use yet
       fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
@@ -44,7 +44,7 @@ architecture structual of aw_top is
 
    signal data_stream : std_logic_vector(31 downto 0);
 
-   signal bit_stream_out : std_logic_vector(15 downto 0);
+   signal bit_stream_sim_array : std_logic_vector(15 downto 0);
 
    signal mic_sample_data  : matrix_16_24_type;
    signal mic_sample_valid : std_logic_vector(15 downto 0);
@@ -156,14 +156,14 @@ begin
          ws_out         => ws_out
       );
 
-   simulated_array_select_inst : entity work.simulated_array_select
-      port map(
-         sys_clk            => clk,
-         reset              => reset,
-         btn_state_select   => btn_ff(1),
-         sw_simulated_array => sw_simulated_array,
-         sw_mic_id          => sw_mic_id
-      );
+   --simulated_array_select_inst : entity work.simulated_array_select
+   --   port map(
+   --      sys_clk            => clk,
+   --      reset              => reset,
+   --      btn_state_select   => btn_ff(1),
+   --      sw_simulated_array => sw_simulated_array,
+   --      sw_mic_id          => sw_mic_id
+   --   );
 
    ws_pulse : entity work.ws_pulse
       port map(
@@ -172,19 +172,21 @@ begin
          ws      => ws
       );
 
-   simulated_array : entity work.simulated_array
-      generic map(
-         index => 14 --14-19
-      )
-      port map(
-         clk            => clk,
-         sck_clk        => sck_clk,
-         ws             => ws,
-         reset          => reset,
-         switch         => sw_simulated_array,
-         bit_stream_in  => bit_stream,
-         bit_stream_out => bit_stream_out
-      );
+   --simulated_array : entity work.simulated_array
+   --   generic map(
+   --      index => 14 --14-19
+   --   )
+   --   port map(
+   --      clk            => clk,
+   --      sck_clk        => sck_clk,
+   --      ws             => ws,
+   --      reset          => reset,
+   --      switch         => sw_simulated_array,
+   --      bit_stream_in  => bit_stream,
+   --      bit_stream_out => bit_stream_sim_array
+   --   );
+
+   bit_stream_sim_array <= bit_stream;
 
    button_index_select_inst : entity work.button_index_select
       port map(
@@ -204,7 +206,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i + 12),
+            bit_stream           => bit_stream_sim_array(i + 12),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -219,7 +221,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => bit_stream_sim_array(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -234,7 +236,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => bit_stream_sim_array(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
@@ -249,7 +251,7 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_out(i - 4),
+            bit_stream           => bit_stream_sim_array(i - 4),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );

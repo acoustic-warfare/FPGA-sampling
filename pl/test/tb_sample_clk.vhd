@@ -11,7 +11,7 @@ entity tb_sample_clk is
       runner_cfg : string
    );
 
-end tb_sample_clk;
+end entity;
 
 architecture behave of tb_sample_clk is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz

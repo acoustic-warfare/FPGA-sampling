@@ -11,7 +11,7 @@ entity tb_fifo_axi is
    generic (
       runner_cfg : string
    );
-end tb_fifo_axi;
+end entity;
 
 architecture behavior of tb_fifo_axi is
 

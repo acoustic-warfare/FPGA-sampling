@@ -62,16 +62,6 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 #start_gui
 update_compile_order -fileset sources_1
 
-## run synth
-#launch_runs synth_1 -jobs 4
-#wait_on_run synth_1
-#update_compile_order -fileset sources_1
-
 ## run synth, impl and write bitstream
-launch_runs impl_1 -to_step write_bitstream -jobs 2
+launch_runs impl_1 -to_step write_bitstream -jobs 4
 wait_on_run impl_1
-
-## launch SDK
-# file mkdir [file join "$ROOT" vivado_files acoustic_warfare.sdk]
-# file copy -force [file join "$ROOT" vivado_files acoustic_warfare.runs impl_1 aw_top.sysdef] [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]
-# launch_sdk -workspace [file join "$ROOT" vivado_files acoustic_warfare.sdk] -hwspec [file join "$ROOT" vivado_files acoustic_warfare.sdk aw_top.hdf]}

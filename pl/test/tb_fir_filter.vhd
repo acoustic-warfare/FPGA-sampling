@@ -13,7 +13,7 @@ entity tb_fir_filter is
         INPUT_FILE_NAME  : string := "/home/voltorb/Projects/FPGA-sampling/filter_coefficients/filter_input.txt";
         OUTPUT_FILE_NAME : string := "/home/voltorb/Projects/FPGA-sampling/filter_coefficients/filter_output.txt"
     );
-end tb_fir_filter;
+end entity;
 
 architecture Behavioral of tb_fir_filter is
     constant C_CLK_CYKLE : time := 8 ns;

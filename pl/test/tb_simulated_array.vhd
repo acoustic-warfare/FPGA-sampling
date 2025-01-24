@@ -8,7 +8,7 @@ entity tb_simulated_array is
    generic (
       runner_cfg : string
    );
-end tb_simulated_array;
+end entity;
 
 architecture rtl of tb_simulated_array is
    constant C_CLK_CYKLE : time := 8 ns; -- 125MHz

@@ -12,7 +12,7 @@ entity tb_mux is
       runner_cfg : string
    );
 
-end tb_mux;
+end entity;
 
 architecture tb of tb_mux is
    constant C_CLK_CYKLE : time := 8 ns; -- 125 MHz
