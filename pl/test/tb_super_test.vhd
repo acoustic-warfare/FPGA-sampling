@@ -125,9 +125,9 @@ begin
    end generate collector_gen;
 
    full_sample1 : entity work.full_sample
-      generic map(
-         number_of_arrays => 4
-      )
+      -- generic map(
+      --    number_of_arrays => 4
+      -- )
       port map(
          sys_clk                 => clk,
          reset                   => reset,

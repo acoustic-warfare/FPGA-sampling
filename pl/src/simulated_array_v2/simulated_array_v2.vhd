@@ -3,7 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity simulated_array_v2 is
-
+    generic (
+        -- 11 to 15 seems to work in simulation :)
+        DEFAULT_INDEX : integer range 0 to 15 := 11
+    );
     port (
         sys_clk : in std_logic;
         btn     : in std_logic_vector(3 downto 0);
@@ -55,6 +58,10 @@ begin
     end process;
 
     button_index_select_inst : entity work.button_index_select
+        generic map(
+            DEFAULT_INDEX => DEFAULT_INDEX
+
+        )
         port map(
             sys_clk     => clk,
             reset       => rst,

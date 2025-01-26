@@ -13,12 +13,12 @@ use work.matrix_type.all;
 -- ARRAY_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in ARRAY_MATRIX_DATA_OUT
 ------------------------------------------------------------------------------------------------------------------------------------------------
 entity full_sample is
-   generic (
-      --   -- TODO: implement generics
-      --   G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      --   G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
-      number_of_arrays : integer
-   );
+   --generic (
+   --   -- TODO: implement generics
+   --   G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
+   --   G_NR_MICS  : integer := 64  -- Number of microphones in the Matrix
+   --number_of_arrays : integer
+   --);
    port (
       sys_clk                 : in std_logic;
       reset                   : in std_logic;

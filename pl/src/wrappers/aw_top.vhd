@@ -5,7 +5,7 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      number_of_arrays   : integer := 4; -- not in use yet
+      --number_of_arrays   : integer := 4; -- not in use yet
       fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
@@ -189,6 +189,10 @@ begin
    bit_stream_sim_array <= bit_stream;
 
    button_index_select_inst : entity work.button_index_select
+      generic map(
+         DEFAULT_INDEX => 8
+
+      )
       port map(
          sys_clk     => clk,
          reset       => reset,
@@ -273,7 +277,7 @@ begin
    end generate collector_gen;
 
    full_sample_c : entity work.full_sample
-      generic map(number_of_arrays => number_of_arrays)
+      --generic map(number_of_arrays => number_of_arrays)
       port map(
          sys_clk                 => clk,
          reset                   => reset,
