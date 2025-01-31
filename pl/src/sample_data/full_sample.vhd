@@ -20,12 +20,12 @@ entity full_sample is
    --number_of_arrays : integer
    --);
    port (
-      sys_clk                 : in std_logic;
-      reset                   : in std_logic;
-      chain_x4_matrix_data_in : in matrix_16_16_32_type;
-      chain_matrix_valid_in   : in std_logic_vector(15 downto 0);
-      array_matrix_data_out   : out matrix_256_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      array_matrix_valid_out  : out std_logic           -- A signal to tell the receiver to start reading the array_matrix_data_out
+      sys_clk                : in std_logic;
+      reset                  : in std_logic;
+      chain_matrix_data_in   : in matrix_4_16_32_type;
+      chain_matrix_valid_in  : in std_logic;
+      array_matrix_data_out  : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_valid_out : out std_logic           -- A signal to tell the receiver to start reading the array_matrix_data_out
    );
 end entity;
 architecture rtl of full_sample is
@@ -37,7 +37,7 @@ begin
          if (reset = '1') then
             array_matrix_valid_out <= '0';
          else
-            if (chain_matrix_valid_in = x"FFFF") then
+            if (chain_matrix_valid_in = '1') then
                array_matrix_valid_out <= '1';
             else
                array_matrix_valid_out <= '0';
@@ -47,11 +47,11 @@ begin
       end if;
    end process;
 
-   comb : process (chain_x4_matrix_data_in)
+   comb : process (chain_matrix_data_in)
    begin
-      for chain in 0 to 15 loop
+      for chain in 0 to 3 loop
          for mic in 0 to 15 loop
-            array_matrix_data_out(chain * 16 + mic) <= chain_x4_matrix_data_in(chain)(mic);
+            array_matrix_data_out(chain * 16 + mic) <= chain_matrix_data_in(chain)(mic);
          end loop;
       end loop;
    end process;

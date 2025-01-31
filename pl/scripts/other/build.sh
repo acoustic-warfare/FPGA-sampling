@@ -13,6 +13,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 
 # Define relative paths within the repository
 BITSTREAM_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/aw_top.bit"
+BITSTREAM_PATH_SIM_ARRAY="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/simulated_array_v2.bit"
 ELF_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk/aw_udp_ps/Debug/aw_udp_ps.elf"
 
 # Destination tftp directory
@@ -70,7 +71,7 @@ done
 # END FLAGS
 
 if [ "$skip_vivado" = false ]; then
-   source /tools/Xilinx/Vivado/2022.1/settings64.sh
+   source /tools/Xilinx/Vivado/2024.2/settings64.sh
    if [ -d "$GIT_ROOT/pl/vivado_files" ]; then
       rm -r "$GIT_ROOT/pl/vivado_files"
    fi
@@ -78,13 +79,14 @@ if [ "$skip_vivado" = false ]; then
    if [ "$simulated_array" = true ]; then
       # build simulated array
       vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_simulated_array/build_only_simulated_array.tcl
+      printf "%b\n" "${BOLD}copying bitstream...${RESET}"
+      cp "$BITSTREAM_PATH_SIM_ARRAY" "$DEST_DIR/bitstream"
    else
       # normal build
       vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
+      printf "%b\n" "${BOLD}copying bitstream...${RESET}"
+      cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
    fi
-
-   printf "%b\n" "${BOLD}copying bitstream...${RESET}"
-   cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
 fi
 
 if [ "$vivado_gui" = true ]; then

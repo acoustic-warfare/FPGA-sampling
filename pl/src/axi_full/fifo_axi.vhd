@@ -12,7 +12,7 @@ entity fifo_axi is
       clk          : in std_logic;
       reset        : in std_logic;
       wr_en        : in std_logic; -- Write port
-      wr_data      : in matrix_256_32_type;
+      wr_data      : in matrix_64_32_type;
       rd_en        : in std_logic; -- Read port
       rd_data      : out matrix_256_32_type;
       empty        : out std_logic; -- Flags
@@ -91,9 +91,13 @@ begin
 
             if wr_start = '1' and wr_count < 64 then
                wr_data_ram(0) <= wr_data(wr_count + 0);
-               wr_data_ram(1) <= wr_data(wr_count + 64);
-               wr_data_ram(2) <= wr_data(wr_count + 128);
-               wr_data_ram(3) <= wr_data(wr_count + 192);
+               wr_data_ram(1) <= (others => '0');
+               wr_data_ram(2) <= (others => '0');
+               wr_data_ram(3) <= (others => '0');
+
+               --wr_data_ram(1) <= wr_data(wr_count + 64);
+               --wr_data_ram(2) <= wr_data(wr_count + 128);
+               --wr_data_ram(3) <= wr_data(wr_count + 192);
 
                wr_ram_addr <= write_ptr * 64 + wr_count;
                wr_count    <= wr_count + 1;

@@ -51,18 +51,15 @@ begin
 
                if sw_mic_id = '0' then
                   -- Prevents to reach the highest value, bit errors
-                  if mic_sample_data_in(23) = '1' and mic_sample_data_in(22 downto 16) = "0000000" then
-                     chain_matrix_data_out(counter_mic)(31 downto 23) <= "000000000";
-                  elsif mic_sample_data_in(23) = '0' and mic_sample_data_in(22 downto 16) = "1111111" then
-                     chain_matrix_data_out(counter_mic)(31 downto 23) <= "111111111";
+                  --if mic_sample_data_in(23) = '1' and mic_sample_data_in(22 downto 16) = "0000000" then
+                  --   chain_matrix_data_out(counter_mic)(31 downto 23) <= "000000000";
+                  --elsif mic_sample_data_in(23) = '0' and mic_sample_data_in(22 downto 16) = "1111111" then
+                  --   chain_matrix_data_out(counter_mic)(31 downto 23) <= "111111111";
+                  --else
 
-                  else
-                     if (mic_sample_data_in(23) = '0') then
-                        chain_matrix_data_out(counter_mic)(31 downto 24) <= "00000000"; -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 0 then padding = "00000000"
-                     else
-                        chain_matrix_data_out(counter_mic)(31 downto 24) <= "11111111"; -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 1 then padding = "11111111"
-                     end if;
-                  end if;
+                  -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 0 then padding = "00000000" else padding = "11111111"
+                  chain_matrix_data_out(counter_mic)(31 downto 24) <= (others => (mic_sample_data_in(23)));
+                  --end if;
                else
                   chain_matrix_data_out(counter_mic)(31 downto 24) <= std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8)); -- Add padding according to the the current mic. if 2:nd mic then padding = "00000010"
                end if;

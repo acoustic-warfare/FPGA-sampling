@@ -5,7 +5,7 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      --number_of_arrays   : integer := 4; -- not in use yet
+      number_of_arrays   : integer := 1; -- set nr of arrays
       fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
@@ -36,20 +36,14 @@ architecture structual of aw_top is
    signal btn_up   : std_logic;
    signal btn_down : std_logic;
 
-   signal sw_simulated_array : std_logic;
-   signal sw_mic_id          : std_logic;
-   signal sw_fir_off         : std_logic;
-
    signal index : std_logic_vector(3 downto 0);
 
    signal data_stream : std_logic_vector(31 downto 0);
 
-   signal bit_stream_sim_array : std_logic_vector(15 downto 0);
-
    signal mic_sample_data  : matrix_16_24_type;
    signal mic_sample_valid : std_logic_vector(15 downto 0);
 
-   signal chain_matrix_data        : matrix_16_16_32_type;
+   signal chain_matrix_data        : matrix_4_16_32_type;
    signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
 
    signal full_array         : std_logic;
@@ -57,18 +51,18 @@ architecture structual of aw_top is
    signal almost_full_array  : std_logic;
    signal almost_empty_array : std_logic;
 
-   signal array_matrix_data  : matrix_256_32_type;
+   signal array_matrix_data  : matrix_64_32_type;
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
 
-   signal array_matrix_data_fir  : matrix_256_32_type;
+   signal array_matrix_data_fir  : matrix_64_32_type;
    signal array_matrix_valid_fir : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
    signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
-   signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
+   --signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
 
 begin
    ws_array      <= (others => ws);
@@ -86,61 +80,38 @@ begin
    btn_down <= btn_ff(3);
 
    system_ids <= sw_ff(3 downto 2);
-   nr_arrays  <= sw_ff(1 downto 0);
+   --nr_arrays  <= sw_ff(1 downto 0);
 
-   sw_fir_off <= sw_simulated_array or sw_mic_id; -- if sim_array or mic_id on fir filter have to be turned off
+   --sw_fir_off <= sw_simulated_array or sw_mic_id; -- if sim_array or mic_id on fir filter have to be turned off
 
-   process (empty_array, almost_empty_array, almost_full_array, full_array, sw_simulated_array, sw_mic_id)
+   process (empty_array, almost_empty_array, almost_full_array, full_array)
    begin
+      led_rgb_6_out(0) <= '0';
+      led_rgb_5_out(1) <= '0';
 
-      if (sw_simulated_array = '1' and sw_mic_id = '1') then
-         -- mic id and simulated array
-         led_rgb_6_out(0) <= '1';
-         led_rgb_6_out(1) <= '0';
-         led_rgb_6_out(2) <= '0';
-         led_rgb_5_out(0) <= '1';
-         led_rgb_5_out(1) <= '0';
-         led_rgb_5_out(2) <= '0';
-
-      elsif (sw_simulated_array = '0' and sw_mic_id = '1') then
-         -- mic id and mic data
-         led_rgb_6_out(0) <= '1';
-         led_rgb_6_out(1) <= '1';
-         led_rgb_6_out(2) <= '0';
-         led_rgb_5_out(0) <= '1';
-         led_rgb_5_out(1) <= '1';
-         led_rgb_5_out(2) <= '0';
-
+      if (empty_array = '1') then
+         led_rgb_6_out(2) <= '1';
       else
-         -- default mic data
-         led_rgb_6_out(0) <= '0';
-         led_rgb_5_out(1) <= '0';
-
-         if (empty_array = '1') then
-            led_rgb_6_out(2) <= '1';
-         else
-            led_rgb_6_out(2) <= '0';
-         end if;
-
-         if (almost_empty_array = '1') then
-            led_rgb_6_out(1) <= '1';
-         else
-            led_rgb_6_out(1) <= '0';
-         end if;
-
-         if (almost_full_array = '1') then
-            led_rgb_5_out(0) <= '1';
-         else
-            led_rgb_5_out(0) <= '0';
-         end if;
-
-         if (full_array = '1') then
-            led_rgb_5_out(2) <= '1';
-         else
-            led_rgb_5_out(2) <= '0';
-         end if;
+         led_rgb_6_out(2) <= '0';
       end if;
 
+      if (almost_empty_array = '1') then
+         led_rgb_6_out(1) <= '1';
+      else
+         led_rgb_6_out(1) <= '0';
+      end if;
+
+      if (almost_full_array = '1') then
+         led_rgb_5_out(0) <= '1';
+      else
+         led_rgb_5_out(0) <= '0';
+      end if;
+
+      if (full_array = '1') then
+         led_rgb_5_out(2) <= '1';
+      else
+         led_rgb_5_out(2) <= '0';
+      end if;
    end process;
 
    double_ff : entity work.double_ff
@@ -156,15 +127,6 @@ begin
          ws_out         => ws_out
       );
 
-   --simulated_array_select_inst : entity work.simulated_array_select
-   --   port map(
-   --      sys_clk            => clk,
-   --      reset              => reset,
-   --      btn_state_select   => btn_ff(1),
-   --      sw_simulated_array => sw_simulated_array,
-   --      sw_mic_id          => sw_mic_id
-   --   );
-
    ws_pulse : entity work.ws_pulse
       port map(
          sck_clk => sck_clk,
@@ -172,26 +134,9 @@ begin
          ws      => ws
       );
 
-   --simulated_array : entity work.simulated_array
-   --   generic map(
-   --      index => 14 --14-19
-   --   )
-   --   port map(
-   --      clk            => clk,
-   --      sck_clk        => sck_clk,
-   --      ws             => ws,
-   --      reset          => reset,
-   --      switch         => sw_simulated_array,
-   --      bit_stream_in  => bit_stream,
-   --      bit_stream_out => bit_stream_sim_array
-   --   );
-
-   bit_stream_sim_array <= bit_stream;
-
    button_index_select_inst : entity work.button_index_select
       generic map(
-         DEFAULT_INDEX => 8
-
+         DEFAULT_INDEX => 1
       )
       port map(
          sys_clk     => clk,
@@ -201,8 +146,8 @@ begin
          index_out   => index
       );
 
-   -- PMOD port JE, BitStream 12-15: Array 1
-   sample_gen_1 : for i in 0 to 3 generate
+   -- PMOD port JB, BitStream 0-3: Array 1
+   sample_gen_0 : for i in 0 to 3 generate
    begin
       sample_C : entity work.sample_clk
          port map(
@@ -210,65 +155,20 @@ begin
             reset                => reset,
             index                => index,
             ws                   => ws,
-            bit_stream           => bit_stream_sim_array(i + 12),
+            bit_stream           => bit_stream(i),
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
-   end generate sample_gen_1;
+   end generate sample_gen_0;
 
-   -- PMOD port JB, BitStream 0-3: Array 2
-   sample_gen_2 : for i in 4 to 7 generate
-   begin
-      sample_C : entity work.sample_clk
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            index                => index,
-            ws                   => ws,
-            bit_stream           => bit_stream_sim_array(i - 4),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_2;
-
-   -- PMOD port JC, BitStream 4-7: Array 3
-   sample_gen_3 : for i in 8 to 11 generate
-   begin
-      sample_C : entity work.sample_clk
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            index                => index,
-            ws                   => ws,
-            bit_stream           => bit_stream_sim_array(i - 4),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_3;
-
-   -- PMOD port JD, BitStream 8-11: Array 4
-   sample_gen_4 : for i in 12 to 15 generate
-   begin
-      sample_C : entity work.sample_clk
-         port map(
-            sys_clk              => clk,
-            reset                => reset,
-            index                => index,
-            ws                   => ws,
-            bit_stream           => bit_stream_sim_array(i - 4),
-            mic_sample_data_out  => mic_sample_data(i),
-            mic_sample_valid_out => mic_sample_valid(i)
-         );
-   end generate sample_gen_4;
-
-   collector_gen : for i in 0 to 15 generate
+   collector_gen : for i in 0 to 3 generate
    begin
       collector_c : entity work.collector
          generic map(chainID => i)
          port map(
             sys_clk                => clk,
             reset                  => reset,
-            sw_mic_id              => sw_mic_id,
+            sw_mic_id              => '0', -- 0 -> no id -> normal sample
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -279,19 +179,19 @@ begin
    full_sample_c : entity work.full_sample
       --generic map(number_of_arrays => number_of_arrays)
       port map(
-         sys_clk                 => clk,
-         reset                   => reset,
-         chain_x4_matrix_data_in => chain_matrix_data,
-         chain_matrix_valid_in   => chain_matrix_valid_array,
-         array_matrix_data_out   => array_matrix_data,
-         array_matrix_valid_out  => array_matrix_valid
+         sys_clk                => clk,
+         reset                  => reset,
+         chain_matrix_data_in   => chain_matrix_data,
+         chain_matrix_valid_in  => chain_matrix_valid_array(0),
+         array_matrix_data_out  => array_matrix_data,
+         array_matrix_valid_out => array_matrix_valid
       );
 
    fir_filter_controller_c : entity work.fir_filter_controller
       port map(
          clk              => clk,
          reset            => reset,
-         sw_fir_off       => sw_fir_off,
+         sw_fir_off       => '1', -- =1 -> fir off
          matrix_in        => array_matrix_data,
          matrix_in_valid  => array_matrix_valid,
          matrix_out       => array_matrix_data_fir,
@@ -334,7 +234,7 @@ begin
          axi_empty     => empty_array,
          axi_rd_en     => rd_en_pulse,
          axi_sys_id    => system_ids,
-         axi_nr_arrays => nr_arrays
+         axi_nr_arrays => std_logic_vector(to_unsigned(number_of_arrays, 2))
       );
 
 end architecture;

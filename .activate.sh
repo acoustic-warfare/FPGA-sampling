@@ -52,9 +52,9 @@ VIVADO_VERSION_17="2017.4"
 [ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_17/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
 echo "Vivado $VIVADO_VERSION_17"
 
-VIVADO_VERSION_22="2022.1"
-[ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_22/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
-echo "Vivado $VIVADO_VERSION_22"
+VIVADO_VERSION_24="2024.2"
+[ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_24/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
+echo "Vivado $VIVADO_VERSION_24"
 
 # TODO: set up simlibs and path to them
 # NOTE: xsim will be needed for ip simulations if needed as most are verilog based
@@ -71,7 +71,6 @@ echo "GHDL $GHDL_VERSION"
 #
 alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.sh'
 alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
-alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
 
 echo -e '
@@ -85,4 +84,4 @@ Welcome to Acustic Warfare!
 #
 # Cleanup
 #
-unset GHDL_PATH GHDL_REQUIRED_VERSION GHDL_VERSION XILINX_PATH VENV_NAME VIVADO_VERSION
+unset GHDL_PATH GHDL_VERSION XILINX_PATH VIVADO_VERSION_17 VIVADO_VERSION_24 VENV_NAME

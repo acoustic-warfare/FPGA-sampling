@@ -40,9 +40,9 @@ architecture tb of tb_super_test is
    signal tb_look_fullsample_data_out_48 : std_logic_vector(31 downto 0);
    signal tb_look_fullsample_data_out_63 : std_logic_vector(31 downto 0);
 
-   signal chain_x16_matrix_data_in : matrix_16_16_32_type;
-   signal array_matrix_data_out    : matrix_256_32_type;
-   signal array_matrix_valid_out   : std_logic;
+   signal chain_matrix_data      : matrix_4_16_32_type;
+   signal array_matrix_data_out  : matrix_64_32_type;
+   signal array_matrix_valid_out : std_logic;
 
    -- signal ws_ok  : std_logic;
    -- signal sck_ok : std_logic;
@@ -119,7 +119,7 @@ begin
             sw_mic_id              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
-            chain_matrix_data_out  => chain_x16_matrix_data_in(i),
+            chain_matrix_data_out  => chain_matrix_data(i),
             chain_matrix_valid_out => chain_matrix_valid_out(i)
          );
    end generate collector_gen;
@@ -129,12 +129,12 @@ begin
       --    number_of_arrays => 4
       -- )
       port map(
-         sys_clk                 => clk,
-         reset                   => reset,
-         chain_x4_matrix_data_in => chain_x16_matrix_data_in,
-         chain_matrix_valid_in   => chain_matrix_valid_out,
-         array_matrix_data_out   => array_matrix_data_out,
-         array_matrix_valid_out  => array_matrix_valid_out
+         sys_clk                => clk,
+         reset                  => reset,
+         chain_matrix_data_in   => chain_matrix_data,
+         chain_matrix_valid_in  => chain_matrix_valid_out(0),
+         array_matrix_data_out  => array_matrix_data_out,
+         array_matrix_valid_out => array_matrix_valid_out
       );
 
    -- gets error when trying to use this will look in to it later 

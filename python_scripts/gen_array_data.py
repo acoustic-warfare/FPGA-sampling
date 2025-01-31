@@ -18,6 +18,7 @@ max_amplitude = 1000
 file_name = "test_file.mem"
 # END USER PARAMETERS
 ####################
+
 print("Desired frequency: ", frequency, "   max_multiple", max_multiple)
 
 # try all multiples and see which is best
