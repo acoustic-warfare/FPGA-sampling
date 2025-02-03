@@ -13,7 +13,9 @@ end entity;
 
 architecture rtl of simulated_array_bram is
 
-   constant ram_depth : integer := 2048;
+   -- 270 KB bram on zybo z720
+   -- 24 bit words + 30% margin => 67500 samples max in BRAM
+   constant ram_depth : integer := 67500;
    type ram_type is array (0 to ram_depth - 1) of std_logic_vector(23 downto 0);
    signal ram : ram_type;
 

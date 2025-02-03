@@ -5,54 +5,101 @@ sampling_rate = 48828.125  # (FPGA sampling rate) [Hz]
 
 ######################
 # START USER PARAMETERS
-# Desired frequency [Hz]
-frequency = 400
 
-# Max multiple [nr] (number of periods max to get closer to desired frequency)
-max_multiple = 10
+# Max BRAM (with some headroom :))
+# If I imporve this to the max run from 1 to 60000 samples
+BRAM_max_size = 60000  # max nr samples
+
+# Desired frequency [Hz]
+# min frequency that will work good is around 10 Hz?
+frequencys = [400]
+
+# Noise level (% of max_amplitude or db or something)
+# Mabey it should be SNR instead
+noise_level = 0  # todo add this feature
 
 # Max amplitude of output
 # 24 bit signed means max is ...?
 max_amplitude = 1000
 
-file_name = "test_file.mem"
+file_name_sim = "./data.mem"
+file_name_build = "./pl/src/simulated_array_v2/data.mem"
+
 # END USER PARAMETERS
 ####################
 
-print("Desired frequency: ", frequency, "   max_multiple", max_multiple)
-
 # try all multiples and see which is best
 # in reality you only need to test prime multiples, rest are useless
-lowes_delta = 999999
-best_multiple = 1
-for i in range(1, max_multiple + 1):
-    lenght = round(sampling_rate*i/frequency)
-    actual_frequency = sampling_rate * i / lenght
+best_delta = 9999
+length = 1
+for i in range(1, BRAM_max_size):
+    all_deltas = []
+    for frequency in frequencys:
+
+        multiple = round(i * frequency/sampling_rate)
+
+        actual_frequency = sampling_rate * multiple / i
+        delta = abs(frequency - actual_frequency)
+        all_deltas.append(delta)
+
+    if (best_delta > np.max(all_deltas)):
+        best_delta = delta
+        length = i
+
+final_frequencys = []
+final_delats = []
+for frequency in frequencys:
+
+    multiple = round(length * frequency/sampling_rate)
+
+    actual_frequency = sampling_rate * multiple / length
     delta = abs(frequency - actual_frequency)
 
-    print("multiple:", i, " actual_frequency:",
-          actual_frequency, " lenght:", lenght)
+    final_frequencys.append(actual_frequency)
+    final_delats.append(delta)
 
-    if delta < lowes_delta:
-        lowes_delta = delta
-        best_multiple = i
 
-# calculate best result
-lenght = round(sampling_rate*best_multiple/frequency)
-actual_frequency = sampling_rate*best_multiple / lenght
-delta = frequency - actual_frequency
+worst_delta = np.max(final_delats)
+print("worst_delta:", best_delta, " [Hz]")
+print("lenght: ", length)
+print("desired_frequnecys: ", frequencys)  # make this x decimans
+print("actual_frequnecys: ", final_frequencys)  # make this x decimans
 
-print("\nBest result:")
-print("multiple:", best_multiple, " actual_frequency:",
-      actual_frequency, " lenght:", lenght)
+x = np.linspace(0, length-1, length)
+
+all_data_components = []
+for frequency in final_frequencys:
+    data_component = []
+    for i in range(0, length):
+        index = i * (frequency / sampling_rate) * (2*np.pi)
+        amplitude = np.sin(index)
+        data_component.append(amplitude)
+
+    all_data_components.append(data_component)
 
 data = []
-x = np.linspace(0, lenght-1, lenght)
-# y = np.sin(x)
+for i in range(0, length):
+    amplitude = 0
+    for data_component in all_data_components:
+        amplitude = amplitude + data_component[i]
 
-for i in range(0, lenght):
-    index = i * (best_multiple / lenght) * (2*np.pi)
-    data.append(np.sin(index) * max_amplitude)
+    data.append(amplitude)
+
+# Amplification
+max_natural_amplitude = max(data)
+amplification = max_amplitude / max_natural_amplitude
+data = np.array(data) * amplification
+all_data_components = np.array(all_data_components) * amplification
+print("max_natural_amplitude", max_natural_amplitude)
+
+
+def plt_freq_component(index):
+    plt.plot(all_data_components[index])
+
+
+def plt_all_freq_components():
+    for i in range(len(final_frequencys)):
+        plt_freq_component(i)
 
 
 def int_to_twos(num, bits):
@@ -60,27 +107,22 @@ def int_to_twos(num, bits):
     return "{:0{}b}".format(num & mask, bits)
 
 
-def write_to_file():
+def save_sample_data_to_file(file_name, length, samples):
     f = open(file_name, "w")
-
-    f.write(int_to_twos(lenght, 24))
+    f.write(int_to_twos(length, 24))
     f.write("\n")
-    for i in range(0, lenght):
-        f.write(int_to_twos(round(data[i]), 24))
+    for i in range(0, length):
+        f.write(int_to_twos(round(samples[i]), 24))
         f.write("\n")
 
     f.close
 
 
-def plot_data():
-    plt.title("two periods with multiple")
-    plt.scatter(x, data, color='b')
-    plt.plot(data, color='b')
-    plt.scatter((x+lenght), data, color='r')
-    plt.plot((x+lenght), data, color='r')
+save_sample_data_to_file(file_name_build, length, data)
+save_sample_data_to_file(file_name_sim, length, data)
 
-    plt.show()
+plt_all_freq_components()
+plt.plot(data, color='r')
 
-
-plot_data()
-write_to_file()
+plt.xlim(0, 122)
+plt.show()

@@ -21,3 +21,4 @@ ljud
 recorded_mic_data
 filter_coefficients/filter_output.txt
 filter_coefficients/filter_input.txt
+test_file.mem
