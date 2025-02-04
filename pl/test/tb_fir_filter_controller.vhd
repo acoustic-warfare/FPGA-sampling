@@ -39,7 +39,7 @@ begin
 
    process (reset)
    begin
-      for i in 0 to 255 loop
+      for i in 0 to 63 loop
          matrix_in(i) <= std_logic_vector(to_unsigned(i, 32));
       end loop;
    end process;
@@ -47,7 +47,7 @@ begin
    check_matrix : process (matrix_out_valid)
    begin
       if (matrix_out_valid = '1') then
-         for i in 0 to 255 loop
+         for i in 0 to 63 loop
             info("matrix_out" & to_string(i) & " " & to_string(matrix_out(i)));
          end loop;
       end if;

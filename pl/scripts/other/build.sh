@@ -13,7 +13,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 
 # Define relative paths within the repository
 BITSTREAM_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/aw_top.bit"
-BITSTREAM_PATH_SIM_ARRAY="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/simulated_array_v2.bit"
+BITSTREAM_PATH_SIM_ARRAY="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/simulated_array.bit"
 ELF_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk/aw_udp_ps/Debug/aw_udp_ps.elf"
 
 # Destination tftp directory

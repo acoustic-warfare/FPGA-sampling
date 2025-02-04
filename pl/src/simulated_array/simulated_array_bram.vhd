@@ -4,9 +4,12 @@ use IEEE.NUMERIC_STD.all;
 use std.textio.all;
 
 entity simulated_array_bram is
+   generic (
+      RAM_DEPTH : integer
+   );
    port (
       clk     : in std_logic;
-      addr    : in std_logic_vector(7 downto 0);
+      addr    : in std_logic_vector(23 downto 0);
       rd_data : out std_logic_vector(23 downto 0)
    );
 end entity;
@@ -15,7 +18,11 @@ architecture rtl of simulated_array_bram is
 
    -- 270 KB bram on zybo z720
    -- 24 bit words + 30% margin => 67500 samples max in BRAM
-   constant ram_depth : integer := 67500;
+   -- max from vivado 65537
+   -- if i want bigger test this:
+   -- set_param synth.elaboration.rodinMoreOptions "rt::set_parameter max_loop_limit <X>"
+   -- where <X> is recommended to be 100000 for cases with approx 2K symbols, but may need to be increased for larger numbers of symbols.
+   --constant ram_depth : integer := 65537;
    type ram_type is array (0 to ram_depth - 1) of std_logic_vector(23 downto 0);
    signal ram : ram_type;
 

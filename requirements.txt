@@ -3,6 +3,7 @@ scipy
 matplotlib
 colorama
 sounddevice
+PyQt6
 
 #vunit-hdl>=4.6.0
 #GHDL>=2.0.0

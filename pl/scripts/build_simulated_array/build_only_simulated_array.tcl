@@ -13,20 +13,20 @@ set_property board_part $board     [current_project]
 set_property target_language VHDL  [current_project]
 
 # Set top module
-set top_module [file join "$ROOT" src simulated_array_v2 simulated_array_v2.vhd]
+set top_module [file join "$ROOT" src simulated_array simulated_array.vhd]
 
 # Import files
-add_files [file join "$ROOT" src simulated_array_v2 data.mem]
-add_files [file join "$ROOT" src simulated_array_v2 edge_detect_ws_sck.vhd]
-add_files [file join "$ROOT" src simulated_array_v2 simulated_array_bram.vhd]
-add_files [file join "$ROOT" src simulated_array_v2 simulated_array_controller.vhd]
-add_files [file join "$ROOT" src simulated_array_v2 simulated_array_v2.vhd]
+add_files [file join "$ROOT" src simulated_array data.mem]
+add_files [file join "$ROOT" src simulated_array edge_detect_ws.vhd]
+add_files [file join "$ROOT" src simulated_array simulated_array_bram.vhd]
+add_files [file join "$ROOT" src simulated_array simulated_array_controller.vhd]
+add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
 
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 
 add_files [file join "$ROOT" src matrix_package.vhd]
 
-add_files -fileset constrs_1 [file join "$ROOT" src simulated_array_v2 constraint_simulated_array.xdc]
+add_files -fileset constrs_1 [file join "$ROOT" src simulated_array constraint_simulated_array.xdc]
 
 import_files -force
 

@@ -19,7 +19,7 @@ frequencys = [400]
 noise_level = 0  # todo add this feature
 
 # Max amplitude of output
-# 24 bit signed means max is ...?
+# 24 bit signed means max is 8388607
 max_amplitude = 1000
 
 file_name_sim = "./data.mem"

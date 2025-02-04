@@ -18,9 +18,6 @@ architecture rtl of tb_simulated_array_controller is
     signal rst : std_logic := '1';
 
     signal sck_clk    : std_logic := '0';
-    signal sck_clk_d  : std_logic := '0';
-    signal sck_clk_dd : std_logic := '0';
-    signal sck_edge   : std_logic := '0';
 
     signal ws      : std_logic := '0';
     signal ws_d    : std_logic := '0';
@@ -41,9 +38,11 @@ begin
         );
 
     simulated_array_controller : entity work.simulated_array_controller
+        generic map(
+            ram_depth => 100
+        )
         port map(
-            clk        => clk,
-            sck_edge   => sck_edge,
+            clk => clk,
             ws_edge    => ws_edge,
             rst        => rst,
             bit_stream => bit_stream
@@ -52,14 +51,10 @@ begin
     delay : process (clk)
     begin
         if rising_edge(clk) then
-            sck_clk_d  <= sck_clk;
-            sck_clk_dd <= sck_clk_d;
-
             ws_d <= ws;
         end if;
     end process;
 
-    sck_edge <= sck_clk_d and (not sck_clk_dd);
     ws_edge  <= ws and (not ws_d);
 
     main : process
@@ -71,7 +66,7 @@ begin
                 wait for C_CLK_CYKLE * 5;
                 rst <= '0';
 
-                wait for C_CLK_CYKLE * 100000;
+                wait for C_CLK_CYKLE * 1000000;
 
             elsif run("auto") then
 

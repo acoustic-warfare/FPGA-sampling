@@ -25,9 +25,9 @@ architecture tb of tb_super_test is
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
    -- signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
-   signal bit_stream_out : std_logic_vector(15 downto 0);
-   signal switch         : std_logic := '1';
+   --signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
+   signal bit_stream_out : std_logic_vector(3 downto 0);
+   --signal switch         : std_logic := '1';
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
@@ -49,7 +49,7 @@ architecture tb of tb_super_test is
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
-   signal bitstream_cable : std_logic_vector(15 downto 0);
+   signal bitstream_cable : std_logic_vector(3 downto 0);
 
    signal rd_en              : std_logic;
    signal data_fifo_out      : matrix_256_32_type := (others => (others => '0'));
@@ -64,9 +64,15 @@ architecture tb of tb_super_test is
    constant delay_sample : integer                      := 3;
    signal index          : std_logic_vector(3 downto 0) := std_logic_vector(to_unsigned(delay_sample, 4));
 
+   signal btn : std_logic_vector(3 downto 0);
+   signal sw  : std_logic_vector(3 downto 0);
+   signal led : std_logic_vector(3 downto 0);
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
+
+   btn(0) <= reset;
 
    ws_cable        <= transport ws after 30 ns;
    sck_clk_cable   <= transport sck_clk after 30 ns;
@@ -83,16 +89,16 @@ begin
 
    simulated_array1 : entity work.simulated_array
       generic map(
-         index => delay_sample + 8 -- currently +4 to +8
+         DEFAULT_INDEX => delay_sample + 8, -- currently +4 to +8
+         RAM_DEPTH     => 1000
       )
       port map(
-         clk            => clk,
-         sck_clk        => sck_clk_cable,
-         ws             => ws_cable,
-         reset          => reset,
-         switch         => switch,
-         bit_stream_in  => bit_stream_in,
-         bit_stream_out => bit_stream_out
+         sys_clk    => clk,
+         btn        => btn,
+         sw         => sw,
+         ws         => ws,
+         bit_stream => bit_stream_out,
+         led_out    => led
       );
 
    sample_gen : for i in 0 to 3 generate

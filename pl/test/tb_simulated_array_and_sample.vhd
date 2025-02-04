@@ -1,16 +1,17 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
+use ieee.numeric_std.all;
 
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-entity tb_simulated_array_v2 is
+entity tb_simulated_array_and_sample is
     generic (
         runner_cfg : string
     );
 end entity;
 
-architecture rtl of tb_simulated_array_v2 is
+architecture rtl of tb_simulated_array_and_sample is
     constant C_CLK_CYKLE : time    := 8 ns; -- 125MHz
     signal counter_tb    : integer := 0;
 
@@ -26,6 +27,9 @@ architecture rtl of tb_simulated_array_v2 is
     signal bit_stream : std_logic_vector(3 downto 0);
     signal led_out    : std_logic_vector(3 downto 0);
 
+    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
+    signal mic_sample_valid_out : std_logic;
+
 begin
     clk        <= not (clk) after C_CLK_CYKLE / 2;
     sck_clk    <= not (sck_clk) after C_CLK_CYKLE * 5 / 2;
@@ -39,15 +43,30 @@ begin
             reset   => rst
         );
 
-    simulated_array_v2_inst : entity work.simulated_array_v2
+    simulated_array_inst : entity work.simulated_array
+        generic map(
+            -- 11 to 15 seems to work in simulation :)
+            DEFAULT_INDEX => 11,
+            ram_depth     => 32
+        )
         port map(
             sys_clk    => clk,
             btn        => btn,
             sw         => sw,
-            sck_clk    => sck_clk,
             ws         => ws,
             bit_stream => bit_stream,
             led_out    => led_out
+        );
+
+    sample_clk_inst : entity work.sample_clk
+        port map(
+            sys_clk              => clk,
+            reset                => rst,
+            bit_stream           => bit_stream(0),
+            index                => std_logic_vector(to_unsigned(8, 4)),
+            ws                   => ws,
+            mic_sample_data_out  => mic_sample_data_out,
+            mic_sample_valid_out => mic_sample_valid_out
         );
 
     main : process

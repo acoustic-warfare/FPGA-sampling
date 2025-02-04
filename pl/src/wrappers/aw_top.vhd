@@ -136,7 +136,7 @@ begin
 
    button_index_select_inst : entity work.button_index_select
       generic map(
-         DEFAULT_INDEX => 1
+         DEFAULT_INDEX => 5
       )
       port map(
          sys_clk     => clk,

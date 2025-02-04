@@ -96,7 +96,7 @@ begin
 
    process (reset, multiplyer)
    begin
-      for i in 0 to 255 loop
+      for i in 0 to 63 loop
          wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 32));
       end loop;
    end process;

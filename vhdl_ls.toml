@@ -56,5 +56,4 @@ ljudkriget.files = [
    "pl/src/*.vhd",
    "pl/src/*/*.vhd",
    "pl/test/*.vhd",
-   "pl/src/simulated_array/ip_wrappers/*.vhd",
 ]

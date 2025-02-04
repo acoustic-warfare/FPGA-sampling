@@ -1,3 +1,6 @@
+
+# mic 35 works good on the "Bäst! 20223-09-21 array" and is in the midle of the array
+
 import numpy as np
 import os
 from pathlib import Path
@@ -8,91 +11,69 @@ def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
     path = Path(ROOT + "/" + fileChooser)
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
-    data2D = data.reshape(-1, 258)
+    data2D = data.reshape(-1, 66)  # 1array (-1, 66), 4arrays (-1, 258)
     micData = data2D[:, 2:]
-    f_sampling = 48828
+    f_sampling = 48828.125
     return micData, f_sampling
 
 
-def plot_mic_data(fileChooser):
-    mic1 = 17
-    mic2 = 81
-
+def plot_mic_data_fft(fileChooser, mic_nr, max_freq):
     data, fs = load_data_FPGA(fileChooser)
 
-    # FFT for microphone 17
-    mic_data_17 = data[:, mic1 - 1]
-    n_17 = len(mic_data_17)
-    fft_result_17 = np.fft.fft(mic_data_17)
-    freq_17 = np.fft.fftfreq(n_17, d=1 / fs)
-    freq_17 = freq_17[: n_17 // 2]  # Take only positive frequencies
-    fft_result_17 = (
-        np.abs(fft_result_17[: n_17 // 2]) / n_17
+    # FFT for microphone
+    mic_data = data[:, mic_nr - 1]
+    n = len(mic_data)
+    fft_result = np.fft.fft(mic_data)
+    freq = np.fft.fftfreq(n, d=1 / fs)
+    freq = freq[: n // 2]  # Take only positive frequencies
+    fft_result = (
+        np.abs(fft_result[: n // 2]) / n
     )  # Normalize by number of samples
 
-    # FFT for microphone 81
-    mic_data_81 = data[:, mic2 - 1]
-    n_81 = len(mic_data_81)
-    fft_result_81 = np.fft.fft(mic_data_81)
-    freq_81 = np.fft.fftfreq(n_81, d=1 / fs)
-    freq_81 = freq_81[: n_81 // 2]  # Take only positive frequencies
-    fft_result_81 = (
-        np.abs(fft_result_81[: n_81 // 2]) / n_81
-    )  # Normalize by number of samples
+    # Find indices corresponding to frequency range 0 to max_freq Hz
+    idx = np.where((freq >= 0) & (freq <= max_freq))[0]
+    max_amplitude = np.max(fft_result[idx])
 
-    # Find indices corresponding to frequency range 0 to 2000 Hz
-    idx_17 = np.where((freq_17 >= 0) & (freq_17 <= 2000))[0]
-    idx_81 = np.where((freq_81 >= 0) & (freq_81 <= 2000))[0]
-    max_amplitude_17 = np.max(fft_result_17[idx_17])
-    max_amplitude_81 = np.max(fft_result_81[idx_81])
+    fft_result_normalized = fft_result / max_amplitude
 
-    fft_result_17_normalized = fft_result_17 / max_amplitude_17
-    fft_result_81_normalized = fft_result_81 / max_amplitude_81
-
-    # Plot frequency-domain signal (FFT) for microphone 17
-    plt.subplot(3, 1, 1)
+    # Plot frequency-domain signal (FFT) for microphone
     plt.plot(
-        freq_17, fft_result_17_normalized, color="blue", label=f"Microphone {mic1}"
+        freq, fft_result_normalized, color="blue", label=f"Microphone {mic_nr}"
     )
     plt.title("Frequency Spectrum of Microphone Signals")
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Amplitude (Normalized)")
-    plt.xlim(0, 2000)  # Limit x-axis to positive frequencies
+    plt.xlim(0, max_freq)  # Limit x-axis to positive frequencies
     plt.ylim(0, 1)  # Set y-axis limit to max amplitude
     plt.legend()
-
-    # Plot frequency-domain signal (FFT) for microphone 81
-    plt.subplot(3, 1, 2)
-    plt.plot(
-        freq_81, fft_result_81_normalized, color="green", label=f"Microphone {mic2}"
-    )
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Amplitude (Normalized)")
-    plt.xlim(0, 2000)  # Limit x-axis to positive frequencies
-    plt.ylim(0, 1)  # Set y-axis limit to max amplitude
-    plt.legend()
-
-    # Plot both on the same subplot for comparison
-    plt.subplot(3, 1, 3)
-    plt.plot(
-        freq_17, fft_result_17_normalized, color="blue", label=f"Microphone {mic1}"
-    )
-    plt.plot(
-        freq_81, fft_result_81_normalized, color="green", label=f"Microphone {mic2}"
-    )
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Amplitude (Normalized)")
-    plt.xlim(0, 2000)  # Limit x-axis to positive frequencies
-    plt.ylim(0, 1)  # Set y-axis limit to max amplitude
-    plt.legend()
-
-    # Adjust layout to ensure plots do not overlap
-    plt.tight_layout()
-
     plt.show()
 
 
-if __name__ == "__main__":
-    print("Enter a filename to samples: ")
-    fileChooser = input()
-    plot_mic_data(fileChooser)
+def plot_mic_data(fileChooser, mic_nr, max_time):
+    data, fs = load_data_FPGA(fileChooser)
+    mic_data = data[:, mic_nr - 1]
+    length = len(mic_data)
+    print(length)
+    x = np.linspace(0, length-1, length)
+
+    # Plot frequency-domain signal (FFT) for microphone
+    plt.scatter(x, mic_data, color="blue", label=f"Mic {mic_nr}")
+    plt.title("Microphone Signal (time domain)")
+    plt.xlabel("Frequency (Hz)")
+    plt.ylabel("Amplitude (Normalized)")
+    # plt.xlim(0, max_time)  # Limit x-axis to positive frequencies
+    # plt.ylim(0, 1)  # Set y-axis limit to max amplitude
+    plt.legend()
+    plt.show()
+
+
+# print("Enter a filename to samples: ")
+# fileChooser = input()
+fileChooser = "test"
+
+mic_nr = 35
+max_frequency = 48828.125/2
+
+# todo would be nice with some sub plot situation :)
+plot_mic_data_fft(fileChooser, mic_nr=mic_nr, max_freq=1000)
+plot_mic_data(fileChooser, mic_nr=mic_nr, max_time=1)
