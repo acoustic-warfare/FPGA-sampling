@@ -23,7 +23,7 @@ noise_level = 0  # todo add this feature
 max_amplitude = 1000
 
 file_name_sim = "./data.mem"
-file_name_build = "./pl/src/simulated_array_v2/data.mem"
+file_name_build = "./pl/src/simulated_array/data.mem"
 
 # END USER PARAMETERS
 ####################
@@ -60,8 +60,9 @@ for frequency in frequencys:
 
 
 worst_delta = np.max(final_delats)
+print(length)  # first print have to be lenght for the build.sh script to work
 print("worst_delta:", best_delta, " [Hz]")
-print("lenght: ", length)
+print("length: ", length)
 print("desired_frequnecys: ", frequencys)  # make this x decimans
 print("actual_frequnecys: ", final_frequencys)  # make this x decimans
 
@@ -109,8 +110,8 @@ def int_to_twos(num, bits):
 
 def save_sample_data_to_file(file_name, length, samples):
     f = open(file_name, "w")
-    f.write(int_to_twos(length, 24))
-    f.write("\n")
+    # f.write(int_to_twos(length, 24))
+    # f.write("\n")
     for i in range(0, length):
         f.write(int_to_twos(round(samples[i]), 24))
         f.write("\n")
@@ -121,8 +122,7 @@ def save_sample_data_to_file(file_name, length, samples):
 save_sample_data_to_file(file_name_build, length, data)
 save_sample_data_to_file(file_name_sim, length, data)
 
-plt_all_freq_components()
-plt.plot(data, color='r')
-
-plt.xlim(0, 122)
-plt.show()
+# plt_all_freq_components()
+# plt.plot(data, color='r')
+# plt.xlim(0, 122)
+# plt.show()

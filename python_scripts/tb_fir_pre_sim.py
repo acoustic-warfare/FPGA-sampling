@@ -11,6 +11,7 @@ fs = 48828.125  # Sampling frequency in Hz
 sine_freq1 = 100  # Sine wave frequency 1 in Hz
 sine_freq2 = 1000  # Sine wave frequency 2 in Hz
 
+
 def sine_waves():
     # Generate the sine waves
     t = np.arange(N) / fs
@@ -23,12 +24,14 @@ def sine_waves():
     # Scale and convert the sine wave to integers with a specific data width
     max_val = 2**(Data_Width - 1) - 1
     min_val = -2**(Data_Width - 1)
-    sine_wave_scaled = np.int32(sine_wave * max_val / 2)  # Divide by 2 to prevent overflow
+    # Divide by 2 to prevent overflow
+    sine_wave_scaled = np.int32(sine_wave * max_val / 2)
 
     # Shift the data
     sine_wave_shifted = sine_wave_scaled >> Shift
 
     return sine_wave_shifted
+
 
 def noise():
     # Generate white noise signal
@@ -40,10 +43,11 @@ def noise():
 
     return signal_shifted
 
-#gen sine wave
-#wave = sine_waves()
+# gen sine wave
+# wave = sine_waves()
 
-#gen noise
+
+# gen noise
 wave = noise()
 
 # Save the samples to a text file
@@ -54,11 +58,11 @@ with open(Text_file_input, 'w') as file:
 print(f"Sine wave samples saved to {Text_file_input}")
 
 # Plot the generated sine wave
-#plt.figure(figsize=(14, 6))
-#plt.plot(t, sine_wave, label='Summed Sine Wave (200 Hz + 1000 Hz)')
-#plt.title('Summed Sine Wave')
-#plt.xlabel('Time [s]')
-#plt.ylabel('Amplitude')
-#plt.legend()
-#plt.show()
+# plt.figure(figsize=(14, 6))
+# plt.plot(t, sine_wave, label='Summed Sine Wave (200 Hz + 1000 Hz)')
+# plt.title('Summed Sine Wave')
+# plt.xlabel('Time [s]')
+# plt.ylabel('Amplitude')
+# plt.legend()
+# plt.show()
 #

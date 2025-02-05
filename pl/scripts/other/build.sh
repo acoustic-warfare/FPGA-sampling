@@ -62,7 +62,7 @@ for arg in "$@"; do
       exit 0
       ;;
    *)
-      printf "%b\n" "${BOLD}${RED}Unknown option: $arg${RESET}"
+      printf "%b\n" "${RED}Unknown option: $arg${RESET}"
       echo "Use --help or -h for usage instructions."
       exit 1
       ;;
@@ -78,11 +78,19 @@ if [ "$skip_vivado" = false ]; then
 
    if [ "$simulated_array" = true ]; then
       # build simulated array
-      vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_simulated_array/build_only_simulated_array.tcl
+
+      # run python_scrips/gen_array_data.py to generate data, edit in the script to customize the signal sent from the simulated array
+      echo "${GREEN} Generating data using gen_array_data.py ${RESET}"
+      length=$({ python3 $GIT_ROOT/python_scripts/gen_array_data.py | tee /dev/tty; } | head -n 1) #run program and save firt print to length
+      echo "Setting length of bram to length: $length"
+
+      echo "${GREEN} Starting Vivado ${RESET}"
+      vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_simulated_array/build_only_simulated_array.tcl -tclargs $length
       printf "%b\n" "${BOLD}copying bitstream...${RESET}"
       cp "$BITSTREAM_PATH_SIM_ARRAY" "$DEST_DIR/bitstream"
    else
       # normal build
+      echo "${GREEN} Starting Vivado ${RESET}"
       vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
       printf "%b\n" "${BOLD}copying bitstream...${RESET}"
       cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
@@ -130,5 +138,5 @@ if [ "$skip_docker" = false ]; then
    fi
 fi
 
-printf "%b\n" "${BOLD}${GREEN}done!${RESET}"
+printf "%b\n" "${GREEN}done!${RESET}"
 exit 0

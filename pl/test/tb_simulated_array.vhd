@@ -40,6 +40,9 @@ begin
         );
 
     simulated_array_inst : entity work.simulated_array
+        generic map(
+            RAM_DEPTH => 20
+        )
         port map(
             sys_clk    => clk,
             btn        => btn,

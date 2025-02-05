@@ -15,8 +15,7 @@ def print_analysis(fileChooser, source_audio):
     def load_data_FPGA():
 
         ROOT = os.getcwd()
-        path = Path(ROOT + "/" + fileChooser)
-
+        path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
         data = np.fromfile(
             path, dtype=c_int32, count=-1, offset=0
         )  # Read the whole file
@@ -58,13 +57,14 @@ def print_analysis(fileChooser, source_audio):
             new_lab_data = np.add(new_lab_data, data[:, i])
 
         new_lab_data = new_lab_data / 64
-        print("################# ANALYSE OF " + fileChooser + " #################")
+        print("################# ANALYSE OF " +
+              fileChooser + " #################")
 
         lab_test_mic = 1
         initial_lab_test_sample = 10000
         lab_test_samples = 5000
         lab_test_data = data[
-            initial_lab_test_sample : initial_lab_test_sample + lab_test_samples,
+            initial_lab_test_sample: initial_lab_test_sample + lab_test_samples,
             lab_test_mic,
         ]
         lab_test_power = (
@@ -94,7 +94,7 @@ def print_analysis(fileChooser, source_audio):
         for j in range(4):
             for i in range(16):
                 axs[j, i].plot(
-                    ok_data[start_val : start_val + plot_samples, i + j * 16]
+                    ok_data[start_val: start_val + plot_samples, i + j * 16]
                 )
                 axs[j, i].set_title(str(i + j * 16 + 1), fontsize=8)
                 axs[j, i].axis("off")
@@ -108,12 +108,14 @@ def print_analysis(fileChooser, source_audio):
             for j in range(4):
                 for i in range(16):
                     axs[j, i].plot(
-                        ok_data[start_val : start_val + plot_samples, i + j * 16 + 64]
+                        ok_data[start_val: start_val +
+                                plot_samples, i + j * 16 + 64]
                     )
                     axs[j, i].set_title(str(i + j * 16 + 1 + 64), fontsize=8)
                     axs[j, i].axis("off")
                     if normalized:
-                        axs[j, i].set_ylim(-max_value_ok * 1.1, max_value_ok * 1.1)
+                        axs[j, i].set_ylim(-max_value_ok *
+                                           1.1, max_value_ok * 1.1)
 
         if nr_arrays > 2:
             fig, axs = plt.subplots(4, 16)
@@ -123,12 +125,14 @@ def print_analysis(fileChooser, source_audio):
             for j in range(4):
                 for i in range(16):
                     axs[j, i].plot(
-                        ok_data[start_val : start_val + plot_samples, i + j * 16 + 128]
+                        ok_data[start_val: start_val +
+                                plot_samples, i + j * 16 + 128]
                     )
                     axs[j, i].set_title(str(i + j * 16 + 1 + 128), fontsize=8)
                     axs[j, i].axis("off")
                     if normalized:
-                        axs[j, i].set_ylim(-max_value_ok * 1.1, max_value_ok * 1.1)
+                        axs[j, i].set_ylim(-max_value_ok *
+                                           1.1, max_value_ok * 1.1)
 
         if nr_arrays > 2:
             fig, axs = plt.subplots(4, 16)
@@ -138,12 +142,14 @@ def print_analysis(fileChooser, source_audio):
             for j in range(4):
                 for i in range(16):
                     axs[j, i].plot(
-                        ok_data[start_val : start_val + plot_samples, i + j * 16 + 192]
+                        ok_data[start_val: start_val +
+                                plot_samples, i + j * 16 + 192]
                     )
                     axs[j, i].set_title(str(i + j * 16 + 1 + 192), fontsize=8)
                     axs[j, i].axis("off")
                     if normalized:
-                        axs[j, i].set_ylim(-max_value_ok * 1.1, max_value_ok * 1.1)
+                        axs[j, i].set_ylim(-max_value_ok *
+                                           1.1, max_value_ok * 1.1)
 
         # Show all plots
         plt.show()

@@ -33,7 +33,7 @@ architecture rtl of simulated_array_bram is
    -- Impure function for simulation
    impure function init_ram_bin return ram_type is
       file text_file : text open read_mode is "data.mem";
-      --file text_file       : text open read_mode is "./pl/src/simulated_array_v2/data.mem";
+      --file text_file       : text open read_mode is "./pl/src/simulated_array/data.mem";
 
       variable text_line   : line;
       variable ram_content : ram_type;

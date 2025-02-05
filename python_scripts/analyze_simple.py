@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/" + fileChooser)
+    path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
     data2D = data.reshape(-1, 66)  # 1array (-1, 66), 4arrays (-1, 258)
     micData = data2D[:, 2:]
@@ -37,6 +37,7 @@ def plot_mic_data_fft(fileChooser, mic_nr, max_freq):
     fft_result_normalized = fft_result / max_amplitude
 
     # Plot frequency-domain signal (FFT) for microphone
+    plt.subplot(2, 1, 1)
     plt.plot(
         freq, fft_result_normalized, color="blue", label=f"Microphone {mic_nr}"
     )
@@ -46,7 +47,6 @@ def plot_mic_data_fft(fileChooser, mic_nr, max_freq):
     plt.xlim(0, max_freq)  # Limit x-axis to positive frequencies
     plt.ylim(0, 1)  # Set y-axis limit to max amplitude
     plt.legend()
-    plt.show()
 
 
 def plot_mic_data(fileChooser, mic_nr, max_time):
@@ -57,23 +57,24 @@ def plot_mic_data(fileChooser, mic_nr, max_time):
     x = np.linspace(0, length-1, length)
 
     # Plot frequency-domain signal (FFT) for microphone
+    plt.subplot(2, 1, 2)
     plt.scatter(x, mic_data, color="blue", label=f"Mic {mic_nr}")
     plt.title("Microphone Signal (time domain)")
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Amplitude (Normalized)")
-    # plt.xlim(0, max_time)  # Limit x-axis to positive frequencies
+    plt.xlim(0, max_time*fs)  # Limit x-axis to positive frequencies
     # plt.ylim(0, 1)  # Set y-axis limit to max amplitude
     plt.legend()
-    plt.show()
 
 
-# print("Enter a filename to samples: ")
-# fileChooser = input()
-fileChooser = "test"
+print("Enter a filename to samples: ")
+fileChooser = input()
+# fileChooser = "test"
 
 mic_nr = 35
-max_frequency = 48828.125/2
+# max_frequency = 48828.125/2
 
 # todo would be nice with some sub plot situation :)
 plot_mic_data_fft(fileChooser, mic_nr=mic_nr, max_freq=1000)
 plot_mic_data(fileChooser, mic_nr=mic_nr, max_time=1)
+plt.show()

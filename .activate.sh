@@ -72,6 +72,7 @@ echo "GHDL $GHDL_VERSION"
 alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.sh'
 alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
 alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
+alias recive_and_plot='g++ python_scripts/udp_reciver.cpp && echo "recive_and_plot 2" | ./a.out && echo "recive_and_plot" | python3 python_scripts/bin_to_txt.py && echo "recive_and_plot" | python3 python_scripts/analyze_simple.py'
 
 echo -e '
 Welcome to Acustic Warfare!

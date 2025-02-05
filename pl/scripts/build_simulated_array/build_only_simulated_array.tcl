@@ -30,12 +30,16 @@ add_files -fileset constrs_1 [file join "$ROOT" src simulated_array constraint_s
 
 import_files -force
 
+#set the ram depth that was generated from the python script
+set length [lindex $argv 0]
+set_property generic "RAM_DEPTH=$length" [get_filesets sources_1]
+
 # set VHDL 2008 as default
 set_property file_type {VHDL 2008} [get_files  *.vhd]
 
 # clk wiz ip
 # Import Block Designs
-source [ file normalize [ file join $ROOT scripts build_simulated_array simulated_array_clk_wiz.tcl ] ]
+source [ file normalize [ file join "$ROOT" scripts build_simulated_array simulated_array_clk_wiz.tcl ] ]
 
 # Make wrapper zynq
 make_wrapper -inst_template [ get_files {simulated_array_clk_wiz.bd} ]
