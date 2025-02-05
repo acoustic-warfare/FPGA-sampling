@@ -13,7 +13,7 @@ entity tb_fir_filter_controller is
    );
 end entity;
 
-architecture behavioral of tb_fir_filter_controller is
+architecture tb of tb_fir_filter_controller is
    signal clk           : std_logic := '0';
    constant C_CLK_CYKLE : time      := 8 ns;
    signal reset         : std_logic := '0';

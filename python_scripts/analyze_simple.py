@@ -45,7 +45,7 @@ def plot_mic_data_fft(fileChooser, mic_nr, max_freq):
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Amplitude (Normalized)")
     plt.xlim(0, max_freq)  # Limit x-axis to positive frequencies
-    plt.ylim(0, 1)  # Set y-axis limit to max amplitude
+    plt.ylim(0, 1.2)  # Set y-axis limit to max amplitude
     plt.legend()
 
 
@@ -53,7 +53,8 @@ def plot_mic_data(fileChooser, mic_nr, max_time):
     data, fs = load_data_FPGA(fileChooser)
     mic_data = data[:, mic_nr - 1]
     length = len(mic_data)
-    print(length)
+    print("Recoring length (samples): ", length,
+          "     Recoring length (seconds): ", length/fs)
     x = np.linspace(0, length-1, length)
 
     # Plot frequency-domain signal (FFT) for microphone
@@ -67,7 +68,7 @@ def plot_mic_data(fileChooser, mic_nr, max_time):
     plt.legend()
 
 
-print("Enter a filename to samples: ")
+print("Enter a file to plot: ")
 fileChooser = input()
 # fileChooser = "test"
 
@@ -75,6 +76,8 @@ mic_nr = 35
 # max_frequency = 48828.125/2
 
 # todo would be nice with some sub plot situation :)
-plot_mic_data_fft(fileChooser, mic_nr=mic_nr, max_freq=1000)
+plot_mic_data_fft(fileChooser, mic_nr=mic_nr, max_freq=4000)
 plot_mic_data(fileChooser, mic_nr=mic_nr, max_time=1)
 plt.show()
+
+print(" ")  # end with a empty line

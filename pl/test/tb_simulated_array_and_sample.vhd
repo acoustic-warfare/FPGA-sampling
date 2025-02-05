@@ -11,7 +11,7 @@ entity tb_simulated_array_and_sample is
     );
 end entity;
 
-architecture rtl of tb_simulated_array_and_sample is
+architecture tb of tb_simulated_array_and_sample is
     constant C_CLK_CYKLE : time    := 8 ns; -- 125MHz
     signal counter_tb    : integer := 0;
 

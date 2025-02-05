@@ -66,13 +66,17 @@ GHDL_PATH="$ "/usr/lib/ghdl""
 GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
 echo "GHDL $GHDL_VERSION"
 
+# TODO: create vhdl_ls.toml
+# python3 pl/gen_vhdl_ls_toml.py
+# remove the current toml and add to the git ignore
+
 #
 # Useful aliases
 #
 alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.sh'
 alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
 alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
-alias recive_and_plot='g++ python_scripts/udp_reciver.cpp && echo "recive_and_plot 2" | ./a.out && echo "recive_and_plot" | python3 python_scripts/bin_to_txt.py && echo "recive_and_plot" | python3 python_scripts/analyze_simple.py'
+alias recive_and_plot='g++ python_scripts/udp_reciver.cpp && echo "recive_and_plot 1" | ./a.out && rm ./a.out && echo "recive_and_plot" | python3 python_scripts/post_process_recording.py && echo "recive_and_plot" | python3 python_scripts/analyze_simple.py'
 
 echo -e '
 Welcome to Acustic Warfare!
@@ -80,6 +84,9 @@ Welcome to Acustic Warfare!
 \033[1m  run_test --help         \033[0m
 \033[1m  build --help            \033[0m
 \033[1m  clean_vivado --help     \033[0m
+\033[1m  recive_and_plot         \033[0m
+
+recive_and_plot
 '
 
 #

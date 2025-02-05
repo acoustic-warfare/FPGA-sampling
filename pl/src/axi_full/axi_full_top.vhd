@@ -204,4 +204,4 @@ begin
          --M_AXI_BUSER  => m00_axi_buser,
          M_AXI_BREADY => m00_axi_bready
       );
-end rtl;
+end architecture;

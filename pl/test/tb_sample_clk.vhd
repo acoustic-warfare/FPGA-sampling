@@ -13,7 +13,7 @@ entity tb_sample_clk is
 
 end entity;
 
-architecture behave of tb_sample_clk is
+architecture tb of tb_sample_clk is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 

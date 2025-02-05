@@ -40,7 +40,7 @@ begin
 
    sys_clock <= not(sys_clock) after C_CLK_CYKLE/2;
 
-   btn(0)    <= reset;
+   btn(0) <= reset;
 
    main_p : process
    begin

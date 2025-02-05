@@ -10,7 +10,7 @@ entity tb_simulated_array is
     );
 end entity;
 
-architecture rtl of tb_simulated_array is
+architecture tb of tb_simulated_array is
     constant C_CLK_CYKLE : time    := 8 ns; -- 125MHz
     signal counter_tb    : integer := 0;
 

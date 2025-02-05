@@ -6,7 +6,7 @@ user = os.getenv('USER')
 path = f"/home/{user}/Utilities/vunit/"
 sys.path.append(path)
 
-from vunit import VUnit
+from vunit import VUnit # type: ignore
 
 # NOTE: Path to directory containing this file
 ROOT = Path(__file__).parent
@@ -33,6 +33,6 @@ lib.add_source_files(ROOT.glob("src/matrix_package.vhd"))
 
 for l in lib.get_test_benches():
    wave = ROOT.joinpath("test", "wave", f"{l.name}.tcl")
-   l.set_sim_option("ghdl.gtkwave_script.gui", str(wave) if wave.is_file() else str(ROOT / "gtkwave.tcl"))
+   l.set_sim_option("ghdl.viewer_script.gui", str(wave) if wave.is_file() else str(ROOT / "gtkwave.tcl"))
 
 vu.main()

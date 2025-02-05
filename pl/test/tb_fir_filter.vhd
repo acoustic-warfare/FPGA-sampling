@@ -15,7 +15,7 @@ entity tb_fir_filter is
    );
 end entity;
 
-architecture Behavioral of tb_fir_filter is
+architecture tb of tb_fir_filter is
    constant C_CLK_CYKLE : time := 8 ns;
    --signal loop_enable    : boolean   := true;
    signal clk   : std_logic := '1';

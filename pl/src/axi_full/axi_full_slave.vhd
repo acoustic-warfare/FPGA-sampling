@@ -399,4 +399,4 @@ begin
    init_txn  <= slv_reg0(0);
    read_done <= slv_reg0(1);
 
-end rtl;
+end architecture;

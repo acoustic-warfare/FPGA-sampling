@@ -22,7 +22,7 @@ entity fifo_axi is
    );
 end entity;
 
-architecture Behavioral of fifo_axi is
+architecture rtl of fifo_axi is
    constant ALMOST_EMPTY_THRESHOLD : integer := 2;
    constant ALMOST_FULL_THRESHOLD  : integer := RAM_DEPTH - 2;
 
@@ -164,4 +164,4 @@ begin
    full <= '1' when fifo_count = RAM_DEPTH else
       '0';
 
-end Behavioral;
+end architecture;
