@@ -16,10 +16,10 @@ entity simulated_array_controller is
 end entity;
 
 architecture rtl of simulated_array_controller is
-   signal addres_counter : unsigned (23 downto 0) := (others => '0');
-   signal addr           : std_logic_vector(23 downto 0);
-   signal rd_data        : std_logic_vector(23 downto 0);
-
+   signal addres_counter   : unsigned (23 downto 0) := (others => '0');
+   signal addr             : std_logic_vector(23 downto 0);
+   signal rd_data          : std_logic_vector(23 downto 0);
+   signal rd_data_internal : std_logic_vector(23 downto 0);
    type state_type is (idle, run, pause);
    signal state   : state_type;
    signal state_1 : integer range 0 to 3; -- Only for buggfixing (0 startup, 1 idel, 2 run, 3 pause)
@@ -66,8 +66,11 @@ begin
                if counter_samp = 4 then
                   counter_samp <= 0;
 
-                  bit_stream <= rd_data(23 - bit_counter);
+                  rd_data_internal <= std_logic_vector(unsigned(rd_data) + to_unsigned(mic_counter, 24));
+                  bit_stream       <= rd_data_internal (23 - bit_counter);
 
+
+                  
                   if (bit_counter = 23) then
                      mic_counter <= mic_counter + 1;
                      state       <= pause;
@@ -91,11 +94,11 @@ begin
                         addres_counter <= (others => '0');
                      else
                         addres_counter <= addres_counter + 1;
-
                      end if;
                      bit_counter <= 0;
                      mic_counter <= 0;
                      state       <= idle;
+
                   end if;
 
                   if (bit_counter = 31) then

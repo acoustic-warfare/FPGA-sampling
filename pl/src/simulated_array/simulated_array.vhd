@@ -100,8 +100,7 @@ begin
    simulated_array_clk_wiz_wrapper_inst : entity work.simulated_array_clk_wiz_wrapper
       port map(
          sys_clk => sys_clk,
-         clk     => clk,
-         rst     => rst
+         clk     => clk
       );
 
 end architecture;
