@@ -55,8 +55,8 @@ architecture structual of aw_top is
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
 
-   signal array_matrix_data_fir  : matrix_64_32_type;
-   signal array_matrix_valid_fir : std_logic;
+   --signal array_matrix_data_fir  : matrix_64_32_type;
+   --signal array_matrix_valid_fir : std_logic;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -164,11 +164,12 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector_c : entity work.collector
-         generic map(chainID => i)
+         --generic map(chainID => i)
          port map(
             sys_clk                => clk,
+            ws                     => ws,
             reset                  => reset,
-            sw_mic_id              => '0', -- 0 -> no id -> normal sample
+            --sw_mic_id              => '0', -- 0 -> no id -> normal sample
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
             chain_matrix_data_out  => chain_matrix_data(i),
@@ -187,16 +188,16 @@ begin
          array_matrix_valid_out => array_matrix_valid
       );
 
-   fir_filter_controller_c : entity work.fir_filter_controller
-      port map(
-         clk              => clk,
-         reset            => reset,
-         sw_fir_off       => '1', -- =1 -> fir off
-         matrix_in        => array_matrix_data,
-         matrix_in_valid  => array_matrix_valid,
-         matrix_out       => array_matrix_data_fir,
-         matrix_out_valid => array_matrix_valid_fir
-      );
+   --fir_filter_controller_c : entity work.fir_filter_controller
+   --   port map(
+   --      clk              => clk,
+   --      reset            => reset,
+   --      sw_fir_off       => '1', -- =1 -> fir off
+   --      matrix_in        => array_matrix_data,
+   --      matrix_in_valid  => array_matrix_valid,
+   --      matrix_out       => array_matrix_data_fir,
+   --      matrix_out_valid => array_matrix_valid_fir
+   --   );
 
    fifo_axi : entity work.fifo_axi
       generic map(
@@ -205,8 +206,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => array_matrix_valid_fir,
-         wr_data      => array_matrix_data_fir,
+         wr_en        => array_matrix_valid,
+         wr_data      => array_matrix_data,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,

@@ -81,7 +81,8 @@ if [ "$skip_vivado" = false ]; then
 
       # run python_scrips/gen_array_data.py to generate data, edit in the script to customize the signal sent from the simulated array
       echo "${GREEN} Generating data using gen_array_data.py ${RESET}"
-      length=$({ python3 $GIT_ROOT/python_scripts/gen_array_data.py | tee /dev/tty; } | head -n 1) #run program and save firt print to length
+      #run program and save first print to (length)
+      length=$({ python3 $GIT_ROOT/python_scripts/gen_array_data.py | tee /dev/tty; } | head -n 1)
       echo "Setting length of bram to length: $length"
 
       echo "${GREEN} Starting Vivado ${RESET}"

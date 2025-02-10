@@ -33,17 +33,16 @@ void udpReceiver(const std::string &filename, int recordTime) {
     return;
   }
 
-  // Set socket options (Increase buffer size for performance)
+  // Set socket buffer size, see github wiki to enable bigger buffer
   int bufferSize = 8 * 1024 * 1024;  // 8MB buffer
   setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &bufferSize, sizeof(bufferSize));
 
   // Uncomment to check the actual buffer size alocated on your computer
-  /// int actualSize;
-  /// socklen_t optLen = sizeof(actualSize);
-  /// getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &actualSize, &optLen);
-  /// std::cout << "Actual receive buffer size: " << actualSize << " bytes\n";
+  // int actualSize;
+  // socklen_t optLen = sizeof(actualSize);
+  // getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &actualSize, &optLen);
+  // std::cout << "Actual receive buffer size: " << actualSize << " bytes\n";
 
-  // Configure server address structure
   serverAddr.sin_family = AF_INET;
   serverAddr.sin_addr.s_addr = INADDR_ANY;
   serverAddr.sin_port = htons(UDP_PORT);

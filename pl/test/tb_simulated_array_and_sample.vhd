@@ -2,6 +2,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 
+use work.matrix_type.all;
+
 library vunit_lib;
 context vunit_lib.vunit_context;
 
@@ -27,13 +29,50 @@ architecture tb of tb_simulated_array_and_sample is
     signal bit_stream : std_logic_vector(3 downto 0);
     signal led_out    : std_logic_vector(3 downto 0);
 
-    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
-    signal mic_sample_valid_out : std_logic;
+    signal mic_sample_data  : std_logic_vector(23 downto 0);
+    signal mic_sample_valid : std_logic;
+
+    signal chain_matrix_data  : matrix_16_32_type;
+    signal chain_matrix_valid : std_logic;
+
+    signal tb_chain_matrix_data_0  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_1  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_2  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_3  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_4  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_5  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_6  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_7  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_8  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_9  : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_10 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_11 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_12 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_13 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_14 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_15 : std_logic_vector(31 downto 0);
 
 begin
     clk        <= not (clk) after C_CLK_CYKLE / 2;
     sck_clk    <= not (sck_clk) after C_CLK_CYKLE * 5 / 2;
     counter_tb <= counter_tb + 1 after C_CLK_CYKLE;
+
+    tb_chain_matrix_data_0  <= chain_matrix_data(0);
+    tb_chain_matrix_data_1  <= chain_matrix_data(1);
+    tb_chain_matrix_data_2  <= chain_matrix_data(2);
+    tb_chain_matrix_data_3  <= chain_matrix_data(3);
+    tb_chain_matrix_data_4  <= chain_matrix_data(4);
+    tb_chain_matrix_data_5  <= chain_matrix_data(5);
+    tb_chain_matrix_data_6  <= chain_matrix_data(6);
+    tb_chain_matrix_data_7  <= chain_matrix_data(7);
+    tb_chain_matrix_data_8  <= chain_matrix_data(8);
+    tb_chain_matrix_data_9  <= chain_matrix_data(9);
+    tb_chain_matrix_data_10 <= chain_matrix_data(10);
+    tb_chain_matrix_data_11 <= chain_matrix_data(11);
+    tb_chain_matrix_data_12 <= chain_matrix_data(12);
+    tb_chain_matrix_data_13 <= chain_matrix_data(13);
+    tb_chain_matrix_data_14 <= chain_matrix_data(14);
+    tb_chain_matrix_data_15 <= chain_matrix_data(15);
 
     ws_pulse_inst : entity work.ws_pulse
         generic map(startup_length => 10)
@@ -65,8 +104,19 @@ begin
             bit_stream           => bit_stream(0),
             index                => std_logic_vector(to_unsigned(8, 4)),
             ws                   => ws,
-            mic_sample_data_out  => mic_sample_data_out,
-            mic_sample_valid_out => mic_sample_valid_out
+            mic_sample_data_out  => mic_sample_data,
+            mic_sample_valid_out => mic_sample_valid
+        );
+
+    collector_inst : entity work.collector
+        port map(
+            sys_clk                => clk,
+            ws                     => ws,
+            reset                  => rst,
+            mic_sample_data_in     => mic_sample_data,
+            mic_sample_valid_in    => mic_sample_valid,
+            chain_matrix_data_out  => chain_matrix_data,
+            chain_matrix_valid_out => chain_matrix_valid
         );
 
     main : process

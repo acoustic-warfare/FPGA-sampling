@@ -22,8 +22,8 @@ architecture rtl of simulated_array_bram is
    -- if i want bigger test this:
    -- set_param synth.elaboration.rodinMoreOptions "rt::set_parameter max_loop_limit <X>"
    -- where <X> is recommended to be 100000 for cases with approx 2K symbols, but may need to be increased for larger numbers of symbols.
-   --constant ram_depth : integer := 65537;
-   type ram_type is array (0 to ram_depth - 1) of std_logic_vector(23 downto 0);
+   --constant RAM_DEPTH : integer := 65537;
+   type ram_type is array (0 to RAM_DEPTH - 1) of std_logic_vector(23 downto 0);
    signal ram : ram_type;
 
    -- Attribute for synthesis (for .mem file)
@@ -38,7 +38,7 @@ architecture rtl of simulated_array_bram is
       variable text_line   : line;
       variable ram_content : ram_type;
    begin
-      for i in 0 to ram_depth - 1 loop
+      for i in 0 to RAM_DEPTH - 1 loop
          if not endfile(text_file) then
             readline(text_file, text_line);
             read(text_line, ram_content(i)); -- Read binary data

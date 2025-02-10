@@ -118,11 +118,12 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector : entity work.collector
-         generic map(chainID => i)
+         --generic map(chainID => i)
          port map(
             sys_clk                => clk,
+            ws                     => ws,
             reset                  => reset,
-            sw_mic_id              => '1',
+            --sw_mic_id              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
             chain_matrix_data_out  => chain_matrix_data(i),
