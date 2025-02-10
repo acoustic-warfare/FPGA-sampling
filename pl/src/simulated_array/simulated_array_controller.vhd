@@ -57,7 +57,8 @@ begin
 
                when idle =>
                if ws_edge = '1' then
-                  state <= run;
+                  state        <= run;
+                  counter_samp <= 3;
                end if;
 
                when run =>
@@ -66,11 +67,10 @@ begin
                if counter_samp = 4 then
                   counter_samp <= 0;
 
-                  rd_data_internal <= std_logic_vector(unsigned(rd_data) + to_unsigned(mic_counter, 24));
+                  --rd_data_internal <= std_logic_vector(unsigned(rd_data) + (to_unsigned(mic_counter * 256, 24)));
+                  rd_data_internal <= rd_data;
                   bit_stream       <= rd_data_internal (23 - bit_counter);
 
-
-                  
                   if (bit_counter = 23) then
                      mic_counter <= mic_counter + 1;
                      state       <= pause;

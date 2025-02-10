@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity simulated_array is
    generic (
       -- 11 to 15 seems to work in simulation :)
-      DEFAULT_INDEX : integer range 0 to 15 := 5;
+      DEFAULT_INDEX : integer range 0 to 15 := 4;
       RAM_DEPTH     : integer range 0 to 100001 --this should always be over writen by tb or tcl script, max value is just a guess :)
    );
    port (
@@ -34,8 +34,9 @@ architecture rtl of simulated_array is
 
    signal ws_edge : std_logic;
 
-   signal bit_stream_internal : std_logic;
-
+   signal bit_stream_internal    : std_logic;
+   signal bit_stream_internal_d  : std_logic;
+   signal bit_stream_internal_dd : std_logic;
 begin
 
    -- buttons
@@ -91,7 +92,10 @@ begin
    process (clk)
    begin
       if rising_edge(clk) then
-         bit_stream <= (others => bit_stream_internal); --test with at extra ff on output
+          --test with at extra ff on output
+         bit_stream_internal_d  <= bit_stream_internal;
+         bit_stream_internal_dd <= bit_stream_internal_d;
+         bit_stream             <= (others => bit_stream_internal_dd);
       end if;
    end process;
 

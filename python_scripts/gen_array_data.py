@@ -12,7 +12,7 @@ BRAM_max_size = 60000  # max nr samples
 
 # Desired frequency [Hz]
 # min frequency that will work good is around 10 Hz?
-frequencys = [400, 1500]
+frequencys = [150, 400, 1500, 1600]
 
 # Noise level (% of max_amplitude or db or something)
 # Mabey it should be SNR instead
@@ -146,9 +146,9 @@ def save_sample_data_to_file(file_name, length, samples):
     f.close
 
 
-# length, data = sinus_signals()
+length, data = sinus_signals()
 # length, data = ramp_signal()
-length, data = zero_signal()
+# length, data = zero_signal()
 
 
 save_sample_data_to_file(file_name_build, length, data)
