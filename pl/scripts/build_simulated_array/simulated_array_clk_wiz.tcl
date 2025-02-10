@@ -25,7 +25,13 @@ set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
    puts ""
-   catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Please run the script in Vivado <$scripts_vivado_version> then open the design in Vivado <$current_vivado_version>. Upgrade the design by running \"Tools => Report => Report IP Status...\", then run write_bd_tcl to create an updated script."}
+   if { [string compare $scripts_vivado_version $current_vivado_version] > 0 } {
+      catch {common::send_gid_msg -ssname BD::TCL -id 2042 -severity "ERROR" " This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Sourcing the script failed since it was created with a future version of Vivado."}
+
+   } else {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Please run the script in Vivado <$scripts_vivado_version> then open the design in Vivado <$current_vivado_version>. Upgrade the design by running \"Tools => Report => Report IP Status...\", then run write_bd_tcl to create an updated script."}
+
+   }
 
    return 1
 }
@@ -191,32 +197,30 @@ proc create_root_design { parentCell } {
 
   # Create ports
   set clk [ create_bd_port -dir O -type clk clk ]
-  set rst [ create_bd_port -dir I -type rst rst ]
-  set_property -dict [ list \
-   CONFIG.POLARITY {ACTIVE_HIGH} \
- ] $rst
   set sys_clk [ create_bd_port -dir I -type clk sys_clk ]
 
   # Create instance: clk_wiz_0, and set properties
   set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
-  set_property -dict [ list \
-   CONFIG.CLKIN1_JITTER_PS {80.0} \
-   CONFIG.CLKOUT1_JITTER {119.348} \
-   CONFIG.CLKOUT1_PHASE_ERROR {96.948} \
-   CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {125} \
-   CONFIG.CLK_IN1_BOARD_INTERFACE {sys_clock} \
-   CONFIG.CLK_IN2_BOARD_INTERFACE {Custom} \
-   CONFIG.MMCM_CLKFBOUT_MULT_F {8.000} \
-   CONFIG.MMCM_CLKIN1_PERIOD {8.000} \
-   CONFIG.MMCM_CLKOUT0_DIVIDE_F {8.000} \
-   CONFIG.RESET_BOARD_INTERFACE {Custom} \
-   CONFIG.USE_LOCKED {false} \
- ] $clk_wiz_0
+  set_property -dict [list \
+    CONFIG.CLKIN1_JITTER_PS {80.0} \
+    CONFIG.CLKOUT1_JITTER {119.348} \
+    CONFIG.CLKOUT1_PHASE_ERROR {96.948} \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {125} \
+    CONFIG.CLK_IN1_BOARD_INTERFACE {sys_clock} \
+    CONFIG.CLK_IN2_BOARD_INTERFACE {Custom} \
+    CONFIG.MMCM_CLKFBOUT_MULT_F {8.000} \
+    CONFIG.MMCM_CLKIN1_PERIOD {8.000} \
+    CONFIG.MMCM_CLKOUT0_DIVIDE_F {8.000} \
+    CONFIG.RESET_BOARD_INTERFACE {Custom} \
+    CONFIG.USE_LOCKED {false} \
+  ] $clk_wiz_0
+
 
   # Create port connections
-  connect_bd_net -net clk_in1_0_1 [get_bd_ports sys_clk] [get_bd_pins clk_wiz_0/clk_in1]
-  connect_bd_net -net clk_wiz_0_clk_out1 [get_bd_ports clk] [get_bd_pins clk_wiz_0/clk_out1]
-  connect_bd_net -net reset_0_1 [get_bd_ports rst] [get_bd_pins clk_wiz_0/reset]
+  connect_bd_net -net clk_in1_0_1  [get_bd_ports sys_clk] \
+  [get_bd_pins clk_wiz_0/clk_in1]
+  connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
+  [get_bd_ports clk]
 
   # Create address segments
 
@@ -224,6 +228,7 @@ proc create_root_design { parentCell } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
+  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -235,6 +240,4 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
-
-common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
