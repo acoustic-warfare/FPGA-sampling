@@ -125,7 +125,7 @@ begin
         while test_suite loop
             if run("wave") then
                 -- test 1 is so far only meant for gktwave
-                wait for C_CLK_CYKLE * 5;
+                wait for C_CLK_CYKLE * 15;
                 rst <= '0';
                 btn <= "0000";
 

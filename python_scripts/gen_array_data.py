@@ -12,7 +12,7 @@ BRAM_max_size = 60000  # max nr samples
 
 # Desired frequency [Hz]
 # min frequency that will work good is around 10 Hz?
-frequencys = [150, 400, 1500, 1600]
+frequencies = [150, 400, 1500, 1600]
 
 # Noise level (% of max_amplitude or db or something)
 # Mabey it should be SNR instead
@@ -60,7 +60,7 @@ def sinus_signals():
     length = 1
     for i in range(1, BRAM_max_size):
         all_deltas = []
-        for frequency in frequencys:
+        for frequency in frequencies:
 
             multiple = round(i * frequency/sampling_rate)
 
@@ -72,29 +72,29 @@ def sinus_signals():
             best_delta = delta
             length = i
 
-    final_frequencys = []
+    final_frequencies = []
     final_delats = []
-    for frequency in frequencys:
+    for frequency in frequencies:
 
         multiple = round(length * frequency/sampling_rate)
 
         actual_frequency = sampling_rate * multiple / length
         delta = abs(frequency - actual_frequency)
 
-        final_frequencys.append(actual_frequency)
+        final_frequencies.append(actual_frequency)
         final_delats.append(delta)
 
     worst_delta = np.max(final_delats)
     print(length)  # first print have to be lenght for the build.sh script to work
     print("worst_delta:", best_delta, " [Hz]")
     print("length: ", length)
-    print("desired_frequnecys: ", frequencys)  # make this x decimans
-    print("actual_frequnecys: ", final_frequencys)  # make this x decimans
+    print("desired_frequnecys: ", frequencies)  # make this x decimans
+    print("actual_frequnecys: ", final_frequencies)  # make this x decimans
 
     x = np.linspace(0, length-1, length)
 
     all_data_components = []
-    for frequency in final_frequencys:
+    for frequency in final_frequencies:
         data_component = []
         for i in range(0, length):
             index = i * (frequency / sampling_rate) * (2*np.pi)
@@ -125,8 +125,8 @@ def plt_freq_component(all_data_components, index):
     plt.plot(all_data_components[index])
 
 
-def plt_all_freq_components(all_data_components, final_frequencys):
-    for i in range(len(final_frequencys)):
+def plt_all_freq_components(all_data_components, final_frequencies):
+    for i in range(len(final_frequencies)):
         plt_freq_component(all_data_components, i)
 
 
@@ -154,7 +154,7 @@ length, data = sinus_signals()
 save_sample_data_to_file(file_name_build, length, data)
 save_sample_data_to_file(file_name_sim, length, data)
 
-# plt_all_freq_components(all_data_components, final_frequencys)
+# plt_all_freq_components(all_data_components, final_frequencies)
 # plt.plot(data, color='r')
 # plt.xlim(0, 122)
 # plt.show()

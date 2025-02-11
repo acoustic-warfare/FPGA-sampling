@@ -1,0 +1,137 @@
+<mxfile host="65bd71144e">
+    <diagram id="6clEa1H5DmBXHuVkHicz" name="Page-1">
+        <mxGraphModel dx="1057" dy="884" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="66" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="69" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="240.00000000000023" y="321" as="sourcePoint"/>
+                        <mxPoint x="350" y="221" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="67" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="71" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="240.00000000000023" y="321" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="68" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="72" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="240.00000000000023" y="321" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="69" value="Band pass 0" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="201" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="Band pass 1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="261" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" value="Band pass 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="321" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="Band pass n" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="360" y="401" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="351" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="371" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" target="70" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="240.00000000000023" y="321" as="sourcePoint"/>
+                        <mxPoint x="360" y="221" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="76" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="480.0000000000002" y="221" as="sourcePoint"/>
+                        <mxPoint x="560.0000000000002" y="221" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="77" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="480.0000000000002" y="280.6600000000001" as="sourcePoint"/>
+                        <mxPoint x="560.0000000000002" y="280.6600000000001" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="78" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="480.0000000000002" y="340.6600000000001" as="sourcePoint"/>
+                        <mxPoint x="560.0000000000002" y="340.6600000000001" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="79" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="480.0000000000002" y="420.6600000000001" as="sourcePoint"/>
+                        <mxPoint x="560.0000000000002" y="420.6600000000001" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="80" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="680" y="220.67000000000007" as="sourcePoint"/>
+                        <mxPoint x="760" y="220.67000000000007" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="81" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="680" y="280.3299999999999" as="sourcePoint"/>
+                        <mxPoint x="760" y="280.3299999999999" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="82" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="680" y="340.3299999999999" as="sourcePoint"/>
+                        <mxPoint x="760" y="340.3299999999999" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="83" value="" style="endArrow=classic;html=1;" parent="1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="680" y="420.3299999999999" as="sourcePoint"/>
+                        <mxPoint x="760" y="420.3299999999999" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="84" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="700" y="351" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="85" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="700" y="371" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="86" value="Down sample 0" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="201" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" value="Down sample 1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="261" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" value="Down sample 2" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="321" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="89" value="Down sample n" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="401" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="90" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="590" y="351" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="91" value="..." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="590" y="371" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" value="n output streams" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="680" y="431" width="80" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="Outputs (Mic 0)&lt;br&gt;&lt;br&gt;Output data&lt;br&gt;32-bit&lt;br&gt;&lt;br&gt;&lt;span style=&quot;&quot; data-end=&quot;315&quot; data-start=&quot;296&quot;&gt;48828.125 Hz&lt;br&gt;* 32 bits /M*M&lt;br&gt;&lt;br&gt;non-overlapping&lt;/span&gt; subbands -&amp;gt;&lt;br&gt;same data rate as input (+ some extra for the 24 -&amp;gt; 32 bit)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="200" width="120" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="94" value="Inputs (Mic 0)&lt;br&gt;&lt;br&gt;&lt;span style=&quot;&quot;&gt;Input data&amp;nbsp;&lt;/span&gt;&lt;br style=&quot;&quot;&gt;&lt;span style=&quot;&quot;&gt;48828.125 Hz&amp;nbsp;&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;&quot;&gt;* 24 bits&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="120" y="200" width="120" height="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" value="Downsample to the correct spectrum (n times)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="545" y="161" width="150" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" value="Push filterd signal down to baseband" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="130" width="210" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
