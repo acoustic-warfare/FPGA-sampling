@@ -8,11 +8,11 @@ sampling_rate = 48828.125  # (FPGA sampling rate) [Hz]
 
 # Max BRAM (with some headroom :))
 # If I imporve this to the max run from 1 to 60000 samples
-BRAM_max_size = 60000  # max nr samples
+BRAM_max_size = 1000000  # max nr samples
 
 # Desired frequency [Hz]
 # min frequency that will work good is around 10 Hz?
-frequencies = [150, 400, 1500, 1600]
+frequencies = [150, 400, 1500, 1600, 6000, 10000, 15000]
 
 # Noise level (% of max_amplitude or db or something)
 # Mabey it should be SNR instead
@@ -86,12 +86,10 @@ def sinus_signals():
 
     worst_delta = np.max(final_delats)
     print(length)  # first print have to be lenght for the build.sh script to work
-    print("worst_delta:", best_delta, " [Hz]")
+    print("worst_delta:", worst_delta, " [Hz]")
     print("length: ", length)
     print("desired_frequnecys: ", frequencies)  # make this x decimans
     print("actual_frequnecys: ", final_frequencies)  # make this x decimans
-
-    x = np.linspace(0, length-1, length)
 
     all_data_components = []
     for frequency in final_frequencies:
@@ -103,31 +101,20 @@ def sinus_signals():
 
         all_data_components.append(data_component)
 
-    data = []
+    data_raw = []
     for i in range(0, length):
         amplitude = 0
         for data_component in all_data_components:
             amplitude = amplitude + data_component[i]
 
-        data.append(amplitude)
+        data_raw.append(amplitude)
 
     # Amplification
-    max_natural_amplitude = max(data)
+    max_natural_amplitude = max(data_raw)
     amplification = max_amplitude / max_natural_amplitude
-    data = np.array(data) * amplification
-    all_data_components = np.array(all_data_components) * amplification
-    print("max_natural_amplitude", max_natural_amplitude)
+    data = np.array(data_raw) * amplification
 
-    return length, data
-
-
-def plt_freq_component(all_data_components, index):
-    plt.plot(all_data_components[index])
-
-
-def plt_all_freq_components(all_data_components, final_frequencies):
-    for i in range(len(final_frequencies)):
-        plt_freq_component(all_data_components, i)
+    return length, data, final_frequencies
 
 
 def int_to_twos(num, bits):
@@ -146,7 +133,30 @@ def save_sample_data_to_file(file_name, length, samples):
     f.close
 
 
-length, data = sinus_signals()
+def plt_freq_fft(data, length):
+    """Compute and plot the FFT of two signals in separate subplots."""
+    Fs = 48828.125
+    freq_axis = np.fft.fftfreq(length, d=1/Fs)[:length//2]  # Compute positive frequencies
+
+    # Apply Hanning window to reduce spectral leakage
+    window = np.hanning(length)
+    data = data * window
+
+    # Compute FFT magnitude (normalize for comparison)
+    fft_0 = np.fft.fft(data)
+    magnitude_0 = 20 * np.log10(np.abs(fft_0[:length//2]) + 1e-12)  # Avoid log(0)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(freq_axis, magnitude_0, color="b")
+    # qplt.ylim(bottom=0)
+    plt.ylabel("Magnitude (dB)")
+    plt.grid()
+
+    plt.tight_layout()
+    plt.show()
+
+
+length, data, final_frequencies = sinus_signals()
 # length, data = ramp_signal()
 # length, data = zero_signal()
 
@@ -154,7 +164,4 @@ length, data = sinus_signals()
 save_sample_data_to_file(file_name_build, length, data)
 save_sample_data_to_file(file_name_sim, length, data)
 
-# plt_all_freq_components(all_data_components, final_frequencies)
-# plt.plot(data, color='r')
-# plt.xlim(0, 122)
-# plt.show()
+plt_freq_fft(data, length)

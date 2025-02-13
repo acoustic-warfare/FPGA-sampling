@@ -6,7 +6,7 @@ entity simulated_array is
    generic (
       -- 11 to 15 seems to work in simulation :)
       DEFAULT_INDEX : integer range 0 to 15 := 4;
-      RAM_DEPTH     : integer range 0 to 100001 --this should always be over writen by tb or tcl script, max value is just a guess :)
+      RAM_DEPTH     : integer --this should always be over writen by tb or tcl script, max value is just a guess :)
    );
    port (
       sys_clk    : in std_logic;

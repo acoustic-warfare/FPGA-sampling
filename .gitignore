@@ -11,3 +11,4 @@ recorded_data/*
 .vscode/settings.json
 data.mem
 a.out
+__pycache__

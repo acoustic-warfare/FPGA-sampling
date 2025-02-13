@@ -41,4 +41,5 @@ foreach signal $signals {
 }
 
 # zoom full
+gtkwave::/View/Fullscreen
 gtkwave::/Time/Zoom/Zoom_Full

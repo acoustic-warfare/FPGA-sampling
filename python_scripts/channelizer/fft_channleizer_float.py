@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.signal as sp_signal
 import matplotlib.pyplot as plt
+import signal_generator
 
 ######################
 # START USER PARAMETERS
@@ -9,70 +10,13 @@ import matplotlib.pyplot as plt
 Fs = 48828.125  # Sampling Rate
 
 # Filter parameters
-M = 128  # Number of channels (subbands)
+M = 64  # Number of channels (subbands)
 Fpass = Fs / (2 * M)  # Passband edge of prototype filter (low-pass)
-num_taps = M * 8  # Increased number of taps for better filter sharpness
+num_taps = M * 4  # Increased number of taps for better filter sharpness
 num_taps = (num_taps // M) * M  # Ensures it's a multiple of M
-
-# Input signal
-frequencies = [1000, 10000, 20000]
-amplitudes = [100, 100, 100]
-length = 50000  # Number of samples
-
-# Noise parameters
-SNR_dB = 10  # Desired Signal-to-Noise Ratio in dB
 
 # END USER PARAMETERS
 ####################
-
-
-def gen_signal():
-    """Generate a multi-tone signal."""
-    t = np.arange(length) / Fs  # Time vector
-    input_signal = np.sum([amplitudes[i] * np.sin(2 * np.pi * f * t) for i, f in enumerate(frequencies)], axis=0)
-
-    return input_signal
-
-
-def add_noise(input_signal):
-    """Add white Gaussian noise to the input signal based on a given SNR."""
-    signal_power = np.mean(input_signal**2)  # Compute signal power
-    noise_power = signal_power / (10**(SNR_dB / 10))  # Compute noise power based on SNR
-    noise = np.sqrt(noise_power) * np.random.randn(len(input_signal))  # Generate white Gaussian noise
-    input_signal_with_noise = input_signal + noise  # Add noise to the signal
-
-    return input_signal_with_noise
-
-
-def plot_signals(signal_0, signal_1, Fs):
-    """Compute and plot the FFT of two signals in separate subplots."""
-    N = len(signal_0)  # Assume both signals have the same length
-    freq_axis = np.fft.fftfreq(N, d=1/Fs)[:N//2]  # Compute positive frequencies
-
-    # Compute FFT magnitude (normalize for comparison)
-    fft_0 = np.fft.fft(signal_0)
-    fft_1 = np.fft.fft(signal_1)
-    magnitude_0 = 20 * np.log10(np.abs(fft_0[:N//2]) + 1e-12)  # Avoid log(0)
-    magnitude_1 = 20 * np.log10(np.abs(fft_1[:N//2]) + 1e-12)
-
-    # Create subplots
-    plt.figure(figsize=(10, 6))
-
-    # Plot FFT of signal_0
-    plt.subplot(2, 1, 1)
-    plt.plot(freq_axis, magnitude_0, color="b")
-    plt.ylabel("Magnitude (dB)")
-    plt.grid()
-
-    # Plot FFT of signal_1
-    plt.subplot(2, 1, 2)
-    plt.plot(freq_axis, magnitude_1, color="r")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Magnitude (dB)")
-    plt.grid()
-
-    plt.tight_layout()
-    plt.show()
 
 
 def fft_channelizer(input_signal, M, Fs):
@@ -90,7 +34,7 @@ def fft_channelizer(input_signal, M, Fs):
         # Define frequency range for the m-th subband
         low_freq = m * (Fs / M)  # Low edge of subband
         high_freq = (m + 1) * (Fs / M)  # High edge of subband
-        
+
         # Ensure that high_freq does not exceed Nyquist
         high_freq = min(high_freq, nyquist)
 
@@ -129,11 +73,8 @@ def plot_spectrum(fft_output, freq_bins):
     plt.show()
 
 
-# Run simulation step by step
-input_signal = gen_signal()
-input_signal_no_noise = input_signal
-input_signal = add_noise(input_signal)
-plot_signals(input_signal_no_noise, input_signal, Fs=Fs)
+# Main
+input_signal = signal_generator.generate_signal()
 
 # Apply FFT Channelizer
 subband_signals, freq_bins = fft_channelizer(input_signal, M, Fs)
