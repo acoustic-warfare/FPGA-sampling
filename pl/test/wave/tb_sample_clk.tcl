@@ -11,15 +11,12 @@ proc addSignal {signal} {
 # List of signals to add
 set signals {
    tb_sample_clk.sample_clk1.bit_stream -
-   tb_sample_clk.sample_clk1.clk -
-   tb_sample_clk.sample_clk1.counter_1s -
+   tb_sample_clk.sample_clk1.sys_clk -
    tb_sample_clk.sample_clk1.counter_samp -
    tb_sample_clk.sample_clk1.counter_bit -
    tb_sample_clk.sample_clk1.counter_mic -
-   tb_sample_clk.sample_clk1.rd_enable -
-   tb_sample_clk.sample_clk1.reg -
    tb_sample_clk.sample_clk1.reset -
-   tb_sample_clk.sample_clk1.state -
+   tb_sample_clk.sample_clk1.state_1 -
    tb_sample_clk.ws -
 }
 

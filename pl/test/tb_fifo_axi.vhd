@@ -11,7 +11,7 @@ entity tb_fifo_axi is
    generic (
       runner_cfg : string
    );
-end tb_fifo_axi;
+end entity;
 
 architecture behavior of tb_fifo_axi is
 
@@ -20,7 +20,7 @@ architecture behavior of tb_fifo_axi is
    signal reset         : std_logic := '0';
 
    signal wr_en   : std_logic := '0';
-   signal wr_data : matrix_256_32_type;
+   signal wr_data : matrix_64_32_type;
 
    signal rd_en   : std_logic := '0';
    signal rd_data : matrix_256_32_type;
@@ -44,16 +44,16 @@ architecture behavior of tb_fifo_axi is
    signal TB_wr_data_8 : std_logic_vector(31 downto 0);
    signal TB_wr_data_9 : std_logic_vector(31 downto 0);
 
-   signal TB_wr_data_246 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_247 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_248 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_249 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_250 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_251 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_252 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_253 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_254 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_255 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_246 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_247 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_248 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_249 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_250 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_251 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_252 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_253 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_254 : std_logic_vector(31 downto 0);
+   --signal TB_wr_data_255 : std_logic_vector(31 downto 0);
 
    signal TB_rd_data_0 : std_logic_vector(31 downto 0);
    signal TB_rd_data_1 : std_logic_vector(31 downto 0);
@@ -96,33 +96,33 @@ begin
 
    process (reset, multiplyer)
    begin
-      for i in 0 to 255 loop
+      for i in 0 to 63 loop
          wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 32));
       end loop;
    end process;
 
    process (wr_data)
    begin
-      TB_wr_data_0   <= wr_data(0);
-      TB_wr_data_1   <= wr_data(1);
-      TB_wr_data_2   <= wr_data(2);
-      TB_wr_data_3   <= wr_data(3);
-      TB_wr_data_4   <= wr_data(4);
-      TB_wr_data_5   <= wr_data(5);
-      TB_wr_data_6   <= wr_data(6);
-      TB_wr_data_7   <= wr_data(7);
-      TB_wr_data_8   <= wr_data(8);
-      TB_wr_data_9   <= wr_data(9);
-      TB_wr_data_246 <= wr_data(246);
-      TB_wr_data_247 <= wr_data(247);
-      TB_wr_data_248 <= wr_data(248);
-      TB_wr_data_249 <= wr_data(249);
-      TB_wr_data_250 <= wr_data(250);
-      TB_wr_data_251 <= wr_data(251);
-      TB_wr_data_252 <= wr_data(252);
-      TB_wr_data_253 <= wr_data(253);
-      TB_wr_data_254 <= wr_data(254);
-      TB_wr_data_255 <= wr_data(255);
+      TB_wr_data_0 <= wr_data(0);
+      TB_wr_data_1 <= wr_data(1);
+      TB_wr_data_2 <= wr_data(2);
+      TB_wr_data_3 <= wr_data(3);
+      TB_wr_data_4 <= wr_data(4);
+      TB_wr_data_5 <= wr_data(5);
+      TB_wr_data_6 <= wr_data(6);
+      TB_wr_data_7 <= wr_data(7);
+      TB_wr_data_8 <= wr_data(8);
+      TB_wr_data_9 <= wr_data(9);
+      --TB_wr_data_246 <= wr_data(246);
+      --TB_wr_data_247 <= wr_data(247);
+      --TB_wr_data_248 <= wr_data(248);
+      --TB_wr_data_249 <= wr_data(249);
+      --TB_wr_data_250 <= wr_data(250);
+      --TB_wr_data_251 <= wr_data(251);
+      --TB_wr_data_252 <= wr_data(252);
+      --TB_wr_data_253 <= wr_data(253);
+      --TB_wr_data_254 <= wr_data(254);
+      --TB_wr_data_255 <= wr_data(255);
    end process;
 
    process (rd_data)

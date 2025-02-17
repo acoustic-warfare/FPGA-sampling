@@ -15,16 +15,11 @@ entity collector is
    --
    -- CHAIN_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in CHAIN_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
-   generic (
-      -- TODO: implement generics
-      --G_BITS_MIC : integer := 24; -- Defines the resulotion of a mic sample
-      --G_NR_MICS  : integer := 16; -- Number of chains in the Matrix
-      chainID : integer := 0 -- Identifier for a specific chain
-   );
    port (
       sys_clk                : in std_logic;
+      ws                     : in std_logic;
       reset                  : in std_logic;
-      sw_mic_id              : in std_logic;
+      --sw_mic_id              : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
@@ -41,7 +36,7 @@ begin
       if rising_edge(sys_clk) then
          mic_sample_valid_in_d <= mic_sample_valid_in;
 
-         if reset = '1' then -- When reset is HIGH data_valid_out and counter_mic are reset back to LOW and zero
+         if reset = '1' or ws = '1' then -- When reset is HIGH data_valid_out and counter_mic are reset back to LOW and zero
             chain_matrix_valid_out <= '0';
             counter_mic            <= 0;
          else
@@ -49,23 +44,20 @@ begin
             if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid
                chain_matrix_data_out(counter_mic)(23 downto 0) <= mic_sample_data_in;
 
-               if sw_mic_id = '0' then
-                  -- Prevents to reach the highest value, bit errors
-                  if mic_sample_data_in(23) = '1' and mic_sample_data_in(22 downto 16) = "0000000" then
-                     chain_matrix_data_out(counter_mic)(31 downto 23) <= "000000000";
-                  elsif mic_sample_data_in(23) = '0' and mic_sample_data_in(22 downto 16) = "1111111" then
-                     chain_matrix_data_out(counter_mic)(31 downto 23) <= "111111111";
+               --if sw_mic_id = '0' then
+               -- Prevents to reach the highest value, bit errors
+               --if mic_sample_data_in(23) = '1' and mic_sample_data_in(22 downto 16) = "0000000" then
+               --   chain_matrix_data_out(counter_mic)(31 downto 23) <= "000000000";
+               --elsif mic_sample_data_in(23) = '0' and mic_sample_data_in(22 downto 16) = "1111111" then
+               --   chain_matrix_data_out(counter_mic)(31 downto 23) <= "111111111";
+               --else
 
-                  else
-                     if (mic_sample_data_in(23) = '0') then
-                        chain_matrix_data_out(counter_mic)(31 downto 24) <= "00000000"; -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 0 then padding = "00000000"
-                     else
-                        chain_matrix_data_out(counter_mic)(31 downto 24) <= "11111111"; -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 1 then padding = "11111111"
-                     end if;
-                  end if;
-               else
-                  chain_matrix_data_out(counter_mic)(31 downto 24) <= std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8)); -- Add padding according to the the current mic. if 2:nd mic then padding = "00000010"
-               end if;
+               -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 0 then padding = "00000000" else padding = "11111111"
+               chain_matrix_data_out(counter_mic)(31 downto 24) <= (others => (mic_sample_data_in(23)));
+               --end if;
+               --else
+               --   chain_matrix_data_out(counter_mic)(31 downto 24) <= std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8)); -- Add padding according to the the current mic. if 2:nd mic then padding = "00000010"
+               --end if;
                counter_mic <= counter_mic + 1;
             end if;
 

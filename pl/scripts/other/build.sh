@@ -13,6 +13,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 
 # Define relative paths within the repository
 BITSTREAM_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/aw_top.bit"
+BITSTREAM_PATH_SIM_ARRAY="$GIT_ROOT/pl/vivado_files/acoustic_warfare.runs/impl_1/simulated_array.bit"
 ELF_PATH="$GIT_ROOT/pl/vivado_files/acoustic_warfare.sdk/aw_udp_ps/Debug/aw_udp_ps.elf"
 
 # Destination tftp directory
@@ -27,6 +28,8 @@ skip_sdk=false
 skip_docker=false
 vivado_gui=false
 sdk_gui=false
+simulated_array=false
+
 for arg in "$@"; do
    case $arg in
    --skip_vivado)
@@ -44,6 +47,10 @@ for arg in "$@"; do
    --sdk_gui)
       sdk_gui=true
       ;;
+   --simulated_array)
+      simulated_array=true
+      skip_sdk=true
+      ;;
    -h | --help)
       echo "Usage: ./script.sh [--skip_vivado] [--skip_sdk]"
       echo "  --skip_vivado      Skip Vivado tasks"
@@ -51,10 +58,11 @@ for arg in "$@"; do
       echo "  --skip_docker      Skip setting up Docker"
       echo "  --vivado_gui       Open Vivado gui"
       echo "  --sdk_gui          Open SDK gui"
+      echo "  --simulated_array  Build standalone simulated array"
       exit 0
       ;;
    *)
-      printf "%b\n" "${BOLD}${RED}Unknown option: $arg${RESET}"
+      printf "%b\n" "${RED}Unknown option: $arg${RESET}"
       echo "Use --help or -h for usage instructions."
       exit 1
       ;;
@@ -63,13 +71,31 @@ done
 # END FLAGS
 
 if [ "$skip_vivado" = false ]; then
-   source /tools/Xilinx/Vivado/2022.1/settings64.sh
+   source /tools/Xilinx/Vivado/2024.2/settings64.sh
    if [ -d "$GIT_ROOT/pl/vivado_files" ]; then
       rm -r "$GIT_ROOT/pl/vivado_files"
    fi
-   vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
-   printf "%b\n" "${BOLD}copying bitstream...${RESET}"
-   cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
+
+   if [ "$simulated_array" = true ]; then
+      # build simulated array
+
+      # run python_scrips/gen_array_data.py to generate data, edit in the script to customize the signal sent from the simulated array
+      echo "${GREEN} Generating data using gen_array_data.py ${RESET}"
+      #run program and save first print to (length)
+      length=$({ python3 $GIT_ROOT/python_scripts/gen_array_data.py | tee /dev/tty; } | head -n 1)
+      echo "Setting length of bram to length: $length"
+
+      echo "${GREEN} Starting Vivado ${RESET}"
+      vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_simulated_array/build_only_simulated_array.tcl -tclargs $length
+      printf "%b\n" "${BOLD}copying bitstream...${RESET}"
+      cp "$BITSTREAM_PATH_SIM_ARRAY" "$DEST_DIR/bitstream"
+   else
+      # normal build
+      echo "${GREEN} Starting Vivado ${RESET}"
+      vivado -notrace -mode batch -source $GIT_ROOT/pl/scripts/build_axi_full/build_axi_full.tcl
+      printf "%b\n" "${BOLD}copying bitstream...${RESET}"
+      cp "$BITSTREAM_PATH" "$DEST_DIR/bitstream"
+   fi
 fi
 
 if [ "$vivado_gui" = true ]; then
@@ -113,5 +139,5 @@ if [ "$skip_docker" = false ]; then
    fi
 fi
 
-printf "%b\n" "${BOLD}${GREEN}done!${RESET}"
+printf "%b\n" "${GREEN}done!${RESET}"
 exit 0

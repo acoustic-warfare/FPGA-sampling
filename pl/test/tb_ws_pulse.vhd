@@ -10,7 +10,7 @@ entity tb_ws_pulse is
    generic (
       runner_cfg : string
    );
-end tb_ws_pulse;
+end entity;
 
 architecture tb of tb_ws_pulse is
    constant C_SCK_CYKLE    : time    := 10 ns; -- set the duration of one clock cycle

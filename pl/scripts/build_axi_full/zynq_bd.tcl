@@ -1,3 +1,4 @@
+
 ################################################################
 # This is a generated script based on design: zynq_bd
 #
@@ -5,6 +6,7 @@
 # the main purpose of this utility is to make learning
 # IP Integrator Tcl commands easier.
 ################################################################
+
 namespace eval _tcl {
    proc get_script_folder {} {
       set script_path [file normalize [info script]]
@@ -18,25 +20,38 @@ set script_folder [_tcl::get_script_folder]
 ################################################################
 # Check if script is running in correct Vivado version.
 ################################################################
-set scripts_vivado_version 2022.1
+set scripts_vivado_version 2024.2
 set current_vivado_version [version -short]
 
 if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
    puts ""
-   catch {common::send_msg_id "BD_TCL-109" "ERROR" "This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Please run the script in Vivado <$scripts_vivado_version> then open the design in Vivado <$current_vivado_version>. Upgrade the design by running \"Tools => Report => Report IP Status...\", then run write_bd_tcl to create an updated script."}
+   catch {common::send_gid_msg -ssname BD::TCL -id 2041 -severity "ERROR" "This script was generated using Vivado <$scripts_vivado_version> and is being run in <$current_vivado_version> of Vivado. Please run the script in Vivado <$scripts_vivado_version> then open the design in Vivado <$current_vivado_version>. Upgrade the design by running \"Tools => Report => Report IP Status...\", then run write_bd_tcl to create an updated script."}
 
    return 1
 }
+
 ################################################################
 # START
 ################################################################
+
 # To test this script, run the following commands from Vivado Tcl console:
 # source zynq_bd_script.tcl
+
+
+# The design that will be created by this Tcl script contains the following
+# module references:
+# axi_v1_0
+
+# Please add the sources of those modules before sourcing this Tcl script.
+
+# If there is no project opened, this script will create a
+# project, but make sure you do not have an existing project
+# <./myproj/project_1.xpr> in the current working folder.
 
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
    create_project project_1 myproj -part xc7z020clg400-1
-   set_property BOARD_PART digilentinc.com:zybo-z7-20:part0:1.1 [current_project]
+   set_property BOARD_PART digilentinc.com:zybo-z7-20:part0:1.2 [current_project]
 }
 
 
@@ -69,10 +84,10 @@ if { ${design_name} eq "" } {
    #    4): Current design opened AND is empty AND names diff; design_name exists in project.
 
    if { $cur_design ne $design_name } {
-      common::send_msg_id "BD_TCL-001" "INFO" "Changing value of <design_name> from <$design_name> to <$cur_design> since current design is empty."
+      common::send_gid_msg -ssname BD::TCL -id 2001 -severity "INFO" "Changing value of <design_name> from <$design_name> to <$cur_design> since current design is empty."
       set design_name [get_property NAME $cur_design]
    }
-   common::send_msg_id "BD_TCL-002" "INFO" "Constructing design in IPI design <$cur_design>..."
+   common::send_gid_msg -ssname BD::TCL -id 2002 -severity "INFO" "Constructing design in IPI design <$cur_design>..."
 
 } elseif { ${cur_design} ne "" && $list_cells ne "" && $cur_design eq $design_name } {
    # USE CASES:
@@ -93,19 +108,19 @@ if { ${design_name} eq "" } {
    #    8) No opened design, design_name not in project.
    #    9) Current opened design, has components, but diff names, design_name not in project.
 
-   common::send_msg_id "BD_TCL-003" "INFO" "Currently there is no design <$design_name> in project, so creating one..."
+   common::send_gid_msg -ssname BD::TCL -id 2003 -severity "INFO" "Currently there is no design <$design_name> in project, so creating one..."
 
    create_bd_design $design_name
 
-   common::send_msg_id "BD_TCL-004" "INFO" "Making design <$design_name> as current_bd_design."
+   common::send_gid_msg -ssname BD::TCL -id 2004 -severity "INFO" "Making design <$design_name> as current_bd_design."
    current_bd_design $design_name
 
 }
 
-common::send_msg_id "BD_TCL-005" "INFO" "Currently the variable <design_name> is equal to \"$design_name\"."
+common::send_gid_msg -ssname BD::TCL -id 2005 -severity "INFO" "Currently the variable <design_name> is equal to \"$design_name\"."
 
 if { $nRet != 0 } {
-   catch {common::send_msg_id "BD_TCL-114" "ERROR" $errMsg}
+   catch {common::send_gid_msg -ssname BD::TCL -id 2006 -severity "ERROR" $errMsg}
    return $nRet
 }
 
@@ -123,7 +138,7 @@ if { $bCheckIPs == 1 } {
    "
 
 set list_ips_missing ""
-common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
+common::send_gid_msg -ssname BD::TCL -id 2011 -severity "INFO" "Checking if the following IPs exist in the project's IP catalog: $list_check_ips ."
 
 foreach ip_vlnv $list_check_ips {
    set ip_obj [get_ipdefs -all $ip_vlnv]
@@ -133,11 +148,12 @@ foreach ip_vlnv $list_check_ips {
 }
 
 if { $list_ips_missing ne "" } {
-   catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
+   catch {common::send_gid_msg -ssname BD::TCL -id 2012 -severity "ERROR" "The following IPs are not found in the IP Catalog:\n  $list_ips_missing\n\nResolution: Please add the repository containing the IP(s) to the project." }
    set bCheckIPsPassed 0
 }
 
 }
+
 ##################################################################
 # CHECK Modules
 ##################################################################
@@ -148,7 +164,7 @@ if { $bCheckModules == 1 } {
    "
 
 set list_mods_missing ""
-common::send_msg_id "BD_TCL-006" "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
+common::send_gid_msg -ssname BD::TCL -id 2020 -severity "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
 
 foreach mod_vlnv $list_check_mods {
    if { [can_resolve_reference $mod_vlnv] == 0 } {
@@ -157,20 +173,22 @@ foreach mod_vlnv $list_check_mods {
 }
 
 if { $list_mods_missing ne "" } {
-   catch {common::send_msg_id "BD_TCL-115" "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
-   common::send_msg_id "BD_TCL-008" "INFO" "Please add source files for the missing module(s) above."
+   catch {common::send_gid_msg -ssname BD::TCL -id 2021 -severity "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
+   common::send_gid_msg -ssname BD::TCL -id 2022 -severity "INFO" "Please add source files for the missing module(s) above."
    set bCheckIPsPassed 0
 }
 }
 
 if { $bCheckIPsPassed != 1 } {
-   common::send_msg_id "BD_TCL-1003" "WARNING" "Will not continue with creation of design due to the error(s) above."
+   common::send_gid_msg -ssname BD::TCL -id 2023 -severity "WARNING" "Will not continue with creation of design due to the error(s) above."
    return 3
 }
 
 ##################################################################
 # DESIGN PROCs
 ##################################################################
+
+
 
 # Procedure to create entire design; Provide argument to make
 # procedure reusable. If parentCell is "", will use root.
@@ -186,14 +204,14 @@ proc create_root_design { parentCell } {
    # Get object for parentCell
    set parentObj [get_bd_cells $parentCell]
    if { $parentObj == "" } {
-      catch {common::send_msg_id "BD_TCL-100" "ERROR" "Unable to find parent cell <$parentCell>!"}
+      catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
       return
    }
 
    # Make sure parentObj is hier blk
    set parentType [get_property TYPE $parentObj]
    if { $parentType ne "hier" } {
-      catch {common::send_msg_id "BD_TCL-101" "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+      catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
       return
    }
 
@@ -206,14 +224,16 @@ proc create_root_design { parentCell } {
 
    # Create interface ports
    set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
+
    set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
+
 
    # Create ports
    set axi_data [ create_bd_port -dir I -from 31 -to 0 axi_data ]
    set axi_empty [ create_bd_port -dir I axi_empty ]
-   set axi_sys_id [ create_bd_port -dir I -from 1 -to 0 axi_sys_id ]
    set axi_nr_arrays [ create_bd_port -dir I -from 1 -to 0 axi_nr_arrays ]
    set axi_rd_en [ create_bd_port -dir O axi_rd_en ]
+   set axi_sys_id [ create_bd_port -dir I -from 1 -to 0 axi_sys_id ]
    set clk_25 [ create_bd_port -dir O -type clk clk_25 ]
    set_property -dict [ list \
       CONFIG.FREQ_HZ {25000000} \
@@ -222,10 +242,7 @@ proc create_root_design { parentCell } {
    set_property -dict [ list \
       CONFIG.FREQ_HZ {125000000} \
       ] $clk_125
-   set sys_clock [ create_bd_port -dir I -type clk sys_clock ]
-   set_property -dict [ list \
-      CONFIG.FREQ_HZ {125000000} \
-      ] $sys_clock
+   set sys_clock [ create_bd_port -dir I -type clk -freq_hz 125000000 sys_clock ]
 
    # Create instance: axi_smc, and set properties
    set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
@@ -238,26 +255,12 @@ proc create_root_design { parentCell } {
    set block_name axi_v1_0
    set block_cell_name axi_v1_0_0
    if { [catch {set axi_v1_0_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
-      catch {common::send_msg_id "BD_TCL-105" "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+      catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
       return 1
    } elseif { $axi_v1_0_0 eq "" } {
-      catch {common::send_msg_id "BD_TCL-106" "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+      catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
       return 1
    }
-
-   set_property -dict [ list \
-      CONFIG.SUPPORTS_NARROW_BURST {1} \
-      CONFIG.NUM_READ_OUTSTANDING {2} \
-      CONFIG.NUM_WRITE_OUTSTANDING {2} \
-      CONFIG.MAX_BURST_LENGTH {256} \
-      ] [get_bd_intf_pins /axi_v1_0_0/m00_axi]
-
-   set_property -dict [ list \
-      CONFIG.SUPPORTS_NARROW_BURST {0} \
-      CONFIG.NUM_READ_OUTSTANDING {1} \
-      CONFIG.NUM_WRITE_OUTSTANDING {1} \
-      CONFIG.MAX_BURST_LENGTH {1} \
-      ] [get_bd_intf_pins /axi_v1_0_0/s00_axi]
 
    # Create instance: clk_wiz_0, and set properties
    set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
@@ -518,19 +521,19 @@ proc create_root_design { parentCell } {
       CONFIG.PCW_MIO_36_DIRECTION {in} \
       CONFIG.PCW_MIO_36_IOTYPE {LVCMOS 1.8V} \
       CONFIG.PCW_MIO_36_PULLUP {enabled} \
-      CONFIG.PCW_MIO_36_SLEW {fast} \
+      CONFIG.PCW_MIO_36_SLEW {slow} \
       CONFIG.PCW_MIO_37_DIRECTION {inout} \
       CONFIG.PCW_MIO_37_IOTYPE {LVCMOS 1.8V} \
       CONFIG.PCW_MIO_37_PULLUP {enabled} \
-      CONFIG.PCW_MIO_37_SLEW {fast} \
+      CONFIG.PCW_MIO_37_SLEW {slow} \
       CONFIG.PCW_MIO_38_DIRECTION {inout} \
       CONFIG.PCW_MIO_38_IOTYPE {LVCMOS 1.8V} \
       CONFIG.PCW_MIO_38_PULLUP {enabled} \
-      CONFIG.PCW_MIO_38_SLEW {fast} \
+      CONFIG.PCW_MIO_38_SLEW {slow} \
       CONFIG.PCW_MIO_39_DIRECTION {inout} \
       CONFIG.PCW_MIO_39_IOTYPE {LVCMOS 1.8V} \
       CONFIG.PCW_MIO_39_PULLUP {enabled} \
-      CONFIG.PCW_MIO_39_SLEW {fast} \
+      CONFIG.PCW_MIO_39_SLEW {slow} \
       CONFIG.PCW_MIO_3_DIRECTION {inout} \
       CONFIG.PCW_MIO_3_IOTYPE {LVCMOS 3.3V} \
       CONFIG.PCW_MIO_3_PULLUP {disabled} \
@@ -615,8 +618,15 @@ proc create_root_design { parentCell } {
       CONFIG.PCW_MIO_9_IOTYPE {LVCMOS 3.3V} \
       CONFIG.PCW_MIO_9_PULLUP {enabled} \
       CONFIG.PCW_MIO_9_SLEW {slow} \
-      CONFIG.PCW_MIO_TREE_PERIPHERALS {GPIO#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#GPIO#Quad SPI Flash#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#USB Reset#SD 0#UART 1#UART 1#GPIO#GPIO#Enet 0#Enet 0} \
-      CONFIG.PCW_MIO_TREE_SIGNALS {gpio[0]#qspi0_ss_b#qspi0_io[0]#qspi0_io[1]#qspi0_io[2]#qspi0_io[3]/HOLD_B#qspi0_sclk#gpio[7]#qspi_fbclk#gpio[9]#gpio[10]#gpio[11]#gpio[12]#gpio[13]#gpio[14]#gpio[15]#tx_clk#txd[0]#txd[1]#txd[2]#txd[3]#tx_ctl#rx_clk#rxd[0]#rxd[1]#rxd[2]#rxd[3]#rx_ctl#data[4]#dir#stp#nxt#data[0]#data[1]#data[2]#data[3]#clk#data[5]#data[6]#data[7]#clk#cmd#data[0]#data[1]#data[2]#data[3]#reset#cd#tx#rx#gpio[50]#gpio[51]#mdc#mdio} \
+      CONFIG.PCW_MIO_TREE_PERIPHERALS {\
+      GPIO#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI Flash#Quad SPI\
+      Flash#Quad SPI Flash#GPIO#Quad SPI\
+      Flash#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#GPIO#Enet 0#Enet 0#Enet 0#Enet 0#Enet\
+      0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#Enet 0#USB 0#USB 0#USB 0#USB 0#USB\
+      0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#USB 0#SD 0#SD 0#SD 0#SD 0#SD 0#SD 0#USB\
+      Reset#SD 0#UART 1#UART 1#GPIO#GPIO#Enet 0#Enet 0} \
+      CONFIG.PCW_MIO_TREE_SIGNALS {\
+      gpio[0]#qspi0_ss_b#qspi0_io[0]#qspi0_io[1]#qspi0_io[2]#qspi0_io[3]/HOLD_B#qspi0_sclk#gpio[7]#qspi_fbclk#gpio[9]#gpio[10]#gpio[11]#gpio[12]#gpio[13]#gpio[14]#gpio[15]#tx_clk#txd[0]#txd[1]#txd[2]#txd[3]#tx_ctl#rx_clk#rxd[0]#rxd[1]#rxd[2]#rxd[3]#rx_ctl#data[4]#dir#stp#nxt#data[0]#data[1]#data[2]#data[3]#clk#data[5]#data[6]#data[7]#clk#cmd#data[0]#data[1]#data[2]#data[3]#reset#cd#tx#rx#gpio[50]#gpio[51]#mdc#mdio} \
       CONFIG.PCW_NAND_GRP_D8_ENABLE {0} \
       CONFIG.PCW_NAND_PERIPHERAL_ENABLE {0} \
       CONFIG.PCW_NOR_GRP_A25_ENABLE {0} \
@@ -797,27 +807,31 @@ proc create_root_design { parentCell } {
    connect_bd_net -net clk_wiz_0_clk_125 [get_bd_ports clk_125] [get_bd_pins axi_smc/aclk] [get_bd_pins axi_v1_0_0/m00_axi_aclk] [get_bd_pins axi_v1_0_0/s00_axi_aclk] [get_bd_pins clk_wiz_0/clk_125] [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] [get_bd_pins processing_system7_0/S_AXI_HP0_ACLK] [get_bd_pins ps7_0_axi_periph/ACLK] [get_bd_pins ps7_0_axi_periph/M00_ACLK] [get_bd_pins ps7_0_axi_periph/S00_ACLK] [get_bd_pins rst_ps7_0_50M/slowest_sync_clk] [get_bd_pins rst_ps7_0_50M_1/slowest_sync_clk]
    connect_bd_net -net data_0_1 [get_bd_ports axi_data] [get_bd_pins axi_v1_0_0/data]
    connect_bd_net -net empty_0_1 [get_bd_ports axi_empty] [get_bd_pins axi_v1_0_0/empty]
-   connect_bd_net -net sys_id_0_1 [get_bd_ports axi_sys_id] [get_bd_pins axi_v1_0_0/sys_id]
    connect_bd_net -net nr_arrays_0_1 [get_bd_ports axi_nr_arrays] [get_bd_pins axi_v1_0_0/nr_arrays]
    connect_bd_net -net processing_system7_0_FCLK_RESET0_N [get_bd_pins processing_system7_0/FCLK_RESET0_N] [get_bd_pins rst_ps7_0_50M/ext_reset_in] [get_bd_pins rst_ps7_0_50M_1/ext_reset_in]
    connect_bd_net -net rst_ps7_0_50M_1_peripheral_aresetn [get_bd_pins axi_v1_0_0/m00_axi_aresetn] [get_bd_pins rst_ps7_0_50M_1/peripheral_aresetn]
    connect_bd_net -net rst_ps7_0_50M_interconnect_aresetn [get_bd_pins ps7_0_axi_periph/ARESETN] [get_bd_pins rst_ps7_0_50M/interconnect_aresetn]
    connect_bd_net -net rst_ps7_0_50M_peripheral_aresetn [get_bd_pins axi_smc/aresetn] [get_bd_pins axi_v1_0_0/s00_axi_aresetn] [get_bd_pins ps7_0_axi_periph/M00_ARESETN] [get_bd_pins ps7_0_axi_periph/S00_ARESETN] [get_bd_pins rst_ps7_0_50M/peripheral_aresetn]
+   connect_bd_net -net sys_id_0_1 [get_bd_ports axi_sys_id] [get_bd_pins axi_v1_0_0/sys_id]
 
    # Create address segments
-   create_bd_addr_seg -range 0x40000000 -offset 0x00000000 [get_bd_addr_spaces axi_v1_0_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] SEG_processing_system7_0_HP0_DDR_LOWOCM
-   create_bd_addr_seg -range 0x00010000 -offset 0x43C00000 [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_v1_0_0/s00_axi/reg0] SEG_axi_v1_0_0_reg0
+   assign_bd_address -offset 0x00000000 -range 0x40000000 -target_address_space [get_bd_addr_spaces axi_v1_0_0/m00_axi] [get_bd_addr_segs processing_system7_0/S_AXI_HP0/HP0_DDR_LOWOCM] -force
+   assign_bd_address -offset 0x43C00000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_v1_0_0/s00_axi/reg0] -force
 
 
    # Restore current instance
    current_bd_instance $oldCurInst
 
+   validate_bd_design
    save_bd_design
 }
 # End of create_root_design()
+
 
 ##################################################################
 # MAIN FLOW
 ##################################################################
 
 create_root_design ""
+
+

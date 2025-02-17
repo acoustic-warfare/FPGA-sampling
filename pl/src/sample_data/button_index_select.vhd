@@ -4,7 +4,8 @@ use ieee.numeric_std.all;
 
 entity button_index_select is
    generic (
-      G_DEBOUNCE_DELAY : integer := 22
+      G_DEBOUNCE_DELAY : integer               := 22;
+      DEFAULT_INDEX    : integer range 0 to 15 := 8
    );
    port (
       sys_clk     : in std_logic;
@@ -43,7 +44,7 @@ begin
          if reset = '1' then
             debounce_counter_up   <= (others => '0');
             debounce_counter_down <= (others => '0');
-            index_internal        <= "1000"; -- default 8
+            index_internal        <= to_unsigned(DEFAULT_INDEX, 4); -- default 8
             hold_up               <= '0';
             hold_down             <= '0';
          else
@@ -76,4 +77,4 @@ begin
       end if;
    end process;
 
-end rtl;
+end architecture;

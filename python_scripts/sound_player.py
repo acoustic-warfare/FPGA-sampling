@@ -15,9 +15,11 @@ fileChooser = input()
 # fileChooser = "ljud"
 
 ROOT = os.getcwd()
-path = Path(ROOT + "/" + fileChooser)
+path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
 
-data = np.fromfile(path, dtype=c_int32, count=-1, offset=0)  # Read the whole file
+
+data = np.fromfile(path, dtype=c_int32, count=-1,
+                   offset=0)  # Read the whole file
 # reshapes into a Numpy array which is N*68 in dimensions
 
 nr_arrays = 1  # todo: make this find the nr_arrays from the header :)

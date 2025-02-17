@@ -9,7 +9,7 @@ entity axi_v1_0_M00_AXI is
       -- Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
       C_M_AXI_BURST_LEN : integer := 256;
       -- Thread ID Width
-      C_M_AXI_ID_WIDTH : integer := 1;
+      --C_M_AXI_ID_WIDTH : integer := 1;
       -- Width of Address Bus
       C_M_AXI_ADDR_WIDTH : integer := 32;
       -- Width of Data Bus
@@ -17,13 +17,13 @@ entity axi_v1_0_M00_AXI is
       -- Width of User Write Address Bus
       C_M_AXI_AWUSER_WIDTH : integer := 0;
       -- Width of User Read Address Bus
-      C_M_AXI_ARUSER_WIDTH : integer := 0;
+      --C_M_AXI_ARUSER_WIDTH : integer := 0;
       -- Width of User Write Data Bus
-      C_M_AXI_WUSER_WIDTH : integer := 0;
+      C_M_AXI_WUSER_WIDTH : integer := 0
       -- Width of User Read Data Bus
-      C_M_AXI_RUSER_WIDTH : integer := 0;
+      --C_M_AXI_RUSER_WIDTH : integer := 0;
       -- Width of User Response Bus
-      C_M_AXI_BUSER_WIDTH : integer := 0
+      --C_M_AXI_BUSER_WIDTH : integer := 0
    );
    port (
       rd_en : out std_logic;
@@ -33,7 +33,7 @@ entity axi_v1_0_M00_AXI is
       -- Initiate AXI transactions
       INIT_AXI_TXN : in std_logic;
       -- Asserts when transaction is complete
-      TXN_DONE : out std_logic;
+      --TXN_DONE : out std_logic;
       -- Asserts when ERROR is detected
       ERROR : out std_logic;
       -- Global Clock Signal.
@@ -88,11 +88,11 @@ entity axi_v1_0_M00_AXI is
       -- can accept the write data.
       M_AXI_WREADY : in std_logic;
       -- Master Interface Write Response.
-      M_AXI_BID : in std_logic_vector(C_M_AXI_ID_WIDTH - 1 downto 0);
+      --M_AXI_BID : in std_logic_vector(C_M_AXI_ID_WIDTH - 1 downto 0);
       -- Write response. This signal indicates the status of the write transaction.
-      M_AXI_BRESP : in std_logic_vector(1 downto 0);
+      --M_AXI_BRESP : in std_logic_vector(1 downto 0);
       -- Optional User-defined signal in the write response channel
-      M_AXI_BUSER : in std_logic_vector(C_M_AXI_BUSER_WIDTH - 1 downto 0);
+      --M_AXI_BUSER : in std_logic_vector(C_M_AXI_BUSER_WIDTH - 1 downto 0);
       -- Write response valid. This signal indicates that the
       -- channel is signaling a valid write response.
       M_AXI_BVALID : in std_logic;
@@ -126,8 +126,8 @@ architecture rtl of axi_v1_0_M00_AXI is
    type state_type is (idle, startup, run, pause);
    signal state : state_type := idle;
 
-   signal addr_ready : std_logic := '0';
-   signal txn_ready  : std_logic := '0';
+   --signal addr_ready : std_logic := '0';
+   --signal txn_ready  : std_logic := '0';
 
    signal read_done_counter : integer := 0;
 
@@ -365,4 +365,4 @@ begin
       end if;
    end process;
 
-end rtl;
+end architecture;

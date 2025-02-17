@@ -37,8 +37,10 @@ plt.show()
 
 
 def print_coefficients(coefficients_scaled, nr_bits):
-    max_val = (1 << nr_bits) - 1  # Calculate the maximum value based on nr_bits
-    hex_format = f"{{:0{(nr_bits + 3) // 4}X}}"  # Create format string based on nr_bits
+    # Calculate the maximum value based on nr_bits
+    max_val = (1 << nr_bits) - 1
+    # Create format string based on nr_bits
+    hex_format = f"{{:0{(nr_bits + 3) // 4}X}}"
     hex_vhdl_format = f'x"{{:0{(nr_bits + 3) // 4}X}}"'
 
     coefficients_hex_python = [

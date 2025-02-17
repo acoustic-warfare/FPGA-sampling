@@ -19,11 +19,11 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal chain_x16_matrix_data_in : matrix_16_16_32_type          := (others => (others => (others => '0')));
+   signal chain_x16_matrix_data_in : matrix_4_16_32_type           := (others => (others => (others => '0')));
    signal chain_matrix_valid_in    : std_logic_vector(15 downto 0) := (others => '0');
 
    signal array_matrix_valid_out : std_logic;
-   signal array_matrix_data_out  : matrix_256_32_type;
+   signal array_matrix_data_out  : matrix_64_32_type;
 
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
@@ -39,13 +39,17 @@ architecture tb of tb_full_sample is
 
 begin
 
-   full_sample_1 : entity work.full_sample port map(
-      sys_clk                 => clk,
-      reset                   => reset,
-      chain_x4_matrix_data_in => chain_x16_matrix_data_in,
-      chain_matrix_valid_in   => chain_matrix_valid_in,
-      array_matrix_data_out   => array_matrix_data_out,
-      array_matrix_valid_out  => array_matrix_valid_out
+   full_sample_1 : entity work.full_sample
+      --generic map(
+      -- number_of_arrays => 4
+      --)
+      port map(
+         sys_clk                => clk,
+         reset                  => reset,
+         chain_matrix_data_in   => chain_x16_matrix_data_in,
+         chain_matrix_valid_in  => chain_matrix_valid_in(0),
+         array_matrix_data_out  => array_matrix_data_out,
+         array_matrix_valid_out => array_matrix_valid_out
       );
 
    clk <= not(clk) after C_CLK_CYKLE/2;

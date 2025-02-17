@@ -25,9 +25,9 @@ architecture tb of tb_super_test is
    signal mic_sample_data_out  : matrix_4_24_type;
    signal mic_sample_valid_out : std_logic_vector(3 downto 0);
    -- signal ws_error             : std_logic_vector(3 downto 0);
-   signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
-   signal bit_stream_out : std_logic_vector(15 downto 0);
-   signal switch         : std_logic := '1';
+   --signal bit_stream_in  : std_logic_vector(15 downto 0) := (others => '1');
+   signal bit_stream_out : std_logic_vector(3 downto 0);
+   --signal switch         : std_logic := '1';
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
@@ -40,16 +40,16 @@ architecture tb of tb_super_test is
    signal tb_look_fullsample_data_out_48 : std_logic_vector(31 downto 0);
    signal tb_look_fullsample_data_out_63 : std_logic_vector(31 downto 0);
 
-   signal chain_x16_matrix_data_in : matrix_16_16_32_type;
-   signal array_matrix_data_out    : matrix_256_32_type;
-   signal array_matrix_valid_out   : std_logic;
+   signal chain_matrix_data      : matrix_4_16_32_type;
+   signal array_matrix_data_out  : matrix_64_32_type;
+   signal array_matrix_valid_out : std_logic;
 
    -- signal ws_ok  : std_logic;
    -- signal sck_ok : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
-   signal bitstream_cable : std_logic_vector(15 downto 0);
+   signal bitstream_cable : std_logic_vector(3 downto 0);
 
    signal rd_en              : std_logic;
    signal data_fifo_out      : matrix_256_32_type := (others => (others => '0'));
@@ -64,9 +64,15 @@ architecture tb of tb_super_test is
    constant delay_sample : integer                      := 3;
    signal index          : std_logic_vector(3 downto 0) := std_logic_vector(to_unsigned(delay_sample, 4));
 
+   signal btn : std_logic_vector(3 downto 0);
+   signal sw  : std_logic_vector(3 downto 0);
+   signal led : std_logic_vector(3 downto 0);
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
+
+   btn(0) <= reset;
 
    ws_cable        <= transport ws after 30 ns;
    sck_clk_cable   <= transport sck_clk after 30 ns;
@@ -83,16 +89,16 @@ begin
 
    simulated_array1 : entity work.simulated_array
       generic map(
-         index => delay_sample + 8 -- currently +4 to +8
+         DEFAULT_INDEX => delay_sample + 8, -- currently +4 to +8
+         RAM_DEPTH     => 1000
       )
       port map(
-         clk            => clk,
-         sck_clk        => sck_clk_cable,
-         ws             => ws_cable,
-         reset          => reset,
-         switch         => switch,
-         bit_stream_in  => bit_stream_in,
-         bit_stream_out => bit_stream_out
+         sys_clk    => clk,
+         btn        => btn,
+         sw         => sw,
+         ws         => ws,
+         bit_stream => bit_stream_out,
+         led_out    => led
       );
 
    sample_gen : for i in 0 to 3 generate
@@ -112,26 +118,30 @@ begin
    collector_gen : for i in 0 to 3 generate
    begin
       collector : entity work.collector
-         generic map(chainID => i)
+         --generic map(chainID => i)
          port map(
             sys_clk                => clk,
+            ws                     => ws,
             reset                  => reset,
-            sw_mic_id              => '1',
+            --sw_mic_id              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
-            chain_matrix_data_out  => chain_x16_matrix_data_in(i),
+            chain_matrix_data_out  => chain_matrix_data(i),
             chain_matrix_valid_out => chain_matrix_valid_out(i)
          );
    end generate collector_gen;
 
    full_sample1 : entity work.full_sample
+      -- generic map(
+      --    number_of_arrays => 4
+      -- )
       port map(
-         sys_clk                 => clk,
-         reset                   => reset,
-         chain_x4_matrix_data_in => chain_x16_matrix_data_in,
-         chain_matrix_valid_in   => chain_matrix_valid_out,
-         array_matrix_data_out   => array_matrix_data_out,
-         array_matrix_valid_out  => array_matrix_valid_out
+         sys_clk                => clk,
+         reset                  => reset,
+         chain_matrix_data_in   => chain_matrix_data,
+         chain_matrix_valid_in  => chain_matrix_valid_out(0),
+         array_matrix_data_out  => array_matrix_data_out,
+         array_matrix_valid_out => array_matrix_valid_out
       );
 
    -- gets error when trying to use this will look in to it later 

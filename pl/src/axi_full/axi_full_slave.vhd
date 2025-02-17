@@ -45,7 +45,7 @@ entity axi_v1_0_S00_AXI is
       -- Write channel Protection type. This signal indicates the
       -- privilege and security level of the transaction, and whether
       -- the transaction is a data access or an instruction access.
-      S_AXI_AWPROT : in std_logic_vector(2 downto 0);
+      -- S_AXI_AWPROT : in std_logic_vector(2 downto 0);
       -- Write address valid. This signal indicates that the master signaling
       -- valid write address and control information.
       S_AXI_AWVALID : in std_logic;
@@ -78,7 +78,7 @@ entity axi_v1_0_S00_AXI is
       -- Protection type. This signal indicates the privilege
       -- and security level of the transaction, and whether the
       -- transaction is a data access or an instruction access.
-      S_AXI_ARPROT : in std_logic_vector(2 downto 0);
+      -- S_AXI_ARPROT : in std_logic_vector(2 downto 0);
       -- Read address valid. This signal indicates that the channel
       -- is signaling valid read address and control information.
       S_AXI_ARVALID : in std_logic;
@@ -131,8 +131,8 @@ architecture rtl of axi_v1_0_S00_AXI is
    signal slv_reg_rden : std_logic;
    signal slv_reg_wren : std_logic;
    signal reg_data_out : std_logic_vector(C_S_AXI_DATA_WIDTH - 1 downto 0);
-   signal byte_index   : integer;
-   signal aw_en        : std_logic;
+   --signal byte_index   : integer;
+   signal aw_en : std_logic;
 
    --signal S_AXI_AWVALID1 : std_logic;
    --signal S_AXI_WVALID1 : std_logic;
@@ -399,4 +399,4 @@ begin
    init_txn  <= slv_reg0(0);
    read_done <= slv_reg0(1);
 
-end rtl;
+end architecture;

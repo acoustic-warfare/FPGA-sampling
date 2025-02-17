@@ -11,9 +11,9 @@ entity tb_sample_clk is
       runner_cfg : string
    );
 
-end tb_sample_clk;
+end entity;
 
-architecture behave of tb_sample_clk is
+architecture tb of tb_sample_clk is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
@@ -22,7 +22,7 @@ architecture behave of tb_sample_clk is
 
    signal reset      : std_logic := '0';
    signal ws         : std_logic := '0';
-   signal bit_stream : std_logic_vector(15 downto 0);
+   signal bit_stream : std_logic_vector(3 downto 0);
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
@@ -35,19 +35,27 @@ architecture behave of tb_sample_clk is
    -- signal sim_counter : integer := 0;
    -- signal counter_tb  : integer := 0;
 
+   signal btn : std_logic_vector(3 downto 0);
+   signal sw  : std_logic_vector(3 downto 0);
+   signal led : std_logic_vector(3 downto 0);
+
 begin
    sck_clk <= not(sck_clk) after C_SCK_CYKLE/2;
    clk     <= not(clk) after C_CLK_CYKLE/2;
 
+   btn(0) <= reset;
+
    simulated_array1 : entity work.simulated_array
+      generic map(
+         RAM_DEPTH => 20
+      )
       port map(
-         clk            => clk,
-         sck_clk        => sck_clk,
-         ws             => ws,
-         reset          => reset,
-         switch         => '1',
-         bit_stream_in => (others => '0'),
-         bit_stream_out => bit_stream
+         sys_clk    => clk,
+         btn        => btn,
+         sw         => sw,
+         ws         => ws,
+         bit_stream => bit_stream,
+         led_out    => led
       );
 
    sample_clk1 : entity work.sample_clk

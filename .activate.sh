@@ -52,9 +52,9 @@ VIVADO_VERSION_17="2017.4"
 [ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_17/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
 echo "Vivado $VIVADO_VERSION_17"
 
-VIVADO_VERSION_22="2022.1"
-[ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_22/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
-echo "Vivado $VIVADO_VERSION_22"
+VIVADO_VERSION_24="2024.2"
+[ $? -eq 0 ] && . "$XILINX_PATH/Vivado/$VIVADO_VERSION_24/settings64.sh" || echo -e "\033[1;33mWARNING: Could not locate Vivado $VIVADO_VERSION\033[0m"
+echo "Vivado $VIVADO_VERSION_24"
 
 # TODO: set up simlibs and path to them
 # NOTE: xsim will be needed for ip simulations if needed as most are verilog based
@@ -66,13 +66,17 @@ GHDL_PATH="$ "/usr/lib/ghdl""
 GHDL_VERSION="$(ghdl --version | head -n1 | cut -d" " -f2)"
 echo "GHDL $GHDL_VERSION"
 
+# TODO: create vhdl_ls.toml
+# python3 pl/gen_vhdl_ls_toml.py
+# remove the current toml and add to the git ignore
+
 #
 # Useful aliases
 #
 alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.sh'
 alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
-alias build_simulated_array='vivado -notrace -mode batch -source $(git rev-parse --show-toplevel)/pl/scripts/build_simulated_array/build_only_simulated_array.tcl'
 alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
+alias recive_and_plot='g++ python_scripts/udp_reciver.cpp && echo "recive_and_plot 1" | ./a.out && rm ./a.out && echo "recive_and_plot" | python3 python_scripts/post_process_recording.py && echo "recive_and_plot" | python3 python_scripts/analyze_simple.py'
 
 echo -e '
 Welcome to Acustic Warfare!
@@ -80,9 +84,12 @@ Welcome to Acustic Warfare!
 \033[1m  run_test --help         \033[0m
 \033[1m  build --help            \033[0m
 \033[1m  clean_vivado --help     \033[0m
+\033[1m  recive_and_plot         \033[0m
+
+recive_and_plot
 '
 
 #
 # Cleanup
 #
-unset GHDL_PATH GHDL_REQUIRED_VERSION GHDL_VERSION XILINX_PATH VENV_NAME VIVADO_VERSION
+unset GHDL_PATH GHDL_VERSION XILINX_PATH VIVADO_VERSION_17 VIVADO_VERSION_24 VENV_NAME
