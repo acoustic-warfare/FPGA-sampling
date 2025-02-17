@@ -104,8 +104,6 @@ def _add_noise(input_signal):
 
 def _plot_input_signals(signal_0, signal_1):
     """Compute and plot the FFT of two signals in separate subplots."""
-    Fs = 48828.125
-    length = 100000
     freq_axis = np.fft.fftfreq(length, d=1/Fs)[:length//2]  # Compute positive frequencies
 
     # Apply Hanning window to reduce spectral leakage
