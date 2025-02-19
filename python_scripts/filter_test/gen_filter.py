@@ -3,11 +3,19 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
-num_taps = 32  # Number of taps per filter
-high_edge = 500  # Cutoff frequency
+num_taps = 129  # Number of taps per filter
+
+subband_nr = 1
+M = 32
+filter_width = Fs / (2 * M)
+center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
+low_edge = max(0.1, center_frequencies[subband_nr] - filter_width/2)
+high_edge = min(Fs / 2 - 0.1, center_frequencies[subband_nr] + filter_width/2)
+
+print("low_edge:", low_edge, "  high_edge:", high_edge)
 
 # Floating-point filter design
-taps = signal.firwin(num_taps, cutoff=high_edge, fs=Fs, pass_zero=True)
+taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
 
 plt.figure(figsize=(8, 6))
 
@@ -21,7 +29,10 @@ plt.legend()
 ylim1 = plt.gca().get_ylim()
 
 # Scale coefficients to fixed-point
-scale_factor = 2**12  # Scaling factor for fixed-point
+max_scale = 2**15 / np.max(taps)
+scale_factor = 2**int(np.floor(np.log2(max_scale)))
+print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
+
 taps_scaled = np.round(taps * scale_factor).astype(np.int16)
 
 # Convert back to floating-point for correct freqz() evaluation
@@ -44,6 +55,8 @@ taps_hex = np.array(taps_hex)
 
 
 def print_vhdl_format(taps_hex):
+    print("length", np.ceil(len(taps_hex) / 2))
+    taps_hex = taps_hex[:int(np.ceil(len(taps_hex) / 2))]
     formatted = ", ".join([f'x"{tap}"' for tap in taps_hex])
     print(formatted)
 

@@ -23,14 +23,13 @@ architecture tb of tb_folded_fir_controller is
    signal data_in  : std_logic_vector(23 downto 0) := (others => '1');
    signal data_out : std_logic_vector(23 downto 0);
 
-   constant nr_taps : integer := 32;
+   constant nr_taps : integer := 65;
 
    -- input file
    constant ram_lenght : integer := 15625;
    type ram_type is array (ram_lenght - 1 downto 0) of std_logic_vector(23 downto 0);
    signal ram         : ram_type;
    signal ram_counter : integer := 0;
-   signal ram_0       : std_logic_vector(23 downto 0);
    -- Impure function for simulation
    impure function init_ram_bin return ram_type is
       file text_file       : text open read_mode is "data.mem";
@@ -49,8 +48,7 @@ architecture tb of tb_folded_fir_controller is
    end function;
 
 begin
-   ram   <= init_ram_bin;
-   ram_0 <= ram(0);
+   ram <= init_ram_bin;
 
    clk        <= not (clk) after C_CLK_CYKLE / 2;
    counter_tb <= counter_tb + 1 after C_CLK_CYKLE;
@@ -63,7 +61,7 @@ begin
          if ram_counter < ram_lenght then
             data_in     <= ram(ram_counter);
             ram_counter <= ram_counter + 1;
-            if ram_counter > nr_taps * 2 + 1 then
+            if ram_counter > nr_taps * 3 + 1 then
                write(line_to_write, data_out);        -- setup line
                writeline(output_file, line_to_write); -- write line to file
             end if;
@@ -94,7 +92,7 @@ begin
             wait for C_CLK_CYKLE * 5;
             rst <= '0';
 
-            wait for C_CLK_CYKLE * 100000;
+            wait for C_CLK_CYKLE * (ram_lenght + 2 * nr_taps + 10);
 
          elsif run("auto") then
 

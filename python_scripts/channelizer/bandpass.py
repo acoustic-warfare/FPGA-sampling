@@ -11,7 +11,7 @@ Fs = 48828.125  # Sampling Rate
 
 # Filter parameters
 M = 32  # Number band pass filters
-num_taps = 16*32  # Number of taps per filter
+num_taps = 501  # Number of taps per filter
 filter_width = Fs / (2 * M)
 # END USER PARAMETERS
 ####################
@@ -20,11 +20,11 @@ filter_width = Fs / (2 * M)
 def design_subband_filters(plt_bool=False):
     """Design a bank of M bandpass filters."""
     filters = []
-    center_frequencies = np.linspace(0, Fs / 2, M, endpoint=False)  # Subband centers
+    center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
     for center_frequency in center_frequencies:
         low_edge = max(0.1, center_frequency - filter_width/2)
-        high_edge = min(Fs - 0.1 / 2, center_frequency + filter_width/2)
-        # print(low_edge, high_edge)
+        high_edge = min(Fs / 2 - 0.1, center_frequency + filter_width/2)
+        #print(low_edge, high_edge)
 
         taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
         filters.append(taps)

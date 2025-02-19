@@ -18,7 +18,6 @@ file1 = "./data.mem"
 file2 = "./output.mem"
 data1 = read_24bit_signed(file1)
 data2 = read_24bit_signed(file2)
-data2 = data2 / 2**9
 
 # Compute FFT
 fft_data1 = np.fft.rfft(data1)
@@ -27,9 +26,11 @@ fft_data2 = np.fft.rfft(data2)
 freqs1 = np.fft.rfftfreq(len(data1))
 freqs2 = np.fft.rfftfreq(len(data2))
 
+fft_data1 = 20 * np.log10(np.abs(fft_data1))
+fft_data2 = 20 * np.log10(np.abs(fft_data2))
+
 # Plot FFT results
 plt.figure(figsize=(12, 6))
-
 plt.subplot(2, 1, 1)
 plt.plot(freqs1 * 48828.125, np.abs(fft_data1))
 plt.ylabel("Magnitude")

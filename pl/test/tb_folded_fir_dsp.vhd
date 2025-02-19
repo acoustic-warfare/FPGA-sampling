@@ -22,8 +22,8 @@ architecture tb of tb_folded_fir_dsp is
    signal data_0   : std_logic_vector(23 downto 0) := (others => '1');
    signal data_1   : std_logic_vector(23 downto 0) := (others => '1');
    signal coeff    : std_logic_vector(15 downto 0) := (others => '1');
-   signal data_sum : std_logic_vector(23 downto 0) := (others => '1');
-   signal result   : std_logic_vector(23 downto 0) := (others => '1');
+   signal data_sum : std_logic_vector(39 downto 0) := (others => '1');
+   signal result   : std_logic_vector(39 downto 0) := (others => '1');
 
 begin
 
