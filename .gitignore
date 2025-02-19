@@ -12,3 +12,4 @@ recorded_data/*
 data.mem
 a.out
 __pycache__
+output.mem

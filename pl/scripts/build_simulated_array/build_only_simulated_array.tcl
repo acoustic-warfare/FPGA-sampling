@@ -48,5 +48,6 @@ add_files -files [file join "$ROOT" vivado_files acoustic_warfare.srcs sources_1
 update_compile_order -fileset sources_1
 
 ## run synth, impl and write bitstream
-launch_runs impl_1 -to_step write_bitstream -jobs 4
+#  -jobs 16 on good computer, 4 on bad computer
+launch_runs impl_1 -to_step write_bitstream -jobs 16
 wait_on_run impl_1

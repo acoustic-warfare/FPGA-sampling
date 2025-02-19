@@ -10,7 +10,7 @@ Fs = 48828.125  # Sampling Rate
 # Input signal
 frequencies = [1300, 10000, 20000]
 amplitudes = [100, 100, 100]
-length = 100000  # Number of samples
+length = 409600  # Number of samples
 
 # Add tone after set time
 add_frequencies = [5000, 15000]
@@ -22,7 +22,7 @@ end_time = [40000, 100000]
 chirp_min_frequency = 2000
 chirp_max_frequency = 7000
 chirp_amplitude = 50
-chirp_length = 10000
+chirp_length = 50000
 
 # Noise parameters
 SNR_dB = 20  # Desired Signal-to-Noise Ratio in dB
@@ -116,8 +116,6 @@ def _plot_input_signals(signal_0, signal_1):
     fft_1 = np.fft.fft(signal_1)
     magnitude_0 = 20 * np.log10(np.abs(fft_0[:length//2]) + 1e-12)  # Avoid log(0)
     magnitude_1 = 20 * np.log10(np.abs(fft_1[:length//2]) + 1e-12)
-
-    plt.figure(figsize=(10, 6))
 
     plt.subplot(2, 1, 1)
     plt.plot(freq_axis, magnitude_0, color="b")

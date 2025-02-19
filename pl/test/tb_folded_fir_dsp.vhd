@@ -4,14 +4,14 @@ use IEEE.STD_LOGIC_1164.all;
 library vunit_lib;
 context vunit_lib.vunit_context;
 
-entity tb_poly_test is
+entity tb_folded_fir_dsp is
    generic (
       runner_cfg : string
    );
 
 end entity;
 
-architecture tb of tb_poly_test is
+architecture tb of tb_folded_fir_dsp is
 
    constant C_CLK_CYKLE : time    := 8 ns; -- 125MHz
    signal counter_tb    : integer := 0;
@@ -19,32 +19,25 @@ architecture tb of tb_poly_test is
    signal clk : std_logic := '0';
    signal rst : std_logic := '1';
 
-   constant DATA_WIDTH        : integer := 16; --4
-   constant CONVERSION_FACTOR : integer := 8;
-   constant TAPS_PER_PHASE    : integer := 15;
-   constant DECIMATION_ARCH   : boolean := false;
-
-   signal enable : std_logic                                 := '1';
-   signal data_i : std_logic_vector(DATA_WIDTH - 1 downto 0) := (others => '1');
-   signal data_o : std_logic_vector(DATA_WIDTH - 1 downto 0);
+   signal data_0   : std_logic_vector(23 downto 0) := (others => '1');
+   signal data_1   : std_logic_vector(23 downto 0) := (others => '1');
+   signal coeff    : std_logic_vector(15 downto 0) := (others => '1');
+   signal data_sum : std_logic_vector(23 downto 0) := (others => '1');
+   signal result   : std_logic_vector(23 downto 0) := (others => '1');
 
 begin
 
    clk        <= not (clk) after C_CLK_CYKLE / 2;
    counter_tb <= counter_tb + 1 after C_CLK_CYKLE;
 
-   poly_test_inst : entity work.poly_test
-      generic map(
-         DATA_WIDTH        => DATA_WIDTH,
-         CONVERSION_FACTOR => CONVERSION_FACTOR,
-         TAPS_PER_PHASE    => TAPS_PER_PHASE,
-         DECIMATION_ARCH   => DECIMATION_ARCH
-      )
+   folded_fir_dsp_inst : entity work.folded_fir_dsp
       port map(
-         clk    => clk,
-         enable => enable,
-         data_i => data_i,
-         data_o => data_o
+         clk      => clk,
+         data_0   => data_0,
+         data_1   => data_1,
+         coeff    => coeff,
+         data_sum => data_sum,
+         result   => result
       );
 
    main : process

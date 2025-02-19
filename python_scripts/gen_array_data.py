@@ -12,7 +12,7 @@ BRAM_max_size = 1000000  # max nr samples
 
 # Desired frequency [Hz]
 # min frequency that will work good is around 10 Hz?
-frequencies = [150, 400, 1500, 1600, 6000, 10000, 15000]
+frequencies = [200, 15000]
 
 # Noise level (% of max_amplitude or db or something)
 # Mabey it should be SNR instead
@@ -20,7 +20,7 @@ noise_level = 0  # todo add this feature
 
 # Max amplitude of output
 # 24 bit signed means max is 8388607
-max_amplitude = 1000
+max_amplitude = 100
 
 file_name_sim = "./data.mem"
 file_name_build = "./pl/src/simulated_array/data.mem"
