@@ -16,13 +16,13 @@ entity collector is
    -- CHAIN_MATRIX_VALID_OUT: Indicates to the next component that the data has ben updated in CHAIN_MATRIX_DATA_OUT
    ------------------------------------------------------------------------------------------------------------------------------------------------
    port (
-      sys_clk                : in std_logic;
-      ws                     : in std_logic;
-      reset                  : in std_logic;
+      sys_clk : in std_logic;
+      ws      : in std_logic;
+      reset   : in std_logic;
       --sw_mic_id              : in std_logic;
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
-      chain_matrix_data_out  : out matrix_16_32_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
+      chain_matrix_data_out  : out matrix_16_24_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
       chain_matrix_valid_out : out std_logic := '0'   -- A signal to tell the receiver to start reading the data_out_matrix
    );
 end entity;
@@ -42,7 +42,7 @@ begin
          else
             chain_matrix_valid_out <= '0';                                    -- Set data_valid_out to LOW as defult value
             if mic_sample_valid_in = '1' and mic_sample_valid_in_d = '0' then -- Data from a new mic is valid
-               chain_matrix_data_out(counter_mic)(23 downto 0) <= mic_sample_data_in;
+               chain_matrix_data_out(counter_mic) <= mic_sample_data_in;
 
                --if sw_mic_id = '0' then
                -- Prevents to reach the highest value, bit errors
@@ -53,7 +53,7 @@ begin
                --else
 
                -- Add padding according to TWO'S COMPLIMENT. If the 23:rd bit = 0 then padding = "00000000" else padding = "11111111"
-               chain_matrix_data_out(counter_mic)(31 downto 24) <= (others => (mic_sample_data_in(23)));
+               --chain_matrix_data_out(counter_mic)(31 downto 24) <= (others => (mic_sample_data_in(23)));
                --end if;
                --else
                --   chain_matrix_data_out(counter_mic)(31 downto 24) <= std_logic_vector(to_unsigned(chainID * 16 + counter_mic, 8)); -- Add padding according to the the current mic. if 2:nd mic then padding = "00000010"

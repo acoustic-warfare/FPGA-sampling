@@ -6,14 +6,14 @@ context vunit_lib.vunit_context;
 
 use work.MATRIX_TYPE.all;
 
-entity tb_sample_clk is
+entity tb_sample is
    generic (
       runner_cfg : string
    );
 
 end entity;
 
-architecture tb of tb_sample_clk is
+architecture tb of tb_sample is
    constant C_SCK_CYKLE : time := 40 ns; -- 25 MHz
    constant C_CLK_CYKLE : time := 8 ns;  -- 125MHz
 
@@ -26,11 +26,7 @@ architecture tb of tb_sample_clk is
 
    signal mic_sample_data_out  : std_logic_vector(23 downto 0);
    signal mic_sample_valid_out : std_logic;
-
-   signal mic_sample_data_out_2  : std_logic_vector(23 downto 0);
-   signal mic_sample_valid_out_2 : std_logic;
-
-   signal index : std_logic_vector(3 downto 0) := "1000";
+   signal index                : std_logic_vector(3 downto 0) := "1000";
 
    -- signal sim_counter : integer := 0;
    -- signal counter_tb  : integer := 0;
@@ -58,7 +54,7 @@ begin
          led_out    => led
       );
 
-   sample_clk1 : entity work.sample_clk
+   sample_1 : entity work.sample
       port map(
          sys_clk              => clk,
          reset                => reset,
@@ -67,16 +63,6 @@ begin
          index                => index,
          mic_sample_data_out  => mic_sample_data_out,
          mic_sample_valid_out => mic_sample_valid_out
-      );
-
-   sample1 : entity work.sample
-      port map(
-         sys_clk              => sck_clk,
-         reset                => reset,
-         bit_stream           => bit_stream(0),
-         ws                   => ws,
-         mic_sample_data_out  => mic_sample_data_out_2,
-         mic_sample_valid_out => mic_sample_valid_out_2
       );
 
    ws_pulse1 : entity work.ws_pulse

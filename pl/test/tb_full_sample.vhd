@@ -19,23 +19,23 @@ architecture tb of tb_full_sample is
    signal clk   : std_logic := '0';
    signal reset : std_logic := '0';
 
-   signal chain_x16_matrix_data_in : matrix_4_16_32_type           := (others => (others => (others => '0')));
+   signal chain_x16_matrix_data_in : matrix_4_16_24_type           := (others => (others => (others => '0')));
    signal chain_matrix_valid_in    : std_logic_vector(15 downto 0) := (others => '0');
 
    signal array_matrix_valid_out : std_logic;
-   signal array_matrix_data_out  : matrix_64_32_type;
+   signal array_matrix_data_out  : matrix_64_24_type;
 
    signal data_change_counter   : integer := 1;
    signal data_valid_in_counter : integer := 0;
 
    -- signal temp_matrix_16_24 : matrix_16_32_type;
 
-   signal temp_arrays0     : std_logic_vector(31 downto 0);
-   signal temp_arrays16    : std_logic_vector(31 downto 0);
-   signal temp_in_chain0   : matrix_16_32_type;
-   signal temp_in_chain1   : matrix_16_32_type;
-   signal temp_in_arrays0  : std_logic_vector(31 downto 0);
-   signal temp_in_arrays16 : std_logic_vector(31 downto 0);
+   signal temp_arrays0     : std_logic_vector(23 downto 0);
+   signal temp_arrays16    : std_logic_vector(23 downto 0);
+   signal temp_in_chain0   : matrix_16_24_type;
+   signal temp_in_chain1   : matrix_16_24_type;
+   signal temp_in_arrays0  : std_logic_vector(23 downto 0);
+   signal temp_in_arrays16 : std_logic_vector(23 downto 0);
 
 begin
 

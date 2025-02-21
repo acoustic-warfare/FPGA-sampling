@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import chirp
 
 sampling_rate = 48828.125  # (FPGA sampling rate) [Hz]
 
@@ -8,7 +9,7 @@ sampling_rate = 48828.125  # (FPGA sampling rate) [Hz]
 
 # Max BRAM (with some headroom :))
 # If I imporve this to the max run from 1 to 60000 samples
-BRAM_max_size = 1000000  # max nr samples
+BRAM_max_size = 10000  # max nr samples
 
 # Desired frequency [Hz]
 # min frequency that will work good is around 10 Hz?
@@ -27,6 +28,21 @@ file_name_build = "./pl/src/simulated_array/data.mem"
 
 # END USER PARAMETERS
 ####################
+
+
+def chirp_signal():
+    length = BRAM_max_size
+    t = np.linspace(0, length / sampling_rate, length)
+    data = chirp(t, f0=10, f1=sampling_rate / 2, t1=t[-1], method='linear') * max_amplitude
+    print(length)
+    return length, data
+
+
+def white_noise_signal():
+    length = BRAM_max_size  # Full BRAM for best resolution
+    data = np.random.normal(0, 1, length) * max_amplitude  # White noise
+    print(length)  # Needed for script
+    return length, data
 
 
 def ramp_signal():
@@ -156,9 +172,11 @@ def plt_freq_fft(data, length):
     plt.show()
 
 
-length, data, final_frequencies = sinus_signals()
+# length, data, final_frequencies = sinus_signals()
 # length, data = ramp_signal()
 # length, data = zero_signal()
+# length, data = chirp_signal()
+length, data = white_noise_signal()
 
 
 save_sample_data_to_file(file_name_build, length, data)

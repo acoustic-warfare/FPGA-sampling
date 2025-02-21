@@ -1,5 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import glob
+import os
+
+
+def remove_XXXXX_top(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    # Find the index of the first line that is not all 'X'
+    start_index = 0
+    for i, line in enumerate(lines):
+        if not line.strip().startswith('X') or set(line.strip()) != {'X'}:
+            start_index = i
+            break
+
+    # Write back the filtered lines
+    with open(filename, 'w') as file:
+        file.writelines(lines[start_index:])
 
 
 def read_24bit_signed(filename):
@@ -13,34 +31,44 @@ def read_24bit_signed(filename):
     return np.array(data)
 
 
-# Load data
-file1 = "./data.mem"
-file2 = "./output.mem"
-data1 = read_24bit_signed(file1)
-data2 = read_24bit_signed(file2)
+# Locate files
+data_file = "./data.mem"
+output_files = sorted(glob.glob("./output_*.mem"))  # Get all output_n.mem files and sort them
+
+# Ensure there's at least one output file
+if not output_files:
+    raise FileNotFoundError("No output_*.mem files found in the directory.")
+
+# Remove leading XXXXXX lines from all files
+for file in output_files:
+    remove_XXXXX_top(file)
+
+# Read input data and output data
+data_in = read_24bit_signed(data_file)
+data_outputs = [read_24bit_signed(file) for file in output_files]
 
 # Compute FFT
-fft_data1 = np.fft.rfft(data1)
-fft_data2 = np.fft.rfft(data2)
+fft_data_in = np.fft.rfft(data_in)
+freqs_in = np.fft.rfftfreq(len(data_in))
+fft_data_outputs = [np.fft.rfft(data) for data in data_outputs]
+freqs_outputs = [np.fft.rfftfreq(len(data)) for data in data_outputs]
 
-freqs1 = np.fft.rfftfreq(len(data1))
-freqs2 = np.fft.rfftfreq(len(data2))
-
-fft_data1 = 20 * np.log10(np.abs(fft_data1))
-fft_data2 = 20 * np.log10(np.abs(fft_data2))
+# Convert to decibels
+fft_data_in = 20 * np.log10(np.abs(fft_data_in))
+fft_data_outputs = [20 * np.log10(np.abs(fft)) for fft in fft_data_outputs]
 
 # Plot FFT results
 plt.figure(figsize=(12, 6))
 plt.subplot(2, 1, 1)
-plt.plot(freqs1 * 48828.125, np.abs(fft_data1))
+plt.plot(freqs_in * 48828.125, np.abs(fft_data_in))
 plt.ylabel("Magnitude")
 plt.grid()
 
-plt.subplot(2, 1, 2)
-plt.plot(freqs2 * 48828.125, np.abs(fft_data2))
+plt.subplot(2, 1,  2)
 plt.xlabel("Frequency")
-plt.ylabel("Magnitude")
+plt.ylabel("Magnitude (Output)")
 plt.grid()
+for i, (fft_data, freqs) in enumerate(zip(fft_data_outputs, freqs_outputs)):
+    plt.plot(freqs * 48828.125, np.abs(fft_data))
 
-plt.tight_layout()
 plt.show()

@@ -10,12 +10,15 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-    tb_fir_filter.clk -
+    tb_transposed_fir.clk -
+    tb_transposed_fir.transposed_fir_inst.data_in -
+    tb_transposed_fir.transposed_fir_inst.data_out -
 
 }
 
 foreach signal $signals {
     addSignal $signal
+    gtkwave::/Edit/Data_Format/Signed_Decimal
 }
 
 # zoom full

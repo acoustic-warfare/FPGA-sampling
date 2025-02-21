@@ -1,6 +1,8 @@
 # Setup Board
 set board digilentinc.com:zybo-z7-20:part0:1.2
 
+
+
 # Create project
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 set outputdir [file join "$ROOT" vivado_files]
@@ -11,27 +13,29 @@ create_project acoustic_warfare $outputdir -force
 set_property board_part $board     [current_project]
 set_property target_language VHDL  [current_project]
 
-add_files [file join "$ROOT" src wrappers aw_top.vhd]
+# this is not suppose to be here
+start_gui
 
+# add all files (folder by folder for some structure)
 add_files [file join "$ROOT" src axi_full axi_full_master.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
-add_files [file join "$ROOT" src axi_full mux.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
+add_files [file join "$ROOT" src axi_full mux.vhd]
 
-add_files [file join "$ROOT" src simulated_array simulated_array.vhd]
+add_files [file join "$ROOT" src channelizer circular_mega_buffer.vhd]
+add_files [file join "$ROOT" src channelizer down_sample.vhd]
+add_files [file join "$ROOT" src channelizer transposed_fir_controller.vhd]
+add_files [file join "$ROOT" src channelizer transposed_fir_dsp.vhd]
 
-add_files [file join "$ROOT" src filter fir_filter_controller.vhd]
-add_files [file join "$ROOT" src filter fir_bram.vhd]
-
-#add_files [file join "$ROOT" src sample_data sample.vhd]
-add_files [file join "$ROOT" src sample_data sample_clk.vhd]
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
-add_files [file join "$ROOT" src sample_data full_sample.vhd]
 add_files [file join "$ROOT" src sample_data double_ff.vhd]
-add_files [file join "$ROOT" src sample_data simulated_array_select.vhd]
+add_files [file join "$ROOT" src sample_data full_sample.vhd]
+add_files [file join "$ROOT" src sample_data sample.vhd]
+
+add_files [file join "$ROOT" src wrappers aw_top.vhd]
 
 add_files [file join "$ROOT" src ws_pulse ws_pulse.vhd]
 

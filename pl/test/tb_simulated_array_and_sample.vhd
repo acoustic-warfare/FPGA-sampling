@@ -32,25 +32,25 @@ architecture tb of tb_simulated_array_and_sample is
     signal mic_sample_data  : std_logic_vector(23 downto 0);
     signal mic_sample_valid : std_logic;
 
-    signal chain_matrix_data  : matrix_16_32_type;
+    signal chain_matrix_data  : matrix_16_24_type;
     signal chain_matrix_valid : std_logic;
 
-    signal tb_chain_matrix_data_0  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_1  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_2  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_3  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_4  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_5  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_6  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_7  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_8  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_9  : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_10 : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_11 : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_12 : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_13 : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_14 : std_logic_vector(31 downto 0);
-    signal tb_chain_matrix_data_15 : std_logic_vector(31 downto 0);
+    signal tb_chain_matrix_data_0  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_1  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_2  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_3  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_4  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_5  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_6  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_7  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_8  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_9  : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_10 : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_11 : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_12 : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_13 : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_14 : std_logic_vector(23 downto 0);
+    signal tb_chain_matrix_data_15 : std_logic_vector(23 downto 0);
 
 begin
     clk        <= not (clk) after C_CLK_CYKLE / 2;
@@ -97,7 +97,7 @@ begin
             led_out    => led_out
         );
 
-    sample_clk_inst : entity work.sample_clk
+    sample_inst : entity work.sample
         port map(
             sys_clk              => clk,
             reset                => rst,

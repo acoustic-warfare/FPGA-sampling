@@ -43,17 +43,24 @@ architecture structual of aw_top is
    signal mic_sample_data  : matrix_16_24_type;
    signal mic_sample_valid : std_logic_vector(15 downto 0);
 
-   signal chain_matrix_data        : matrix_4_16_32_type;
-   signal chain_matrix_valid_array : std_logic_vector(15 downto 0);
+   signal chain_matrix_data        : matrix_4_16_24_type;
+   signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
 
    signal full_array         : std_logic;
    signal empty_array        : std_logic;
    signal almost_full_array  : std_logic;
    signal almost_empty_array : std_logic;
 
-   signal array_matrix_data  : matrix_64_32_type;
+   signal array_matrix_data  : matrix_64_24_type;
    signal data_fifo_256_out  : matrix_256_32_type;
    signal array_matrix_valid : std_logic;
+
+   signal array_matrix_filterd_data  : matrix_64_24_type;
+   signal array_matrix_filterd_valid : std_logic;
+   signal subband_filter             : std_logic_vector(7 downto 0);
+
+   signal down_sampled_data  : matrix_64_32_type;
+   signal down_sampled_valid : std_logic;
 
    --signal array_matrix_data_fir  : matrix_64_32_type;
    --signal array_matrix_valid_fir : std_logic;
@@ -149,7 +156,7 @@ begin
    -- PMOD port JB, BitStream 0-3: Array 1
    sample_gen_0 : for i in 0 to 3 generate
    begin
-      sample_C : entity work.sample_clk
+      sample_C : entity work.sample
          port map(
             sys_clk              => clk,
             reset                => reset,
@@ -166,9 +173,9 @@ begin
       collector_c : entity work.collector
          --generic map(chainID => i)
          port map(
-            sys_clk                => clk,
-            ws                     => ws,
-            reset                  => reset,
+            sys_clk => clk,
+            ws      => ws,
+            reset   => reset,
             --sw_mic_id              => '0', -- 0 -> no id -> normal sample
             mic_sample_data_in     => mic_sample_data(i),
             mic_sample_valid_in    => mic_sample_valid(i),
@@ -187,17 +194,28 @@ begin
          array_matrix_data_out  => array_matrix_data,
          array_matrix_valid_out => array_matrix_valid
       );
+      
+   transposed_fir_controller_inst : entity work.transposed_fir_controller
+      port map(
+         clk            => clk,
+         rst            => reset,
+         data_in        => array_matrix_data,
+         data_in_valid  => array_matrix_valid,
+         data_out       => array_matrix_filterd_data,
+         data_out_valid => array_matrix_filterd_valid,
+         subband_out    => subband_filter
+      );
 
-   --fir_filter_controller_c : entity work.fir_filter_controller
-   --   port map(
-   --      clk              => clk,
-   --      reset            => reset,
-   --      sw_fir_off       => '1', -- =1 -> fir off
-   --      matrix_in        => array_matrix_data,
-   --      matrix_in_valid  => array_matrix_valid,
-   --      matrix_out       => array_matrix_data_fir,
-   --      matrix_out_valid => array_matrix_valid_fir
-   --   );
+   down_sample_inst : entity work.down_sample
+      port map(
+         clk                => clk,
+         rst                => reset,
+         array_matrix_data  => array_matrix_filterd_data,
+         array_matrix_valid => array_matrix_filterd_valid,
+         subband_in         => subband_filter,
+         down_sampled_data  => down_sampled_data,
+         down_sampled_valid => down_sampled_valid
+      );
 
    fifo_axi : entity work.fifo_axi
       generic map(
@@ -206,8 +224,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => array_matrix_valid,
-         wr_data      => array_matrix_data,
+         wr_en        => down_sampled_valid,
+         wr_data      => down_sampled_data,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,

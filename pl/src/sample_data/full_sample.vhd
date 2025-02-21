@@ -22,10 +22,10 @@ entity full_sample is
    port (
       sys_clk                : in std_logic;
       reset                  : in std_logic;
-      chain_matrix_data_in   : in matrix_4_16_32_type;
+      chain_matrix_data_in   : in matrix_4_16_24_type;
       chain_matrix_valid_in  : in std_logic;
-      array_matrix_data_out  : out matrix_64_32_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
-      array_matrix_valid_out : out std_logic           -- A signal to tell the receiver to start reading the array_matrix_data_out
+      array_matrix_data_out  : out matrix_64_24_type; --SAMPLE_MATRIX is array(4) of matrix(16x24 bits);
+      array_matrix_valid_out : out std_logic          -- A signal to tell the receiver to start reading the array_matrix_data_out
    );
 end entity;
 architecture rtl of full_sample is

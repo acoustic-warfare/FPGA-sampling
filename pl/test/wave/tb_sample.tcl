@@ -10,18 +10,19 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-   tb_sample.sck_clk -
+   tb_sample.sample_1.bit_stream -
+   tb_sample.sample_1.sys_clk -
+   tb_sample.sample_1.counter_samp -
+   tb_sample.sample_1.counter_bit -
+   tb_sample.sample_1.counter_mic -
+   tb_sample.sample_1.reset -
+   tb_sample.sample_1.state_1 -
    tb_sample.ws -
-   tb_sample.reset -
-   tb_sample.sample_inst.bit_stream -
-   tb_sample.sample_inst.counter_bit -
-   tb_sample.sample_inst.counter_mic -
-   tb_sample.sample_inst.state_1 -
 }
 
 foreach signal $signals {
    addSignal $signal
-   gtkwave::/Edit/Data_Format/Decimal
+   #gtkwave::/Edit/Data_Format/Decimal
 }
 
 # zoom full

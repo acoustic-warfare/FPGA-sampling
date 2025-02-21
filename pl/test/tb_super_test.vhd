@@ -31,21 +31,27 @@ architecture tb of tb_super_test is
 
    signal chain_matrix_valid_out : std_logic_vector(15 downto 0) := (others => '1');
 
-   signal tb_look_fullsample_data_out_0  : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_15 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_31 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_32 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_47 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_16 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_48 : std_logic_vector(31 downto 0);
-   signal tb_look_fullsample_data_out_63 : std_logic_vector(31 downto 0);
+   signal tb_look_fullsample_data_out_0  : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_15 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_31 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_32 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_47 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_16 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_48 : std_logic_vector(23 downto 0);
+   signal tb_look_fullsample_data_out_63 : std_logic_vector(23 downto 0);
 
-   signal chain_matrix_data      : matrix_4_16_32_type;
-   signal array_matrix_data_out  : matrix_64_32_type;
-   signal array_matrix_valid_out : std_logic;
+   signal chain_matrix_data  : matrix_4_16_24_type;
+   signal array_matrix_data  : matrix_64_24_type;
+   signal array_matrix_valid : std_logic;
 
    -- signal ws_ok  : std_logic;
    -- signal sck_ok : std_logic;
+
+   signal array_matrix_filterd_data  : matrix_64_24_type;
+   signal array_matrix_filterd_valid : std_logic;
+   signal subband_filter             : std_logic_vector(7 downto 0);
+   signal down_sampled_data          : matrix_64_32_type;
+   signal down_sampled_valid         : std_logic;
 
    signal ws_cable        : std_logic;
    signal sck_clk_cable   : std_logic;
@@ -78,14 +84,14 @@ begin
    sck_clk_cable   <= transport sck_clk after 30 ns;
    bitstream_cable <= transport bit_stream_out after 0 ns;
 
-   tb_look_fullsample_data_out_0  <= array_matrix_data_out(0);
-   tb_look_fullsample_data_out_15 <= array_matrix_data_out(15);
-   tb_look_fullsample_data_out_16 <= array_matrix_data_out(16);
-   tb_look_fullsample_data_out_31 <= array_matrix_data_out(31);
-   tb_look_fullsample_data_out_32 <= array_matrix_data_out(32);
-   tb_look_fullsample_data_out_47 <= array_matrix_data_out(47);
-   tb_look_fullsample_data_out_48 <= array_matrix_data_out(48);
-   tb_look_fullsample_data_out_63 <= array_matrix_data_out(63);
+   tb_look_fullsample_data_out_0  <= array_matrix_data(0);
+   tb_look_fullsample_data_out_15 <= array_matrix_data(15);
+   tb_look_fullsample_data_out_16 <= array_matrix_data(16);
+   tb_look_fullsample_data_out_31 <= array_matrix_data(31);
+   tb_look_fullsample_data_out_32 <= array_matrix_data(32);
+   tb_look_fullsample_data_out_47 <= array_matrix_data(47);
+   tb_look_fullsample_data_out_48 <= array_matrix_data(48);
+   tb_look_fullsample_data_out_63 <= array_matrix_data(63);
 
    simulated_array1 : entity work.simulated_array
       generic map(
@@ -103,7 +109,7 @@ begin
 
    sample_gen : for i in 0 to 3 generate
    begin
-      sample_C : entity work.sample_clk
+      sample_C : entity work.sample
          port map(
             sys_clk              => clk,
             reset                => reset,
@@ -120,9 +126,9 @@ begin
       collector : entity work.collector
          --generic map(chainID => i)
          port map(
-            sys_clk                => clk,
-            ws                     => ws,
-            reset                  => reset,
+            sys_clk => clk,
+            ws      => ws,
+            reset   => reset,
             --sw_mic_id              => '1',
             mic_sample_data_in     => mic_sample_data_out(i),
             mic_sample_valid_in    => mic_sample_valid_out(i),
@@ -140,11 +146,31 @@ begin
          reset                  => reset,
          chain_matrix_data_in   => chain_matrix_data,
          chain_matrix_valid_in  => chain_matrix_valid_out(0),
-         array_matrix_data_out  => array_matrix_data_out,
-         array_matrix_valid_out => array_matrix_valid_out
+         array_matrix_data_out  => array_matrix_data,
+         array_matrix_valid_out => array_matrix_valid
       );
 
-   -- gets error when trying to use this will look in to it later 
+   transposed_fir_controller_inst : entity work.transposed_fir_controller
+      port map(
+         clk            => clk,
+         rst            => reset,
+         data_in        => array_matrix_data,
+         data_in_valid  => array_matrix_valid,
+         data_out       => array_matrix_filterd_data,
+         data_out_valid => array_matrix_filterd_valid,
+         subband_out    => subband_filter
+      );
+
+   down_sample_inst : entity work.down_sample
+      port map(
+         clk                => clk,
+         rst                => reset,
+         array_matrix_data  => array_matrix_filterd_data,
+         array_matrix_valid => array_matrix_filterd_valid,
+         subband_in         => subband_filter,
+         down_sampled_data  => down_sampled_data,
+         down_sampled_valid => down_sampled_valid
+      );
 
    fifo_0 : entity work.fifo_axi
       generic map(
@@ -153,8 +179,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => array_matrix_valid_out,
-         wr_data      => array_matrix_data_out,
+         wr_en        => down_sampled_valid,
+         wr_data      => down_sampled_data,
          rd_en        => rd_en,
          rd_data      => data_fifo_out,
          empty        => empty_array,
@@ -203,13 +229,13 @@ begin
             reset <= '0';
 
             for i in 0 to 100000 loop
-               if (array_matrix_valid_out = '1') then
+               if (array_matrix_valid = '1') then
                   --info("test");
                   for row in 0 to 63 loop
                      auto_test_data(31 downto 24) := to_unsigned(row, 8);
                      auto_test_data(23 downto 16) := to_unsigned(row, 8);
                      auto_test_data(15 downto 0)  := counter_test;
-                     check(array_matrix_data_out(row) = std_logic_vector(auto_test_data), "all data row: " & to_string(row) & " value data: " & to_string(array_matrix_data_out(row)) & " value expected: " & to_string(std_logic_vector(auto_test_data)), warning);
+                     check(array_matrix_data(row) = std_logic_vector(auto_test_data), "all data row: " & to_string(row) & " value data: " & to_string(array_matrix_data(row)) & " value expected: " & to_string(std_logic_vector(auto_test_data)), warning);
                   end loop;
                   counter_test := counter_test + 1;
                end if;

@@ -3,62 +3,63 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
-num_taps = 129  # Number of taps per filter
+num_taps = 29  # Number of taps per filter
 
-subband_nr = 1
-M = 32
+M = 6
 filter_width = Fs / (2 * M)
 center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
-low_edge = max(0.1, center_frequencies[subband_nr] - filter_width/2)
-high_edge = min(Fs / 2 - 0.1, center_frequencies[subband_nr] + filter_width/2)
-
-print("low_edge:", low_edge, "  high_edge:", high_edge)
 
 # Floating-point filter design
-taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
+filters = []
+for center_frecuency in center_frequencies:
+    low_edge = max(0.1, center_frecuency - filter_width/2)
+    high_edge = min(Fs / 2 - 0.1, center_frecuency + filter_width/2)
+    #print("low_edge:", low_edge, "  high_edge:", high_edge)
+    taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
+    filters.append(taps)
 
 plt.figure(figsize=(8, 6))
 
 # Plot floating-point response
 plt.subplot(2, 1, 1)
-w, h = signal.freqz(taps, worN=1024, fs=Fs)
-plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label="Floating-Point Filter")
-plt.ylabel("Magnitude (dB)")
-plt.title("Filter Frequency Response")
-plt.legend()
+for i in range(0, len(filters)):  # Plot a subset of filters
+    w, h = signal.freqz(filters[i], worN=1024, fs=Fs)
+    plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label=f"Filter {i} ({center_frequencies[i]:.1f} Hz)")
 ylim1 = plt.gca().get_ylim()
 
 # Scale coefficients to fixed-point
-max_scale = 2**15 / np.max(taps)
-scale_factor = 2**int(np.floor(np.log2(max_scale)))
-print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
+filters_scaled_all = []
+for filter in filters:
+    max_scale = 2**15 / np.max(filter)
+    scale_factor = 2**int(np.floor(np.log2(max_scale)))
+    print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
 
-taps_scaled = np.round(taps * scale_factor).astype(np.int16)
+    filter_scaled = np.round(filter * scale_factor).astype(np.int16)
+    filters_scaled_all.append(filter_scaled)
 
-# Convert back to floating-point for correct freqz() evaluation
-taps_fixed_point = taps_scaled / scale_factor
+    # filter fixed point for plot
+    filter_fixed_point = filter_scaled / scale_factor
 
-# Plot fixed-point response
-plt.subplot(2, 1, 2)
-w, h = signal.freqz(taps_fixed_point, worN=1024, fs=Fs)
-plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label="Fixed-Point Filter")
-plt.ylabel("Magnitude (dB)")
-plt.xlabel("Frequency (Hz)")
-plt.ylim(ylim1)
-plt.legend()
+    plt.subplot(2, 1, 2)
+    w, h = signal.freqz(filter_fixed_point, worN=1024, fs=Fs)
+    plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label="Fixed-Point Filter")
+    plt.ylabel("Magnitude (dB)")
+    plt.xlabel("Frequency (Hz)")
+    plt.ylim(ylim1)
+    plt.legend()
 
 plt.show()
 
-# Convert to 16-bit hex values
-taps_hex = [f"{np.uint16(tap):04X}" for tap in taps_scaled]
-taps_hex = np.array(taps_hex)
+
+def print_all_vhdl_format(filters):
+    num_filters = len(filters)
+    for i, filter in enumerate(filters):
+        taps_hex = [f"{np.uint16(tap):04X}" for tap in filter]
+        formatted = ", ".join([f'x"{tap}"' for tap in taps_hex])
+        if i < num_filters - 1:
+            print(f"({formatted}),")
+        else:
+            print(f"({formatted})")   # No comma for last row
 
 
-def print_vhdl_format(taps_hex):
-    print("length", np.ceil(len(taps_hex) / 2))
-    taps_hex = taps_hex[:int(np.ceil(len(taps_hex) / 2))]
-    formatted = ", ".join([f'x"{tap}"' for tap in taps_hex])
-    print(formatted)
-
-
-print_vhdl_format(taps_hex)
+print_all_vhdl_format(np.array(filters_scaled_all))

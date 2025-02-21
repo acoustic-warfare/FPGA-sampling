@@ -62,7 +62,9 @@ if [ "$wave_test" = true ]; then
         exit 1
     else
         printf "%b\n" "${BOLD}Running wave test${RESET}"
-        python3 "$GIT_ROOT/pl/run.py" --gtkwave-fmt vcd --gui "*$test_name.wave*"
+        python3 "$GIT_ROOT/pl/run.py" --gtkwave-fmt vcd --gui "*$test_name.wave*" -p 0
+        #        python3 "$GIT_ROOT/pl/run.py" --gui "*$test_name.wave*"
+
     fi
 fi
 
@@ -73,7 +75,7 @@ if [ "$auto_test" = true ]; then
         exit 1
     else
         printf "%b\n" "${BOLD}Running auto test${RESET}"
-        python3 "$GIT_ROOT/pl/run.py" -v "*$test_name.auto*"
+        python3 "$GIT_ROOT/pl/run.py" -v "*$test_name.auto*" -p 0
     fi
 fi
 

@@ -12,8 +12,8 @@ proc addSignal {signal} {
 set signals {
     tb_simulated_array_and_sample.clk -
     tb_simulated_array_and_sample.ws -
-    tb_simulated_array_and_sample.sample_clk_inst.mic_sample_data_out -
-    tb_simulated_array_and_sample.sample_clk_inst.mic_sample_valid_out -
+    tb_simulated_array_and_sample.sample_inst.mic_sample_data_out -
+    tb_simulated_array_and_sample.sample_inst.mic_sample_valid_out -
     tb_simulated_array_and_sample.simulated_array_inst.simulated_array_controller_inst.addres_counter -
 
     tb_simulated_array_and_sample.tb_chain_matrix_data_0 -
