@@ -39,7 +39,8 @@ int main() {
   xil_printf("Nr of arrays: %x\r\n", nr_arrays);
 
   // set number of 32bit slots in payload_header
-  u32 payload_header_size = 2;
+  u32 payload_header_size = 4;
+  u32 pl_header = 2;
 
   // constants that will be sent in payload_header
   u32 protocol_ver = 3;
@@ -178,32 +179,36 @@ int main() {
       data[1] = counter;
       counter++;
 
+      data[2] = *(data_p);
+      data[3] = *(data_p + 1);
+
       // recive data from AXI
       if (nr_arrays == 1) {
         for (int i = 0; i < 8; i++) {  // mic 0-7 (56-63)
-          data[i + payload_header_size + 0] = *(data_p + 56 + i);
+          data[i + payload_header_size + 0] = *(data_p + pl_header + 56 + i);
         }
         for (int i = 0; i < 8; i++) {  // mic 8-15 (55-48)
-          data[i + payload_header_size + 8] = *(data_p + 55 - i);
+          data[i + payload_header_size + 8] = *(data_p + pl_header + 55 - i);
         }
         for (int i = 0; i < 8; i++) {  // mic 16-23 (40-47)
-          data[i + payload_header_size + 16] = *(data_p + 40 + i);
+          data[i + payload_header_size + 16] = *(data_p + pl_header + 40 + i);
         }
         for (int i = 0; i < 8; i++) {  // mic 24-31 (39-32)
-          data[i + payload_header_size + 24] = *(data_p + 39 - i);
+          data[i + payload_header_size + 24] = *(data_p + pl_header + 39 - i);
         }
         for (int i = 0; i < 8; i++) {  // mic 32-39 (24-31)
-          data[i + payload_header_size + 32] = *(data_p + 24 + i);
+          data[i + payload_header_size + 32] = *(data_p + pl_header + 24 + i);
         }
         for (int i = 0; i < 8; i++) {  // mic 40-47 (23-16)
-          data[i + payload_header_size + 40] = *(data_p + 23 - i);
+          data[i + payload_header_size + 40] = *(data_p + pl_header + 23 - i);
         }
         for (int i = 0; i < 8; i++) {  // mic 48-55 (8-15)
-          data[i + payload_header_size + 48] = *(data_p + 8 + i);
+          data[i + payload_header_size + 48] = *(data_p + pl_header + 8 + i);
         }
         for (int i = 0; i < 8; i++) {  // mic 56-63 (7-0)
-          data[i + payload_header_size + 56] = *(data_p + 7 - i);
+          data[i + payload_header_size + 56] = *(data_p + pl_header + 7 - i);
         }
+
       } else if (nr_arrays == 2) {
         // ARRAY 2
         for (int i = 0; i < 8; i++) {  // mic 0-7 (120-127)

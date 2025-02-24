@@ -1,6 +1,3 @@
-
-# mic 35 works good on the "Bäst! 20223-09-21 array" and is in the midle of the array
-
 import numpy as np
 import os
 from pathlib import Path
@@ -11,73 +8,101 @@ def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
     path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
-    data2D = data.reshape(-1, 66)  # 1array (-1, 66), 4arrays (-1, 258)
-    micData = data2D[:, 2:]
-    f_sampling = 48828.125
-    return micData, f_sampling
+    data2D = data.reshape(-1, 68)  # Each row: 4 header fields + 64 mic data values
+    subband_info = data2D[:, 3]  # Extract subband column (4th column, index 3)
+    micData = data2D[:, 4:]  # Microphone data starts from column 5 (index 4)
+    f_sampling = 48828.125  # Hz
+    return micData, subband_info, f_sampling
 
 
-def plot_mic_data_fft(fileChooser, mic_nr, max_freq):
-    data, fs = load_data_FPGA(fileChooser)
+def split_to_subbands_for_mic(micData, subband_info, mic_nr):
+    unique_subbands = np.unique(subband_info)
+    subband_data = []
 
-    # FFT for microphone
-    mic_data = data[:, mic_nr - 1]
-    n = len(mic_data)
-    fft_result = np.fft.fft(mic_data)
-    freq = np.fft.fftfreq(n, d=1 / fs)
-    freq = freq[: n // 2]  # Take only positive frequencies
-    fft_result = (
-        np.abs(fft_result[: n // 2]) / n
-    )  # Normalize by number of samples
+    min_len = min(np.sum(subband_info == subband) for subband in unique_subbands)
 
-    # Find indices corresponding to frequency range 0 to max_freq Hz
-    idx = np.where((freq >= 0) & (freq <= max_freq))[0]
-    max_amplitude = np.max(fft_result[idx])
+    for subband in unique_subbands:
+        subband_indices = np.where(subband_info == subband)[0]
+        mic_samples = micData[subband_indices, mic_nr - 1]
 
-    fft_result_normalized = fft_result / max_amplitude
+        # Truncate to min_len
+        subband_data.append(mic_samples[:min_len])
 
-    # Plot frequency-domain signal (FFT) for microphone
-    plt.subplot(2, 1, 1)
-    plt.plot(
-        freq, fft_result_normalized, color="blue", label=f"Microphone {mic_nr}"
-    )
-    plt.title("Frequency Spectrum of Microphone Signals")
+    return np.vstack(subband_data), unique_subbands
+
+
+def plot_mic_data_fft(subband_data, unique_subbands, f_sampling, mic_nr, max_freq=4000):
+    plt.figure(figsize=(12, 8))
+
+    for subband in unique_subbands:
+        # Get data for this subband
+        mic_data = subband_data[int(subband)]
+
+        if len(mic_data) == 0:
+            continue
+
+        # Calculate FFT
+        n = len(mic_data)
+        fft_result = np.fft.fft(mic_data)
+        freq = np.fft.fftfreq(n, d=1/f_sampling)
+
+        # Keep only positive frequencies up to max_freq
+        positive_freq_mask = (freq >= 0) & (freq <= max_freq)
+        freq = freq[positive_freq_mask]
+        fft_result = np.abs(fft_result[positive_freq_mask]) / n
+
+        # Plot
+        plt.plot(freq, fft_result, label=f"Subband {subband}")
+
+    plt.title(f"Frequency Spectrum of Microphone {mic_nr}")
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Amplitude (Normalized)")
-    plt.xlim(0, max_freq)  # Limit x-axis to positive frequencies
-    plt.ylim(0, 1.2)  # Set y-axis limit to max amplitude
+    plt.xlim(0, max_freq)
+    plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 
-def plot_mic_data(fileChooser, mic_nr, max_time):
-    data, fs = load_data_FPGA(fileChooser)
-    mic_data = data[:, mic_nr - 1]
-    length = len(mic_data)
-    print("Recoring length (samples): ", length,
-          "     Recoring length (seconds): ", length/fs)
-    x = np.linspace(0, length-1, length)
-
-    # Plot frequency-domain signal (FFT) for microphone
-    plt.subplot(2, 1, 2)
-    plt.scatter(x, mic_data, color="blue", label=f"Mic {mic_nr}")
-    plt.title("Microphone Signal (time domain)")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylabel("Amplitude (Normalized)")
-    plt.xlim(0, max_time*fs)  # Limit x-axis to positive frequencies
-    # plt.ylim(0, 1)  # Set y-axis limit to max amplitude
-    plt.legend()
-
-
+# Main execution block
 print("Enter a file to plot: ")
 fileChooser = input()
-# fileChooser = "test"
+mic_nr = 35  # Selecting microphone number 35
 
-mic_nr = 35
-# max_frequency = 48828.125/2
+# Load data
+micData, subband_info, f_sampling = load_data_FPGA(fileChooser)
 
-# todo would be nice with some sub plot situation :)
-plot_mic_data_fft(fileChooser, mic_nr=mic_nr, max_freq=4000)
-plot_mic_data(fileChooser, mic_nr=mic_nr, max_time=1)
+# Split data by subbands for specific microphone
+subband_data, unique_subbands = split_to_subbands_for_mic(micData, subband_info, mic_nr)
+
+
+print(f"Unique subbands: {unique_subbands}")
+print(f"Number of subbands: {len(unique_subbands)}")
+print(f"Number of samples in recording: {len(subband_info)}")
+
+# Print samples per subband
+for subband in unique_subbands:
+    sb = int(subband)
+    print(f"Subband {sb}: {len(subband_data[sb])} samples")
+
+# Plot FFT for each subband
+# plot_mic_data_fft(subband_data, unique_subbands, f_sampling, mic_nr)
+
+
+# take the power from the downsampled signal
+
+print("output length:", len(subband_data[0]))
+print(np.array(subband_data))
+
+subband_data_power = np.abs(subband_data)**2
+
+
+def db(x):
+    return 10*np.log10(x)
+
+
+plt.imshow(db(subband_data_power.T), cmap='viridis', aspect='auto')
+plt.colorbar()
+plt.xlabel("Channel")
+plt.ylabel("Time")
 plt.show()
-
-print(" ")  # end with a empty line

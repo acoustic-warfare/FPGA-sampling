@@ -28,18 +28,19 @@ def bin_to_txt(bin_path, txt_path):
 
     with open(bin_path, "rb") as bin_file, open(txt_path, "w") as txt_file:
         for row in range(max_rows):
-            # Read one full data packet (header + sampleCounter + 64 microphones)
-            data_packet = bin_file.read(4 + 4 + (64 * 4 * nr_arrays))
+            # Read one full data packet (header + sampleCounter + PL_counter + subband_nr + 64 microphones)
+            data_packet = bin_file.read(4 + 4 + 4 + 4 + (64 * 4 * nr_arrays))
             if not data_packet:
                 break  # Stop when no more data
 
             # Unpack the binary data
-            header, sample_counter, * \
-                mic_data = struct.unpack("<ii64i", data_packet)
+            header, sample_counter, pl_counter, subband_nr, *mic_data = struct.unpack("<iiii64i", data_packet)
 
             # Write to text file
             txt_file.write(f"header: {int_to_twos_string_header(header)}    ")
             txt_file.write(f"sample_counter: {sample_counter}    ")
+            txt_file.write(f"pl_counter: {pl_counter}    ")
+            txt_file.write(f"subband_nr: {subband_nr}    ")
 
             for i, mic in enumerate(mic_data):
                 txt_file.write(
@@ -54,7 +55,7 @@ def check_all_sample_nr(bin_path):
     """Check that counter is correct and no samples are missed"""
     nr_arrays = 1
     # size of each data packet (header + counter + mic_data)
-    data_packet_size = 4 + 4 + (64 * 4 * nr_arrays)
+    data_packet_size = 4 + 4 + 4 + 4 + (64 * 4 * nr_arrays)
 
     if not os.path.exists(bin_path):
         print(f"Error: File {bin_path} not found!")
@@ -68,8 +69,8 @@ def check_all_sample_nr(bin_path):
             print("Error: File is empty!")
             return
 
-        header, sample_counter, * \
-            mic_data = struct.unpack("<ii64i", data_packet)
+        header, sample_counter, pl_counter, subband_nr, *mic_data = struct.unpack("<iiii64i", data_packet)
+
         current_counter = sample_counter
         start_sample_nr = sample_counter
         print(f"Starting counter: {current_counter}")
@@ -82,8 +83,7 @@ def check_all_sample_nr(bin_path):
                 break  # End of file reached
 
             # Unpack the binary data
-            header, sample_counter, * \
-                mic_data = struct.unpack("<ii64i", data_packet)
+            header, sample_counter, pl_counter, subband_nr, *mic_data = struct.unpack("<iiii64i", data_packet)
 
             if current_counter + 1 == sample_counter:
                 current_counter = sample_counter

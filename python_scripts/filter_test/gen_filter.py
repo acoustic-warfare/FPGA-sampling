@@ -3,18 +3,22 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
-num_taps = 29  # Number of taps per filter
+num_taps = 61  # Number of taps per filter
 
-M = 6
+M = 10
 filter_width = Fs / (2 * M)
 center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
+
+print("num_taps", num_taps)
+print("num_subbands", M)
+
 
 # Floating-point filter design
 filters = []
 for center_frecuency in center_frequencies:
     low_edge = max(0.1, center_frecuency - filter_width/2)
     high_edge = min(Fs / 2 - 0.1, center_frecuency + filter_width/2)
-    #print("low_edge:", low_edge, "  high_edge:", high_edge)
+    # print("low_edge:", low_edge, "  high_edge:", high_edge)
     taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
     filters.append(taps)
 

@@ -70,6 +70,7 @@ subband_signals = apply_subband_filters(input_signal, filters)
 
 downsampled_subbands = apply_down_sampling(subband_signals)
 print("output length:", len(downsampled_subbands[0]))
+print(downsampled_subbands)
 
 # take the power from the downsampled signal
 downsampled_subbands_power = np.abs(downsampled_subbands)**2

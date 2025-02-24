@@ -47,6 +47,11 @@ for file in output_files:
 data_in = read_24bit_signed(data_file)
 data_outputs = [read_24bit_signed(file) for file in output_files]
 
+# Downsample remove every nth sample
+# nr_subbands = len(data_outputs)
+# data_outputs = [data[::6] for data in data_outputs]
+# data_outputs = [np.repeat(data, 6) for data in data_outputs]
+
 # Compute FFT
 fft_data_in = np.fft.rfft(data_in)
 freqs_in = np.fft.rfftfreq(len(data_in))

@@ -9,6 +9,9 @@ use std.textio.all;
 
 entity tb_transposed_fir_controller is
    generic (
+      nr_filter_taps : integer := 29;
+      nr_subbands    : integer := 6;
+
       runner_cfg : string
    );
 
@@ -143,6 +146,10 @@ begin
    end process;
 
    transposed_fir_controller_inst : entity work.transposed_fir_controller
+      generic map(
+         nr_taps => nr_filter_taps,
+         M       => nr_subbands
+      )
       port map(
          clk            => clk,
          rst            => rst,

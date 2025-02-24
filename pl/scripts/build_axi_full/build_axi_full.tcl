@@ -13,9 +13,6 @@ create_project acoustic_warfare $outputdir -force
 set_property board_part $board     [current_project]
 set_property target_language VHDL  [current_project]
 
-# this is not suppose to be here
-start_gui
-
 # add all files (folder by folder for some structure)
 add_files [file join "$ROOT" src axi_full axi_full_master.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]

@@ -5,7 +5,11 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      number_of_arrays   : integer := 1; -- set nr of arrays
+      number_of_arrays : integer := 1; -- set nr of arrays, will be sent over axi-lite to configure the PS
+
+      nr_filter_taps : integer := 29;
+      nr_subbands    : integer := 6;
+
       fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
@@ -59,11 +63,12 @@ architecture structual of aw_top is
    signal array_matrix_filterd_valid : std_logic;
    signal subband_filter             : std_logic_vector(7 downto 0);
 
-   signal down_sampled_data  : matrix_64_32_type;
-   signal down_sampled_valid : std_logic;
+   signal down_sampled_data          : matrix_64_32_type;
+   signal down_sampled_valid         : std_logic;
+   signal subband_filter_downsampled : std_logic_vector(31 downto 0);
 
-   --signal array_matrix_data_fir  : matrix_64_32_type;
-   --signal array_matrix_valid_fir : std_logic;
+   signal pl_sample_counter     : unsigned(31 downto 0);
+   signal down_sampled_data_256 : matrix_256_32_type;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -194,8 +199,12 @@ begin
          array_matrix_data_out  => array_matrix_data,
          array_matrix_valid_out => array_matrix_valid
       );
-      
+
    transposed_fir_controller_inst : entity work.transposed_fir_controller
+      generic map(
+         nr_taps => nr_filter_taps,
+         M       => nr_subbands
+      )
       port map(
          clk            => clk,
          rst            => reset,
@@ -207,15 +216,43 @@ begin
       );
 
    down_sample_inst : entity work.down_sample
+      generic map(
+         M => nr_subbands
+      )
       port map(
          clk                => clk,
          rst                => reset,
          array_matrix_data  => array_matrix_filterd_data,
          array_matrix_valid => array_matrix_filterd_valid,
          subband_in         => subband_filter,
+         subband_out        => subband_filter_downsampled,
          down_sampled_data  => down_sampled_data,
          down_sampled_valid => down_sampled_valid
       );
+
+   process (clk)
+   begin
+      if rising_edge(clk) then
+         if reset = '1' then
+            pl_sample_counter <= (others => '0');
+         else
+            if array_matrix_valid = '1' then
+               pl_sample_counter <= pl_sample_counter + 1;
+            else
+               pl_sample_counter <= pl_sample_counter;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   process (pl_sample_counter, subband_filter_downsampled, down_sampled_data)
+   begin
+      down_sampled_data_256(0) <= std_logic_vector(pl_sample_counter);
+      down_sampled_data_256(1) <= subband_filter_downsampled;
+      for i in 0 to 63 loop
+         down_sampled_data_256(i + 2) <= down_sampled_data(i);
+      end loop;
+   end process;
 
    fifo_axi : entity work.fifo_axi
       generic map(
@@ -225,7 +262,7 @@ begin
          clk          => clk,
          reset        => reset,
          wr_en        => down_sampled_valid,
-         wr_data      => down_sampled_data,
+         wr_data      => down_sampled_data_256,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,

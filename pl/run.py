@@ -42,7 +42,7 @@ for l in lib.get_test_benches():
 
 def wait_for_gtkwave():
     sleep_time = 0.05  # small timer makes it maximize before tb_.tcl scirpt go to full view
-    max_wait_time = 2  # max wait time in seconds
+    max_wait_time = 40  # max wait time in seconds
     for i in range(int(max_wait_time * (1/sleep_time))):
         # list of open windows
         result = subprocess.run(["wmctrl", "-l"], capture_output=True, text=True)

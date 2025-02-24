@@ -4,6 +4,9 @@ use IEEE.STD_LOGIC_1164.all;
 use ieee.numeric_std.all;
 
 entity fifo_bram is
+   generic (
+      RAM_DEPTH : natural
+   );
    port (
       clk     : in std_logic;
       wr_addr : in std_logic_vector(10 downto 0);
@@ -16,7 +19,7 @@ entity fifo_bram is
 end entity;
 
 architecture rtl of fifo_bram is
-   type ram_type is array (2048 - 1 downto 0) of std_logic_vector(31 downto 0);
+   type ram_type is array (RAM_DEPTH * 64 - 1 downto 0) of std_logic_vector(31 downto 0);
    signal ram              : ram_type;
    signal rd_data_internal : std_logic_vector(31 downto 0);
 begin

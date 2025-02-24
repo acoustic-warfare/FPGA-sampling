@@ -10,16 +10,6 @@
 
 #define UDP_PORT 21875
 #define BUFFER_SIZE 1458
-#define NUM_MICROPHONES 64
-
-#pragma pack(push, 1)  // Ensures no padding in struct
-#pragma pack(pop)
-
-struct DataPacket {
-  int32_t header;
-  int32_t sampleCounter;
-  int32_t mic[NUM_MICROPHONES];
-};
 
 void udpReceiver(const std::string &filename, int recordTime) {
   int sockfd;

@@ -20,7 +20,7 @@ architecture behavior of tb_fifo_axi is
    signal reset         : std_logic := '0';
 
    signal wr_en   : std_logic := '0';
-   signal wr_data : matrix_64_32_type;
+   signal wr_data : matrix_256_32_type;
 
    signal rd_en   : std_logic := '0';
    signal rd_data : matrix_256_32_type;

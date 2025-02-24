@@ -6,8 +6,8 @@ use work.matrix_type.all;
 
 entity transposed_fir_controller is
    generic (
-      constant nr_taps : integer := 29;
-      constant M       : integer := 6
+      constant nr_taps : integer;
+      constant M       : integer
    );
    port (
       clk            : in std_logic;
