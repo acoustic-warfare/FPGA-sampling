@@ -40,7 +40,7 @@ def bin_to_txt(bin_path, txt_path):
             txt_file.write(f"header: {int_to_twos_string_header(header)}    ")
             txt_file.write(f"sample_counter: {sample_counter}    ")
             txt_file.write(f"pl_counter: {pl_counter}    ")
-            txt_file.write(f"subband_nr: {subband_nr}    ")
+            txt_file.write(f"subband_nr: {subband_nr:03d}    ")
 
             for i, mic in enumerate(mic_data):
                 txt_file.write(

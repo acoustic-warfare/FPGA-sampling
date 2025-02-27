@@ -63,12 +63,12 @@ begin
             ram_counter <= ram_counter + 1;
             if ram_counter > nr_taps * 3 + 1 then
                write(line_to_write, data_out);        -- setup line
-               writeline(output_file, line_to_write); -- write line to file
+               --writeline(output_file, line_to_write); -- write line to file
             end if;
          elsif ram_counter < ram_lenght + nr_taps * 2 + 3 then
             ram_counter <= ram_counter + 1;
             write(line_to_write, data_out);        -- setup line
-            writeline(output_file, line_to_write); -- write line to file
+            --writeline(output_file, line_to_write); -- write line to file
          else
             file_close(output_file);
          end if;

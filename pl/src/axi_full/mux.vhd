@@ -28,6 +28,7 @@ end entity;
 
 architecture rtl of mux is
    signal rd_en_d    : std_logic;
+   signal rd_en_dd   : std_logic;
    signal rd_en_edge : std_logic;
    type state_type is (idle, run);
    signal state : state_type;
@@ -45,7 +46,7 @@ architecture rtl of mux is
    --signal tb_data_in_dddd : std_logic_vector(31 downto 0);
 begin
 
-   rd_en_edge <= (not rd_en_d) and rd_en;
+   rd_en_edge <= (not rd_en_dd) and rd_en_d;
 
    -- only to view signals in tb
    --tb : process (data_in_d, data_in_dd, data_in_ddd, data_in_dddd)
@@ -59,7 +60,8 @@ begin
    process (sys_clk)
    begin
       if (rising_edge(sys_clk)) then
-         rd_en_d <= rd_en;
+         rd_en_d  <= rd_en;
+         rd_en_dd <= rd_en_d;
 
          data_in_d    <= data_in;
          data_in_dd   <= data_in_d;
@@ -93,7 +95,7 @@ begin
                      counter <= (others => '0');
                      state   <= idle;
 
-                     -- minus 4 from _dddd and minus 4 from fifo read cycles
+                     -- minus 4 from _dddd and minus 64 from fifo read cycles
                   elsif (counter = 255 - 4 - 64) then
                      rd_en_fifo <= '1';
                      counter    <= counter + 1;

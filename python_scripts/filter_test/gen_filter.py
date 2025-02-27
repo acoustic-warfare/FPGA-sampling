@@ -3,9 +3,9 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
-num_taps = 61  # Number of taps per filter
+num_taps = 17  # Number of taps per filter
 
-M = 10
+M = 32
 filter_width = Fs / (2 * M)
 center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
 
@@ -30,6 +30,7 @@ for i in range(0, len(filters)):  # Plot a subset of filters
     w, h = signal.freqz(filters[i], worN=1024, fs=Fs)
     plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label=f"Filter {i} ({center_frequencies[i]:.1f} Hz)")
 ylim1 = plt.gca().get_ylim()
+plt.legend()
 
 # Scale coefficients to fixed-point
 filters_scaled_all = []
@@ -46,11 +47,10 @@ for filter in filters:
 
     plt.subplot(2, 1, 2)
     w, h = signal.freqz(filter_fixed_point, worN=1024, fs=Fs)
-    plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label="Fixed-Point Filter")
+    plt.plot(w, 20 * np.log10(abs(h) + 1e-12))
     plt.ylabel("Magnitude (dB)")
     plt.xlabel("Frequency (Hz)")
     plt.ylim(ylim1)
-    plt.legend()
 
 plt.show()
 

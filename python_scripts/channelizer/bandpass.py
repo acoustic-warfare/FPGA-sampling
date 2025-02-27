@@ -11,10 +11,12 @@ Fs = 48828.125  # Sampling Rate
 
 # Filter parameters
 M = 32  # Number band pass filters
-num_taps = 501  # Number of taps per filter
+num_taps = 17  # Number of taps per filter
 filter_width = Fs / (2 * M)
 # END USER PARAMETERS
 ####################
+
+print("Max: taps * subbands = ", )
 
 
 def design_subband_filters(plt_bool=False):
@@ -24,7 +26,7 @@ def design_subband_filters(plt_bool=False):
     for center_frequency in center_frequencies:
         low_edge = max(0.1, center_frequency - filter_width/2)
         high_edge = min(Fs / 2 - 0.1, center_frequency + filter_width/2)
-        #print(low_edge, high_edge)
+        # print(low_edge, high_edge)
 
         taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
         filters.append(taps)
@@ -61,7 +63,10 @@ def apply_down_sampling(subband_signals):
 
 
 # Generate input signal
-input_signal = signal_generator.generate_signal()
+# input_signal = signal_generator.generate_signal(noise=False)
+# input_signal = signal_generator.generate_signal(long_tone=True, shot_tone=False, chirp=False, noise=False, plt=True)
+input_signal = signal_generator.generate_signal(long_tone=False, shot_tone=False, chirp=True, noise=False, plt=True)
+
 print("input length: ", len(input_signal))
 
 # Create filter and run signalr through filters
@@ -70,7 +75,7 @@ subband_signals = apply_subband_filters(input_signal, filters)
 
 downsampled_subbands = apply_down_sampling(subband_signals)
 print("output length:", len(downsampled_subbands[0]))
-print(downsampled_subbands)
+# print(downsampled_subbands)
 
 # take the power from the downsampled signal
 downsampled_subbands_power = np.abs(downsampled_subbands)**2

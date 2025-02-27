@@ -5,12 +5,15 @@ use work.matrix_type.all;
 
 entity aw_top is
    generic (
-      number_of_arrays : integer := 1; -- set nr of arrays, will be sent over axi-lite to configure the PS
+      constant number_of_arrays : integer := 1; -- set nr of arrays, will be sent over axi-lite to configure the PS
 
-      nr_filter_taps : integer := 29;
-      nr_subbands    : integer := 6;
+      constant startup_length : integer := 5000000;
 
-      fifo_buffer_lenght : integer := 32 --lowerd from 128
+      constant bypass_filter  : std_logic := '0'; -- 0 = filters as normal, 1 = bypass filters
+      constant nr_filter_taps : integer   := 17;
+      constant nr_subbands    : integer   := 32;
+
+      constant fifo_buffer_lenght : integer := 32 --lowerd from 128
    );
    port (
       sys_clock     : in std_logic;
@@ -26,10 +29,13 @@ entity aw_top is
 end entity;
 architecture structual of aw_top is
 
-   signal clk           : std_logic;
-   signal sck_clk       : std_logic;
-   signal ws            : std_logic;
-   signal ws_array      : std_logic_vector(7 downto 0);
+   signal clk     : std_logic;
+   signal sck_clk : std_logic;
+   signal ws      : std_logic;
+   signal ws_edge : std_logic;
+   signal ws_d    : std_logic;
+   signal ws_dd   : std_logic;
+   --signal ws_array      : std_logic_vector(7 downto 0);
    signal sck_clk_array : std_logic_vector(7 downto 0);
 
    signal btn_ff        : std_logic_vector(3 downto 0);
@@ -55,13 +61,18 @@ architecture structual of aw_top is
    signal almost_full_array  : std_logic;
    signal almost_empty_array : std_logic;
 
-   signal array_matrix_data  : matrix_64_24_type;
-   signal data_fifo_256_out  : matrix_256_32_type;
-   signal array_matrix_valid : std_logic;
+   --signal array_matrix_data  : matrix_64_24_type;
+   signal data_fifo_256_out : matrix_256_32_type;
+   --signal array_matrix_valid : std_logic;
 
-   signal array_matrix_filterd_data  : matrix_64_24_type;
-   signal array_matrix_filterd_valid : std_logic;
-   signal subband_filter             : std_logic_vector(7 downto 0);
+   signal array_matrix_filterd_data  : matrix_4_16_24_type;
+   signal array_matrix_filterd_valid : std_logic_vector(3 downto 0);
+   type subband_filter_array_type is array (3 downto 0) of std_logic_vector(7 downto 0);
+   signal subband_filter_array : subband_filter_array_type;
+
+   signal array_matrix_filterd_data_d  : matrix_4_16_24_type;
+   signal array_matrix_filterd_valid_d : std_logic;
+   signal subband_filter_d             : std_logic_vector(7 downto 0);
 
    signal down_sampled_data          : matrix_64_32_type;
    signal down_sampled_valid         : std_logic;
@@ -70,6 +81,9 @@ architecture structual of aw_top is
    signal pl_sample_counter     : unsigned(31 downto 0);
    signal down_sampled_data_256 : matrix_256_32_type;
 
+   signal down_sampled_valid_d    : std_logic;
+   signal down_sampled_data_256_d : matrix_256_32_type;
+
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
 
@@ -77,7 +91,49 @@ architecture structual of aw_top is
    --signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
 
 begin
-   ws_array      <= (others => ws);
+
+   ws_edge <= ws and not ws_d;
+
+   comb : process (pl_sample_counter, subband_filter_downsampled, down_sampled_data)
+   begin
+      down_sampled_data_256(0) <= std_logic_vector(pl_sample_counter);
+      down_sampled_data_256(1) <= subband_filter_downsampled;
+      for i in 0 to 63 loop
+         down_sampled_data_256(i + 2) <= down_sampled_data(i);
+      end loop;
+
+      for i in 0 to 61 loop
+         down_sampled_data_256(i + 2 + 64) <= (others => '0');
+      end loop;
+   end process;
+
+   ff : process (clk)
+   begin
+      if rising_edge(clk) then
+         ws_d  <= ws;
+         ws_dd <= ws_d;
+
+         array_matrix_filterd_data_d  <= array_matrix_filterd_data;
+         array_matrix_filterd_valid_d <= array_matrix_filterd_valid(0);
+         subband_filter_d             <= subband_filter_array(0);
+
+         down_sampled_valid_d    <= down_sampled_valid;
+         down_sampled_data_256_d <= down_sampled_data_256;
+
+         if reset = '1' then
+            pl_sample_counter <= (others => '0');
+         else
+            if ws_edge = '1' then
+               pl_sample_counter <= pl_sample_counter + 1;
+            else
+               pl_sample_counter <= pl_sample_counter;
+            end if;
+         end if;
+      end if;
+   end process;
+
+   ws_out <= (others => ws_dd);
+
    sck_clk_array <= (others => sck_clk);
    sck_clk_out   <= sck_clk_array;
 
@@ -128,18 +184,21 @@ begin
 
    double_ff : entity work.double_ff
       port map(
-         sys_clk        => clk,
-         btn_in         => btn,
-         sw_in          => sw,
-         bit_stream_in  => bit_stream,
-         ws_in          => ws_array,
+         sys_clk       => clk,
+         btn_in        => btn,
+         sw_in         => sw,
+         bit_stream_in => bit_stream,
+         --ws_in          => ws_array,
          btn_out        => btn_ff,
          sw_out         => sw_ff,
-         bit_stream_out => bit_stream_ff,
-         ws_out         => ws_out
+         bit_stream_out => bit_stream_ff
+         --ws_out         => ws_out
       );
 
    ws_pulse : entity work.ws_pulse
+      generic map(
+         startup_length => startup_length
+      )
       port map(
          sck_clk => sck_clk,
          reset   => reset,
@@ -171,7 +230,7 @@ begin
             mic_sample_data_out  => mic_sample_data(i),
             mic_sample_valid_out => mic_sample_valid(i)
          );
-   end generate sample_gen_0;
+   end generate;
 
    collector_gen : for i in 0 to 3 generate
    begin
@@ -179,7 +238,7 @@ begin
          --generic map(chainID => i)
          port map(
             sys_clk => clk,
-            ws      => ws,
+            ws      => ws_d,
             reset   => reset,
             --sw_mic_id              => '0', -- 0 -> no id -> normal sample
             mic_sample_data_in     => mic_sample_data(i),
@@ -187,33 +246,37 @@ begin
             chain_matrix_data_out  => chain_matrix_data(i),
             chain_matrix_valid_out => chain_matrix_valid_array(i)
          );
-   end generate collector_gen;
+   end generate;
 
-   full_sample_c : entity work.full_sample
-      --generic map(number_of_arrays => number_of_arrays)
-      port map(
-         sys_clk                => clk,
-         reset                  => reset,
-         chain_matrix_data_in   => chain_matrix_data,
-         chain_matrix_valid_in  => chain_matrix_valid_array(0),
-         array_matrix_data_out  => array_matrix_data,
-         array_matrix_valid_out => array_matrix_valid
-      );
+   -- full_sample_c : entity work.full_sample
+   --    --generic map(number_of_arrays => number_of_arrays)
+   --    port map(
+   --       sys_clk                => clk,
+   --       reset                  => reset,
+   --       chain_matrix_data_in   => chain_matrix_data,
+   --       chain_matrix_valid_in  => chain_matrix_valid_array(0),
+   --       array_matrix_data_out  => array_matrix_data,
+   --       array_matrix_valid_out => array_matrix_valid
+   --    );
 
-   transposed_fir_controller_inst : entity work.transposed_fir_controller
-      generic map(
-         nr_taps => nr_filter_taps,
-         M       => nr_subbands
-      )
-      port map(
-         clk            => clk,
-         rst            => reset,
-         data_in        => array_matrix_data,
-         data_in_valid  => array_matrix_valid,
-         data_out       => array_matrix_filterd_data,
-         data_out_valid => array_matrix_filterd_valid,
-         subband_out    => subband_filter
-      );
+   filter_gen : for i in 0 to 3 generate
+      transposed_fir_controller_inst : entity work.transposed_fir_controller
+         generic map(
+            bypass_filter => bypass_filter,
+            nr_taps       => nr_filter_taps,
+            M             => nr_subbands,
+            nr_mics       => 16
+         )
+         port map(
+            clk            => clk,
+            rst            => reset,
+            data_in        => chain_matrix_data(i),
+            data_in_valid  => chain_matrix_valid_array(i),
+            data_out       => array_matrix_filterd_data(i),
+            data_out_valid => array_matrix_filterd_valid(i),
+            subband_out    => subband_filter_array(i)
+         );
+   end generate;
 
    down_sample_inst : entity work.down_sample
       generic map(
@@ -222,37 +285,13 @@ begin
       port map(
          clk                => clk,
          rst                => reset,
-         array_matrix_data  => array_matrix_filterd_data,
-         array_matrix_valid => array_matrix_filterd_valid,
-         subband_in         => subband_filter,
+         array_matrix_data  => array_matrix_filterd_data_d,
+         array_matrix_valid => array_matrix_filterd_valid_d,
+         subband_in         => subband_filter_d,
          subband_out        => subband_filter_downsampled,
          down_sampled_data  => down_sampled_data,
          down_sampled_valid => down_sampled_valid
       );
-
-   process (clk)
-   begin
-      if rising_edge(clk) then
-         if reset = '1' then
-            pl_sample_counter <= (others => '0');
-         else
-            if array_matrix_valid = '1' then
-               pl_sample_counter <= pl_sample_counter + 1;
-            else
-               pl_sample_counter <= pl_sample_counter;
-            end if;
-         end if;
-      end if;
-   end process;
-
-   process (pl_sample_counter, subband_filter_downsampled, down_sampled_data)
-   begin
-      down_sampled_data_256(0) <= std_logic_vector(pl_sample_counter);
-      down_sampled_data_256(1) <= subband_filter_downsampled;
-      for i in 0 to 63 loop
-         down_sampled_data_256(i + 2) <= down_sampled_data(i);
-      end loop;
-   end process;
 
    fifo_axi : entity work.fifo_axi
       generic map(
@@ -261,8 +300,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => down_sampled_valid,
-         wr_data      => down_sampled_data_256,
+         wr_en        => down_sampled_valid_d,
+         wr_data      => down_sampled_data_256_d,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,

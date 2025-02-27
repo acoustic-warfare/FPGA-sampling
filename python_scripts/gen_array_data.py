@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # General
 Fs = 48828.125  # Sampling Rate
 
-max_length = 100000  # Number of samples
+max_length = 50000  # Number of samples
 max_amplitude = 10000  # Max amplitude (all signals are normilized to this value at the end)
 
 # Input signal
@@ -35,6 +35,7 @@ file_name_build = "./pl/src/simulated_array/data.mem"
 
 # END USER PARAMETERS
 ####################
+print(max_length)
 
 
 def generate_signal(long_tone=True, shot_tone=True, chirp=True, noise=True, plt=True):

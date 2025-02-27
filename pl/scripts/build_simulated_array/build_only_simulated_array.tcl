@@ -49,5 +49,5 @@ update_compile_order -fileset sources_1
 
 ## run synth, impl and write bitstream
 #  -jobs 16 on good computer, 4 on bad computer
-launch_runs impl_1 -to_step write_bitstream -jobs 16
+launch_runs impl_1 -to_step write_bitstream -jobs 6
 wait_on_run impl_1

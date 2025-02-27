@@ -7,7 +7,7 @@ library vunit_lib;
 context vunit_lib.vunit_context;
 use std.textio.all;
 
-entity tb_transposed_fir_controller is
+entity tb_transposed_fir_downsample is
    generic (
       nr_filter_taps : integer := 17;
       nr_subbands    : integer := 32;
@@ -17,7 +17,7 @@ entity tb_transposed_fir_controller is
 
 end entity;
 
-architecture tb of tb_transposed_fir_controller is
+architecture tb of tb_transposed_fir_downsample is
 
    constant C_CLK_CYKLE : time    := 8 ns; -- 125MHz
    signal counter_tb    : integer := 0;
@@ -25,20 +25,22 @@ architecture tb of tb_transposed_fir_controller is
    signal clk : std_logic := '0';
    signal rst : std_logic := '1';
 
-   signal data_in        : matrix_16_24_type;
-   signal data_in_valid  : std_logic := '0';
-   signal data_out       : matrix_16_24_type;
-   signal data_out_valid : std_logic;
-   signal subband_out    : std_logic_vector(7 downto 0);
+   signal data_in           : matrix_16_24_type;
+   signal data_in_valid     : std_logic := '0';
+   signal data_filter       : matrix_16_24_type;
+   signal data_filter_x4    : matrix_4_16_24_type;
+   signal data_filter_valid : std_logic;
+   signal subband_filter    : std_logic_vector(7 downto 0);
 
-   --constant nr_taps : integer := 9;
-   --constant M : integer := 6;
+   signal subband_down_sample : std_logic_vector(31 downto 0);
+   signal down_sampled_data   : matrix_64_32_type;
+   signal down_sampled_valid  : std_logic;
 
    -- input file and Impure function for simulation
    signal read_counter  : integer := 0;
    signal Write_counter : integer := 0;
 
-   constant ram_lenght : integer := 15625;
+   constant ram_lenght : integer := 10000;
    type ram_type is array (ram_lenght - 1 downto 0) of std_logic_vector(23 downto 0);
    signal ram : ram_type;
    impure function init_ram_bin return ram_type is
@@ -85,7 +87,7 @@ begin
                   startup_coutner <= startup_coutner + 1;
                end if;
             else
-               if data_out_valid = '1' and subband_out = std_logic_vector(to_unsigned(nr_subbands - 1, 8)) then
+               if data_filter_valid = '1' and subband_filter = std_logic_vector(to_unsigned(nr_subbands - 1, 8)) then
                   startup_bool    <= '1';
                   startup_coutner <= 0;
                end if;
@@ -112,21 +114,21 @@ begin
             end if;
          end if;
 
-         if data_out_valid = '1' then
+         if down_sampled_valid = '1' then
             if write_counter < ram_lenght then
-               write(line_to_write, data_out(0)); -- setup line
+               write(line_to_write, down_sampled_data(0)); -- setup line
 
-               if subband_out = std_logic_vector(to_unsigned(0, 8)) then
+               if subband_down_sample = std_logic_vector(to_unsigned(0, 32)) then
                   -- writeline(output_file_0, line_to_write); -- write line to file
-               elsif subband_out = std_logic_vector(to_unsigned(1, 8)) then
+               elsif subband_down_sample = std_logic_vector(to_unsigned(1, 32)) then
                   -- writeline(output_file_1, line_to_write); -- write line to file
-               elsif subband_out = std_logic_vector(to_unsigned(2, 8)) then
+               elsif subband_down_sample = std_logic_vector(to_unsigned(2, 32)) then
                   -- writeline(output_file_2, line_to_write); -- write line to file
-               elsif subband_out = std_logic_vector(to_unsigned(3, 8)) then
+               elsif subband_down_sample = std_logic_vector(to_unsigned(3, 32)) then
                   -- writeline(output_file_3, line_to_write); -- write line to file
-               elsif subband_out = std_logic_vector(to_unsigned(4, 8)) then
+               elsif subband_down_sample = std_logic_vector(to_unsigned(4, 32)) then
                   -- writeline(output_file_4, line_to_write); -- write line to file
-               elsif subband_out = std_logic_vector(to_unsigned(5, 8)) then
+               elsif subband_down_sample = std_logic_vector(to_unsigned(5, 32)) then
                   -- writeline(output_file_5, line_to_write); -- write line to file
                end if;
                write_counter <= write_counter + 1;
@@ -157,9 +159,29 @@ begin
          rst            => rst,
          data_in        => data_in,
          data_in_valid  => data_in_valid,
-         data_out       => data_out,
-         data_out_valid => data_out_valid,
-         subband_out    => subband_out
+         data_out       => data_filter,
+         data_out_valid => data_filter_valid,
+         subband_out    => subband_filter
+      );
+
+   data_filter_x4(0) <= data_filter;
+   data_filter_x4(1) <= data_filter;
+   data_filter_x4(2) <= data_filter;
+   data_filter_x4(3) <= data_filter;
+
+   down_sample_inst : entity work.down_sample
+      generic map(
+         M => nr_subbands
+      )
+      port map(
+         clk                => clk,
+         rst                => rst,
+         array_matrix_data  => data_filter_x4,
+         array_matrix_valid => data_filter_valid,
+         subband_in         => subband_filter,
+         subband_out        => subband_down_sample,
+         down_sampled_data  => down_sampled_data,
+         down_sampled_valid => down_sampled_valid
       );
 
    main : process

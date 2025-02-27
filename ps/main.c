@@ -40,7 +40,7 @@ int main() {
 
   // set number of 32bit slots in payload_header
   u32 payload_header_size = 4;
-  u32 pl_header = 2;
+  u32 pl_header = 3;
 
   // constants that will be sent in payload_header
   u32 protocol_ver = 3;
@@ -180,7 +180,7 @@ int main() {
       counter++;
 
       data[2] = *(data_p);
-      data[3] = *(data_p + 1);
+      data[3] = *(data_p + 2);
 
       // recive data from AXI
       if (nr_arrays == 1) {

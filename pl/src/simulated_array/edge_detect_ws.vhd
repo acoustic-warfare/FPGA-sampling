@@ -9,7 +9,7 @@ entity edge_detect_ws is
       rst   : in std_logic;
       index : in std_logic_vector(3 downto 0);
 
-      ws_edge  : out std_logic
+      ws_edge : out std_logic
    );
 end entity;
 architecture rtl of edge_detect_ws is
@@ -34,7 +34,7 @@ begin
 
             ws_edge <= '0';
 
-            if (idle_counter = to_integer(unsigned(index))) then
+            if idle_counter = unsigned(index) then
                idle_counter <= (others => '0');
                ws_edge      <= '1';
             elsif ws_edge_internal = '1' then

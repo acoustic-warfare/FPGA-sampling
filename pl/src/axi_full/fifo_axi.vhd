@@ -91,8 +91,15 @@ begin
             -- Write
             if wr_en = '1' and full = '0' then
                wr_start  <= '1';
-               wr_count  <= 0;
+               wr_count  <= 1;
                wr_en_ram <= '1';
+
+               wr_data_ram(0) <= wr_data(0);
+               wr_data_ram(1) <= wr_data(64);
+               --wr_data_ram(2) <= wr_data(128);
+               --wr_data_ram(3) <= wr_data(192);
+
+               wr_ram_addr <= write_ptr * 64;
             end if;
 
             if wr_start = '1' and wr_count < 64 then
@@ -103,11 +110,26 @@ begin
 
                wr_ram_addr <= write_ptr * 64 + wr_count;
                wr_count    <= wr_count + 1;
+
             elsif wr_start = '1' then
-               wr_count  <= 0;
-               wr_en_ram <= '0';
+               if wr_en = '1' and full = '0' then
+                  -- restart now! sample is here 
+                  wr_count  <= 1;
+                  wr_start  <= '1';
+                  wr_en_ram <= '1';
+
+                  wr_data_ram(0) <= wr_data(0);
+                  wr_data_ram(1) <= wr_data(64);
+                  wr_ram_addr    <= write_ptr * 64 + 64;
+               else
+                  -- go to basicly idle
+                  wr_count  <= 0;
+                  wr_en_ram <= '0';
+                  wr_start  <= '0';
+               end if;
+
                write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
-               wr_start  <= '0';
+
             end if;
 
             -- read
