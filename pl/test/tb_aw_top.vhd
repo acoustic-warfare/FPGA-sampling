@@ -34,7 +34,7 @@ begin
 
    simulated_array_inst : entity work.simulated_array
       generic map(
-         DEFAULT_INDEX => delay_sample + 8, -- currently +4 to +8
+         DEFAULT_INDEX => delay_sample + 0, -- currently +4 to +8
          RAM_DEPTH     => 1000
       )
       port map(
@@ -82,6 +82,14 @@ begin
             reset               <= '0';
             btn_simulated_array <= (others => '0');
             wait for (C_CLK_CYKLE * 200000);
+
+         elsif run("wave_full") then -- this test case will take some time!
+            reset                  <= '1';
+            btn_simulated_array(0) <= '1';
+            wait for (C_CLK_CYKLE * 10);
+            reset               <= '0';
+            btn_simulated_array <= (others => '0');
+            wait for (C_CLK_CYKLE * 100000);
 
          elsif run("auto") then
             reset                  <= '1';

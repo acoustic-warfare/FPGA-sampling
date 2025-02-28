@@ -9,7 +9,7 @@ use std.textio.all;
 
 entity tb_transposed_fir_controller is
    generic (
-      nr_filter_taps : integer := 17;
+      nr_filter_taps : integer := 55;
       nr_subbands    : integer := 32;
 
       runner_cfg : string
@@ -149,7 +149,7 @@ begin
       generic map(
          bypass_filter => '0',
          nr_taps       => nr_filter_taps,
-         M             => nr_subbands,
+         nr_subbands   => nr_subbands,
          nr_mics       => 4
       )
       port map(

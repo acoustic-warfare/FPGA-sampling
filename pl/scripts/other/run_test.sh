@@ -69,7 +69,7 @@ if [ "$wave_test" = true ]; then
         exit 1
     else
         printf "%b\n" "${BOLD}Running wave test${RESET}"
-        python3 "$GIT_ROOT/pl/run.py" --gtkwave-fmt vcd --gui "*$test_name.wave*" -p 0
+        python3 "$GIT_ROOT/pl/run.py" --gtkwave-fmt vcd --gui "*$test_name.wave" -p 0
     fi
 fi
 
@@ -80,7 +80,7 @@ if [ "$wave_full_test" = true ]; then
         exit 1
     else
         printf "%b\n" "${BOLD}Running full wave test${RESET}"
-        python3 "$GIT_ROOT/pl/run.py" --gui "*$test_name.wave*" -p 0
+        python3 "$GIT_ROOT/pl/run.py" --gui "*$test_name.wave_full" -p 0
     fi
 fi
 

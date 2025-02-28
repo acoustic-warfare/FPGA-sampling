@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity simulated_array is
    generic (
       -- 11 to 15 seems to work in simulation :)
-      DEFAULT_INDEX : integer range 0 to 15 := 4;
+      DEFAULT_INDEX : integer range 0 to 15 := 1;
       RAM_DEPTH     : integer --this should always be over writen by tb or tcl script, max value is just a guess :)
    );
    port (

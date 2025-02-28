@@ -7,9 +7,9 @@ entity transposed_fir_dsp is
    port (
       clk       : in std_logic;
       sample_in : in std_logic_vector(23 downto 0);
-      coeff     : in std_logic_vector(15 downto 0);
-      data_sum  : in std_logic_vector(39 downto 0);
-      result    : out std_logic_vector(39 downto 0)
+      coeff     : in std_logic_vector(11 downto 0);
+      data_sum  : in std_logic_vector(35 downto 0);
+      result    : out std_logic_vector(35 downto 0)
    );
 end entity;
 
@@ -21,13 +21,13 @@ architecture rtl of transposed_fir_dsp is
    --signal sample_in_d : std_logic_vector(23 downto 0);
    --signal coeff_d     : std_logic_vector(15 downto 0);
 
-   --signal data_sum_d  : std_logic_vector(39 downto 0);
-   --signal data_sum_dd : std_logic_vector(39 downto 0);
+   --signal data_sum_d  : std_logic_vector(35 downto 0);
+   --signal data_sum_dd : std_logic_vector(35 downto 0);
 
-   signal mul   : signed(39 downto 0);
-   signal mul_d : signed(39 downto 0);
+   signal mul   : signed(35 downto 0);
+   signal mul_d : signed(35 downto 0);
 
-   signal result_signed : signed(39 downto 0);
+   signal result_signed : signed(35 downto 0);
 begin
 
    mul           <= signed(sample_in) * signed(coeff);

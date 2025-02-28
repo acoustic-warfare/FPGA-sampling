@@ -6,7 +6,7 @@ use work.matrix_type.all;
 
 entity down_sample is
    generic (
-      constant M : integer
+      constant nr_subbands : integer
    );
    port (
       clk                : in std_logic;
@@ -21,7 +21,7 @@ entity down_sample is
 end entity;
 
 architecture rtl of down_sample is
-   signal down_sample_counter  : integer range 0 to M + 1;
+   signal down_sample_counter  : integer range 0 to nr_subbands + 1;
    signal array_matrix_valid_d : std_logic;
 
    signal down_sampled_data_internal : matrix_64_32_type;
@@ -55,7 +55,7 @@ begin
          else
 
             if array_matrix_valid = '1' and unsigned(subband_in) = 0 then
-               if down_sample_counter < M then
+               if down_sample_counter < nr_subbands - 1 then
                   down_sample_counter <= down_sample_counter + 1;
                else
                   down_sample_counter <= 0;

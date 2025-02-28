@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 Fs = 48828.125  # Sampling Rate
 
 max_length = 50000  # Number of samples
-max_amplitude = 10000  # Max amplitude (all signals are normilized to this value at the end)
+max_amplitude = 1000000  # Max amplitude (all signals are normilized to this value at the end)
 
 # Input signal
 frequencies = [1300, 10000, 20000]
@@ -38,7 +38,7 @@ file_name_build = "./pl/src/simulated_array/data.mem"
 print(max_length)
 
 
-def generate_signal(long_tone=True, shot_tone=True, chirp=True, noise=True, plt=True):
+def generate_signal(long_tone=True, shot_tone=True, chirp=True, counter=False, noise=True, normalize=True, plt=True):
     input_signal = np.zeros(max_length)
     sig_no_noise = np.zeros(max_length)
 
@@ -51,11 +51,15 @@ def generate_signal(long_tone=True, shot_tone=True, chirp=True, noise=True, plt=
     if chirp:
         input_signal = add_chirp(input_signal)
         sig_no_noise = add_chirp(sig_no_noise)
+    if counter:
+        input_signal = add_counter(input_signal)
+        sig_no_noise = add_counter(sig_no_noise)
     if noise:
         input_signal = add_noise(input_signal)
 
-    input_signal = normalize(input_signal, max_amplitude)
-    sig_no_noise = normalize(sig_no_noise, max_amplitude)
+    if normalize:
+        input_signal = add_normalize(input_signal, max_amplitude)
+        sig_no_noise = add_normalize(sig_no_noise, max_amplitude)
 
     if plt:
         plot_input_signals(sig_no_noise, input_signal)
@@ -102,6 +106,11 @@ def add_chirp(input_signal):
     return input_signal + chirp_signal
 
 
+def add_counter(input_signal):
+    counter = np.arange(max_length)
+    return input_signal + counter
+
+
 def add_noise(input_signal):
     """Add white Gaussian noise to the input signal based on a given SNR."""
     signal_power = np.mean(input_signal**2)  # Compute signal power
@@ -112,7 +121,7 @@ def add_noise(input_signal):
     return input_signal_with_noise
 
 
-def normalize(input_signal, max_amplitude):
+def add_normalize(input_signal, max_amplitude):
     current_max = np.max(np.abs(input_signal))
     if current_max == 0:
         return input_signal
@@ -169,7 +178,10 @@ def save_sample_data_to_file(file_name, length, samples):
     f.close
 
 
-input_signal = generate_signal(long_tone=True, shot_tone=True, chirp=True, noise=True, plt=True)
+# input_signal = generate_signal(long_tone=True, shot_tone=True, chirp=True, counter=False, noise=True, normalize=True, plt=True)
+# input_signal = generate_signal(long_tone=False, shot_tone=False, chirp=False, counter=True, noise=False, normalize=False, plt=True)
+input_signal = generate_signal(long_tone=False, shot_tone=False, chirp=True, counter=False, noise=False, normalize=False, plt=True)
+
 
 save_sample_data_to_file(file_name_build, max_length, input_signal)
 save_sample_data_to_file(file_name_sim, max_length, input_signal)

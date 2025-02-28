@@ -22,7 +22,7 @@ entity sample is
       ws                   : in std_logic;
       index                : in std_logic_vector(3 downto 0);
       mic_sample_data_out  : out std_logic_vector(23 downto 0);
-      mic_sample_valid_out : out std_logic := '0' -- A signal to tell the receiver to start reading the mic_sample_data_out
+      mic_sample_valid_out : out std_logic -- A signal to tell the receiver to start reading the mic_sample_data_out
    );
 end entity;
 
@@ -80,11 +80,12 @@ begin
          index_ddddddddddddddd <= index_dddddddddddddd;
 
          if reset = '1' then
-            state        <= idle;
-            idle_counter <= 0;
-            counter_bit  <= 0;
-            counter_samp <= 0;
-            counter_mic  <= 0;
+            state                <= idle;
+            idle_counter         <= 0;
+            counter_bit          <= 0;
+            counter_samp         <= 0;
+            counter_mic          <= 0;
+            mic_sample_valid_out <= '0';
          else
             case state is
                when idle => -- After a complete sample of all mics (only exit on ws high)

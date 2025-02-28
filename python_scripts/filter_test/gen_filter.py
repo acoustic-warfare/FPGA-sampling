@@ -3,9 +3,10 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
-num_taps = 17  # Number of taps per filter
 
+num_taps = 55  # Number of taps per filter
 M = 32
+
 filter_width = Fs / (2 * M)
 center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
 
@@ -35,11 +36,12 @@ plt.legend()
 # Scale coefficients to fixed-point
 filters_scaled_all = []
 for filter in filters:
-    max_scale = 2**15 / np.max(filter)
-    scale_factor = 2**int(np.floor(np.log2(max_scale)))
+    max_scale = 2**11 / np.max(np.abs(filter))  # Scale to fit 12-bit range
+    scale_factor = 2**int(np.floor(np.log2(max_scale)))  # Ensure power-of-2 scaling
     print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
 
-    filter_scaled = np.round(filter * scale_factor).astype(np.int16)
+    filter_scaled = np.round(filter * scale_factor).astype(np.int16)  # Keep int16 to avoid overflow
+    filter_scaled = np.clip(filter_scaled, -2048, 2047)  # Ensure values fit in 12-bit range
     filters_scaled_all.append(filter_scaled)
 
     # filter fixed point for plot
@@ -58,7 +60,7 @@ plt.show()
 def print_all_vhdl_format(filters):
     num_filters = len(filters)
     for i, filter in enumerate(filters):
-        taps_hex = [f"{np.uint16(tap):04X}" for tap in filter]
+        taps_hex = [f"{(tap & 0xFFF):03X}" for tap in filter]  # Convert to 12-bit hex
         formatted = ", ".join([f'x"{tap}"' for tap in taps_hex])
         if i < num_filters - 1:
             print(f"({formatted}),")

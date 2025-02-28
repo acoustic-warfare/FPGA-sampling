@@ -79,6 +79,9 @@ architecture behavior of tb_fifo_axi is
 
 begin
    fifo_inst : entity work.fifo_axi
+      generic map(
+         RAM_DEPTH => 32
+      )
       port map(
          clk          => clk,
          reset        => reset,

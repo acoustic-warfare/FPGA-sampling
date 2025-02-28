@@ -11,7 +11,7 @@ Fs = 48828.125  # Sampling Rate
 
 # Filter parameters
 M = 32  # Number band pass filters
-num_taps = 17  # Number of taps per filter
+num_taps = 55  # Number of taps per filter
 filter_width = Fs / (2 * M)
 # END USER PARAMETERS
 ####################

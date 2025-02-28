@@ -18,8 +18,4 @@ package matrix_type is
    type matrix_4_16_32_type is array(3 downto 0) of matrix_16_32_type;
    type matrix_16_16_32_type is array (15 downto 0) of matrix_16_32_type;
 
-   --
-   constant nr_taps : integer := 17;
-   type result_line_type is array (nr_taps - 2 downto 0) of std_logic_vector(39 downto 0);
-
 end package matrix_type;
