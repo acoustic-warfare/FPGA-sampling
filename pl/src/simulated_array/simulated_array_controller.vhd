@@ -16,7 +16,7 @@ entity simulated_array_controller is
 end entity;
 
 architecture rtl of simulated_array_controller is
-   signal addres_counter   : unsigned (23 downto 0) := (others => '0');
+   signal addres_counter   : unsigned (23 downto 0);
    signal addr             : std_logic_vector(23 downto 0);
    signal rd_data          : std_logic_vector(23 downto 0);
    signal rd_data_internal : std_logic_vector(23 downto 0);

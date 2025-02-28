@@ -68,4 +68,5 @@ def print_all_vhdl_format(filters):
             print(f"({formatted})")   # No comma for last row
 
 
+#filters_scaled_all = np.array(filters_scaled_all)[::-1]  # Reverse the rows
 print_all_vhdl_format(np.array(filters_scaled_all))

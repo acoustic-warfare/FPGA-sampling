@@ -33,9 +33,9 @@ architecture rtl of sample is
 
    signal mic_sample_data_out_internal : std_logic_vector(23 downto 0);
 
-   signal counter_bit  : integer range 0 to 60 := 0; -- Counts the TDM-slots for a microphone   (0-31)
-   signal counter_samp : integer range 0 to 7  := 0; -- Counts number of samples per TDM-slot   (0-4)
-   signal counter_mic  : integer range 0 to 17 := 0; -- Counts number of microphones per chain  (0-15)
+   signal counter_bit  : integer range 0 to 60; -- Counts the TDM-slots for a microphone   (0-31)
+   signal counter_samp : integer range 0 to 7;  -- Counts number of samples per TDM-slot   (0-4)
+   signal counter_mic  : integer range 0 to 17; -- Counts number of microphones per chain  (0-15)
 
    signal idle_counter : integer; -- Creates a delay for staying in idle until data is transmitted from array
 

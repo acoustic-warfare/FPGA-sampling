@@ -14,36 +14,23 @@ entity transposed_fir_dsp is
 end entity;
 
 architecture rtl of transposed_fir_dsp is
+   --attribute use_dsp        : string;
+   --attribute use_dsp of rtl : architecture is "yes";
 
-   attribute use_dsp        : string;
-   attribute use_dsp of rtl : architecture is "yes";
-
-   --signal sample_in_d : std_logic_vector(23 downto 0);
-   --signal coeff_d     : std_logic_vector(15 downto 0);
-
-   --signal data_sum_d  : std_logic_vector(35 downto 0);
-   --signal data_sum_dd : std_logic_vector(35 downto 0);
-
-   signal mul   : signed(35 downto 0);
-   signal mul_d : signed(35 downto 0);
-
+   signal mul           : signed(35 downto 0);
+   signal mul_d         : signed(35 downto 0);
+   signal mul_dd        : signed(35 downto 0);
    signal result_signed : signed(35 downto 0);
 begin
 
    mul           <= signed(sample_in) * signed(coeff);
-   result_signed <= signed(data_sum) + mul_d;
+   result_signed <= signed(data_sum) + mul_dd;
 
    process (clk)
    begin
       if rising_edge(clk) then
-         --sample_in_d <= sample_in;
-         --coeff_d     <= coeff;
-
-         mul_d <= mul;
-
-         --data_sum_d  <= data_sum; -- this delay is in the read cycle in the ram in the circular_mega_buffer
-         --data_sum_dd <= data_sum_d;
-
+         mul_d  <= mul;
+         mul_dd <= mul_d;
          result <= std_logic_vector(result_signed);
       end if;
    end process;

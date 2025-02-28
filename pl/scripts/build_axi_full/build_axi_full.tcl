@@ -21,10 +21,12 @@ add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
 add_files [file join "$ROOT" src axi_full mux.vhd]
 
-add_files [file join "$ROOT" src channelizer circular_mega_buffer_bram.vhd]
+add_files [file join "$ROOT" src channelizer circular_buffer_bram.vhd]
 add_files [file join "$ROOT" src channelizer down_sample.vhd]
 add_files [file join "$ROOT" src channelizer transposed_fir_controller.vhd]
 add_files [file join "$ROOT" src channelizer transposed_fir_dsp.vhd]
+add_files [file join "$ROOT" src channelizer transposed_folded_fir_controller.vhd]
+add_files [file join "$ROOT" src channelizer transposed_folded_fir_dsp.vhd]
 
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]

@@ -260,7 +260,7 @@ begin
    --    );
 
    filter_gen : for i in 0 to 3 generate
-      transposed_fir_controller_inst : entity work.transposed_fir_controller
+      transposed_folded_fir_controller_inst : entity work.transposed_folded_fir_controller
          generic map(
             bypass_filter => bypass_filter,
             nr_taps       => nr_filter_taps,

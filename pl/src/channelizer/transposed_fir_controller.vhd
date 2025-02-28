@@ -28,9 +28,9 @@ architecture rtl of transposed_fir_controller is
    signal data_in_d   : matrix_16_24_type;
    signal data_fir_in : std_logic_vector(23 downto 0);
 
-   type coeffs_type is array (nr_taps - 1 downto 0) of std_logic_vector(11 downto 0);
-   type coeffs_all_type is array (nr_subbands - 1 downto 0) of coeffs_type;
-   signal coeffs_all : coeffs_all_type := (
+   type coeffs_type is array (0 to nr_taps - 1) of std_logic_vector(11 downto 0);
+   type coeffs_all_type is array (0 to nr_subbands - 1) of coeffs_type;
+   constant coeffs_all : coeffs_all_type := (
    (x"015", x"01B", x"024", x"030", x"042", x"059", x"078", x"09D", x"0CB", x"101", x"13E", x"183", x"1D0", x"222", x"27A", x"2D5", x"332", x"390", x"3ED", x"446", x"49A", x"4E7", x"52C", x"566", x"595", x"5B7", x"5CC", x"5D3", x"5CC", x"5B7", x"595", x"566", x"52C", x"4E7", x"49A", x"446", x"3ED", x"390", x"332", x"2D5", x"27A", x"222", x"1D0", x"183", x"13E", x"101", x"0CB", x"09D", x"078", x"059", x"042", x"030", x"024", x"01B", x"015"),
       (x"FD2", x"FC7", x"FB8", x"FA4", x"F8A", x"F6B", x"F48", x"F25", x"F03", x"EE6", x"ED4", x"ECE", x"EDA", x"EF9", x"F2E", x"F7A", x"FDB", x"050", x"0D5", x"166", x"1FC", x"291", x"31E", x"39D", x"407", x"457", x"489", x"499", x"489", x"457", x"407", x"39D", x"31E", x"291", x"1FC", x"166", x"0D5", x"050", x"FDB", x"F7A", x"F2E", x"EF9", x"EDA", x"ECE", x"ED4", x"EE6", x"F03", x"F25", x"F48", x"F6B", x"F8A", x"FA4", x"FB8", x"FC7", x"FD2"),
       (x"040", x"048", x"052", x"05B", x"061", x"05E", x"04E", x"02B", x"FF3", x"FA4", x"F41", x"ED0", x"E5B", x"DEE", x"D96", x"D62", x"D5C", x"D8D", x"DF9", x"E9D", x"F70", x"065", x"168", x"266", x"347", x"3F8", x"46A", x"491", x"46A", x"3F8", x"347", x"266", x"168", x"065", x"F70", x"E9D", x"DF9", x"D8D", x"D5C", x"D62", x"D96", x"DEE", x"E5B", x"ED0", x"F41", x"FA4", x"FF3", x"02B", x"04E", x"05E", x"061", x"05B", x"052", x"048", x"040"),
@@ -191,7 +191,7 @@ begin
    end process;
 
    circular_mega_buffer_bram_gen : for i in 0 to (nr_taps - 1) / 2 - 1 generate
-      circular_mega_buffer_bram_inst : entity work.circular_mega_buffer_bram
+      circular_mega_buffer_bram_inst : entity work.circular_buffer_bram
          generic map(
             nr_subbands => nr_subbands,
             nr_mics     => nr_mics

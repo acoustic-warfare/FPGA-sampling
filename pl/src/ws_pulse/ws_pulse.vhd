@@ -12,8 +12,8 @@ entity ws_pulse is
 end entity;
 
 architecture rtl of ws_pulse is
-   signal rising_edge_counter : integer range 0 to 516 := 0;
-   signal startup_counter     : unsigned (22 downto 0) := (others => '0');
+   signal rising_edge_counter : integer range 0 to 516;
+   signal startup_counter     : unsigned (22 downto 0);
 begin
    ws_pulse_p : process (sck_clk)
    begin

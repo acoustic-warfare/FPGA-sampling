@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
 
-entity circular_mega_buffer_bram is
+entity circular_buffer_bram is
    generic (
       constant nr_subbands : integer;
       constant nr_mics     : integer
@@ -19,7 +19,7 @@ entity circular_mega_buffer_bram is
    );
 end entity;
 
-architecture rtl of circular_mega_buffer_bram is
+architecture rtl of circular_buffer_bram is
 
    type ram_type is array ((nr_subbands * nr_mics) - 1 downto 0) of std_logic_vector(71 downto 0);
    signal ram : ram_type;

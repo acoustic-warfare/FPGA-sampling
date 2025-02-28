@@ -26,9 +26,9 @@ architecture rtl of fifo_axi is
    constant ALMOST_EMPTY_THRESHOLD : integer := 2;
    constant ALMOST_FULL_THRESHOLD  : integer := RAM_DEPTH - 2;
 
-   signal write_ptr  : integer range 0 to RAM_DEPTH := 0;
-   signal read_ptr   : integer range 0 to RAM_DEPTH := 0;
-   signal fifo_count : integer range 0 to RAM_DEPTH := 0;
+   signal write_ptr  : integer range 0 to RAM_DEPTH;
+   signal read_ptr   : integer range 0 to RAM_DEPTH;
+   signal fifo_count : integer range 0 to RAM_DEPTH;
 
    signal wr_start : std_logic;
    signal wr_count : integer range 0 to 64;

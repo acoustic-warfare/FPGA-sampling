@@ -23,12 +23,12 @@ entity collector is
       mic_sample_data_in     : in std_logic_vector(23 downto 0);
       mic_sample_valid_in    : in std_logic;
       chain_matrix_data_out  : out matrix_16_24_type; -- Our output Matrix with 1 sample from all microphones in the Matrix
-      chain_matrix_valid_out : out std_logic := '0'   -- A signal to tell the receiver to start reading the data_out_matrix
+      chain_matrix_valid_out : out std_logic          -- A signal to tell the receiver to start reading the data_out_matrix
    );
 end entity;
 
 architecture rtl of collector is
-   signal counter_mic           : integer := 0; --Counter for rows in data_matrix_16_32_out
+   signal counter_mic           : integer; --Counter for rows in data_matrix_16_32_out
    signal mic_sample_valid_in_d : std_logic;
 begin
    collect_p : process (sys_clk) -- Process which collects the input data and put it in the matrix
