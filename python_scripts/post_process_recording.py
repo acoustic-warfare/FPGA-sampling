@@ -88,8 +88,8 @@ def check_all_sample_nr(bin_path):
             if current_counter + 1 == sample_counter:
                 current_counter = sample_counter
             else:
-                print(f"ERROR in counter! Expected {current_counter + 1}, but found {
-                      sample_counter}" + f" (sample: {current_counter - start_sample_nr})" + f" (diff: {sample_counter - current_counter})")
+                print(f"ERROR in counter! Expected {current_counter + 1}, but found {sample_counter}" +
+                      f" (sample: {current_counter - start_sample_nr})" + f" (diff: {sample_counter - current_counter})")
 
                 current_counter = sample_counter
 

@@ -78,11 +78,15 @@ architecture structual of aw_top is
    signal down_sampled_valid         : std_logic;
    signal subband_filter_downsampled : std_logic_vector(31 downto 0);
 
-   signal pl_sample_counter     : unsigned(31 downto 0);
-   signal down_sampled_data_256 : matrix_256_32_type;
+   signal decode_subband : std_logic_vector(31 downto 0);
+   signal decoded_data   : matrix_64_32_type;
+   signal decoded_valid  : std_logic;
 
-   signal down_sampled_valid_d    : std_logic;
-   signal down_sampled_data_256_d : matrix_256_32_type;
+   signal pl_sample_counter : unsigned(31 downto 0);
+   signal to_fifo_data_256  : matrix_256_32_type;
+
+   signal to_fifo_valid_d    : std_logic;
+   signal to_fifo_data_256_d : matrix_256_32_type;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -94,16 +98,16 @@ begin
 
    ws_edge <= ws and not ws_d;
 
-   comb : process (pl_sample_counter, subband_filter_downsampled, down_sampled_data)
+   comb : process (pl_sample_counter, decode_subband, decoded_data)
    begin
-      down_sampled_data_256(0) <= std_logic_vector(pl_sample_counter);
-      down_sampled_data_256(1) <= subband_filter_downsampled;
+      to_fifo_data_256(0) <= std_logic_vector(pl_sample_counter);
+      to_fifo_data_256(1) <= decode_subband;
       for i in 0 to 63 loop
-         down_sampled_data_256(i + 2) <= down_sampled_data(i);
+         to_fifo_data_256(i + 2) <= decoded_data(i);
       end loop;
 
       for i in 0 to 61 loop
-         down_sampled_data_256(i + 2 + 64) <= (others => '0');
+         to_fifo_data_256(i + 2 + 64) <= (others => '0');
       end loop;
    end process;
 
@@ -117,8 +121,8 @@ begin
          array_matrix_filterd_valid_d <= array_matrix_filterd_valid(0);
          subband_filter_d             <= subband_filter_array(0);
 
-         down_sampled_valid_d    <= down_sampled_valid;
-         down_sampled_data_256_d <= down_sampled_data_256;
+         to_fifo_valid_d    <= decoded_valid;
+         to_fifo_data_256_d <= to_fifo_data_256;
 
          if reset = '1' then
             pl_sample_counter <= (others => '0');
@@ -293,6 +297,20 @@ begin
          down_sampled_valid => down_sampled_valid
       );
 
+   decode_ema_inst : entity work.decode_ema
+      generic map(
+         nr_subbands => nr_subbands
+      )
+      port map(
+         clk                => clk,
+         subband_in         => subband_filter_downsampled,
+         down_sampled_data  => down_sampled_data,
+         down_sampled_valid => down_sampled_valid,
+         subband_out        => decode_subband,
+         decoded_data       => decoded_data,
+         decoded_valid      => decoded_valid
+      );
+
    fifo_axi : entity work.fifo_axi
       generic map(
          RAM_DEPTH => fifo_buffer_lenght
@@ -300,8 +318,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => down_sampled_valid_d,
-         wr_data      => down_sampled_data_256_d,
+         wr_en        => to_fifo_valid_d,
+         wr_data      => to_fifo_data_256_d,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,
