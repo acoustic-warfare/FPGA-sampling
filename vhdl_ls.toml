@@ -64,6 +64,7 @@ vunit_lib.files = [
 ]
 
 lib.files = [
+    "pl/test/tb_down_sample.vhd",
     "pl/src/ws_pulse/ws_pulse.vhd",
     "pl/src/wrappers/zynq_bd_wrapper.vhd",
     "pl/src/simulated_array/simulated_array_clk_wiz_wrapper.vhd",
@@ -79,11 +80,11 @@ lib.files = [
     "pl/src/matrix_package.vhd",
     "pl/test/tb_ws_pulse.vhd",
     "pl/test/tb_sample_clk.vhd",
-    "pl/test/tb_ema.vhd",
     "pl/src/sample_data/collector.vhd",
     "pl/test/tb_simulated_array_and_sample.vhd",
     "pl/test/tb_collector.vhd",
     "pl/src/decode/ema.vhd",
+    "pl/test/tb_ema.vhd",
     "pl/src/decode/decode_ema.vhd",
     "pl/test/tb_decode_ema.vhd",
     "pl/src/channelizer/transposed_folded_fir_dsp.vhd",

@@ -17,32 +17,26 @@ end entity;
 architecture tb of tb_ema is
    constant C_CLK_CYKLE : time := 8 ns; -- 125 MHz
 
-   signal clk   : std_logic := '1';
-   signal reset : std_logic := '1';
-
-   constant nr_subbands : integer := 2;
+   signal clk : std_logic := '1';
+   signal rst : std_logic := '1';
 
    signal subband_in : std_logic_vector(31 downto 0);
    signal mic_data   : std_logic_vector(31 downto 0);
    signal mic_valid  : std_logic := '0';
 
-   signal valid_subbands_out : std_logic_vector(nr_subbands - 1 downto 0);
-   signal result_ready       : std_logic := '1';
+   signal valid_subbands_out : std_logic;
 
 begin
    clk <= not(clk) after C_CLK_CYKLE/2;
 
    ema_inst : entity work.ema
-      generic map(
-         nr_subbands => nr_subbands
-      )
       port map(
-         clk                => clk,
-         subband_in         => subband_in,
-         mic_data           => mic_data,
-         mic_valid          => mic_valid,
-         valid_subbands_out => valid_subbands_out,
-         result_ready       => result_ready
+         clk               => clk,
+         rst               => rst,
+         subband_in        => subband_in,
+         mic_data          => mic_data,
+         mic_valid         => mic_valid,
+         valid_subband_out => valid_subbands_out
       );
 
    main : process
@@ -52,7 +46,8 @@ begin
          if run("wave") then
             -- test 1 is so far only meant for gktwave
             wait for (2 * C_CLK_CYKLE);
-            reset <= '0';
+            rst <= '0';
+            wait for (2 * C_CLK_CYKLE);
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
@@ -65,7 +60,8 @@ begin
          elsif run("wave_full") then
             -- test 1 is so far only meant for gktwave
             wait for (2 * C_CLK_CYKLE);
-            reset <= '0';
+            rst <= '0';
+            wait for (2 * C_CLK_CYKLE);
 
             -- 1
 

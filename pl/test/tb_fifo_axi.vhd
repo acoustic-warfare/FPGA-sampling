@@ -97,7 +97,7 @@ begin
 
    clk <= not(clk) after C_CLK_CYKLE/2;
 
-   process (reset, multiplyer)
+   process (multiplyer)
    begin
       for i in 0 to 63 loop
          wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 32));

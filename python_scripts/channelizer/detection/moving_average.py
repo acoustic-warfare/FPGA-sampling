@@ -37,7 +37,7 @@ def exponential_moving_average(input_signal, alpha_rise, alpha_fall):
         raise ValueError("Alpha must be in the range (0, 1].")
     input_signal = np.abs(input_signal) ** 2
     ema_signal = np.zeros_like(input_signal)
-    ema_signal[0] = input_signal[0]  # Initialize with the first value
+    ema_signal[0] = 0  # Initialize with the first value
 
     for i in range(1, len(input_signal)):
         if input_signal[i] > ema_signal[i - 1]:
@@ -53,6 +53,8 @@ def plot_32_subplots(plt_data, allowed_subbands):
 
     global_min = np.min(plt_data[:, 2000:]) * 0.9
     global_max = np.max(plt_data[:, 2000:]) * 1.1
+    if global_min == 0:
+        global_min = -0.1
 
     original_index = 0
     for allowed in allowed_subbands:
@@ -188,8 +190,8 @@ allowed_subbands = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 
 plot_32_subplots(np.abs(mic_data[:, :, 1]) ** 2, allowed_subbands)
 
-alpha_rise = 1/(2**8)
-alpha_fall = 1/(2**8)
+alpha_rise = 1/(2**4)
+alpha_fall = 1/(2**4)
 
 ema_data = []
 for i in range(0, len(mic_data)):

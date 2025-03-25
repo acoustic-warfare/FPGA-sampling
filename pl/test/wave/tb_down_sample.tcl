@@ -13,11 +13,7 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-   tb_decode_ema.clk
-   tb_decode_ema.decode_ema_inst.down_sampled_valid
-   tb_decode_ema.decode_ema_inst.subband_out
-   tb_decode_ema.decode_ema_inst.decoded_valid
-   tb_decode_ema.decode_ema_inst.ema_34.ema_max
+   tb_down_sample.clk
 
 }
 
@@ -28,4 +24,3 @@ foreach signal $signals {
 
 # zoom full
 gtkwave::/Time/Zoom/Zoom_Full
-

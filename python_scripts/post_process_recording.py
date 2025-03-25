@@ -18,7 +18,7 @@ def int_to_twos_string_header(num, bits=32):
         binary = bin(num)[2:].zfill(bits)
     else:
         binary = bin((1 << bits) + num)[2:]
-    return binary[0:7] + " " + binary[8:15] + " " + binary[16:31]
+    return binary[0:32]
 
 
 def bin_to_txt(bin_path, txt_path):
@@ -45,6 +45,40 @@ def bin_to_txt(bin_path, txt_path):
             for i, mic in enumerate(mic_data):
                 txt_file.write(
                     f"mic_{i}: {int_to_twos_complement_string(mic)}  ")
+
+            txt_file.write("\n")
+
+    print(f"Conversion complete! Saved as {txt_path}")
+
+
+def bin_to_txt_simple(bin_path, txt_path):
+    """Convert binary UDP data file to a readable text format until the file ends."""
+    nr_arrays = 1  # Assuming one array of 64 microphones
+
+    with open(bin_path, "rb") as bin_file, open(txt_path, "w") as txt_file:
+        while True:
+            # Read one full data packet (header + sampleCounter + PL_counter + subband_nr + 64 microphones)
+            data_packet = bin_file.read(4 + 4 + 4 + 4 + (64 * 4 * nr_arrays))
+            if not data_packet:
+                break  # Stop when no more data
+
+            # Check if the data packet is complete
+            expected_packet_size = 4 + 4 + 4 + 4 + (64 * 4 * nr_arrays)
+            if len(data_packet) != expected_packet_size:
+                print(f"Warning: Incomplete packet encountered. Read {len(data_packet)} bytes, expected {expected_packet_size} bytes. Stopping.")
+                break  # Stop if incomplete packet is encountered.
+
+            # Unpack the binary data
+            header, sample_counter, pl_counter, subband_nr, *mic_data = struct.unpack("<iiii64i", data_packet)
+
+            # Write to text file
+            txt_file.write(int_to_twos_string_header(header))
+            txt_file.write(int_to_twos_string_header(sample_counter))
+            txt_file.write(int_to_twos_string_header(pl_counter))
+            txt_file.write(int_to_twos_string_header(subband_nr))
+
+            for i, mic in enumerate(mic_data):
+                txt_file.write(int_to_twos_string_header(mic))
 
             txt_file.write("\n")
 
@@ -104,6 +138,7 @@ bin_path = Path(ROOT + "/recorded_data/" + f"{file_name}.bin")
 txt_path = Path(ROOT + "/recorded_data/" + f"{file_name}.txt")
 
 check_all_sample_nr(bin_path)
-bin_to_txt(bin_path, txt_path)
+# bin_to_txt(bin_path, txt_path)
+bin_to_txt_simple(bin_path, txt_path)
 
 print(" ")  # end with a empty line

@@ -83,10 +83,11 @@ architecture structual of aw_top is
    signal decoded_valid  : std_logic;
 
    signal pl_sample_counter : unsigned(31 downto 0);
-   signal to_fifo_data_256  : matrix_256_32_type;
 
-   signal to_fifo_valid_d    : std_logic;
-   signal to_fifo_data_256_d : matrix_256_32_type;
+   signal to_fifo_valid_d     : std_logic;
+   signal to_fifo_valid_dd    : std_logic;
+   signal to_fifo_data_256_d  : matrix_256_32_type;
+   signal to_fifo_data_256_dd : matrix_256_32_type;
 
    signal rd_en_pulse : std_logic;
    signal rd_en_fifo  : std_logic;
@@ -98,19 +99,6 @@ begin
 
    ws_edge <= ws and not ws_d;
 
-   comb : process (pl_sample_counter, decode_subband, decoded_data)
-   begin
-      to_fifo_data_256(0) <= std_logic_vector(pl_sample_counter);
-      to_fifo_data_256(1) <= decode_subband;
-      for i in 0 to 63 loop
-         to_fifo_data_256(i + 2) <= decoded_data(i);
-      end loop;
-
-      for i in 0 to 61 loop
-         to_fifo_data_256(i + 2 + 64) <= (others => '0');
-      end loop;
-   end process;
-
    ff : process (clk)
    begin
       if rising_edge(clk) then
@@ -121,8 +109,16 @@ begin
          array_matrix_filterd_valid_d <= array_matrix_filterd_valid(0);
          subband_filter_d             <= subband_filter_array(0);
 
-         to_fifo_valid_d    <= decoded_valid;
-         to_fifo_data_256_d <= to_fifo_data_256;
+         to_fifo_valid_d  <= decoded_valid;
+         to_fifo_valid_dd <= to_fifo_valid_d;
+
+         to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
+         to_fifo_data_256_d(1) <= decode_subband;
+         for i in 0 to 63 loop
+            to_fifo_data_256_d(i + 2) <= decoded_data(i);
+         end loop;
+
+         to_fifo_data_256_dd <= to_fifo_data_256_d;
 
          if reset = '1' then
             pl_sample_counter <= (others => '0');
@@ -298,11 +294,9 @@ begin
       );
 
    decode_ema_inst : entity work.decode_ema
-      generic map(
-         nr_subbands => nr_subbands
-      )
       port map(
          clk                => clk,
+         rst                => reset,
          subband_in         => subband_filter_downsampled,
          down_sampled_data  => down_sampled_data,
          down_sampled_valid => down_sampled_valid,

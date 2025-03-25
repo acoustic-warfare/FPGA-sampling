@@ -37,29 +37,4 @@ for l in lib.get_test_benches():
     wave = ROOT.joinpath("test", "wave", f"{l.name}.tcl")
     l.set_sim_option("ghdl.viewer_script.gui", str(wave) if wave.is_file() else str(ROOT / "gtkwave.tcl"))
 
-
-def wait_for_gtkwave():
-    sleep_time = 0.05  # small timer makes it maximize before tb_.tcl scirpt go to full view
-    max_wait_time = 40  # max wait time in seconds
-    for i in range(int(max_wait_time * (1/sleep_time))):
-        # list of open windows
-        result = subprocess.run(["wmctrl", "-l"], capture_output=True, text=True)
-        # Check if GTKWave is in list
-        if "GTKWave" in result.stdout:
-            print("GTKWave detected, maximizing window...")
-            subprocess.run(["wmctrl", "-r", "GTKWave", "-b", "add,maximized_vert,maximized_horz"])
-            break
-
-        time.sleep(sleep_time)
-
-
-GTKWave = False
-if "--gtkwave-fmt" in sys.argv:
-    GTKWave = True
-    thread = threading.Thread(target=wait_for_gtkwave)
-    thread.start()
-
 vu.main()
-
-if GTKWave:
-    thread.join()
