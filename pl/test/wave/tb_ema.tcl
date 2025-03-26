@@ -13,16 +13,9 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-   tb_mux.clk
-   tb_mux.reset
+   tb_ema.clk
+   tb_ema.reset
 
-   tb_mux.mux_inst.rd_en
-   tb_mux.mux_inst.rd_en_d
-
-   tb_mux.mux_inst.counter
-
-   tb_mux.data_out[31:0]
-   tb_mux.rd_en_fifo
 }
 
 foreach signal $signals {

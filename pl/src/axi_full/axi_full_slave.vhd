@@ -366,7 +366,7 @@ begin
    -- and the slave is ready to accept the read address.
    slv_reg_rden <= axi_arready and S_AXI_ARVALID and (not axi_rvalid);
    --slv_reg_rden <= axi_arready and S_AXI_ARVALID and not axi_rvalid;
-   process (S_AXI_ACLK)
+   process (axi_araddr, slv_reg0, nr_arrays, sys_id, txn_done, txn_error, empty)
    begin
       -- Address decoding for reading registers
       case axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB) is

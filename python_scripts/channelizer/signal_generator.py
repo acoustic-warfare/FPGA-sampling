@@ -29,10 +29,6 @@ chirp_length = 25000
 # Noise parameters
 SNR_dB = 20  # Desired Signal-to-Noise Ratio in dB
 
-
-file_name_sim = "./data.mem"
-file_name_build = "./pl/src/simulated_array/data.mem"
-
 # END USER PARAMETERS
 ####################
 

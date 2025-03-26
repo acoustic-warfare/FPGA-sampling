@@ -54,7 +54,7 @@ begin
       end if;
    end process;
 
-   gen_data_in : process (clk, rd_en_fifo, rd_en_fifo_latch)
+   gen_data_in : process (rd_en_fifo, rd_en_fifo_latch)
    begin
       if (rd_en_fifo = '1') then
          rd_en_fifo_latch <= '1';

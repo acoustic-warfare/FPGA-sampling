@@ -22,9 +22,9 @@ end_time = [40000, 100000]
 
 # Add chirp
 chirp_min_frequency = 2000
-chirp_max_frequency = 7000
+chirp_max_frequency = 12000
 chirp_amplitude = 50
-chirp_length = 20000
+chirp_length = 25000
 
 # Noise parameters
 SNR_dB = 20  # Desired Signal-to-Noise Ratio in dB
