@@ -19,7 +19,7 @@ end entity;
 
 architecture rtl of decode_ema is
 
-   signal valid_subbands_34 : std_logic;
+   signal valid_subbands_24 : std_logic;
 
 begin
 
@@ -32,18 +32,18 @@ begin
          end if;
 
          -- extra ff for some timing :)
-         decoded_valid <= valid_subbands_34;
+         decoded_valid <= valid_subbands_24;
       end if;
    end process;
 
-   ema_34 : entity work.ema
+   ema_24 : entity work.ema
       port map(
          clk                => clk,
          rst                => rst,
          subband_in         => subband_in,
-         mic_data           => down_sampled_data(34),
+         mic_data           => down_sampled_data(24),
          mic_valid          => down_sampled_valid,
-         valid_subband_out => valid_subbands_34
+         valid_subband_out => valid_subbands_24
       );
 
 end architecture;

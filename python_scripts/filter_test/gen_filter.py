@@ -7,8 +7,11 @@ Fs = 48828.125  # Sampling Rate
 num_taps = 55  # Number of taps per filter
 M = 32
 
-filter_width = Fs / (2 * M)
-center_frequencies = np.linspace(filter_width/2, Fs/2 - filter_width/2, M, endpoint=True)  # Subband centers
+low_cutoff = 2 * 10**3
+high_cutoff = 20 * 10**3
+filter_width = (high_cutoff - low_cutoff) / M
+
+center_frequencies = np.linspace(low_cutoff + filter_width/2, high_cutoff - filter_width/2, M, endpoint=True)
 
 print("num_taps", num_taps)
 print("num_subbands", M)
@@ -68,5 +71,18 @@ def print_all_vhdl_format(filters):
             print(f"({formatted})")   # No comma for last row
 
 
-#filters_scaled_all = np.array(filters_scaled_all)[::-1]  # Reverse the rows
-print_all_vhdl_format(np.array(filters_scaled_all))
+def print_all_vhdl_format_folded(filters):
+    num_filters = len(filters)
+    for i, filter in enumerate(filters):
+        taps_hex = [f"{(tap & 0xFFF):03X}" for tap in filter]  # Convert to 12-bit hex
+        taps_hex = taps_hex[:len(taps_hex) // 2 + 1]
+
+        formatted = ", ".join([f'x"{tap}"' for tap in taps_hex])
+        if i < num_filters - 1:
+            print(f"({formatted}),")
+        else:
+            print(f"({formatted})")   # No comma for last row
+
+
+# print_all_vhdl_format(np.array(filters_scaled_all))
+print_all_vhdl_format_folded(np.array(filters_scaled_all))

@@ -112,11 +112,18 @@ begin
          to_fifo_valid_d  <= decoded_valid;
          to_fifo_valid_dd <= to_fifo_valid_d;
 
-         to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
-         to_fifo_data_256_d(1) <= decode_subband;
-         for i in 0 to 63 loop
-            to_fifo_data_256_d(i + 2) <= decoded_data(i);
-         end loop;
+         if decoded_valid = '1' then
+            to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
+            to_fifo_data_256_d(1) <= decode_subband;
+            for i in 0 to 63 loop
+               to_fifo_data_256_d(i + 2) <= decoded_data(i);
+            end loop;
+
+            for i in 66 to 255 loop
+               to_fifo_data_256_d(i) <= (others => '0');
+            end loop;
+
+         end if;
 
          to_fifo_data_256_dd <= to_fifo_data_256_d;
 
@@ -312,8 +319,8 @@ begin
       port map(
          clk          => clk,
          reset        => reset,
-         wr_en        => to_fifo_valid_d,
-         wr_data      => to_fifo_data_256_d,
+         wr_en        => to_fifo_valid_dd,
+         wr_data      => to_fifo_data_256_dd,
          rd_en        => rd_en_fifo,
          rd_data      => data_fifo_256_out,
          empty        => empty_array,
