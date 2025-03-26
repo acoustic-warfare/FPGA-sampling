@@ -13,16 +13,12 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-   tb_mux.clk
-   tb_mux.reset
+   tb_decode_ema.clk
+   tb_decode_ema.decode_ema_inst.down_sampled_valid
+   tb_decode_ema.decode_ema_inst.subband_out
+   tb_decode_ema.decode_ema_inst.decoded_valid
+   tb_decode_ema.decode_ema_inst.ema_34.ema_max
 
-   tb_mux.mux_inst.rd_en
-   tb_mux.mux_inst.rd_en_d
-
-   tb_mux.mux_inst.counter
-
-   tb_mux.data_out[31:0]
-   tb_mux.rd_en_fifo
 }
 
 foreach signal $signals {
@@ -32,3 +28,4 @@ foreach signal $signals {
 
 # zoom full
 gtkwave::/Time/Zoom/Zoom_Full
+

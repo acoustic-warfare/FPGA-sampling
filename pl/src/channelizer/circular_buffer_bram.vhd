@@ -22,7 +22,7 @@ end entity;
 architecture rtl of circular_buffer_bram is
 
    type ram_type is array ((nr_subbands * nr_mics) - 1 downto 0) of std_logic_vector(71 downto 0);
-   signal ram : ram_type;
+   signal ram : ram_type := (others => (others => '0'));
 
 begin
 

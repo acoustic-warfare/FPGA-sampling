@@ -1,3 +1,6 @@
+# make fullscreen (executes standard bash comand)
+exec wmctrl -r GTKWave -b add,maximized_vert,maximized_horz &
+
 set nfacts [gtkwave::getNumFacs]
 puts "$nfacts"
 

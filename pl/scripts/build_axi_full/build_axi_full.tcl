@@ -28,6 +28,9 @@ add_files [file join "$ROOT" src channelizer transposed_fir_dsp.vhd]
 add_files [file join "$ROOT" src channelizer transposed_folded_fir_controller.vhd]
 add_files [file join "$ROOT" src channelizer transposed_folded_fir_dsp.vhd]
 
+add_files [file join "$ROOT" src decode decode_ema.vhd]
+add_files [file join "$ROOT" src decode ema.vhd]
+
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
 add_files [file join "$ROOT" src sample_data double_ff.vhd]

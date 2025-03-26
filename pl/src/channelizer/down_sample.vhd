@@ -28,11 +28,6 @@ architecture rtl of down_sample is
 
 begin
 
-   process (array_matrix_data, subband_in)
-   begin
-
-   end process;
-
    process (clk)
    begin
       if rising_edge(clk) then
