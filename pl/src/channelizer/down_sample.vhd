@@ -15,7 +15,7 @@ entity down_sample is
       array_matrix_valid : in std_logic;
       subband_in         : in std_logic_vector(7 downto 0);
       subband_out        : out std_logic_vector(31 downto 0);
-      down_sampled_data  : out matrix_64_32_type;
+      down_sampled_data  : out matrix_64_24_type;
       down_sampled_valid : out std_logic
    );
 end entity;
@@ -24,7 +24,7 @@ architecture rtl of down_sample is
    signal down_sample_counter  : integer range 0 to nr_subbands + 1;
    signal array_matrix_valid_d : std_logic;
 
-   signal down_sampled_data_internal : matrix_64_32_type;
+   signal down_sampled_data_internal : matrix_64_24_type;
 
 begin
 
@@ -33,8 +33,9 @@ begin
       if rising_edge(clk) then
          for mic in 0 to 15 loop
             for chain in 0 to 3 loop
-               down_sampled_data_internal(chain * 16 + mic)(23 downto 0)  <= array_matrix_data(chain)(mic);
-               down_sampled_data_internal(chain * 16 + mic)(31 downto 24) <= (others => (array_matrix_data(chain)(mic)(23)));
+               --down_sampled_data_internal(chain * 16 + mic)(23 downto 0)  <= array_matrix_data(chain)(mic);
+               --down_sampled_data_internal(chain * 16 + mic)(31 downto 24) <= (others => (array_matrix_data(chain)(mic)(23)));
+               down_sampled_data_internal(chain * 16 + mic) <= array_matrix_data(chain)(mic);
             end loop;
          end loop;
 

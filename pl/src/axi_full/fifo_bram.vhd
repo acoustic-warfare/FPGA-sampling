@@ -30,17 +30,12 @@ begin
          if wr_en = '1' then
             ram(to_integer(unsigned(wr_addr))) <= wr_data;
          end if;
-      end if;
-   end process;
 
-   process (clk)
-   begin
-      if rising_edge(clk) then
          if rd_en = '1' then
             rd_data_internal <= ram(to_integer(unsigned(rd_addr)));
          end if;
          -- denna delay är mycket viktig annars missar man fösta sloten i axi
-         -- dock tror jag den också orsakar att countern skickas två gånger ??
+         -- dock tror jag den också orsakar att countern skickas två gånger ?? :thinking:
          rd_data <= rd_data_internal;
       end if;
    end process;

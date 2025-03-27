@@ -74,7 +74,7 @@ architecture structual of aw_top is
    signal array_matrix_filterd_valid_d : std_logic;
    signal subband_filter_d             : std_logic_vector(7 downto 0);
 
-   signal down_sampled_data          : matrix_64_32_type;
+   signal down_sampled_data          : matrix_64_24_type;
    signal down_sampled_valid         : std_logic;
    signal subband_filter_downsampled : std_logic_vector(31 downto 0);
 
@@ -112,18 +112,15 @@ begin
          to_fifo_valid_d  <= decoded_valid;
          to_fifo_valid_dd <= to_fifo_valid_d;
 
-         if decoded_valid = '1' then
-            to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
-            to_fifo_data_256_d(1) <= decode_subband;
-            for i in 0 to 63 loop
-               to_fifo_data_256_d(i + 2) <= decoded_data(i);
-            end loop;
+         to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
+         to_fifo_data_256_d(1) <= decode_subband;
+         for i in 0 to 63 loop
+            to_fifo_data_256_d(i + 2) <= decoded_data(i);
+         end loop;
 
-            for i in 66 to 255 loop
-               to_fifo_data_256_d(i) <= (others => '0');
-            end loop;
-
-         end if;
+         for i in 66 to 255 loop
+            to_fifo_data_256_d(i) <= (others => '0'); -- this dont do much :/
+         end loop;
 
          to_fifo_data_256_dd <= to_fifo_data_256_d;
 
@@ -255,17 +252,6 @@ begin
          );
    end generate;
 
-   -- full_sample_c : entity work.full_sample
-   --    --generic map(number_of_arrays => number_of_arrays)
-   --    port map(
-   --       sys_clk                => clk,
-   --       reset                  => reset,
-   --       chain_matrix_data_in   => chain_matrix_data,
-   --       chain_matrix_valid_in  => chain_matrix_valid_array(0),
-   --       array_matrix_data_out  => array_matrix_data,
-   --       array_matrix_valid_out => array_matrix_valid
-   --    );
-
    filter_gen : for i in 0 to 3 generate
       transposed_folded_fir_controller_inst : entity work.transposed_folded_fir_controller
          generic map(
@@ -304,6 +290,7 @@ begin
       port map(
          clk                => clk,
          rst                => reset,
+         switch             => sw_ff(1),
          subband_in         => subband_filter_downsampled,
          down_sampled_data  => down_sampled_data,
          down_sampled_valid => down_sampled_valid,

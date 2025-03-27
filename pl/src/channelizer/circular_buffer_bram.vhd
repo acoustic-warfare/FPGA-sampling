@@ -32,15 +32,11 @@ begin
          if write_en = '1' then
             ram(to_integer(unsigned(write_address))) <= write_line_data;
          end if;
-      end if;
-   end process;
 
-   process (clk)
-   begin
-      if rising_edge(clk) then
          if read_en = '1' then
             read_line_data <= ram(to_integer(unsigned(read_address)));
          end if;
+
       end if;
    end process;
 

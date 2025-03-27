@@ -45,7 +45,7 @@ architecture tb of tb_super_test is
    signal array_matrix_filterd_valid : std_logic_vector(3 downto 0);
    type subband_filter_array_type is array (3 downto 0) of std_logic_vector(7 downto 0);
    signal subband_filter_array : subband_filter_array_type;
-   signal down_sampled_data    : matrix_64_32_type;
+   signal down_sampled_data    : matrix_64_24_type;
    signal down_sampled_valid   : std_logic;
 
    signal subband_filter_downsampled : std_logic_vector(31 downto 0);
@@ -190,7 +190,7 @@ begin
       down_sampled_data_256(0) <= std_logic_vector(pl_sample_counter);
       down_sampled_data_256(1) <= subband_filter_downsampled;
       for i in 0 to 63 loop
-         down_sampled_data_256(i + 2) <= down_sampled_data(i);
+         down_sampled_data_256(i + 2)(23 downto 0) <= down_sampled_data(i); --bad quick fix :)
       end loop;
    end process;
 

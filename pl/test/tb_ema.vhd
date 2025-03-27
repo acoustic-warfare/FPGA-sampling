@@ -21,7 +21,7 @@ architecture tb of tb_ema is
    signal rst : std_logic := '1';
 
    signal subband_in : std_logic_vector(31 downto 0);
-   signal mic_data   : std_logic_vector(31 downto 0);
+   signal mic_data   : std_logic_vector(23 downto 0);
    signal mic_valid  : std_logic := '0';
 
    signal valid_subbands_out : std_logic;

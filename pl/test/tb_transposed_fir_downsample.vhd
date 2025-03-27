@@ -33,7 +33,7 @@ architecture tb of tb_transposed_fir_downsample is
    signal subband_filter    : std_logic_vector(7 downto 0);
 
    signal subband_down_sample : std_logic_vector(31 downto 0);
-   signal down_sampled_data   : matrix_64_32_type;
+   signal down_sampled_data   : matrix_64_24_type;
    signal down_sampled_valid  : std_logic;
 
    -- input file and Impure function for simulation

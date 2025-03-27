@@ -22,7 +22,7 @@ architecture tb of tb_decode_ema is
    signal rst : std_logic := '1';
 
    signal subband_in         : std_logic_vector(31 downto 0) := (others => '0');
-   signal down_sampled_data  : matrix_64_32_type             := (others => (others => '0'));
+   signal down_sampled_data  : matrix_64_24_type             := (others => (others => '0'));
    signal down_sampled_valid : std_logic                     := '0';
    signal subband_out        : std_logic_vector(31 downto 0);
    signal decoded_data       : matrix_64_32_type;
@@ -31,14 +31,13 @@ architecture tb of tb_decode_ema is
    --
    constant input_data_lenght : integer := 32 * 40;
    type subband_nr_type is array (0 to input_data_lenght - 1) of std_logic_vector(31 downto 0);
-   type mic_data_type is array (0 to input_data_lenght - 1) of matrix_64_32_type;
+   type mic_data_type is array (0 to input_data_lenght - 1) of matrix_64_24_type;
    signal subband_nr : subband_nr_type;
    signal mic_data   : mic_data_type;
 
    --
-   type matrix_65_32_type is array (64 downto 0) of std_logic_vector(31 downto 0);
-   constant num_columns : integer := 64;
-   type input_data_type is array (0 to input_data_lenght - 1) of matrix_65_32_type;
+   type matrix_65_24_type is array (64 downto 0) of std_logic_vector(23 downto 0);
+   type input_data_type is array (0 to input_data_lenght - 1) of matrix_65_24_type;
 
    signal input_data : input_data_type;
 
@@ -69,22 +68,22 @@ architecture tb of tb_decode_ema is
             -- subband_nr
             read(text_line, temp_value);
             --report "Value: " & to_string(temp_value);
-            ram_content(i)(0) := To_StdLogicVector(temp_value);
+            ram_content(i)(0) := To_StdLogicVector(temp_value)(23 downto 0);
 
             -- mic data
-            for j in 0 to num_columns - 1 loop
+            for j in 0 to 63 loop
                read(text_line, temp_value); -- Read 32-bit binary value
 
                --report "Value: " & to_string(j) & " " & to_string(temp_value);
 
                temp_slv              := To_StdLogicVector(temp_value); -- Convert to std_logic_vector
-               ram_content(i)(j + 1) := temp_slv;                      -- Store in matrix
+               ram_content(i)(j + 1) := temp_slv(23 downto 0);         -- Store in matrix
             end loop;
 
          else
             -- If file ends early, fill with zeros
             --report "ERROR, END OF FILE!";
-            for j in 0 to num_columns - 1 loop
+            for j in 0 to 63 loop
                ram_content(i)(j) := (others => '0');
             end loop;
          end if;
@@ -102,6 +101,7 @@ begin
       port map(
          clk                => clk,
          rst                => rst,
+         switch             => '0',
          subband_in         => subband_in,
          down_sampled_data  => down_sampled_data,
          down_sampled_valid => down_sampled_valid,
@@ -117,7 +117,7 @@ begin
          if run("wave") then
 
             for i in 0 to input_data_lenght - 1 loop
-               subband_nr(i) <= input_data(i)(0);
+               subband_nr(i) <= "00000000" & input_data(i)(0);
                for j in 0 to 63 loop
                   mic_data(i)(j) <= input_data(i)(j);
                end loop;
@@ -128,7 +128,7 @@ begin
             wait for (2 * C_CLK_CYKLE);
 
             for i in 0 to input_data_lenght - 1 loop
-               subband_in         <= subband_nr(i);
+               subband_in         <= "00000000" & subband_nr(i);
                down_sampled_data  <= mic_data(i);
                down_sampled_valid <= '1';
                wait for 1 * C_CLK_CYKLE;
@@ -141,7 +141,7 @@ begin
             -- test 1 is so far only meant for gktwave
 
             for i in 0 to input_data_lenght - 1 loop
-               subband_nr(i) <= input_data(i)(0);
+               subband_nr(i) <= "00000000" & input_data(i)(0);
                for j in 0 to 63 loop
                   mic_data(i)(j) <= input_data(i)(j);
                end loop;
