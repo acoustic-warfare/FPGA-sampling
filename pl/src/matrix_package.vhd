@@ -5,6 +5,7 @@ package matrix_type is
    -- 24 (2d) 
    type matrix_4_24_type is array (3 downto 0) of std_logic_vector(23 downto 0);
    type matrix_16_24_type is array (15 downto 0) of std_logic_vector(23 downto 0);
+   type matrix_32_24_type is array (31 downto 0) of std_logic_vector(23 downto 0);
    type matrix_64_24_type is array (63 downto 0) of std_logic_vector(23 downto 0);
    -- 24 (3d) 
    type matrix_4_16_24_type is array (3 downto 0) of matrix_16_24_type;

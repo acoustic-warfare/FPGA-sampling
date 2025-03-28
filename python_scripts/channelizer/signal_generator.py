@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 # General
 Fs = 48828.125  # Sampling Rate
 
-max_length = 50000 * 5  # Number of samples
+#max_length = 50000 * 5  # Number of samples
+max_length = 249856
 max_amplitude = 1000000  # Max amplitude (all signals are normilized to this value at the end)
 
 # Input signal

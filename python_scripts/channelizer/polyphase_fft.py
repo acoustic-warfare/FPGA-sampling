@@ -33,8 +33,8 @@ def db(x):
 
 
 Fs = 48828.125
-M = 16      # Number of taps
-P = 128     # Number of 'branches', also fft length
+M = 4      # Tap multiplier (taps = M * P)
+P = 64     # Number of 'branches', also fft length
 
 x = signal_generator.generate_signal()
 win_coeffs = generate_win_coeffs(M, P, window_fn="hamming")

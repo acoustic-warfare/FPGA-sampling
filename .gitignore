@@ -13,3 +13,4 @@ data.mem
 a.out
 __pycache__
 output*.mem
+python_scripts/fft/fft_input_data.txt

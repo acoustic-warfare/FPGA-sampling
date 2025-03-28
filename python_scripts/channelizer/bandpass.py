@@ -65,7 +65,8 @@ def apply_down_sampling(subband_signals):
 # Generate input signal
 # input_signal = signal_generator.generate_signal(noise=False)
 # input_signal = signal_generator.generate_signal(long_tone=True, shot_tone=False, chirp=False, noise=False, plt=True)
-input_signal = signal_generator.generate_signal(long_tone=False, shot_tone=False, chirp=True, noise=False, plt=True)
+#input_signal = signal_generator.generate_signal(long_tone=False, shot_tone=False, chirp=True, noise=False, plt=True)
+input_signal = signal_generator.generate_signal()
 
 print("input length: ", len(input_signal))
 
