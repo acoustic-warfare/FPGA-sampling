@@ -28,13 +28,19 @@ def generate_twiddle_factors(N):
         imag = int(math.sin(angle) * SCALE_FACTOR)
         twiddle_lut.append(complex(real, imag))
 
-    twiddle_lut_hex_real = [f"{(int(twidd.real) & 0xFFFFF):05X}" for twidd in twiddle_lut]
-    twiddle_lut_hex_real_formatted = ", ".join([f'x"{twidd}"' for twidd in twiddle_lut_hex_real])
-    print(f"constant twidle_r : twidle_type := ({twiddle_lut_hex_real_formatted});")
+    twiddle_lut_hex_real = [
+        f"{(int(twidd.real) & 0xFFFFF):05X}" for twidd in twiddle_lut]
+    twiddle_lut_hex_real_formatted = ", ".join(
+        [f'x"{twidd}"' for twidd in twiddle_lut_hex_real])
+    print(
+        f"constant twidle_r : twidle_type := ({twiddle_lut_hex_real_formatted});")
 
-    twiddle_lut_hex_imag = [f"{(int(twidd.imag) & 0xFFFFF):05X}" for twidd in twiddle_lut]
-    twiddle_lut_hex_imag_formatted = ", ".join([f'x"{twidd}"' for twidd in twiddle_lut_hex_imag])
-    print(f"constant twidle_i : twidle_type := ({twiddle_lut_hex_imag_formatted});")
+    twiddle_lut_hex_imag = [
+        f"{(int(twidd.imag) & 0xFFFFF):05X}" for twidd in twiddle_lut]
+    twiddle_lut_hex_imag_formatted = ", ".join(
+        [f'x"{twidd}"' for twidd in twiddle_lut_hex_imag])
+    print(
+        f"constant twidle_i : twidle_type := ({twiddle_lut_hex_imag_formatted});")
 
     return twiddle_lut
 
@@ -48,7 +54,8 @@ def fft_32_point(samples, twiddle_lut):
     """Performs a 32-point FFT using fixed-point integer twiddle factors."""
     N = 32
     indices = bit_reverse_indices(N)
-    ordered_samples = [complex(samples[i], 0) for i in indices]  # Ensure complex format
+    ordered_samples = [complex(samples[i], 0)
+                       for i in indices]  # Ensure complex format
 
     stage_size = 2
 
@@ -65,6 +72,8 @@ def fft_32_point(samples, twiddle_lut):
                 a = ordered_samples[i + j]
                 b = ordered_samples[i + j + half_size]
 
+                pre_b = b
+
                 # Fixed-point multiplication
                 b_real = ((b.real * real) - (b.imag * imag)) // SCALE_FACTOR
                 b_imag = ((b.real * imag) + (b.imag * real)) // SCALE_FACTOR
@@ -73,11 +82,21 @@ def fft_32_point(samples, twiddle_lut):
                 ordered_samples[i + j] = a + b
                 ordered_samples[i + j + half_size] = a - b
 
-                print("a + b ", a, " ", b, " ", ordered_samples[i + j], "    a_index", i + j, "b_index", i + j + half_size)
-                print("a - b ", a, " ", b, " ", ordered_samples[i + j + half_size], "    a_index", i + j, "b_index", i + j + half_size)
+                print("! ", pre_b, "       ", b, "       index: ", i +
+                      j + half_size, "      twiddle=", real, " +i ", imag, " twiddle index", j * twiddle_step)
+
+                print("a + b ", a, " ", b, " ",
+                      ordered_samples[i + j], "    a_index", i + j, "b_index", i + j + half_size)
+                print("a - b ", a, " ", b, " ",
+                      ordered_samples[i + j + half_size], "    a_index", i + j, "b_index", i + j + half_size)
                 print()
 
             print("-------------")
+        print("===============")
+        print("stage: ", stage_size)
+        for i in range(len(ordered_samples)):
+            print(i, " ", ordered_samples[i])
+        print()
 
         print("===============")
 

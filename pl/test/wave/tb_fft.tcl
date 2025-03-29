@@ -16,6 +16,11 @@ set signals {
     tb_fft.clk -
 }
 
+for {set i 0} {$i < 32} {incr i} {
+    lappend signals "tb_fft.fft_inst.data_r_out\[$i\] -"
+    lappend signals "tb_fft.fft_inst.data_i_out\[$i\] -"
+}
+
 foreach signal $signals {
     addSignal $signal
     gtkwave::/Edit/Data_Format/Signed_Decimal
