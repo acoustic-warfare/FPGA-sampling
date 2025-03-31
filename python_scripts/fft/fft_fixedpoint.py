@@ -54,8 +54,7 @@ def fft_32_point(samples, twiddle_lut):
     """Performs a 32-point FFT using fixed-point integer twiddle factors."""
     N = 32
     indices = bit_reverse_indices(N)
-    ordered_samples = [complex(samples[i], 0)
-                       for i in indices]  # Ensure complex format
+    ordered_samples = [complex(samples[i], 0) for i in indices]
 
     stage_size = 2
 
@@ -102,40 +101,52 @@ def fft_32_point(samples, twiddle_lut):
 
         stage_size *= 2
 
-    return [x / N for x in ordered_samples]  # Normalize results
+    return [x for x in ordered_samples]  # Normalize results
 
 
-def plot_magnitude_response(fft_results):
-    magnitude_db = 20 * np.log10(fft_results + 1e-10)
-    plt.plot(magnitude_db, linestyle='-', marker='o')
-    plt.xlabel('Frequency Bin')
-    plt.ylabel('Magnitude (dB)')
-    plt.title('FFT Magnitude Response Comparison')
-    plt.grid()
+def db(x):
+    return 20 * np.log10(x + 1e-10)
 
 
-if __name__ == "__main__":
-    INPUT_FILE = './python_scripts/fft/fft_input_data.txt'
-    samples = load_samples(INPUT_FILE)
-    twiddle_lut = generate_twiddle_factors(32)
+INPUT_FILE = './python_scripts/fft/fft_input_data.txt'
+samples = load_samples(INPUT_FILE)
+twiddle_lut = generate_twiddle_factors(32)
 
-    num_batches = len(samples) // 32
-    fft_results = []
+num_batches = len(samples) // 32
+fft_results = []
 
-    for i in range(1):
-        batch = samples[i * 32:(i + 1) * 32]
-        fft_output = fft_32_point(batch, twiddle_lut)
-        fft_results.append(fft_output)
+for i in range(1):
+    batch = samples[i * 32:(i + 1) * 32]
+    fft_output = fft_32_point(batch, twiddle_lut)
+    fft_results.append(fft_output)
 
-    np_fft_result = np.fft.fft(samples[:32]) / 32
+np_fft_result = np.fft.fft(samples[:32])
 
-    avg_magnitude = np.zeros(32)
-    for batch in fft_results:
-        avg_magnitude += np.abs(batch)
+plt.figure(figsize=(10, 5))
 
-    plt.figure(figsize=(10, 5))
-    plot_magnitude_response(np.abs(avg_magnitude))
-    plot_magnitude_response(np.abs(np_fft_result))
-    plt.show()
 
-    print(fft_results[0])
+# print(fft_results[0])
+
+
+# File path (update if necessary)
+file_path = "./python_scripts/fft/tb_result.txt"
+
+# Read data from file
+data = np.loadtxt(file_path, dtype=np.float64)
+real = data[:32, 0]
+imag = data[:32, 1]
+
+fft_tb_result = [complex(real[i], imag[i])
+                 for i in range(min(len(real), len(imag)))]
+
+
+plt.plot(db(np.abs(fft_tb_result)) + 2,  marker='o')
+plt.plot(db(np.abs(fft_results[0])) + 1,  marker='o')
+plt.plot(db(np.abs(np_fft_result)), marker='o')
+
+
+plt.xlabel('Frequency Bin')
+plt.ylabel('Magnitude (dB)')
+plt.title('FFT Magnitude Response Comparison')
+plt.grid()
+plt.show()

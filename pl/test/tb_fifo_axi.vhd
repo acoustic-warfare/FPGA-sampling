@@ -20,10 +20,10 @@ architecture behavior of tb_fifo_axi is
    signal reset         : std_logic := '0';
 
    signal wr_en   : std_logic := '0';
-   signal wr_data : matrix_256_32_type;
+   signal wr_data : matrix_66_24_type;
 
    signal rd_en   : std_logic := '0';
-   signal rd_data : matrix_256_32_type;
+   signal rd_data : std_logic_vector(31 downto 0);
 
    -- Flags
    signal empty        : std_logic;
@@ -33,55 +33,19 @@ architecture behavior of tb_fifo_axi is
 
    signal multiplyer : integer := 1;
 
-   signal TB_wr_data_0 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_1 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_2 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_3 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_4 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_5 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_6 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_7 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_8 : std_logic_vector(31 downto 0);
-   signal TB_wr_data_9 : std_logic_vector(31 downto 0);
-
-   --signal TB_wr_data_246 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_247 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_248 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_249 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_250 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_251 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_252 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_253 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_254 : std_logic_vector(31 downto 0);
-   --signal TB_wr_data_255 : std_logic_vector(31 downto 0);
-
-   signal TB_rd_data_0 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_1 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_2 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_3 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_4 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_5 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_6 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_7 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_8 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_9 : std_logic_vector(31 downto 0);
-
-   signal TB_rd_data_246 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_247 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_248 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_249 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_250 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_251 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_252 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_253 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_254 : std_logic_vector(31 downto 0);
-   signal TB_rd_data_255 : std_logic_vector(31 downto 0);
+   signal TB_wr_data_0 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_1 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_2 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_3 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_4 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_5 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_6 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_7 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_8 : std_logic_vector(23 downto 0);
+   signal TB_wr_data_9 : std_logic_vector(23 downto 0);
 
 begin
    fifo_inst : entity work.fifo_axi
-      generic map(
-         RAM_DEPTH => 32
-      )
       port map(
          clk          => clk,
          reset        => reset,
@@ -99,8 +63,8 @@ begin
 
    process (multiplyer)
    begin
-      for i in 0 to 63 loop
-         wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 32));
+      for i in 0 to 65 loop
+         wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 24));
       end loop;
    end process;
 
@@ -128,35 +92,11 @@ begin
       --TB_wr_data_255 <= wr_data(255);
    end process;
 
-   process (rd_data)
-   begin
-      TB_rd_data_0   <= rd_data(0);
-      TB_rd_data_1   <= rd_data(1);
-      TB_rd_data_2   <= rd_data(2);
-      TB_rd_data_3   <= rd_data(3);
-      TB_rd_data_4   <= rd_data(4);
-      TB_rd_data_5   <= rd_data(5);
-      TB_rd_data_6   <= rd_data(6);
-      TB_rd_data_7   <= rd_data(7);
-      TB_rd_data_8   <= rd_data(8);
-      TB_rd_data_9   <= rd_data(9);
-      TB_rd_data_246 <= rd_data(246);
-      TB_rd_data_247 <= rd_data(247);
-      TB_rd_data_248 <= rd_data(248);
-      TB_rd_data_249 <= rd_data(249);
-      TB_rd_data_250 <= rd_data(250);
-      TB_rd_data_251 <= rd_data(251);
-      TB_rd_data_252 <= rd_data(252);
-      TB_rd_data_253 <= rd_data(253);
-      TB_rd_data_254 <= rd_data(254);
-      TB_rd_data_255 <= rd_data(255);
-   end process;
-
    main_p : process
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("wave") then
+         if run("wave_full") then
 
             wait for C_CLK_CYKLE * 2;
             reset <= '1';

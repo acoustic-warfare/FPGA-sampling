@@ -20,7 +20,6 @@ set signals {
    tb_aw_top.aw_top_inst.sample_gen_0(3).sample_c.bit_stream -
    tb_aw_top.aw_top_inst.sample_gen_0(3).sample_c.mic_sample_data_out -
    tb_aw_top.aw_top_inst.sample_gen_0(3).sample_c.mic_sample_valid_out -
-
 }
 
 foreach signal $signals {

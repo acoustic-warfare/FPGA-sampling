@@ -1,8 +1,6 @@
 # Setup Board
 set board digilentinc.com:zybo-z7-20:part0:1.2
 
-
-
 # Create project
 set ROOT [file normalize [file join [file dirname [info script]] ../.. ]]
 set outputdir [file join "$ROOT" vivado_files]
@@ -30,6 +28,10 @@ add_files [file join "$ROOT" src channelizer transposed_folded_fir_dsp.vhd]
 
 add_files [file join "$ROOT" src decode decode_ema.vhd]
 add_files [file join "$ROOT" src decode ema.vhd]
+
+add_files [file join "$ROOT" src fft fft.vhd]
+add_files [file join "$ROOT" src fft fft_bram.vhd]
+add_files [file join "$ROOT" src fft fft_controller.vhd]
 
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]

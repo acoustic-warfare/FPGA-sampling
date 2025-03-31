@@ -24,7 +24,10 @@ architecture tb of tb_fft is
    signal data_in    : matrix_32_24_type;
    signal data_r_out : matrix_32_24_type;
    signal data_i_out : matrix_32_24_type;
-   
+   signal valid_in   : std_logic                    := '0';
+   signal mic_nr_in  : std_logic_vector(7 downto 0) := (others => '0');
+   signal valid_out  : std_logic;
+   signal mic_nr_out : std_logic_vector(7 downto 0);
    --
    constant input_data_lenght : integer := 32 * 5;
 
@@ -68,11 +71,18 @@ begin
       port map(
          clk        => clk,
          data_in    => data_in,
+         valid_in   => valid_in,
+         mic_nr_in  => mic_nr_in,
          data_r_out => data_r_out,
-         data_i_out => data_i_out
+         data_i_out => data_i_out,
+         valid_out  => valid_out,
+         mic_nr_out => mic_nr_out
       );
 
    main : process
+      file output_file_0     : text open write_mode is ("./python_scripts/fft/tb_result.txt");
+      variable line_to_write : line;
+
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
@@ -99,8 +109,27 @@ begin
             wait for (200 * C_CLK_CYKLE);
 
          elsif run("auto") then
+            wait for (2 * C_CLK_CYKLE);
+            rst <= '0';
+            wait for (2 * C_CLK_CYKLE);
 
-            wait for 12 ns;
+            for i in 0 to input_data_lenght / 32 - 1 loop
+               for j in 0 to 31 loop
+                  data_in(j) <= input_data(i * 32 + j);
+               end loop;
+
+               wait for (20 * C_CLK_CYKLE);
+
+               for s in 0 to 31 loop
+                  write(line_to_write, to_integer(signed(data_r_out(s)))); -- setup line
+                  STRING_WRITE(line_to_write, " ");                        -- setup line
+                  write(line_to_write, to_integer(signed(data_i_out(s)))); -- setup line
+                  writeline(output_file_0, line_to_write);                 -- write line to file
+               end loop;
+
+            end loop;
+
+            wait for (200 * C_CLK_CYKLE);
 
          end if;
       end loop;

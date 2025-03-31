@@ -7,13 +7,7 @@ entity aw_top is
    generic (
       constant number_of_arrays : integer := 1; -- set nr of arrays, will be sent over axi-lite to configure the PS
 
-      constant startup_length : integer := 5000000;
-
-      constant bypass_filter  : std_logic := '0'; -- 0 = filters as normal, 1 = bypass filters
-      constant nr_filter_taps : integer   := 55;
-      constant nr_subbands    : integer   := 32;
-
-      constant fifo_buffer_lenght : integer := 64 --lowerd from 128
+      constant startup_length : integer := 5000000
    );
    port (
       sys_clock     : in std_logic;
@@ -61,36 +55,24 @@ architecture structual of aw_top is
    signal almost_full_array  : std_logic;
    signal almost_empty_array : std_logic;
 
-   --signal array_matrix_data  : matrix_64_24_type;
-   signal data_fifo_256_out : matrix_256_32_type;
-   --signal array_matrix_valid : std_logic;
+   signal fft_data_r_out : matrix_32_24_type;
+   signal fft_data_i_out : matrix_32_24_type;
+   signal fft_valid_out  : std_logic;
+   signal fft_mic_nr_out : std_logic_vector(7 downto 0);
+   --
 
-   signal array_matrix_filterd_data  : matrix_4_16_24_type;
-   signal array_matrix_filterd_valid : std_logic_vector(3 downto 0);
-   type subband_filter_array_type is array (3 downto 0) of std_logic_vector(7 downto 0);
-   signal subband_filter_array : subband_filter_array_type;
+   --
 
-   signal array_matrix_filterd_data_d  : matrix_4_16_24_type;
-   signal array_matrix_filterd_valid_d : std_logic;
-   signal subband_filter_d             : std_logic_vector(7 downto 0);
+   --
 
-   signal down_sampled_data          : matrix_64_24_type;
-   signal down_sampled_valid         : std_logic;
-   signal subband_filter_downsampled : std_logic_vector(31 downto 0);
+   signal pl_sample_counter : unsigned(23 downto 0);
 
-   signal decode_subband : std_logic_vector(31 downto 0);
-   signal decoded_data   : matrix_64_32_type;
-   signal decoded_valid  : std_logic;
-
-   signal pl_sample_counter : unsigned(31 downto 0);
-
-   signal to_fifo_valid_d     : std_logic;
-   signal to_fifo_valid_dd    : std_logic;
-   signal to_fifo_data_256_d  : matrix_256_32_type;
-   signal to_fifo_data_256_dd : matrix_256_32_type;
+   signal to_fifo_valid_d    : std_logic;
+   signal to_fifo_valid_dd   : std_logic;
+   signal to_fifo_data_66_d  : matrix_66_24_type;
+   signal to_fifo_data_66_dd : matrix_66_24_type;
 
    signal rd_en_pulse : std_logic;
-   signal rd_en_fifo  : std_logic;
 
    signal system_ids : std_logic_vector(1 downto 0); -- 2 bit signal for system IDs (2 switches)
    --signal nr_arrays  : std_logic_vector(1 downto 0); -- 2 bit signal for nr of arrays (2 switches)
@@ -105,24 +87,18 @@ begin
          ws_d  <= ws;
          ws_dd <= ws_d;
 
-         array_matrix_filterd_data_d  <= array_matrix_filterd_data;
-         array_matrix_filterd_valid_d <= array_matrix_filterd_valid(0);
-         subband_filter_d             <= subband_filter_array(0);
-
-         to_fifo_valid_d  <= decoded_valid;
+         to_fifo_valid_d  <= fft_valid_out;
          to_fifo_valid_dd <= to_fifo_valid_d;
 
-         to_fifo_data_256_d(0) <= std_logic_vector(pl_sample_counter);
-         to_fifo_data_256_d(1) <= decode_subband;
-         for i in 0 to 63 loop
-            to_fifo_data_256_d(i + 2) <= decoded_data(i);
+         to_fifo_data_66_d(0) <= std_logic_vector(pl_sample_counter);
+         to_fifo_data_66_d(1) <= x"0000" & fft_mic_nr_out;
+
+         for i in 0 to 31 loop
+            to_fifo_data_66_d(i * 2 + 0 + 2) <= fft_data_r_out(i);
+            to_fifo_data_66_d(i * 2 + 1 + 2) <= fft_data_i_out(i);
          end loop;
 
-         for i in 66 to 255 loop
-            to_fifo_data_256_d(i) <= (others => '0'); -- this dont do much :/
-         end loop;
-
-         to_fifo_data_256_dd <= to_fifo_data_256_d;
+         to_fifo_data_66_dd <= to_fifo_data_66_d;
 
          if reset = '1' then
             pl_sample_counter <= (others => '0');
@@ -252,78 +228,30 @@ begin
          );
    end generate;
 
-   filter_gen : for i in 0 to 3 generate
-      transposed_folded_fir_controller_inst : entity work.transposed_folded_fir_controller
-         generic map(
-            bypass_filter => bypass_filter,
-            nr_taps       => nr_filter_taps,
-            nr_subbands   => nr_subbands,
-            nr_mics       => 16
-         )
-         port map(
-            clk            => clk,
-            rst            => reset,
-            data_in        => chain_matrix_data(i),
-            data_in_valid  => chain_matrix_valid_array(i),
-            data_out       => array_matrix_filterd_data(i),
-            data_out_valid => array_matrix_filterd_valid(i),
-            subband_out    => subband_filter_array(i)
-         );
-   end generate;
-
-   down_sample_inst : entity work.down_sample
-      generic map(
-         nr_subbands => nr_subbands
-      )
+   fft_controller_inst : entity work.fft_controller
       port map(
          clk                => clk,
          rst                => reset,
-         array_matrix_data  => array_matrix_filterd_data_d,
-         array_matrix_valid => array_matrix_filterd_valid_d,
-         subband_in         => subband_filter_d,
-         subband_out        => subband_filter_downsampled,
-         down_sampled_data  => down_sampled_data,
-         down_sampled_valid => down_sampled_valid
-      );
-
-   decode_ema_inst : entity work.decode_ema
-      port map(
-         clk                => clk,
-         rst                => reset,
-         switch             => sw_ff(1),
-         subband_in         => subband_filter_downsampled,
-         down_sampled_data  => down_sampled_data,
-         down_sampled_valid => down_sampled_valid,
-         subband_out        => decode_subband,
-         decoded_data       => decoded_data,
-         decoded_valid      => decoded_valid
+         chain_matrix_x4    => chain_matrix_data,
+         chain_matrix_valid => chain_matrix_valid_array(0),
+         fft_data_r_out     => fft_data_r_out,
+         fft_data_i_out     => fft_data_i_out,
+         fft_valid_out      => fft_valid_out,
+         fft_mic_nr_out     => fft_mic_nr_out
       );
 
    fifo_axi : entity work.fifo_axi
-      generic map(
-         RAM_DEPTH => fifo_buffer_lenght
-      )
       port map(
          clk          => clk,
          reset        => reset,
          wr_en        => to_fifo_valid_dd,
-         wr_data      => to_fifo_data_256_dd,
-         rd_en        => rd_en_fifo,
-         rd_data      => data_fifo_256_out,
+         wr_data      => to_fifo_data_66_dd,
+         rd_en        => rd_en_pulse,
+         rd_data      => data_stream,
          empty        => empty_array,
          almost_empty => almost_empty_array,
          almost_full  => full_array,
          full         => almost_full_array
-      );
-
-   mux : entity work.mux
-      port map(
-         sys_clk    => clk,
-         reset      => reset,
-         rd_en      => rd_en_pulse,
-         data_in    => data_fifo_256_out,
-         rd_en_fifo => rd_en_fifo,
-         data_out   => data_stream
       );
 
    axi_zynq_wrapper : entity work.zynq_bd_wrapper

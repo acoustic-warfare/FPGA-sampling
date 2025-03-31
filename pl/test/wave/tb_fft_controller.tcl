@@ -13,16 +13,16 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-    tb_fifo_axi.clk -
-    tb_fifo_axi.reset -
+    tb_fft_controller.clk -
+}
 
-    tb_fifo_axi.wr_en -
-    tb_fifo_axi.rd_en -
-
+for {set i 0} {$i < 32} {incr i} {
+    lappend signals "tb_fft_controller.fft_controller_inst.fft_data_in\[$i\] -"
 }
 
 foreach signal $signals {
     addSignal $signal
+    gtkwave::/Edit/Data_Format/Signed_Decimal
 }
 
 # zoom full

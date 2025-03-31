@@ -8,8 +8,13 @@ entity fft is
    port (
       clk        : in std_logic;
       data_in    : in matrix_32_24_type;
+      valid_in   : in std_logic;
+      mic_nr_in  : in std_logic_vector(7 downto 0);
       data_r_out : out matrix_32_24_type;
-      data_i_out : out matrix_32_24_type
+      data_i_out : out matrix_32_24_type;
+      valid_out  : out std_logic;
+      mic_nr_out : out std_logic_vector(7 downto 0)
+
    );
 end entity;
 
@@ -57,10 +62,68 @@ architecture rtl of fft is
    signal stage_9_r : fft_32_24_unsiged_type;
    signal stage_9_i : fft_32_24_unsiged_type;
 
+   -- pipe stages for valid & mic_nr
+   signal valid_1d   : std_logic;
+   signal mic_nr_1d  : std_logic_vector(7 downto 0);
+   signal valid_2d   : std_logic;
+   signal mic_nr_2d  : std_logic_vector(7 downto 0);
+   signal valid_3d   : std_logic;
+   signal mic_nr_3d  : std_logic_vector(7 downto 0);
+   signal valid_4d   : std_logic;
+   signal mic_nr_4d  : std_logic_vector(7 downto 0);
+   signal valid_5d   : std_logic;
+   signal mic_nr_5d  : std_logic_vector(7 downto 0);
+   signal valid_6d   : std_logic;
+   signal mic_nr_6d  : std_logic_vector(7 downto 0);
+   signal valid_7d   : std_logic;
+   signal mic_nr_7d  : std_logic_vector(7 downto 0);
+   signal valid_8d   : std_logic;
+   signal mic_nr_8d  : std_logic_vector(7 downto 0);
+   signal valid_9d   : std_logic;
+   signal mic_nr_9d  : std_logic_vector(7 downto 0);
+   signal valid_10d  : std_logic;
+   signal mic_nr_10d : std_logic_vector(7 downto 0);
+   signal valid_11d  : std_logic;
+   signal mic_nr_11d : std_logic_vector(7 downto 0);
+   signal valid_12d  : std_logic;
+   signal mic_nr_12d : std_logic_vector(7 downto 0);
+   signal valid_13d  : std_logic;
+   signal mic_nr_13d : std_logic_vector(7 downto 0);
+
 begin
    process (clk)
    begin
       if rising_edge(clk) then
+         -- pipe stages (not part of fft)
+         valid_1d   <= valid_in;
+         mic_nr_1d  <= mic_nr_in;
+         valid_2d   <= valid_1d;
+         mic_nr_2d  <= mic_nr_1d;
+         valid_3d   <= valid_2d;
+         mic_nr_3d  <= mic_nr_2d;
+         valid_4d   <= valid_3d;
+         mic_nr_4d  <= mic_nr_3d;
+         valid_5d   <= valid_4d;
+         mic_nr_5d  <= mic_nr_4d;
+         valid_6d   <= valid_5d;
+         mic_nr_6d  <= mic_nr_5d;
+         valid_7d   <= valid_6d;
+         mic_nr_7d  <= mic_nr_6d;
+         valid_8d   <= valid_7d;
+         mic_nr_8d  <= mic_nr_7d;
+         valid_9d   <= valid_8d;
+         mic_nr_9d  <= mic_nr_8d;
+         valid_10d  <= valid_9d;
+         mic_nr_10d <= mic_nr_9d;
+         valid_11d  <= valid_10d;
+         mic_nr_11d <= mic_nr_10d;
+         valid_12d  <= valid_11d;
+         mic_nr_12d <= mic_nr_11d;
+         valid_13d  <= valid_12d;
+         mic_nr_13d <= mic_nr_12d;
+         valid_out  <= valid_13d;
+         mic_nr_out <= mic_nr_13d;
+
          -- bit reversal (same both ways around)
          bit_reversal_data_in(0)  <= signed(data_in(0));
          bit_reversal_data_in(16) <= signed(data_in(1));
