@@ -10,15 +10,15 @@ entity fft_bram is
         write_index   : in std_logic;
         write_data    : in std_logic_vector(23 downto 0);
         read_address  : in std_logic_vector(15 downto 0);
-        --read_en       : in std_logic;
-        read_data : out std_logic_vector(47 downto 0)
+        read_en       : in std_logic;
+        read_data     : out std_logic_vector(47 downto 0)
     );
 end entity;
 
 architecture rtl of fft_bram is
 
     type ram_type is array (511 downto 0) of std_logic_vector(47 downto 0);
-    signal ram : ram_type := (others => (others => '0'));
+    signal ram : ram_type;
 
 begin
 
@@ -33,9 +33,9 @@ begin
                 end if;
             end if;
 
-            --if read_en = '1' then
-            read_data <= ram(to_integer(unsigned(read_address)));
-            --end if;
+            if read_en = '1' then
+                read_data <= ram(to_integer(unsigned(read_address)));
+            end if;
 
         end if;
     end process;

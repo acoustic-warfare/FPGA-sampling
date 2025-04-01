@@ -67,13 +67,13 @@ begin
                 rst <= '0';
                 wait for (2 * C_CLK_CYKLE);
 
-                --fast firs cycles to agrogate data (real sample 2560 cycles between samples)
-                for i in 0 to 31 loop
+                -- main loop
+                for i in 0 to 79 loop
                     wait for (2 * C_CLK_CYKLE);
                     chain_matrix_valid <= '1';
                     wait for C_CLK_CYKLE;
                     chain_matrix_valid <= '0';
-                    wait for (72 * C_CLK_CYKLE);
+                    wait for (140 * C_CLK_CYKLE);
                     --
                     for a in 0 to 3 loop
                         for b in 0 to 15 loop
@@ -81,26 +81,6 @@ begin
                         end loop;
                     end loop;
                 end loop;
-
-                -- let fft load data (2560 cycles)
-                wait for (2560 * C_CLK_CYKLE);
-
-                for i in 0 to 31 loop
-                    wait for (2 * C_CLK_CYKLE);
-                    chain_matrix_valid <= '1';
-                    wait for C_CLK_CYKLE;
-                    chain_matrix_valid <= '0';
-                    wait for (72 * C_CLK_CYKLE);
-                    --
-                    for a in 0 to 3 loop
-                        for b in 0 to 15 loop
-                            chain_matrix_x4(a)(b) <= std_logic_vector((unsigned(chain_matrix_x4(a)(b)) + 64));
-                        end loop;
-                    end loop;
-                end loop;
-
-                -- let fft load data (2560 cycles)
-                wait for (2560 * C_CLK_CYKLE);
 
                 --
                 wait for (200 * C_CLK_CYKLE);

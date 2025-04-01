@@ -279,11 +279,6 @@ begin
             stage_6_r_full(16 * i + 8) <= stage_5_r(16 * i + 8) * full_bypass;
             stage_6_i_full(16 * i + 8) <= stage_5_i(16 * i + 8) * full_bypass;
 
-            --
-            stage_4_r_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twidle_r(4) - stage_3_i(8 * i + 5) * twidle_i(4);
-            stage_4_i_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twidle_i(4) + stage_3_i(8 * i + 5) * twidle_r(4);
-            --
-
             stage_6_r_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twidle_r(2) - stage_5_i(16 * i + 9) * twidle_i(2);
             stage_6_i_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twidle_i(2) + stage_5_i(16 * i + 9) * twidle_r(2);
 
@@ -306,7 +301,7 @@ begin
             stage_6_i_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twidle_i(14) + stage_5_i(16 * i + 15) * twidle_r(14);
          end loop;
 
-         for i in 0 to 31 loop
+         for i in 0 to 31 loop   
             stage_6_r(i) <= stage_6_r_full(i)(38 downto 15);
             stage_6_i(i) <= stage_6_i_full(i)(38 downto 15);
          end loop;

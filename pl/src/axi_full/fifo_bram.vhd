@@ -9,7 +9,6 @@ entity fifo_bram is
       write_en      : in std_logic;
       write_data    : in std_logic_vector(71 downto 0);
       read_address  : in std_logic_vector(15 downto 0);
-      read_en       : in std_logic;
       read_data     : out std_logic_vector(71 downto 0)
    );
 end entity;
@@ -28,9 +27,7 @@ begin
             ram(to_integer(unsigned(write_address))) <= write_data;
          end if;
 
-         if read_en = '1' then
             read_data <= ram(to_integer(unsigned(read_address)));
-         end if;
 
       end if;
    end process;

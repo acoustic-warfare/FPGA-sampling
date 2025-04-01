@@ -33,17 +33,6 @@ architecture behavior of tb_fifo_axi is
 
    signal multiplyer : integer := 1;
 
-   signal TB_wr_data_0 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_1 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_2 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_3 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_4 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_5 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_6 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_7 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_8 : std_logic_vector(23 downto 0);
-   signal TB_wr_data_9 : std_logic_vector(23 downto 0);
-
 begin
    fifo_inst : entity work.fifo_axi
       port map(
@@ -66,30 +55,6 @@ begin
       for i in 0 to 65 loop
          wr_data(i) <= std_logic_vector(to_unsigned(multiplyer * (i + 1), 24));
       end loop;
-   end process;
-
-   process (wr_data)
-   begin
-      TB_wr_data_0 <= wr_data(0);
-      TB_wr_data_1 <= wr_data(1);
-      TB_wr_data_2 <= wr_data(2);
-      TB_wr_data_3 <= wr_data(3);
-      TB_wr_data_4 <= wr_data(4);
-      TB_wr_data_5 <= wr_data(5);
-      TB_wr_data_6 <= wr_data(6);
-      TB_wr_data_7 <= wr_data(7);
-      TB_wr_data_8 <= wr_data(8);
-      TB_wr_data_9 <= wr_data(9);
-      --TB_wr_data_246 <= wr_data(246);
-      --TB_wr_data_247 <= wr_data(247);
-      --TB_wr_data_248 <= wr_data(248);
-      --TB_wr_data_249 <= wr_data(249);
-      --TB_wr_data_250 <= wr_data(250);
-      --TB_wr_data_251 <= wr_data(251);
-      --TB_wr_data_252 <= wr_data(252);
-      --TB_wr_data_253 <= wr_data(253);
-      --TB_wr_data_254 <= wr_data(254);
-      --TB_wr_data_255 <= wr_data(255);
    end process;
 
    main_p : process
