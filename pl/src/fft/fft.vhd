@@ -14,53 +14,53 @@ entity fft is
       data_i_out : out matrix_32_24_type;
       valid_out  : out std_logic;
       mic_nr_out : out std_logic_vector(7 downto 0)
-
    );
 end entity;
 
 architecture rtl of fft is
 
-   type twidle_type is array (0 to 15) of signed(19 downto 0);
-   constant twidle_r    : twidle_type         := (x"08000", x"07D8A", x"07641", x"06A6D", x"05A82", x"0471C", x"030FB", x"018F8", x"00000", x"FE708", x"FCF05", x"FB8E4", x"FA57E", x"F9593", x"F89BF", x"F8276");
-   constant twidle_i    : twidle_type         := (x"00000", x"FE708", x"FCF05", x"FB8E4", x"FA57E", x"F9593", x"F89BF", x"F8276", x"F8000", x"F8276", x"F89BF", x"F9593", x"FA57E", x"FB8E4", x"FCF05", x"FE708");
-   constant full_bypass : signed(19 downto 0) := x"08000";
+   type twiddle_type is array (0 to 15) of signed(17 downto 0);
+   constant twiddle_r    : twiddle_type         := ("010000000000000000", "001111101100010100", "001110110010000011", "001101010011011011", "001011010100000100", "001000111000111001", "000110000111110111", "000011000111110001", "000000000000000000", "111100111000001111", "111001111000001001", "110111000111000111", "110100101011111100", "110010101100100101", "110001001101111101", "110000010011101100");
+   constant twiddle_i    : twiddle_type         := ("000000000000000000", "111100111000001111", "111001111000001001", "110111000111000111", "110100101011111100", "110010101100100101", "110001001101111101", "110000010011101100", "110000000000000000", "110000010011101100", "110001001101111101", "110010101100100101", "110100101011111100", "110111000111000111", "111001111000001001", "111100111000001111");
+   constant full_bypass : signed(17 downto 0) := "010000000000000000";
+   -- scale factor = (1 << 16) = 65536 (shift 16 bits)
 
-   type fft_32_24_unsiged_type is array (31 downto 0) of signed(23 downto 0);
-   type fft_32_40_unsiged_type is array (31 downto 0) of signed(43 downto 0);
+   type fft_32_24_siged_type is array (31 downto 0) of signed(23 downto 0);
+   type fft_32_42_siged_type is array (31 downto 0) of signed(41 downto 0);
 
-   signal bit_reversal_data_in : fft_32_24_unsiged_type;
+   signal bit_reversal_data_in : fft_32_24_siged_type;
 
-   signal stage_1 : fft_32_24_unsiged_type;
+   signal stage_1 : fft_32_24_siged_type;
 
-   signal stage_2_r : fft_32_24_unsiged_type;
-   signal stage_2_i : fft_32_24_unsiged_type;
+   signal stage_2_r : fft_32_24_siged_type;
+   signal stage_2_i : fft_32_24_siged_type;
 
-   signal stage_3_r : fft_32_24_unsiged_type;
-   signal stage_3_i : fft_32_24_unsiged_type;
+   signal stage_3_r : fft_32_24_siged_type;
+   signal stage_3_i : fft_32_24_siged_type;
 
-   signal stage_4_r_full : fft_32_40_unsiged_type;
-   signal stage_4_i_full : fft_32_40_unsiged_type;
-   signal stage_4_r      : fft_32_24_unsiged_type;
-   signal stage_4_i      : fft_32_24_unsiged_type;
+   signal stage_4_r_full : fft_32_42_siged_type;
+   signal stage_4_i_full : fft_32_42_siged_type;
+   signal stage_4_r      : fft_32_24_siged_type;
+   signal stage_4_i      : fft_32_24_siged_type;
 
-   signal stage_5_r : fft_32_24_unsiged_type;
-   signal stage_5_i : fft_32_24_unsiged_type;
+   signal stage_5_r : fft_32_24_siged_type;
+   signal stage_5_i : fft_32_24_siged_type;
 
-   signal stage_6_r_full : fft_32_40_unsiged_type;
-   signal stage_6_i_full : fft_32_40_unsiged_type;
-   signal stage_6_r      : fft_32_24_unsiged_type;
-   signal stage_6_i      : fft_32_24_unsiged_type;
+   signal stage_6_r_full : fft_32_42_siged_type;
+   signal stage_6_i_full : fft_32_42_siged_type;
+   signal stage_6_r      : fft_32_24_siged_type;
+   signal stage_6_i      : fft_32_24_siged_type;
 
-   signal stage_7_r : fft_32_24_unsiged_type;
-   signal stage_7_i : fft_32_24_unsiged_type;
+   signal stage_7_r : fft_32_24_siged_type;
+   signal stage_7_i : fft_32_24_siged_type;
 
-   signal stage_8_r_full : fft_32_40_unsiged_type;
-   signal stage_8_i_full : fft_32_40_unsiged_type;
-   signal stage_8_r      : fft_32_24_unsiged_type;
-   signal stage_8_i      : fft_32_24_unsiged_type;
+   signal stage_8_r_full : fft_32_42_siged_type;
+   signal stage_8_i_full : fft_32_42_siged_type;
+   signal stage_8_r      : fft_32_24_siged_type;
+   signal stage_8_i      : fft_32_24_siged_type;
 
-   signal stage_9_r : fft_32_24_unsiged_type;
-   signal stage_9_i : fft_32_24_unsiged_type;
+   signal stage_9_r : fft_32_24_siged_type;
+   signal stage_9_i : fft_32_24_siged_type;
 
    -- pipe stages for valid & mic_nr
    signal valid_1d   : std_logic;
@@ -206,22 +206,22 @@ begin
             stage_4_r_full(8 * i + 3) <= stage_3_r(8 * i + 3) * full_bypass;
             stage_4_i_full(8 * i + 3) <= stage_3_i(8 * i + 3) * full_bypass;
 
-            stage_4_r_full(8 * i + 4) <= stage_3_r(8 * i + 4) * full_bypass;-- twidle = x8000 + x0000i
+            stage_4_r_full(8 * i + 4) <= stage_3_r(8 * i + 4) * full_bypass;-- twiddle = x8000 + x0000i
             stage_4_i_full(8 * i + 4) <= stage_3_i(8 * i + 4) * full_bypass;
 
-            stage_4_r_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twidle_r(4) - stage_3_i(8 * i + 5) * twidle_i(4);
-            stage_4_i_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twidle_i(4) + stage_3_i(8 * i + 5) * twidle_r(4);
+            stage_4_r_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twiddle_r(4) - stage_3_i(8 * i + 5) * twiddle_i(4);
+            stage_4_i_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twiddle_i(4) + stage_3_i(8 * i + 5) * twiddle_r(4);
 
-            stage_4_r_full(8 * i + 6) <= stage_3_i(8 * i + 6) * full_bypass;          -- twidle = x0000 + -x8000i (c = 0, d = -1)
+            stage_4_r_full(8 * i + 6) <= stage_3_i(8 * i + 6) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
             stage_4_i_full(8 * i + 6) <= not(stage_3_r(8 * i + 6) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
 
-            stage_4_r_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twidle_r(12) - stage_3_i(8 * i + 7) * twidle_i(12);
-            stage_4_i_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twidle_i(12) + stage_3_i(8 * i + 7) * twidle_r(12);
+            stage_4_r_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twiddle_r(12) - stage_3_i(8 * i + 7) * twiddle_i(12);
+            stage_4_i_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twiddle_i(12) + stage_3_i(8 * i + 7) * twiddle_r(12);
          end loop;
 
          for i in 0 to 31 loop
-            stage_4_r(i) <= stage_4_r_full(i)(38 downto 15);
-            stage_4_i(i) <= stage_4_i_full(i)(38 downto 15);
+            stage_4_r(i) <= stage_4_r_full(i)(39 downto 16);
+            stage_4_i(i) <= stage_4_i_full(i)(39 downto 16);
          end loop;
 
          -- butterfly 8
@@ -279,31 +279,31 @@ begin
             stage_6_r_full(16 * i + 8) <= stage_5_r(16 * i + 8) * full_bypass;
             stage_6_i_full(16 * i + 8) <= stage_5_i(16 * i + 8) * full_bypass;
 
-            stage_6_r_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twidle_r(2) - stage_5_i(16 * i + 9) * twidle_i(2);
-            stage_6_i_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twidle_i(2) + stage_5_i(16 * i + 9) * twidle_r(2);
+            stage_6_r_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twiddle_r(2) - stage_5_i(16 * i + 9) * twiddle_i(2);
+            stage_6_i_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twiddle_i(2) + stage_5_i(16 * i + 9) * twiddle_r(2);
 
-            stage_6_r_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twidle_r(4) - stage_5_i(16 * i + 10) * twidle_i(4);
-            stage_6_i_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twidle_i(4) + stage_5_i(16 * i + 10) * twidle_r(4);
+            stage_6_r_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twiddle_r(4) - stage_5_i(16 * i + 10) * twiddle_i(4);
+            stage_6_i_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twiddle_i(4) + stage_5_i(16 * i + 10) * twiddle_r(4);
 
-            stage_6_r_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twidle_r(6) - stage_5_i(16 * i + 11) * twidle_i(6);
-            stage_6_i_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twidle_i(6) + stage_5_i(16 * i + 11) * twidle_r(6);
+            stage_6_r_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twiddle_r(6) - stage_5_i(16 * i + 11) * twiddle_i(6);
+            stage_6_i_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twiddle_i(6) + stage_5_i(16 * i + 11) * twiddle_r(6);
 
-            stage_6_r_full(16 * i + 12) <= stage_5_i(16 * i + 12) * full_bypass;          -- twidle = x0000 + -x8000i (c = 0, d = -1)
+            stage_6_r_full(16 * i + 12) <= stage_5_i(16 * i + 12) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
             stage_6_i_full(16 * i + 12) <= not(stage_5_r(16 * i + 12) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
 
-            stage_6_r_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twidle_r(10) - stage_5_i(16 * i + 13) * twidle_i(10);
-            stage_6_i_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twidle_i(10) + stage_5_i(16 * i + 13) * twidle_r(10);
+            stage_6_r_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twiddle_r(10) - stage_5_i(16 * i + 13) * twiddle_i(10);
+            stage_6_i_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twiddle_i(10) + stage_5_i(16 * i + 13) * twiddle_r(10);
 
-            stage_6_r_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twidle_r(12) - stage_5_i(16 * i + 14) * twidle_i(12);
-            stage_6_i_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twidle_i(12) + stage_5_i(16 * i + 14) * twidle_r(12);
+            stage_6_r_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twiddle_r(12) - stage_5_i(16 * i + 14) * twiddle_i(12);
+            stage_6_i_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twiddle_i(12) + stage_5_i(16 * i + 14) * twiddle_r(12);
 
-            stage_6_r_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twidle_r(14) - stage_5_i(16 * i + 15) * twidle_i(14);
-            stage_6_i_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twidle_i(14) + stage_5_i(16 * i + 15) * twidle_r(14);
+            stage_6_r_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twiddle_r(14) - stage_5_i(16 * i + 15) * twiddle_i(14);
+            stage_6_i_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twiddle_i(14) + stage_5_i(16 * i + 15) * twiddle_r(14);
          end loop;
 
-         for i in 0 to 31 loop   
-            stage_6_r(i) <= stage_6_r_full(i)(38 downto 15);
-            stage_6_i(i) <= stage_6_i_full(i)(38 downto 15);
+         for i in 0 to 31 loop
+            stage_6_r(i) <= stage_6_r_full(i)(39 downto 16);
+            stage_6_i(i) <= stage_6_i_full(i)(39 downto 16);
          end loop;
 
          -- butterfly 16
@@ -363,54 +363,54 @@ begin
             stage_8_i_full(i) <= stage_7_i(i) * full_bypass;
          end loop;
 
-         stage_8_r_full(17) <= stage_7_r(17) * twidle_r(1) - stage_7_i(17) * twidle_i(1);
-         stage_8_i_full(17) <= stage_7_r(17) * twidle_i(1) + stage_7_i(17) * twidle_r(1);
+         stage_8_r_full(17) <= stage_7_r(17) * twiddle_r(1) - stage_7_i(17) * twiddle_i(1);
+         stage_8_i_full(17) <= stage_7_r(17) * twiddle_i(1) + stage_7_i(17) * twiddle_r(1);
 
-         stage_8_r_full(18) <= stage_7_r(18) * twidle_r(2) - stage_7_i(18) * twidle_i(2);
-         stage_8_i_full(18) <= stage_7_r(18) * twidle_i(2) + stage_7_i(18) * twidle_r(2);
+         stage_8_r_full(18) <= stage_7_r(18) * twiddle_r(2) - stage_7_i(18) * twiddle_i(2);
+         stage_8_i_full(18) <= stage_7_r(18) * twiddle_i(2) + stage_7_i(18) * twiddle_r(2);
 
-         stage_8_r_full(19) <= stage_7_r(19) * twidle_r(3) - stage_7_i(19) * twidle_i(3);
-         stage_8_i_full(19) <= stage_7_r(19) * twidle_i(3) + stage_7_i(19) * twidle_r(3);
+         stage_8_r_full(19) <= stage_7_r(19) * twiddle_r(3) - stage_7_i(19) * twiddle_i(3);
+         stage_8_i_full(19) <= stage_7_r(19) * twiddle_i(3) + stage_7_i(19) * twiddle_r(3);
 
-         stage_8_r_full(20) <= stage_7_r(20) * twidle_r(4) - stage_7_i(20) * twidle_i(4);
-         stage_8_i_full(20) <= stage_7_r(20) * twidle_i(4) + stage_7_i(20) * twidle_r(4);
+         stage_8_r_full(20) <= stage_7_r(20) * twiddle_r(4) - stage_7_i(20) * twiddle_i(4);
+         stage_8_i_full(20) <= stage_7_r(20) * twiddle_i(4) + stage_7_i(20) * twiddle_r(4);
 
-         stage_8_r_full(21) <= stage_7_r(21) * twidle_r(5) - stage_7_i(21) * twidle_i(5);
-         stage_8_i_full(21) <= stage_7_r(21) * twidle_i(5) + stage_7_i(21) * twidle_r(5);
+         stage_8_r_full(21) <= stage_7_r(21) * twiddle_r(5) - stage_7_i(21) * twiddle_i(5);
+         stage_8_i_full(21) <= stage_7_r(21) * twiddle_i(5) + stage_7_i(21) * twiddle_r(5);
 
-         stage_8_r_full(22) <= stage_7_r(22) * twidle_r(6) - stage_7_i(22) * twidle_i(6);
-         stage_8_i_full(22) <= stage_7_r(22) * twidle_i(6) + stage_7_i(22) * twidle_r(6);
+         stage_8_r_full(22) <= stage_7_r(22) * twiddle_r(6) - stage_7_i(22) * twiddle_i(6);
+         stage_8_i_full(22) <= stage_7_r(22) * twiddle_i(6) + stage_7_i(22) * twiddle_r(6);
 
-         stage_8_r_full(23) <= stage_7_r(23) * twidle_r(7) - stage_7_i(23) * twidle_i(7);
-         stage_8_i_full(23) <= stage_7_r(23) * twidle_i(7) + stage_7_i(23) * twidle_r(7);
+         stage_8_r_full(23) <= stage_7_r(23) * twiddle_r(7) - stage_7_i(23) * twiddle_i(7);
+         stage_8_i_full(23) <= stage_7_r(23) * twiddle_i(7) + stage_7_i(23) * twiddle_r(7);
 
-         stage_8_r_full(24) <= stage_7_i(24) * full_bypass;          -- twidle = x0000 + -x8000i (c = 0, d = -1)
+         stage_8_r_full(24) <= stage_7_i(24) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
          stage_8_i_full(24) <= not(stage_7_r(24) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
 
-         stage_8_r_full(25) <= stage_7_r(25) * twidle_r(9) - stage_7_i(25) * twidle_i(9);
-         stage_8_i_full(25) <= stage_7_r(25) * twidle_i(9) + stage_7_i(25) * twidle_r(9);
+         stage_8_r_full(25) <= stage_7_r(25) * twiddle_r(9) - stage_7_i(25) * twiddle_i(9);
+         stage_8_i_full(25) <= stage_7_r(25) * twiddle_i(9) + stage_7_i(25) * twiddle_r(9);
 
-         stage_8_r_full(26) <= stage_7_r(26) * twidle_r(10) - stage_7_i(26) * twidle_i(10);
-         stage_8_i_full(26) <= stage_7_r(26) * twidle_i(10) + stage_7_i(26) * twidle_r(10);
+         stage_8_r_full(26) <= stage_7_r(26) * twiddle_r(10) - stage_7_i(26) * twiddle_i(10);
+         stage_8_i_full(26) <= stage_7_r(26) * twiddle_i(10) + stage_7_i(26) * twiddle_r(10);
 
-         stage_8_r_full(27) <= stage_7_r(27) * twidle_r(11) - stage_7_i(27) * twidle_i(11);
-         stage_8_i_full(27) <= stage_7_r(27) * twidle_i(11) + stage_7_i(27) * twidle_r(11);
+         stage_8_r_full(27) <= stage_7_r(27) * twiddle_r(11) - stage_7_i(27) * twiddle_i(11);
+         stage_8_i_full(27) <= stage_7_r(27) * twiddle_i(11) + stage_7_i(27) * twiddle_r(11);
 
-         stage_8_r_full(28) <= stage_7_r(28) * twidle_r(12) - stage_7_i(28) * twidle_i(12);
-         stage_8_i_full(28) <= stage_7_r(28) * twidle_i(12) + stage_7_i(28) * twidle_r(12);
+         stage_8_r_full(28) <= stage_7_r(28) * twiddle_r(12) - stage_7_i(28) * twiddle_i(12);
+         stage_8_i_full(28) <= stage_7_r(28) * twiddle_i(12) + stage_7_i(28) * twiddle_r(12);
 
-         stage_8_r_full(29) <= stage_7_r(29) * twidle_r(13) - stage_7_i(29) * twidle_i(13);
-         stage_8_i_full(29) <= stage_7_r(29) * twidle_i(13) + stage_7_i(29) * twidle_r(13);
+         stage_8_r_full(29) <= stage_7_r(29) * twiddle_r(13) - stage_7_i(29) * twiddle_i(13);
+         stage_8_i_full(29) <= stage_7_r(29) * twiddle_i(13) + stage_7_i(29) * twiddle_r(13);
 
-         stage_8_r_full(30) <= stage_7_r(30) * twidle_r(14) - stage_7_i(30) * twidle_i(14);
-         stage_8_i_full(30) <= stage_7_r(30) * twidle_i(14) + stage_7_i(30) * twidle_r(14);
+         stage_8_r_full(30) <= stage_7_r(30) * twiddle_r(14) - stage_7_i(30) * twiddle_i(14);
+         stage_8_i_full(30) <= stage_7_r(30) * twiddle_i(14) + stage_7_i(30) * twiddle_r(14);
 
-         stage_8_r_full(31) <= stage_7_r(31) * twidle_r(15) - stage_7_i(31) * twidle_i(15);
-         stage_8_i_full(31) <= stage_7_r(31) * twidle_i(15) + stage_7_i(31) * twidle_r(15);
+         stage_8_r_full(31) <= stage_7_r(31) * twiddle_r(15) - stage_7_i(31) * twiddle_i(15);
+         stage_8_i_full(31) <= stage_7_r(31) * twiddle_i(15) + stage_7_i(31) * twiddle_r(15);
 
          for i in 0 to 31 loop
-            stage_8_r(i) <= stage_8_r_full(i)(38 downto 15);
-            stage_8_i(i) <= stage_8_i_full(i)(38 downto 15);
+            stage_8_r(i) <= stage_8_r_full(i)(39 downto 16);
+            stage_8_i(i) <= stage_8_i_full(i)(39 downto 16);
          end loop;
 
          -- butterfly 32

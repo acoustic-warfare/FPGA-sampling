@@ -13,12 +13,18 @@ proc addSignal {signal} {
 
 # List of signals to add
 set signals {
-    tb_fft.clk -
+    #    tb_fft.clk -
+    
+
 }
 
 for {set i 0} {$i < 32} {incr i} {
+    lappend signals "tb_fft.clk -"
     lappend signals "tb_fft.fft_inst.data_r_out\[$i\] -"
+    lappend signals "tb_fft.fft_2_inst.data_r_out\[$i\] -"
+    lappend signals "tb_fft.clk -"
     lappend signals "tb_fft.fft_inst.data_i_out\[$i\] -"
+    lappend signals "tb_fft.fft_2_inst.data_i_out\[$i\] -"
 }
 
 foreach signal $signals {

@@ -2,8 +2,8 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-SCALE_FACTOR = (1 << 15)  # Scale twiddle factors to integer values
-
+SCALE_FACTOR = (1 << 16)  # Scale twiddle factors to integer values
+print("SCALE_FACTOR", SCALE_FACTOR)
 
 def twos_to_int(bin_str, bits=24):
     value = int(bin_str, 2)
@@ -28,19 +28,19 @@ def generate_twiddle_factors(N):
         imag = int(math.sin(angle) * SCALE_FACTOR)
         twiddle_lut.append(complex(real, imag))
 
-    twiddle_lut_hex_real = [
-        f"{(int(twidd.real) & 0xFFFFF):05X}" for twidd in twiddle_lut]
-    twiddle_lut_hex_real_formatted = ", ".join(
-        [f'x"{twidd}"' for twidd in twiddle_lut_hex_real])
+    twiddle_lut_bin_real = [
+        f"{(int(twidd.real) & 0x3FFFF):018b}" for twidd in twiddle_lut]
+    twiddle_lut_bin_real_formatted = ", ".join(
+        [f'"{twidd}"' for twidd in twiddle_lut_bin_real])
     print(
-        f"constant twidle_r : twidle_type := ({twiddle_lut_hex_real_formatted});")
+        f'constant twidle_r : twidle_type := ({twiddle_lut_bin_real_formatted});')
 
-    twiddle_lut_hex_imag = [
-        f"{(int(twidd.imag) & 0xFFFFF):05X}" for twidd in twiddle_lut]
-    twiddle_lut_hex_imag_formatted = ", ".join(
-        [f'x"{twidd}"' for twidd in twiddle_lut_hex_imag])
+    twiddle_lut_bin_imag = [
+        f"{(int(twidd.imag) & 0x3FFFF):018b}" for twidd in twiddle_lut]
+    twiddle_lut_bin_imag_formatted = ", ".join(
+        [f'"{twidd}"' for twidd in twiddle_lut_bin_imag])
     print(
-        f"constant twidle_i : twidle_type := ({twiddle_lut_hex_imag_formatted});")
+        f'constant twidle_i : twidle_type := ({twiddle_lut_bin_imag_formatted});')
 
     return twiddle_lut
 

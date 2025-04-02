@@ -84,6 +84,7 @@ lib.files = [
     "pl/test/tb_simulated_array_and_sample.vhd",
     "pl/test/tb_collector.vhd",
     "pl/src/fft/fft_bram.vhd",
+    "pl/src/fft/fft_2.vhd",
     "pl/src/fft/fft.vhd",
     "pl/test/tb_fft.vhd",
     "pl/src/fft/fft_controller.vhd",

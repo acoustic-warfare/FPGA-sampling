@@ -81,7 +81,7 @@ begin
             wait for (C_CLK_CYKLE * 10);
             reset               <= '0';
             btn_simulated_array <= (others => '0');
-            wait for (C_CLK_CYKLE * 200000);
+            wait for (C_CLK_CYKLE * 400000);
 
          elsif run("wave_full") then -- this test case will take some time!
             reset                  <= '1';

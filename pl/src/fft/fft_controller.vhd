@@ -189,7 +189,7 @@ begin
                         fft_valid_in  <= '1';
                         fft_mic_nr_in <= "00" & std_logic_vector(load_mic_counter);
 
-                        load_mic_counter <= load_mic_counter + 1;
+                        load_mic_counter                                 <= load_mic_counter + 1;
                         agrigation_counter(to_integer(load_mic_counter)) <= (others => '0');
 
                     when others =>
@@ -200,7 +200,7 @@ begin
         end if;
     end process;
 
-    fft_inst : entity work.fft
+    fft_inst : entity work.fft_2
         port map(
             clk        => clk,
             data_in    => fft_data_in,

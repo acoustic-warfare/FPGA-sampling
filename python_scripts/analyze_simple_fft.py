@@ -2,6 +2,7 @@ import numpy as np
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
+from scipy.signal import freqs
 
 
 def load_data_FPGA(fileChooser):
@@ -55,19 +56,47 @@ print(len(mic_data))
 print(mic_data[0])
 print(mic_data_c[0])
 
+fft_result = mic_data_c[0]
 
-def db(x):
-    return 20 * np.log10(x + 1e-10)
+# Compute magnitude
+magnitude = np.abs(fft_result)
 
+# Frequency bins
+freqs = np.fft.fftfreq(len(fft_result)) * 48828.125
 
+# Plot Magnitude Spectrum
 plt.figure(figsize=(10, 5))
+plt.stem(freqs, magnitude)
+plt.xlabel("Normalized Frequency")
+plt.ylabel("Magnitude")
+plt.title("Magnitude Spectrum")
+plt.grid()
+plt.show()
 
-for i in range(10):
-    plt.plot(db(np.abs(mic_data_c[i])),  marker='o')
+
+phase = np.angle(fft_result)
+
+# Plot Phase Spectrum
+plt.figure(figsize=(10, 5))
+plt.stem(freqs, phase   )
+plt.xlabel("Normalized Frequency")
+plt.ylabel("Phase (radians)")
+plt.title("Phase Spectrum")
+plt.grid()
+plt.show()
 
 
-plt.xlabel('Frequency Bin')
-plt.ylabel('Magnitude (dB)')
-plt.title('FFT Magnitude Response Comparison')
+# Extract real and imaginary parts
+real_part = np.real(fft_result)
+imag_part = np.imag(fft_result)
+
+# Plot Real and Imaginary Parts
+plt.figure(figsize=(10, 5))
+plt.stem(freqs, real_part, markerfmt='bo', linefmt='b-', basefmt=" ")
+plt.stem(freqs, imag_part, markerfmt='ro', linefmt='r-', basefmt=" ")
+plt.xlabel("Normalized Frequency")
+plt.ylabel("Amplitude")
+plt.legend(["Real Part", "Imaginary Part"])
+plt.title("Real and Imaginary Parts of FFT")
 plt.grid()
 plt.show()
