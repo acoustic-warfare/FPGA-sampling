@@ -92,10 +92,12 @@ begin
    process (clk)
    begin
       if rising_edge(clk) then
-          --test with at extra ff on output
+         --test with at extra ff on output
          bit_stream_internal_d  <= bit_stream_internal;
          bit_stream_internal_dd <= bit_stream_internal_d;
-         bit_stream             <= (others => bit_stream_internal_dd);
+         --bit_stream             <= (others => bit_stream_internal_dd);
+         bit_stream(0)          <= bit_stream_internal_dd;
+         bit_stream(3 downto 1) <= (others => '0');
       end if;
    end process;
 
