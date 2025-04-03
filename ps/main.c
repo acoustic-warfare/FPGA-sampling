@@ -39,8 +39,8 @@ int main() {
   xil_printf("Nr of arrays: %x\r\n", nr_arrays);
 
   // set number of 32bit slots in payload_header
-  u32 payload_header_size = 4;
-  u32 pl_header = 5;
+  u32 payload_header_size = 3;
+  u32 pl_header = 0;
 
   // constants that will be sent in payload_header
   u32 protocol_ver = 3;
@@ -179,13 +179,12 @@ int main() {
       data[1] = counter;
       counter++;
 
-      data[2] = *(data_p + 3);
-      data[3] = *(data_p + 4);
-
       // recive data from AXI
       for (int i = 0; i < 64; i++) {
         data[i + payload_header_size] = *(data_p + pl_header + i);
       }
+
+      data[2] = *(slaveaddr_p + 2);
 
       // flush the cache from old data
       Xil_DCacheFlushRange(data_p, 2048);  // 256*4*

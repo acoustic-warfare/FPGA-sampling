@@ -7,6 +7,7 @@ entity zynq_bd_wrapper is
       sys_clock     : in std_logic;
       axi_data      : in std_logic_vector(31 downto 0);
       axi_empty     : in std_logic;
+      axi_header    : in std_logic_vector(31 downto 0);
       axi_sys_id    : in std_logic_vector(1 downto 0);
       axi_nr_arrays : in std_logic_vector(1 downto 0);
       axi_rd_en     : out std_logic;
@@ -19,6 +20,7 @@ architecture rtl of zynq_bd_wrapper is
    signal axi_data_internal : std_logic_vector(31 downto 0);
    --signal axi_empty_internal     : std_logic;
    --signal axi_rd_en_internal     : std_logic;
+   signal axi_header_internal    : std_logic_vector(31 downto 0);
    signal axi_sys_id_internal    : std_logic_vector(1 downto 0);
    signal axi_nr_arrays_internal : std_logic_vector(1 downto 0);
 
@@ -75,7 +77,8 @@ begin
 
    end process;
 
-   axi_data_internal <= axi_data;
+   axi_data_internal   <= axi_data;
+   axi_header_internal <= axi_header;
    --axi_rd_en_internal     <= axi_rd_en;
    axi_sys_id_internal    <= axi_sys_id;
    axi_nr_arrays_internal <= axi_nr_arrays;

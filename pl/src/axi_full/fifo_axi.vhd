@@ -9,8 +9,10 @@ entity fifo_axi is
       clk          : in std_logic;
       reset        : in std_logic;
       wr_en        : in std_logic; -- Write port
+      wr_header    : in std_logic_vector(31 downto 0);
       wr_data      : in matrix_66_24_type;
       rd_en        : in std_logic; -- Read port
+      rd_header    : out std_logic_vector(31 downto 0);
       rd_data      : out std_logic_vector(31 downto 0);
       empty        : out std_logic; -- Flags
       almost_empty : out std_logic;
@@ -43,6 +45,9 @@ architecture rtl of fifo_axi is
    signal ram_read_address  : std_logic_vector(15 downto 0);
    signal ram_read_en       : std_logic;
    signal ram_read_data     : ram_data_type;
+
+   type header_ram_type is array(0 to RAM_DEPTH - 1) of std_logic_vector(31 downto 0);
+   signal header_ram : header_ram_type;
 
 begin
 
@@ -85,6 +90,7 @@ begin
 
             -- write data
             if wr_en = '1' and full = '0' then -- mabey full -1 since write_ptr increase on cycle after?
+               header_ram(write_ptr) <= wr_header;
                for i in 0 to 21 loop
                   ram_write_data(i) <= wr_data(i * 3) & wr_data(i * 3 + 1) & wr_data(i * 3 + 2);
                end loop;
@@ -103,6 +109,7 @@ begin
             end if;
 
             if rd_en_start = '1' then
+               rd_header <= header_ram(read_ptr);
 
                if rd_count_segmen = 0 then
                   rd_data(31 downto 24) <= (others => ram_read_data(rd_count_ram)(71));

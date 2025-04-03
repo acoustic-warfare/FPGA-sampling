@@ -9,7 +9,7 @@ def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
     path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
-    data2D = data.reshape(-1, 68)  # Each row: 4 header fields + 64 mic data values
+    data2D = data.reshape(-1, 67)  # Each row: 4 header fields + 64 mic data values
     mic_nr = data2D[:, 3]  # Extract subband column (4th column, index 3)
     mic_data = data2D[:, 4:]  # Microphone data starts from column 5 (index 4)
     sample_counter = data2D[:, 2]
@@ -34,7 +34,7 @@ def split_to_subbands_for_mic(all_mic_data, sample_counter, mic_nr, select_mic):
 print("Enter a file to plot: ")
 # fileChooser = input()
 fileChooser = "recive_and_plot"
-select_mic = 63  # (0 - 63) Selecting microphone number 35
+select_mic = 0  # (0 - 63) Selecting microphone number 35
 
 # Load data
 all_mic_data, sample_counter, mic_nr, f_sampling = load_data_FPGA(fileChooser)

@@ -21,9 +21,10 @@ entity axi_v1_0_S00_AXI is
       init_txn  : out std_logic;
 
       txn_done  : in std_logic;
-      txn_error : in std_logic;
+      --txn_error : in std_logic;
 
-      empty : in std_logic;
+      header : in std_logic_vector(31 downto 0);
+      empty  : in std_logic;
 
       sys_id    : in std_logic_vector(1 downto 0);
       nr_arrays : in std_logic_vector(1 downto 0);
@@ -366,13 +367,13 @@ begin
    -- and the slave is ready to accept the read address.
    slv_reg_rden <= axi_arready and S_AXI_ARVALID and (not axi_rvalid);
    --slv_reg_rden <= axi_arready and S_AXI_ARVALID and not axi_rvalid;
-   process (axi_araddr, slv_reg0, nr_arrays, sys_id, txn_done, txn_error, empty)
+   process (axi_araddr, slv_reg0, nr_arrays, sys_id, txn_done, header, empty)
    begin
       -- Address decoding for reading registers
       case axi_araddr(ADDR_LSB + OPT_MEM_ADDR_BITS downto ADDR_LSB) is
          when "00" => reg_data_out   <= slv_reg0;
          when "01" => reg_data_out   <= (31 downto 5 => '0') & nr_arrays & sys_id & txn_done; -- txn_done = bit 0, sys_id = bit 2-1, nr_arrays = bit 4-3
-         when "10" => reg_data_out   <= (31 downto 1 => '0') & txn_error;
+         when "10" => reg_data_out   <= header;                                               -- not used (i dont think)
          when "11" => reg_data_out   <= (31 downto 1 => '0') & empty;
          when others => reg_data_out <= (others => '0');
       end case;

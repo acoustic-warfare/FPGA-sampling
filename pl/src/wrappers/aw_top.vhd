@@ -40,37 +40,34 @@ architecture structual of aw_top is
    signal btn_up   : std_logic;
    signal btn_down : std_logic;
 
-   signal index : std_logic_vector(3 downto 0);
-
-   signal data_stream : std_logic_vector(31 downto 0);
-
+   signal index            : std_logic_vector(3 downto 0);
    signal mic_sample_data  : matrix_16_24_type;
    signal mic_sample_valid : std_logic_vector(15 downto 0);
 
    signal chain_matrix_data        : matrix_4_16_24_type;
    signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
 
-   signal full_array         : std_logic;
-   signal empty_array        : std_logic;
-   signal almost_full_array  : std_logic;
-   signal almost_empty_array : std_logic;
-
    signal fft_data_r_out : matrix_32_24_type;
    signal fft_data_i_out : matrix_32_24_type;
    signal fft_valid_out  : std_logic;
    signal fft_mic_nr_out : std_logic_vector(7 downto 0);
-   --
-
-   --
-
-   --
 
    signal pl_sample_counter : unsigned(23 downto 0);
 
    signal to_fifo_valid_d    : std_logic;
    signal to_fifo_valid_dd   : std_logic;
+   signal to_fifo_header_d   : std_logic_vector(31 downto 0);
+   signal to_fifo_header_dd  : std_logic_vector(31 downto 0);
    signal to_fifo_data_66_d  : matrix_66_24_type;
    signal to_fifo_data_66_dd : matrix_66_24_type;
+
+   signal full_array         : std_logic;
+   signal empty_array        : std_logic;
+   signal almost_full_array  : std_logic;
+   signal almost_empty_array : std_logic;
+
+   signal data_stream : std_logic_vector(31 downto 0);
+   signal header      : std_logic_vector(31 downto 0);
 
    signal rd_en_pulse : std_logic;
 
@@ -90,8 +87,13 @@ begin
          to_fifo_valid_d  <= fft_valid_out;
          to_fifo_valid_dd <= to_fifo_valid_d;
 
-         to_fifo_data_66_d(0) <= std_logic_vector(pl_sample_counter);
-         to_fifo_data_66_d(1) <= x"0000" & fft_mic_nr_out;
+         to_fifo_header_d  <= fft_mic_nr_out & std_logic_vector(pl_sample_counter);
+         to_fifo_header_dd <= to_fifo_header_d;
+
+         --to_fifo_data_66_d(0) <= std_logic_vector(pl_sample_counter);
+         --to_fifo_data_66_d(1) <= x"0000" & fft_mic_nr_out;
+         to_fifo_data_66_d(0) <= "010101010101010101010101";
+         to_fifo_data_66_d(1) <= "000000000000111111111111";
 
          for i in 0 to 31 loop
             to_fifo_data_66_d(i * 2 + 0 + 2) <= fft_data_r_out(i);
@@ -245,8 +247,10 @@ begin
          clk          => clk,
          reset        => reset,
          wr_en        => to_fifo_valid_dd,
+         wr_header    => to_fifo_header_dd,
          wr_data      => to_fifo_data_66_dd,
          rd_en        => rd_en_pulse,
+         rd_header    => header,
          rd_data      => data_stream,
          empty        => empty_array,
          almost_empty => almost_empty_array,
@@ -261,6 +265,7 @@ begin
          sys_clock     => sys_clock,
          axi_data      => data_stream,
          axi_empty     => empty_array,
+         axi_header    => header,
          axi_rd_en     => rd_en_pulse,
          axi_sys_id    => system_ids,
          axi_nr_arrays => std_logic_vector(to_unsigned(number_of_arrays, 2))

@@ -19,11 +19,13 @@ architecture behavior of tb_fifo_axi is
    signal clk           : std_logic := '1';
    signal reset         : std_logic := '0';
 
-   signal wr_en   : std_logic := '0';
-   signal wr_data : matrix_66_24_type;
+   signal wr_en     : std_logic := '0';
+   signal wr_header : std_logic_vector(31 downto 0);
+   signal wr_data   : matrix_66_24_type;
 
-   signal rd_en   : std_logic := '0';
-   signal rd_data : std_logic_vector(31 downto 0);
+   signal rd_en     : std_logic := '0';
+   signal rd_header : std_logic_vector(31 downto 0);
+   signal rd_data   : std_logic_vector(31 downto 0);
 
    -- Flags
    signal empty        : std_logic;
@@ -39,8 +41,10 @@ begin
          clk          => clk,
          reset        => reset,
          wr_en        => wr_en, -- Write port
+         wr_header    => wr_header,
          wr_data      => wr_data,
          rd_en        => rd_en, -- Read port
+         rd_header    => rd_header,
          rd_data      => rd_data,
          empty        => empty, -- Flags
          almost_empty => almost_empty,
