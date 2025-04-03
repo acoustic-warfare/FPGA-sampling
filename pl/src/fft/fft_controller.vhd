@@ -132,7 +132,7 @@ begin
                             write_index_1 <= '1';
                         end if;
 
-                        write_address <= std_logic_vector(save_mic_counter * 8 + agrigation_counter(to_integer(save_mic_counter)) / 4);
+                        write_address <= std_logic_vector(save_mic_counter * 8 + agrigation_counter(to_integer(save_mic_counter(4 downto 0))) / 4);
 
                         agrigation_counter(to_integer(save_mic_counter)) <= agrigation_counter(to_integer(save_mic_counter)) + 1;
 

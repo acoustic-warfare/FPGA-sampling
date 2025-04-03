@@ -46,7 +46,7 @@ int main() {
   u32 protocol_ver = 3;
   u32 frequency = 48828;
 
-  u32 data[payload_header_size + nr_arrays * 64];
+  u32 data[payload_header_size + nr_arrays * 255];
 
   u32 empty;
 
@@ -63,7 +63,7 @@ int main() {
   u16_t Port = 21875;
 
   // 1458 bytes is max that can fit in a udp frame from the zynq
-  int buflen = (payload_header_size + nr_arrays * 64) * 4;  // 1458;
+  int buflen = (payload_header_size + nr_arrays * 256) * 4;  // 1458;
 
   /* The MAC address of the board. This should be unique per board */
   unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -180,7 +180,7 @@ int main() {
       counter++;
 
       // recive data from AXI
-      for (int i = 0; i < 64; i++) {
+      for (int i = 0; i < 255; i++) {
         data[i + payload_header_size] = *(data_p + pl_header + i);
       }
 

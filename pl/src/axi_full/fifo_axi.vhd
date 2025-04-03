@@ -31,7 +31,6 @@ architecture rtl of fifo_axi is
    signal fifo_count : integer range 0 to RAM_DEPTH;
 
    signal rd_en_d    : std_logic;
-   signal rd_en_dd   : std_logic;
    signal rd_en_edge : std_logic;
 
    signal rd_en_start     : std_logic;
@@ -67,14 +66,13 @@ begin
    ram_write_address <= std_logic_vector(to_unsigned(write_ptr, 16));
    ram_read_address  <= std_logic_vector(to_unsigned(read_ptr, 16));
 
-   rd_en_edge <= (not rd_en_dd) and rd_en_d;
+   rd_en_edge <= (not rd_en_d) and rd_en;
 
    process (clk)
    begin
       if rising_edge(clk) then
 
-         rd_en_d  <= rd_en;
-         rd_en_dd <= rd_en_d;
+         rd_en_d <= rd_en;
 
          if reset = '1' then
             write_ptr       <= 0;
@@ -102,10 +100,15 @@ begin
             end if;
 
             -- read data
+            rd_data(31 downto 24) <= (others => ram_read_data(0)(71)); --preload the data to make sure the first read cycle of the axi gets data
+            rd_data(23 downto 0)  <= ram_read_data(0)(71 downto 48);
+
             if rd_en_edge = '1' and empty = '0' then
-               rd_en_start     <= '1';
-               rd_count_segmen <= 0;
-               rd_count_ram    <= 0;
+               rd_en_start           <= '1';
+               rd_count_segmen       <= 2;
+               rd_count_ram          <= 0;
+               rd_data(31 downto 24) <= (others => ram_read_data(0)(47)); -- second stage of the preload to make sure the second read cycle gets data 
+               rd_data(23 downto 0)  <= ram_read_data(0)(47 downto 24);
             end if;
 
             if rd_en_start = '1' then

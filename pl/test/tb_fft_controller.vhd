@@ -33,7 +33,7 @@ begin
 
     clk <= not(clk) after C_CLK_CYKLE/2;
 
-    fft_controller_inst : entity work.fft_controller
+    fft_controller_2_inst : entity work.fft_controller_2
         port map(
             clk                => clk,
             rst                => rst,
@@ -68,7 +68,7 @@ begin
                 wait for (2 * C_CLK_CYKLE);
 
                 -- main loop
-                for i in 0 to 79 loop
+                for i in 0 to 200 loop
                     wait for (2 * C_CLK_CYKLE);
                     chain_matrix_valid <= '1';
                     wait for C_CLK_CYKLE;

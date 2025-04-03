@@ -230,7 +230,7 @@ begin
          );
    end generate;
 
-   fft_controller_inst : entity work.fft_controller
+   fft_controller_inst : entity work.fft_controller_2
       port map(
          clk                => clk,
          rst                => reset,

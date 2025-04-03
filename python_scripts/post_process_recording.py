@@ -28,13 +28,13 @@ def bin_to_txt(bin_path, txt_path):
 
     with open(bin_path, "rb") as bin_file, open(txt_path, "w") as txt_file:
         for row in range(max_rows):
-            # Read one full data packet (header + sampleCounter + PL_header + mic_nr + 64 microphones)
-            data_packet = bin_file.read(4 + 4 + 4 + (64 * 4 * nr_arrays))
+            # Read one full data packet (header + sampleCounter + PL_header + mic_nr + 256 microphones)
+            data_packet = bin_file.read(4 + 4 + 4 + (256 * 4 * nr_arrays))
             if not data_packet:
                 break  # Stop when no more data
 
             # Unpack the binary data
-            header, sample_counter, pl_header, *mic_data = struct.unpack("<iii64i", data_packet)
+            header, sample_counter, pl_header, *mic_data = struct.unpack("<iii256i", data_packet)
 
             # Write to text file
             txt_file.write(f"header: {int_to_twos_string_header(header)}    ")
@@ -43,7 +43,7 @@ def bin_to_txt(bin_path, txt_path):
             txt_file.write(f"mic_nr: {(pl_header >> 24) & 0xFF:03d}    ")
 
             for i, mic in enumerate(mic_data):
-                txt_file.write(f"{int_to_twos_complement_string(mic)}  ")
+                txt_file.write(f"mic_{i}: {int_to_twos_complement_string(mic, 24)}  ")
 
             txt_file.write("\n")
 
@@ -52,23 +52,23 @@ def bin_to_txt(bin_path, txt_path):
 
 def bin_to_txt_simple(bin_path, txt_path):
     """Convert binary UDP data file to a readable text format until the file ends."""
-    nr_arrays = 1  # Assuming one array of 64 microphones
+    nr_arrays = 1  # Assuming one array of 256 microphones
 
     with open(bin_path, "rb") as bin_file, open(txt_path, "w") as txt_file:
         while True:
-            # Read one full data packet (header + sampleCounter + PL_header + mic_nr + 64 microphones)
-            data_packet = bin_file.read(4 + 4 + 4 + (64 * 4 * nr_arrays))
+            # Read one full data packet (header + sampleCounter + PL_header + mic_nr + 256 microphones)
+            data_packet = bin_file.read(4 + 4 + 4 + (256 * 4 * nr_arrays))
             if not data_packet:
                 break  # Stop when no more data
 
             # Check if the data packet is complete
-            expected_packet_size = 4 + 4 + 4 + (64 * 4 * nr_arrays)
+            expected_packet_size = 4 + 4 + 4 + (256 * 4 * nr_arrays)
             if len(data_packet) != expected_packet_size:
                 print(f"Warning: Incomplete packet encountered. Read {len(data_packet)} bytes, expected {expected_packet_size} bytes. Stopping.")
                 break  # Stop if incomplete packet is encountered.
 
             # Unpack the binary data
-            header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii64i", data_packet)
+            header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii256i", data_packet)
 
             # Write to text file
             txt_file.write(int_to_twos_string_header(header))
@@ -88,7 +88,7 @@ def check_all_sample_nr(bin_path):
     """Check that counter is correct and no samples are missed"""
     nr_arrays = 1
     # size of each data packet (header + counter + mic_data)
-    data_packet_size = 4 + 4 + 4 + (64 * 4 * nr_arrays)
+    data_packet_size = 4 + 4 + 4 + (256 * 4 * nr_arrays)
 
     if not os.path.exists(bin_path):
         print(f"Error: File {bin_path} not found!")
@@ -102,21 +102,21 @@ def check_all_sample_nr(bin_path):
             print("Error: File is empty!")
             return
 
-        header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii64i", data_packet)
+        header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii256i", data_packet)
 
         current_counter = sample_counter
         start_sample_nr = sample_counter
         print(f"Starting counter: {current_counter}")
 
         while True:
-            # Read next data packet (header + sampleCounter + 64 microphones)
+            # Read next data packet (header + sampleCounter + 256 microphones)
             data_packet = bin_file.read(data_packet_size)
 
             if not data_packet:
                 break  # End of file reached
 
             # Unpack the binary data
-            header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii64i", data_packet)
+            header, sample_counter, pl_header, mic_nr, *mic_data = struct.unpack("<iii256i", data_packet)
 
             if current_counter + 1 == sample_counter:
                 current_counter = sample_counter

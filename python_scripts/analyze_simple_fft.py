@@ -9,7 +9,7 @@ def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
     path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
-    data2D = data.reshape(-1, 67)  # Each row: 4 header fields + 64 mic data values
+    data2D = data.reshape(-1, 259)  # Each row: 4 header fields + 64 mic data values
     mic_nr = data2D[:, 3]  # Extract subband column (4th column, index 3)
     mic_data = data2D[:, 4:]  # Microphone data starts from column 5 (index 4)
     sample_counter = data2D[:, 2]
@@ -78,7 +78,7 @@ phase = np.angle(fft_result)
 
 # Plot Phase Spectrum
 plt.figure(figsize=(10, 5))
-plt.stem(freqs, phase   )
+plt.stem(freqs, phase)
 plt.xlabel("Normalized Frequency")
 plt.ylabel("Phase (radians)")
 plt.title("Phase Spectrum")
