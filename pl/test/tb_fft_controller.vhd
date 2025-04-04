@@ -24,8 +24,8 @@ architecture tb of tb_fft_controller is
     signal chain_matrix_x4    : matrix_4_16_24_type;
     signal chain_matrix_valid : std_logic := '0';
 
-    signal fft_data_r_out : matrix_32_24_type;
-    signal fft_data_i_out : matrix_32_24_type;
+    signal fft_data_r_out : matrix_128_24_type;
+    signal fft_data_i_out : matrix_128_24_type;
     signal fft_valid_out  : std_logic;
     signal fft_mic_nr_out : std_logic_vector(7 downto 0);
 
@@ -68,7 +68,7 @@ begin
                 wait for (2 * C_CLK_CYKLE);
 
                 -- main loop
-                for i in 0 to 200 loop
+                for i in 0 to 600 loop
                     wait for (2 * C_CLK_CYKLE);
                     chain_matrix_valid <= '1';
                     wait for C_CLK_CYKLE;

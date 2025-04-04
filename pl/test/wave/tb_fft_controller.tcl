@@ -16,7 +16,7 @@ set signals {
     tb_fft_controller.clk -
 }
 
-for {set i 0} {$i < 32} {incr i} {
+for {set i 0} {$i < 127} {incr i 4} {
     lappend signals "tb_fft_controller.fft_controller_2_inst.fft_data_in\[$i\] -"
 }
 

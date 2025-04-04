@@ -47,8 +47,8 @@ architecture structual of aw_top is
    signal chain_matrix_data        : matrix_4_16_24_type;
    signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
 
-   signal fft_data_r_out : matrix_32_24_type;
-   signal fft_data_i_out : matrix_32_24_type;
+   signal fft_data_r_out : matrix_128_24_type;
+   signal fft_data_i_out : matrix_128_24_type;
    signal fft_valid_out  : std_logic;
    signal fft_mic_nr_out : std_logic_vector(7 downto 0);
 

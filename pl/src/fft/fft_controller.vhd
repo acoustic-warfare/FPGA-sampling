@@ -10,8 +10,8 @@ entity fft_controller is
         rst                : in std_logic;
         chain_matrix_x4    : in matrix_4_16_24_type;
         chain_matrix_valid : in std_logic;
-        fft_data_r_out     : out matrix_32_24_type;
-        fft_data_i_out     : out matrix_32_24_type;
+        fft_data_r_out     : out matrix_128_24_type;
+        fft_data_i_out     : out matrix_128_24_type;
         fft_valid_out      : out std_logic;
         fft_mic_nr_out     : out std_logic_vector(7 downto 0)
     );
@@ -48,7 +48,7 @@ architecture rtl of fft_controller is
     signal load_state : load_state_type;
 
     signal fft_mic_nr_in : std_logic_vector(7 downto 0);
-    signal fft_data_in   : matrix_32_24_type;
+    signal fft_data_in   : matrix_128_24_type;
     signal fft_valid_in  : std_logic;
 
 begin

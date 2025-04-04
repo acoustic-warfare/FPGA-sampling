@@ -5,6 +5,7 @@ import numpy as np
 SCALE_FACTOR = (1 << 16)  # Scale twiddle factors to integer values
 print("SCALE_FACTOR", SCALE_FACTOR)
 
+
 def twos_to_int(bin_str, bits=24):
     value = int(bin_str, 2)
     if value >= (1 << (bits - 1)):
@@ -33,14 +34,14 @@ def generate_twiddle_factors(N):
     twiddle_lut_bin_real_formatted = ", ".join(
         [f'"{twidd}"' for twidd in twiddle_lut_bin_real])
     print(
-        f'constant twidle_r : twidle_type := ({twiddle_lut_bin_real_formatted});')
+        f'constant twiddle_r : twiddle_type := ({twiddle_lut_bin_real_formatted});')
 
     twiddle_lut_bin_imag = [
         f"{(int(twidd.imag) & 0x3FFFF):018b}" for twidd in twiddle_lut]
     twiddle_lut_bin_imag_formatted = ", ".join(
         [f'"{twidd}"' for twidd in twiddle_lut_bin_imag])
     print(
-        f'constant twidle_i : twidle_type := ({twiddle_lut_bin_imag_formatted});')
+        f'constant twiddle_i : twiddle_type := ({twiddle_lut_bin_imag_formatted});')
 
     return twiddle_lut
 
@@ -50,11 +51,17 @@ def bit_reverse_indices(N):
     return [int('{:0{width}b}'.format(i, width=num_bits)[::-1], 2) for i in range(N)]
 
 
-def fft_32_point(samples, twiddle_lut):
-    """Performs a 32-point FFT using fixed-point integer twiddle factors."""
-    N = 32
+def fft_128_point(samples, twiddle_lut):
+    """Performs a 128-point FFT using fixed-point integer twiddle factors."""
+    N = 128
     indices = bit_reverse_indices(N)
     ordered_samples = [complex(samples[i], 0) for i in indices]
+
+    print("--------------------------")
+    print("ordered_samples")
+    for i in range(len(ordered_samples)):
+        print(ordered_samples[i])
+    print("--------------------------")
 
     stage_size = 2
 
@@ -78,23 +85,26 @@ def fft_32_point(samples, twiddle_lut):
                 b_imag = ((b.real * imag) + (b.imag * real)) // SCALE_FACTOR
                 b = complex(b_real, b_imag)
 
+                print(a)
+                #print(b, j * twiddle_step)
+
                 ordered_samples[i + j] = a + b
                 ordered_samples[i + j + half_size] = a - b
 
-                print("! ", pre_b, "       ", b, "       index: ", i +
-                      j + half_size, "      twiddle=", real, " +i ", imag, " twiddle index", j * twiddle_step)
+                #print("! ", pre_b, "       ", b, "       index: ", i +
+                #      j + half_size, "      twiddle=", real, " +i ", imag, " twiddle index", j * twiddle_step)
 
-                print("a + b ", a, " ", b, " ",
-                      ordered_samples[i + j], "    a_index", i + j, "b_index", i + j + half_size)
-                print("a - b ", a, " ", b, " ",
-                      ordered_samples[i + j + half_size], "    a_index", i + j, "b_index", i + j + half_size)
-                print()
+                #print("a + b ", a, " ", b, " ",
+                #      ordered_samples[i + j], "    a_index", i + j, "b_index", i + j + half_size)
+                #print("a - b ", a, " ", b, " ",
+                #      ordered_samples[i + j + half_size], "    a_index", i + j, "b_index", i + j + half_size)
+                #print()
 
-            print("-------------")
+            #print("-------------")
         print("===============")
         print("stage: ", stage_size)
-        for i in range(len(ordered_samples)):
-            print(i, " ", ordered_samples[i])
+        #for i in range(len(ordered_samples)):
+        #    print(i, " ", ordered_samples[i])
         print()
 
         print("===============")
@@ -110,17 +120,17 @@ def db(x):
 
 INPUT_FILE = './python_scripts/fft/fft_input_data.txt'
 samples = load_samples(INPUT_FILE)
-twiddle_lut = generate_twiddle_factors(32)
+twiddle_lut = generate_twiddle_factors(128)
 
-num_batches = len(samples) // 32
+num_batches = len(samples) // 128
 fft_results = []
 
 for i in range(1):
-    batch = samples[i * 32:(i + 1) * 32]
-    fft_output = fft_32_point(batch, twiddle_lut)
+    batch = samples[i * 128:(i + 1) * 128]
+    fft_output = fft_128_point(batch, twiddle_lut)
     fft_results.append(fft_output)
 
-np_fft_result = np.fft.fft(samples[:32])
+np_fft_result = np.fft.fft(samples[:128])
 
 plt.figure(figsize=(10, 5))
 
@@ -133,8 +143,8 @@ file_path = "./python_scripts/fft/tb_result.txt"
 
 # Read data from file
 data = np.loadtxt(file_path, dtype=np.float64)
-real = data[:32, 0]
-imag = data[:32, 1]
+real = data[:128, 0]
+imag = data[:128, 1]
 
 fft_tb_result = [complex(real[i], imag[i])
                  for i in range(min(len(real), len(imag)))]

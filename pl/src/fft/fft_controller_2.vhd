@@ -10,8 +10,8 @@ entity fft_controller_2 is
       rst                : in std_logic;
       chain_matrix_x4    : in matrix_4_16_24_type;
       chain_matrix_valid : in std_logic;
-      fft_data_r_out     : out matrix_32_24_type;
-      fft_data_i_out     : out matrix_32_24_type;
+      fft_data_r_out     : out matrix_128_24_type;
+      fft_data_i_out     : out matrix_128_24_type;
       fft_valid_out      : out std_logic;
       fft_mic_nr_out     : out std_logic_vector(7 downto 0)
    );
@@ -22,7 +22,7 @@ architecture rtl of fft_controller_2 is
    signal chain_matrix_buffer : matrix_64_24_type;
 
    signal fft_mic_nr_in : std_logic_vector(7 downto 0);
-   signal fft_data_in   : matrix_32_24_type;
+   signal fft_data_in   : matrix_128_24_type;
    signal fft_valid_in  : std_logic;
 
    type ram_data_type is array (0 to 21) of std_logic_vector(71 downto 0);
@@ -41,8 +41,9 @@ architecture rtl of fft_controller_2 is
    type read_state_type is (idle, read_start, read_start_start, read_main, read_last, read_last_last, read_last_last_last);
    signal read_state     : read_state_type;
    signal read_alternate : std_logic;
+   signal read_pause     : std_logic; -- with fft size over 64 we dont run the fft each time
 
-   signal read_mic_nr    : unsigned(4 downto 0); -- !!!!!!!!!JUTS 32 MICS FOR NOW!
+   signal read_mic_nr    : unsigned(5 downto 0);
    signal read_sample_nr : unsigned(7 downto 0);
    signal read_data      : std_logic_vector(71 downto 0);
    signal read_ram       : integer := 0;
@@ -52,9 +53,9 @@ architecture rtl of fft_controller_2 is
       x : unsigned(8 downto 0)
    ) return unsigned is
    begin
-      if x = 31 then
+      if x = 127 then
          return to_unsigned(256, 9);
-      elsif x = 287 then
+      elsif x = 383 then
          return to_unsigned(0, 9);
       else
          return x + 1;
@@ -63,10 +64,10 @@ architecture rtl of fft_controller_2 is
 
    function read_index_increment (
       read_index_in  : integer;
-      read_mic_nr_in : unsigned(4 downto 0)
+      read_mic_nr_in : unsigned(5 downto 0)
    ) return integer is
    begin
-      if read_mic_nr_in = 31 then
+      if read_mic_nr_in = 63 then
          return 0;
       elsif read_index_in = 0 then
          return read_index_in + 1;
@@ -80,10 +81,10 @@ architecture rtl of fft_controller_2 is
    function read_ram_increment (
       read_ram_in    : integer;
       read_index_in  : integer;
-      read_mic_nr_in : unsigned(4 downto 0)
+      read_mic_nr_in : unsigned(5 downto 0)
    ) return integer is
    begin
-      if read_mic_nr_in = 31 then
+      if read_mic_nr_in = 63 then
          return 0;
       elsif read_ram_in < 21 and read_index_in = 2 then
          return read_ram_in + 1;
@@ -136,8 +137,10 @@ begin
             read_sample_nr <= (others => '0');
             read_index     <= 0;
             read_ram       <= 0;
-         else
 
+            read_pause <= '0';
+
+         else
             write_start  <= '0';
             ram_write_en <= '0';
             write_done   <= write_start; -- just a 1 clk delay from start
@@ -167,6 +170,7 @@ begin
                ram_write_en           <= '1';
 
                write_start <= '1';
+
             end if;
 
             -- read
@@ -213,7 +217,7 @@ begin
                   ram_read_address_unsigned <= ram_read_address_unsigned + 1;
                   read_sample_nr            <= read_sample_nr + 1;
 
-                  if read_sample_nr = 28 then
+                  if read_sample_nr = 124 then
                      read_state <= read_last;
                   end if;
 
@@ -252,8 +256,14 @@ begin
                      fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
                   end if;
 
-                  fft_valid_in  <= '1';
-                  fft_mic_nr_in <= "000" & std_logic_vector(read_mic_nr); -- just "00" when using 64 mics
+                  if read_mic_nr = 63 then
+                     read_pause <= not read_pause;
+                  end if;
+                  
+                  if read_pause = '1' then
+                     fft_valid_in  <= '1';
+                  end if;
+                  fft_mic_nr_in <= "00" & std_logic_vector(read_mic_nr); -- just "00" when using 64 mics
 
                   read_mic_nr <= read_mic_nr + 1;
                   read_index  <= read_index_increment(read_index, read_mic_nr);
