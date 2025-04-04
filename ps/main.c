@@ -180,7 +180,7 @@ int main() {
       counter++;
 
       // recive data from AXI
-      for (int i = 0; i < 255; i++) {
+      for (int i = 0; i < 256; i++) {
         data[i + payload_header_size] = *(data_p + pl_header + i);
       }
 

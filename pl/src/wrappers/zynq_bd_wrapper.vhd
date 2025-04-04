@@ -32,9 +32,9 @@ begin
 
    clk_125 <= sys_clock;
 
-   rd_en_p : process (sys_clock)
+   rd_en_p : process (clk_125)
    begin
-      if rising_edge(sys_clock) then
+      if rising_edge(clk_125) then
 
          if axi_empty = '0' then
             rd_en_delay_counter <= rd_en_delay_counter + 1;
@@ -52,9 +52,9 @@ begin
       end if;
    end process;
 
-   sck_clk_p : process (sys_clock)
+   sck_clk_p : process (clk_125)
    begin
-      if rising_edge(sys_clock) then
+      if rising_edge(clk_125) then
          if sck_counter = 0 then
             clk_25      <= '1';
             sck_counter <= 1;
@@ -64,7 +64,7 @@ begin
 
       end if;
 
-      if falling_edge(sys_clock) then
+      if falling_edge(clk_125) then
          if sck_counter = 9 then
             sck_counter <= 0;
          elsif sck_counter = 5 then

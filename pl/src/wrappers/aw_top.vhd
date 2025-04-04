@@ -54,12 +54,12 @@ architecture structual of aw_top is
 
    signal pl_sample_counter : unsigned(23 downto 0);
 
-   signal to_fifo_valid_d    : std_logic;
-   signal to_fifo_valid_dd   : std_logic;
-   signal to_fifo_header_d   : std_logic_vector(31 downto 0);
-   signal to_fifo_header_dd  : std_logic_vector(31 downto 0);
-   signal to_fifo_data_66_d  : matrix_66_24_type;
-   signal to_fifo_data_66_dd : matrix_66_24_type;
+   signal to_fifo_valid_d   : std_logic;
+   signal to_fifo_valid_dd  : std_logic;
+   signal to_fifo_header_d  : std_logic_vector(31 downto 0);
+   signal to_fifo_header_dd : std_logic_vector(31 downto 0);
+   signal to_fifo_data_d    : matrix_256_24_type;
+   signal to_fifo_data_dd   : matrix_256_24_type;
 
    signal full_array         : std_logic;
    signal empty_array        : std_logic;
@@ -90,17 +90,12 @@ begin
          to_fifo_header_d  <= fft_mic_nr_out & std_logic_vector(pl_sample_counter);
          to_fifo_header_dd <= to_fifo_header_d;
 
-         --to_fifo_data_66_d(0) <= std_logic_vector(pl_sample_counter);
-         --to_fifo_data_66_d(1) <= x"0000" & fft_mic_nr_out;
-         to_fifo_data_66_d(0) <= "010101010101010101010101";
-         to_fifo_data_66_d(1) <= "000000000000111111111111";
-
-         for i in 0 to 31 loop
-            to_fifo_data_66_d(i * 2 + 0 + 2) <= fft_data_r_out(i);
-            to_fifo_data_66_d(i * 2 + 1 + 2) <= fft_data_i_out(i);
+         for i in 0 to 127 loop
+            to_fifo_data_d(i * 2 + 0) <= fft_data_r_out(i);
+            to_fifo_data_d(i * 2 + 1) <= fft_data_i_out(i);
          end loop;
 
-         to_fifo_data_66_dd <= to_fifo_data_66_d;
+         to_fifo_data_dd <= to_fifo_data_d;
 
          if reset = '1' then
             pl_sample_counter <= (others => '0');
@@ -248,7 +243,7 @@ begin
          reset        => reset,
          wr_en        => to_fifo_valid_dd,
          wr_header    => to_fifo_header_dd,
-         wr_data      => to_fifo_data_66_dd,
+         wr_data      => to_fifo_data_dd,
          rd_en        => rd_en_pulse,
          rd_header    => header,
          rd_data      => data_stream,
