@@ -95,7 +95,7 @@ begin
    --         mic_nr_out => mic_nr_out_1
    --      );
 
-   fft_2_inst : entity work.fft_2
+   fft_2_inst : entity work.fft
       port map(
          clk        => clk,
          data_in    => data_in,
@@ -120,7 +120,7 @@ begin
             wait for (2 * C_CLK_CYKLE);
             wait for (200 * C_CLK_CYKLE);
 
-         elsif run("wave_full") then
+         elsif run("wave_full") or run("auto") then
             -- test 1 is so far only meant for gktwave
 
             wait for (2 * C_CLK_CYKLE);
@@ -135,33 +135,7 @@ begin
                valid_in <= '1';
                wait for (1 * C_CLK_CYKLE);
                valid_in <= '0';
-               wait for (500 * C_CLK_CYKLE);
-
-               for s in 0 to 127 loop
-                  write(line_to_write, to_integer(signed(data_r_out_1(s)))); -- setup line
-                  STRING_WRITE(line_to_write, " ");                          -- setup line
-                  write(line_to_write, to_integer(signed(data_i_out_1(s)))); -- setup line
-                  writeline(output_file_0, line_to_write);                   -- write line to file
-               end loop;
-
-            end loop;
-
-            wait for (200 * C_CLK_CYKLE);
-
-         elsif run("auto") then
-            wait for (2 * C_CLK_CYKLE);
-            rst <= '0';
-            wait for (2 * C_CLK_CYKLE);
-
-            for i in 0 to input_data_lenght / 128 - 1 loop
-               for j in 0 to 127 loop
-                  data_in(j) <= input_data(i * 128 + j);
-               end loop;
-
-               valid_in <= '1';
-               wait for (1 * C_CLK_CYKLE);
-               valid_in <= '0';
-               wait for (500 * C_CLK_CYKLE);
+               wait for (600 * C_CLK_CYKLE);
 
                for s in 0 to 127 loop
                   write(line_to_write, to_integer(signed(data_r_out_1(s)))); -- setup line

@@ -18,6 +18,8 @@ set signals {
 
     tb_fifo_axi.wr_en -
     tb_fifo_axi.rd_en -
+    tb_fifo_axi.rd_data -
+
 
 }
 

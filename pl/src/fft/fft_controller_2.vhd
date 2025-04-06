@@ -279,7 +279,7 @@ begin
       end if;
    end process;
 
-   fft_inst : entity work.fft_2
+   fft_inst : entity work.fft
       port map(
          clk        => clk,
          data_in    => fft_data_in,

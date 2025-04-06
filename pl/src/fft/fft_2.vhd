@@ -37,16 +37,24 @@ architecture rtl of fft_2 is
    signal addition_operand_0_r : signed(23 downto 0);
    signal addition_operand_1_r : signed(23 downto 0);
    signal addition_result_r    : signed(23 downto 0);
+   signal addition_result_r_d  : signed(23 downto 0);
+   signal addition_result_r_dd : signed(23 downto 0);
    signal addition_operand_0_i : signed(23 downto 0);
    signal addition_operand_1_i : signed(23 downto 0);
    signal addition_result_i    : signed(23 downto 0);
+   signal addition_result_i_d  : signed(23 downto 0);
+   signal addition_result_i_dd : signed(23 downto 0);
 
    signal subtraction_operand_0_r : signed(23 downto 0);
    signal subtraction_operand_1_r : signed(23 downto 0);
    signal subtraction_result_r    : signed(23 downto 0);
+   signal subtraction_result_r_d  : signed(23 downto 0);
+   signal subtraction_result_r_dd : signed(23 downto 0);
    signal subtraction_operand_0_i : signed(23 downto 0);
    signal subtraction_operand_1_i : signed(23 downto 0);
    signal subtraction_result_i    : signed(23 downto 0);
+   signal subtraction_result_i_d  : signed(23 downto 0);
+   signal subtraction_result_i_dd : signed(23 downto 0);
 
    signal mul_operand_r     : signed(23 downto 0);
    signal mul_operand_i     : signed(23 downto 0);
@@ -58,33 +66,33 @@ architecture rtl of fft_2 is
    signal mul_result_i_pre  : signed(23 downto 0);
    signal mul_result_r      : signed(23 downto 0);
    signal mul_result_i      : signed(23 downto 0);
+   signal mul_result_r_d    : signed(23 downto 0);
+   signal mul_result_i_d    : signed(23 downto 0);
 
-   signal mul_bypass_r     : signed(23 downto 0);
-   signal mul_bypass_i     : signed(23 downto 0);
-   signal mul_bypass_r_d   : signed(23 downto 0);
-   signal mul_bypass_i_d   : signed(23 downto 0);
-   signal mul_bypass_r_dd  : signed(23 downto 0);
-   signal mul_bypass_i_dd  : signed(23 downto 0);
-   signal mul_bypass_r_ddd : signed(23 downto 0);
-   signal mul_bypass_i_ddd : signed(23 downto 0);
+   signal mul_bypass_r      : signed(23 downto 0);
+   signal mul_bypass_i      : signed(23 downto 0);
+   signal mul_bypass_r_d    : signed(23 downto 0);
+   signal mul_bypass_i_d    : signed(23 downto 0);
+   signal mul_bypass_r_dd   : signed(23 downto 0);
+   signal mul_bypass_i_dd   : signed(23 downto 0);
+   signal mul_bypass_r_ddd  : signed(23 downto 0);
+   signal mul_bypass_i_ddd  : signed(23 downto 0);
+   signal mul_bypass_r_dddd : signed(23 downto 0);
+   signal mul_bypass_i_dddd : signed(23 downto 0);
 
    ----------------------- CONTROLL -----------------------
    type fft_128_24_siged_type is array (127 downto 0) of signed(23 downto 0);
 
    signal mic_nr_buffer : std_logic_vector(7 downto 0);
 
-   --signal bit_reversal_data_in : fft_128_24_siged_type;
    signal result_reg_0_r : fft_128_24_siged_type;
    signal result_reg_0_i : fft_128_24_siged_type;
 
-   signal result_reg_1_r : fft_128_24_siged_type;
-   signal result_reg_1_i : fft_128_24_siged_type;
+   --signal result_reg_1_r : fft_128_24_siged_type;
+   --signal result_reg_1_i : fft_128_24_siged_type;
 
    type state_type is (idle, bit_reversal, butterfly_2, butterfly_4, butterfly_8, butterfly_16, butterfly_32, butterfly_64, butterfly_128, finish_state);
    signal state : state_type := idle;
-
-   ----------------------- BUTTERFLY 2 -----------------------
-   signal butterfly_2_counter : unsigned(7 downto 0);
 
    ----------------------- BUTTERFLY -----------------------
    signal butterfly_counter      : unsigned(7 downto 0);
@@ -135,6 +143,16 @@ begin
          subtraction_result_r <= subtraction_operand_0_r - subtraction_operand_1_r;
          subtraction_result_i <= subtraction_operand_0_i - subtraction_operand_1_i;
 
+         addition_result_r_d    <= addition_result_r;
+         addition_result_i_d    <= addition_result_i;
+         subtraction_result_r_d <= subtraction_result_r;
+         subtraction_result_i_d <= subtraction_result_i;
+
+         addition_result_r_dd    <= addition_result_r_d;
+         addition_result_i_dd    <= addition_result_i_d;
+         subtraction_result_r_dd <= subtraction_result_r_d;
+         subtraction_result_i_dd <= subtraction_result_i_d;
+
          mul_result_r_full <= (mul_operand_r * mul_twiddle_r - mul_operand_i * mul_twiddle_i);
          mul_result_i_full <= (mul_operand_r * mul_twiddle_i + mul_operand_i * mul_twiddle_r);
          --mul_result_r  <= mul_result_r_full(39 downto 16);
@@ -143,13 +161,17 @@ begin
          mul_result_i_pre <= mul_result_i_full(39 downto 16);
          mul_result_r     <= mul_result_r_pre;
          mul_result_i     <= mul_result_i_pre;
+         mul_result_r_d   <= mul_result_r;
+         mul_result_i_d   <= mul_result_i;
 
-         mul_bypass_r_d   <= mul_bypass_r;
-         mul_bypass_i_d   <= mul_bypass_i;
-         mul_bypass_r_dd  <= mul_bypass_r_d;
-         mul_bypass_i_dd  <= mul_bypass_i_d;
-         mul_bypass_r_ddd <= mul_bypass_r_dd;
-         mul_bypass_i_ddd <= mul_bypass_i_dd;
+         mul_bypass_r_d    <= mul_bypass_r;
+         mul_bypass_i_d    <= mul_bypass_i;
+         mul_bypass_r_dd   <= mul_bypass_r_d;
+         mul_bypass_i_dd   <= mul_bypass_i_d;
+         mul_bypass_r_ddd  <= mul_bypass_r_dd;
+         mul_bypass_i_ddd  <= mul_bypass_i_dd;
+         mul_bypass_r_dddd <= mul_bypass_r_ddd;
+         mul_bypass_i_dddd <= mul_bypass_i_ddd;
 
          case state is
             when idle =>
@@ -162,71 +184,96 @@ begin
                      result_reg_0_r(to_integer(reverse_bits(to_unsigned(i, fft_addres_lenght)))) <= signed(data_in(i));
                   end loop;
 
-                  butterfly_2_counter <= (others => '0');
+                  result_reg_0_i <= (others => (others => '0')); 
+
+                  --                  butterfly_2_counter <= (others => '0');
+                  butterfly_counter      <= (others => '0');
+                  butterfly_counter_load <= (others => '0');
+                  butterfly_counter_save <= (others => '0');
 
                end if;
 
                --when bit_reversal =>
                --   state <= butterfly_2;
             when butterfly_2 =>
-               if butterfly_2_counter < 64 then
-                  addition_operand_0_r <= result_reg_0_r(2 * to_integer(butterfly_2_counter) + 0);
-                  addition_operand_1_r <= result_reg_0_r(2 * to_integer(butterfly_2_counter) + 1);
 
-                  subtraction_operand_0_r <= result_reg_0_r(2 * to_integer(butterfly_2_counter) + 0);
-                  subtraction_operand_1_r <= result_reg_0_r(2 * to_integer(butterfly_2_counter) + 1);
+               mul_bypass_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 0);
+
+               mul_operand_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 1);
+               mul_operand_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 1);
+               mul_twiddle_r <= twiddle_r(0);
+               mul_twiddle_i <= twiddle_i(0);
+
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
+
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
+
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
+
+               result_reg_0_r(to_integer(butterfly_counter_save) + 1) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 1) <= subtraction_result_i_d;
+
+               if butterfly_counter < 63 then
+                  butterfly_counter_load <= increment_skip(butterfly_counter_load, 0);
                end if;
 
-               if butterfly_2_counter > 1 then
-                  result_reg_1_r(2 * to_integer(butterfly_2_counter) - 4 + 0) <= addition_result_r;
-                  result_reg_1_r(2 * to_integer(butterfly_2_counter) - 4 + 1) <= subtraction_result_r;
+               if butterfly_counter > 7 then
+                  butterfly_counter_save <= increment_skip(butterfly_counter_save, 0);
                end if;
 
-               if butterfly_2_counter = 65 then
+               if butterfly_counter = 71 then
                   state <= butterfly_4;
 
                   butterfly_counter      <= (others => '0');
                   butterfly_counter_load <= (others => '0');
                   butterfly_counter_save <= (others => '0');
                else
-                  butterfly_2_counter <= butterfly_2_counter + 1;
+                  butterfly_counter <= butterfly_counter + 1;
                end if;
 
             when butterfly_4 =>
 
-               mul_bypass_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 0);
-               mul_bypass_i <= (others => '0');
+               mul_bypass_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 0);
 
-               mul_operand_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 2);
-               mul_operand_i <= (others => '0');
+               mul_operand_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 2);
+               mul_operand_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 2);
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(0 downto 0)) * 32);
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(0 downto 0)) * 32);
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 2) <= subtraction_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 2) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 2) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 2) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 1);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 1);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= butterfly_8;
 
                   butterfly_counter      <= (others => '0');
@@ -246,31 +293,31 @@ begin
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(1 downto 0)) * 16);
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(1 downto 0)) * 16);
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 4) <= subtraction_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 4) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 4) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 4) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 2);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 2);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= butterfly_16;
 
                   butterfly_counter      <= (others => '0');
@@ -282,39 +329,39 @@ begin
 
             when butterfly_16 =>
 
-               mul_bypass_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 0);
-               mul_bypass_i <= result_reg_1_i(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 0);
 
-               mul_operand_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 8);
-               mul_operand_i <= result_reg_1_i(to_integer(butterfly_counter_load) + 8);
+               mul_operand_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 8);
+               mul_operand_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 8);
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(2 downto 0)) * 8);
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(2 downto 0)) * 8);
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 8) <= subtraction_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 8) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 8) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 8) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 3);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 3);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= butterfly_32;
 
                   butterfly_counter      <= (others => '0');
@@ -334,31 +381,31 @@ begin
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(3 downto 0)) * 4);
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(3 downto 0)) * 4);
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 16) <= subtraction_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 16) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 16) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 16) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 4);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 4);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= butterfly_64;
 
                   butterfly_counter      <= (others => '0');
@@ -370,39 +417,39 @@ begin
 
             when butterfly_64 =>
 
-               mul_bypass_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 0);
-               mul_bypass_i <= result_reg_1_i(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 0);
+               mul_bypass_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 0);
 
-               mul_operand_r <= result_reg_1_r(to_integer(butterfly_counter_load) + 32);
-               mul_operand_i <= result_reg_1_i(to_integer(butterfly_counter_load) + 32);
+               mul_operand_r <= result_reg_0_r(to_integer(butterfly_counter_load) + 32);
+               mul_operand_i <= result_reg_0_i(to_integer(butterfly_counter_load) + 32);
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(4 downto 0)) * 2);
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(4 downto 0)) * 2);
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_0_r(to_integer(butterfly_counter_save) + 32) <= subtraction_result_r;
-               result_reg_0_i(to_integer(butterfly_counter_save) + 32) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 32) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 32) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 5);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 5);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= butterfly_128;
 
                   butterfly_counter      <= (others => '0');
@@ -422,31 +469,31 @@ begin
                mul_twiddle_r <= twiddle_r(to_integer(butterfly_counter_load(5 downto 0)));
                mul_twiddle_i <= twiddle_i(to_integer(butterfly_counter_load(5 downto 0)));
 
-               addition_operand_0_r <= mul_bypass_r_ddd;
-               addition_operand_1_r <= mul_result_r;
-               addition_operand_0_i <= mul_bypass_i_ddd;
-               addition_operand_1_i <= mul_result_i;
+               addition_operand_0_r <= mul_bypass_r_dddd;
+               addition_operand_1_r <= mul_result_r_d;
+               addition_operand_0_i <= mul_bypass_i_dddd;
+               addition_operand_1_i <= mul_result_i_d;
 
-               subtraction_operand_0_r <= mul_bypass_r_ddd;
-               subtraction_operand_1_r <= mul_result_r;
-               subtraction_operand_0_i <= mul_bypass_i_ddd;
-               subtraction_operand_1_i <= mul_result_i;
+               subtraction_operand_0_r <= mul_bypass_r_dddd;
+               subtraction_operand_1_r <= mul_result_r_d;
+               subtraction_operand_0_i <= mul_bypass_i_dddd;
+               subtraction_operand_1_i <= mul_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 0) <= addition_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 0) <= addition_result_i_d;
 
-               result_reg_1_r(to_integer(butterfly_counter_save) + 64) <= subtraction_result_r;
-               result_reg_1_i(to_integer(butterfly_counter_save) + 64) <= subtraction_result_i;
+               result_reg_0_r(to_integer(butterfly_counter_save) + 64) <= subtraction_result_r_d;
+               result_reg_0_i(to_integer(butterfly_counter_save) + 64) <= subtraction_result_i_d;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, 6);
                end if;
 
-               if butterfly_counter > 5 then
+               if butterfly_counter > 7 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, 6);
                end if;
 
-               if butterfly_counter = 69 then
+               if butterfly_counter = 71 then
                   state <= finish_state;
 
                else
@@ -458,8 +505,8 @@ begin
                valid_out  <= '1';
                mic_nr_out <= mic_nr_buffer;
                for i in 0 to 127 loop
-                  data_r_out(i) <= std_logic_vector(result_reg_1_r(i));
-                  data_i_out(i) <= std_logic_vector(result_reg_1_i(i));
+                  data_r_out(i) <= std_logic_vector(result_reg_0_r(i));
+                  data_i_out(i) <= std_logic_vector(result_reg_0_i(i));
                end loop;
 
                state <= idle;
