@@ -51,24 +51,29 @@ architecture rtl of fft is
    signal subtraction_result_i_d  : signed(23 downto 0);
    signal subtraction_result_i_dd : signed(23 downto 0);
 
-   signal mul_operand_r     : signed(23 downto 0);
-   signal mul_operand_i     : signed(23 downto 0);
-   signal mul_twiddle_r     : signed(17 downto 0);
-   signal mul_twiddle_i     : signed(17 downto 0);
-   signal operand_r_1       : signed(23 downto 0);
-   signal operand_i_1       : signed(23 downto 0);
-   signal twiddle_r_1       : signed(17 downto 0);
-   signal twiddle_i_1       : signed(17 downto 0);
-   signal mult_rr           : signed(41 downto 0);
-   signal mult_ii           : signed(41 downto 0);
-   signal mult_ri           : signed(41 downto 0);
-   signal mult_ir           : signed(41 downto 0);
-   signal mul_result_r_full : signed(41 downto 0);
-   signal mul_result_i_full : signed(41 downto 0);
-   signal mul_result_r_pre  : signed(23 downto 0);
-   signal mul_result_i_pre  : signed(23 downto 0);
-   signal mul_result_r      : signed(23 downto 0);
-   signal mul_result_i      : signed(23 downto 0);
+   signal mul_operand_r : signed(23 downto 0);
+   signal mul_operand_i : signed(23 downto 0);
+   signal mul_twiddle_r : signed(17 downto 0);
+   signal mul_twiddle_i : signed(17 downto 0);
+   signal operand_r_1   : signed(23 downto 0);
+   signal operand_i_1   : signed(23 downto 0);
+   signal twiddle_r_1   : signed(17 downto 0);
+   signal twiddle_i_1   : signed(17 downto 0);
+
+   signal mult_rr : signed(41 downto 0);
+   signal mult_ii : signed(41 downto 0);
+   signal mult_ri : signed(41 downto 0);
+   signal mult_ir : signed(41 downto 0);
+
+   signal mult_rr_scaled : signed(23 downto 0);
+   signal mult_ii_scaled : signed(23 downto 0);
+   signal mult_ri_scaled : signed(23 downto 0);
+   signal mult_ir_scaled : signed(23 downto 0);
+
+   signal mul_result_r_pre : signed(23 downto 0);
+   signal mul_result_i_pre : signed(23 downto 0);
+   signal mul_result_r     : signed(23 downto 0);
+   signal mul_result_i     : signed(23 downto 0);
 
    signal mul_bypass_r       : signed(23 downto 0);
    signal mul_bypass_i       : signed(23 downto 0);
@@ -92,13 +97,13 @@ architecture rtl of fft is
    signal result_reg_0_i : fft_128_24_siged_type;
 
    signal start                   : std_logic;
-   signal butterfly_stage         : unsigned(6 downto 0); -- 1 to 64 (numbers for 128 point fft)
-   signal butterfly_stage_counter : unsigned(2 downto 0); -- 0 to 6
+   signal butterfly_stage         : unsigned(7 downto 0); -- 1 to 64 (numbers for 128 point fft)
+   signal butterfly_stage_counter : unsigned(7 downto 0); -- 0 to 6
 
    ----------------------- BUTTERFLY -----------------------
-   signal butterfly_counter      : unsigned(6 downto 0); -- 0 to 72 ish
-   signal butterfly_counter_load : unsigned(6 downto 0); -- 0 to 126
-   signal butterfly_counter_save : unsigned(6 downto 0); -- 0 to 126
+   signal butterfly_counter      : unsigned(7 downto 0); -- 0 to 72 ish
+   signal butterfly_counter_load : unsigned(7 downto 0); -- 0 to 126
+   signal butterfly_counter_save : unsigned(7 downto 0); -- 0 to 126
 
    ----------------------- FUNCTION FOR BIT REVERSAL -----------------------
    function reverse_bits(
@@ -115,17 +120,17 @@ architecture rtl of fft is
 
    ----------------------- FUNCTION INCREMENTING WITH SKIP -----------------------
    function increment_skip(
-      counter_in                 : unsigned(6 downto 0);
-      butterfly_stage_counter_in : unsigned(2 downto 0))
+      counter_in                 : unsigned(7 downto 0);
+      butterfly_stage_counter_in : unsigned(7 downto 0))
       return unsigned is
-      variable tmp : unsigned(6 downto 0);
+      variable tmp : unsigned(7 downto 0);
    begin
 
       tmp := counter_in + 1;
       if tmp(to_integer(butterfly_stage_counter_in)) = '0' then
          return tmp;
       else
-         return tmp + SHIFT_LEFT("0000001", to_integer(butterfly_stage_counter_in));
+         return tmp + SHIFT_LEFT("00000001", to_integer(butterfly_stage_counter_in));
       end if;
 
    end function;
@@ -133,8 +138,8 @@ architecture rtl of fft is
 
    ----------------------- FUNCTION INCREMENTING WITH SKIP -----------------------
    function calculate_twiddle(
-      butterfly_counter_load_in : unsigned(6 downto 0);
-      butterfly_stage_in        : unsigned(6 downto 0))
+      butterfly_counter_load_in : unsigned(7 downto 0);
+      butterfly_stage_in        : unsigned(7 downto 0))
       return integer is
    begin
 
@@ -200,11 +205,19 @@ begin
          mult_ri <= operand_r_1 * twiddle_i_1;
          mult_ir <= operand_i_1 * twiddle_r_1;
 
-         mul_result_r_full <= mult_rr - mult_ii;
-         mul_result_i_full <= mult_ri + mult_ir;
+         mult_rr_scaled <= mult_rr(39 downto 16);
+         mult_ii_scaled <= mult_ii(39 downto 16);
+         mult_ri_scaled <= mult_ri(39 downto 16);
+         mult_ir_scaled <= mult_ir(39 downto 16);
 
-         mul_result_r_pre <= mul_result_r_full(39 downto 16);
-         mul_result_i_pre <= mul_result_i_full(39 downto 16);
+         mul_result_r_pre <= mult_rr_scaled - mult_ii_scaled;
+         mul_result_i_pre <= mult_ri_scaled + mult_ir_scaled;
+
+         --mul_result_r_full <= mult_rr - mult_ii;
+         --mul_result_i_full <= mult_ri + mult_ir;
+
+         -- mul_result_r_pre <= mul_result_r_full(39 downto 16);
+         -- mul_result_i_pre <= mul_result_i_full(39 downto 16);
 
          mul_result_r <= mul_result_r_pre;
          mul_result_i <= mul_result_i_pre;
@@ -231,7 +244,7 @@ begin
 
             result_reg_0_i <= (others => (others => '0'));
 
-            butterfly_stage         <= "0000001";
+            butterfly_stage         <= "00000001";
             butterfly_stage_counter <= (others => '0');
 
             butterfly_counter      <= (others => '0');

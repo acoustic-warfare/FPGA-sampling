@@ -9,7 +9,7 @@ OUTPUT_FILE = './python_scripts/fft/fft_input_data.txt'
 # Generate sine wave
 t = np.arange(length) / Fs
 sine_wave = np.sin(2 * np.pi * f_sine * t)
-data = (sine_wave * (2**18 - 1)).astype(np.int32)  # Scale to 18-bit integer range (more like array data)
+data = (sine_wave * (2**16 - 1)).astype(np.int32)  # Scale to 18-bit integer range (more like array data)
 
 
 def int_to_twos(num, bits):

@@ -57,11 +57,11 @@ def fft_128_point(samples, twiddle_lut):
     indices = bit_reverse_indices(N)
     ordered_samples = [complex(samples[i], 0) for i in indices]
 
-    print("--------------------------")
-    print("ordered_samples")
-    for i in range(len(ordered_samples)):
-        print(ordered_samples[i])
-    print("--------------------------")
+    #print("--------------------------")
+    #print("ordered_samples")
+    #for i in range(len(ordered_samples)):
+    #    print(ordered_samples[i])
+    #print("--------------------------")
 
     stage_size = 2
 
@@ -85,7 +85,7 @@ def fft_128_point(samples, twiddle_lut):
                 b_imag = ((b.real * imag) + (b.imag * real)) // SCALE_FACTOR
                 b = complex(b_real, b_imag)
 
-                print(a)
+                #print(a)
                 #print(b, j * twiddle_step)
 
                 ordered_samples[i + j] = a + b
@@ -103,8 +103,8 @@ def fft_128_point(samples, twiddle_lut):
             #print("-------------")
         print("===============")
         print("stage: ", stage_size)
-        #for i in range(len(ordered_samples)):
-        #    print(i, " ", ordered_samples[i])
+        for i in range(len(ordered_samples)):
+            print(i, " ", ordered_samples[i])
         print()
 
         print("===============")
@@ -150,8 +150,8 @@ fft_tb_result = [complex(real[i], imag[i])
                  for i in range(min(len(real), len(imag)))]
 
 
-plt.plot(db(np.abs(fft_tb_result)) + 2,  marker='o')
-plt.plot(db(np.abs(fft_results[0])) + 1,  marker='o')
+plt.plot(db(np.abs(fft_tb_result)),  marker='o')
+plt.plot(db(np.abs(fft_results[0])),  marker='o')
 plt.plot(db(np.abs(np_fft_result)), marker='o')
 
 

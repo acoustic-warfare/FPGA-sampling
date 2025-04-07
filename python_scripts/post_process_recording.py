@@ -43,7 +43,7 @@ def bin_to_txt(bin_path, txt_path):
             txt_file.write(f"mic_nr: {(pl_header >> 24) & 0xFF:03d}    ")
 
             for i, mic in enumerate(mic_data):
-                txt_file.write(f"mic_{i}: {int_to_twos_complement_string(mic, 24)}  ")
+                txt_file.write(f"s_{i}: {int_to_twos_complement_string(mic, 24)}  ")
 
             txt_file.write("\n")
 

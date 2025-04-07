@@ -19,13 +19,9 @@ set signals {
 }
 
 for {set i 0} {$i < 128} {incr i} {
-    ##lappend signals "tb_fft.clk -"
-    ##lappend signals "tb_fft.fft_inst.data_r_out\[$i\] -"
-    #lappend signals "tb_fft.fft_3_inst.result_reg_0_r\[$i\] -"
-    #lappend signals "tb_fft.fft_3_inst.result_reg_0_i\[$i\] -"
-    ##lappend signals "tb_fft.clk -"
-    ##lappend signals "tb_fft.fft_inst.data_i_out\[$i\] -"
-    ##lappend signals "tb_fft.fft_2_inst.data_i_out\[$i\] -"
+    lappend signals "tb_fft.clk -"
+    lappend signals "tb_fft.fft_inst.result_reg_0_r\[$i\] -"
+    lappend signals "tb_fft.fft_inst.result_reg_0_i\[$i\] -"
 }
 
 foreach signal $signals {

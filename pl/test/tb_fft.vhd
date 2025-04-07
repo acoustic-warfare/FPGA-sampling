@@ -95,7 +95,7 @@ begin
    --         mic_nr_out => mic_nr_out_1
    --      );
 
-   fft_2_inst : entity work.fft
+   fft_inst : entity work.fft
       port map(
          clk        => clk,
          data_in    => data_in,
