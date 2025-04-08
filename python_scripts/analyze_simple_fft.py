@@ -91,3 +91,14 @@ plt.legend(["Real Part", "Imaginary Part"])
 plt.title("Real and Imaginary Parts of FFT")
 plt.grid()
 plt.show()
+
+
+def db(x):
+    return 20 * np.log10(x + 1e-10)
+
+
+plt.imshow(db(np.abs(mic_data_c)), cmap='viridis', aspect='auto')
+plt.colorbar()
+plt.xlabel("Channel")
+plt.ylabel("Time")
+plt.show()

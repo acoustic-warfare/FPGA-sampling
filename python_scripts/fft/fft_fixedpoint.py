@@ -57,11 +57,17 @@ def fft_128_point(samples, twiddle_lut):
     indices = bit_reverse_indices(N)
     ordered_samples = [complex(samples[i], 0) for i in indices]
 
-    #print("--------------------------")
-    #print("ordered_samples")
-    #for i in range(len(ordered_samples)):
+    # print("--------------------------")
+    # print("samples")
+    # for i in range(len(samples)):
+    #    print(samples[i])
+    # print("--------------------------")
+
+    # print("--------------------------")
+    # print("ordered_samples")
+    # for i in range(len(ordered_samples)):
     #    print(ordered_samples[i])
-    #print("--------------------------")
+    # print("--------------------------")
 
     stage_size = 2
 
@@ -85,29 +91,28 @@ def fft_128_point(samples, twiddle_lut):
                 b_imag = ((b.real * imag) + (b.imag * real)) // SCALE_FACTOR
                 b = complex(b_real, b_imag)
 
-                #print(a)
-                #print(b, j * twiddle_step)
+                # print(a)
+                # print(b, j * twiddle_step)
 
                 ordered_samples[i + j] = a + b
                 ordered_samples[i + j + half_size] = a - b
 
-                #print("! ", pre_b, "       ", b, "       index: ", i +
+                # print("! ", pre_b, "       ", b, "       index: ", i +
                 #      j + half_size, "      twiddle=", real, " +i ", imag, " twiddle index", j * twiddle_step)
 
-                #print("a + b ", a, " ", b, " ",
+                # print("a + b ", a, " ", b, " ",
                 #      ordered_samples[i + j], "    a_index", i + j, "b_index", i + j + half_size)
-                #print("a - b ", a, " ", b, " ",
+                # print("a - b ", a, " ", b, " ",
                 #      ordered_samples[i + j + half_size], "    a_index", i + j, "b_index", i + j + half_size)
-                #print()
+                # print()
 
-            #print("-------------")
-        print("===============")
-        print("stage: ", stage_size)
-        for i in range(len(ordered_samples)):
-            print(i, " ", ordered_samples[i])
-        print()
-
-        print("===============")
+            # print("-------------")
+        # print("===============")
+        # print("stage: ", stage_size)
+        # for i in range(len(ordered_samples)):
+        #    print(i, " ", ordered_samples[i])
+        # print()
+        # print("===============")
 
         stage_size *= 2
 
@@ -143,20 +148,33 @@ file_path = "./python_scripts/fft/tb_result.txt"
 
 # Read data from file
 data = np.loadtxt(file_path, dtype=np.float64)
-real = data[:128, 0]
-imag = data[:128, 1]
+# real = data[128:256, 0]
+# imag = data[128:256, 1]
+
+real = data[512:640, 0]
+imag = data[512:640, 1]
 
 fft_tb_result = [complex(real[i], imag[i])
                  for i in range(min(len(real), len(imag)))]
 
+fft_tb_result_all = []
+for i in range(int(len(data[:, 0])/128)):
+    full_sample = [complex(data[i * 128 + j, 0], data[i * 128 + j, 1]) for j in range(128)]
+    fft_tb_result_all.append(full_sample)
 
-plt.plot(db(np.abs(fft_tb_result)),  marker='o')
-plt.plot(db(np.abs(fft_results[0])),  marker='o')
-plt.plot(db(np.abs(np_fft_result)), marker='o')
-
+plt.plot(db(np.abs(fft_tb_result)),  marker='o', label="tb_res")
+plt.plot(db(np.abs(fft_results[0])),  marker='o', label="fixed_point")
+plt.plot(db(np.abs(np_fft_result)), marker='o', label="numpy")
 
 plt.xlabel('Frequency Bin')
 plt.ylabel('Magnitude (dB)')
 plt.title('FFT Magnitude Response Comparison')
+plt.legend()
 plt.grid()
+plt.show()
+
+plt.imshow(db(np.abs(fft_tb_result_all)), cmap='viridis', aspect='auto')
+plt.colorbar()
+plt.xlabel("Channel")
+plt.ylabel("Time")
 plt.show()

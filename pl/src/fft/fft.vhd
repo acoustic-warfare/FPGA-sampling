@@ -92,6 +92,7 @@ architecture rtl of fft is
    type fft_128_24_siged_type is array (127 downto 0) of signed(23 downto 0);
 
    signal mic_nr_buffer : std_logic_vector(7 downto 0);
+   signal valid_out_pre : std_logic;
 
    signal result_reg_0_r : fft_128_24_siged_type;
    signal result_reg_0_i : fft_128_24_siged_type;
@@ -172,7 +173,8 @@ begin
    begin
       if rising_edge(clk) then
 
-         valid_out <= '0';
+         valid_out     <= valid_out_pre;
+         valid_out_pre <= '0';
 
          for i in 0 to 127 loop
             data_r_out(i) <= std_logic_vector(result_reg_0_r(i));
@@ -282,8 +284,8 @@ begin
 
             if butterfly_counter = 72 then
                if butterfly_stage = 64 then
-                  valid_out <= '1';
-                  start     <= '0';
+                  valid_out_pre <= '1';
+                  start         <= '0';
                else
                   butterfly_stage_counter <= butterfly_stage_counter + 1;
                   butterfly_stage         <= SHIFT_LEFT(butterfly_stage, 1);

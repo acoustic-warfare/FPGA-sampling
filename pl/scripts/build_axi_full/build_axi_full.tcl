@@ -30,11 +30,8 @@ add_files [file join "$ROOT" src decode decode_ema.vhd]
 add_files [file join "$ROOT" src decode ema.vhd]
 
 add_files [file join "$ROOT" src fft fft.vhd]
-add_files [file join "$ROOT" src fft fft_2.vhd]
 add_files [file join "$ROOT" src fft fft_bram.vhd]
-add_files [file join "$ROOT" src fft fft_bram_2.vhd]
 add_files [file join "$ROOT" src fft fft_controller.vhd]
-add_files [file join "$ROOT" src fft fft_controller_2.vhd]
 
 add_files [file join "$ROOT" src sample_data button_index_select.vhd]
 add_files [file join "$ROOT" src sample_data collector.vhd]
