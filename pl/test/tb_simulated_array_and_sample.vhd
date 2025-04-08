@@ -35,44 +35,10 @@ architecture tb of tb_simulated_array_and_sample is
     signal chain_matrix_data  : matrix_16_24_type;
     signal chain_matrix_valid : std_logic;
 
-    signal tb_chain_matrix_data_0  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_1  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_2  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_3  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_4  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_5  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_6  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_7  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_8  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_9  : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_10 : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_11 : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_12 : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_13 : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_14 : std_logic_vector(23 downto 0);
-    signal tb_chain_matrix_data_15 : std_logic_vector(23 downto 0);
-
 begin
     clk        <= not (clk) after C_CLK_CYKLE / 2;
     sck_clk    <= not (sck_clk) after C_CLK_CYKLE * 5 / 2;
     counter_tb <= counter_tb + 1 after C_CLK_CYKLE;
-
-    tb_chain_matrix_data_0  <= chain_matrix_data(0);
-    tb_chain_matrix_data_1  <= chain_matrix_data(1);
-    tb_chain_matrix_data_2  <= chain_matrix_data(2);
-    tb_chain_matrix_data_3  <= chain_matrix_data(3);
-    tb_chain_matrix_data_4  <= chain_matrix_data(4);
-    tb_chain_matrix_data_5  <= chain_matrix_data(5);
-    tb_chain_matrix_data_6  <= chain_matrix_data(6);
-    tb_chain_matrix_data_7  <= chain_matrix_data(7);
-    tb_chain_matrix_data_8  <= chain_matrix_data(8);
-    tb_chain_matrix_data_9  <= chain_matrix_data(9);
-    tb_chain_matrix_data_10 <= chain_matrix_data(10);
-    tb_chain_matrix_data_11 <= chain_matrix_data(11);
-    tb_chain_matrix_data_12 <= chain_matrix_data(12);
-    tb_chain_matrix_data_13 <= chain_matrix_data(13);
-    tb_chain_matrix_data_14 <= chain_matrix_data(14);
-    tb_chain_matrix_data_15 <= chain_matrix_data(15);
 
     ws_pulse_inst : entity work.ws_pulse
         generic map(startup_length => 10)
@@ -131,6 +97,13 @@ begin
 
                 wait for C_CLK_CYKLE * 100000;
 
+            elsif run("wave_full") then
+                -- test 1 is so far only meant for gktwave
+                wait for C_CLK_CYKLE * 15;
+                rst <= '0';
+                btn <= "0000";
+
+                wait for C_CLK_CYKLE * 100000;
             elsif run("auto") then
 
                 wait for 11 ns;

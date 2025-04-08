@@ -28,6 +28,7 @@ entity axi_v1_0 is
    port (
       rd_en     : out std_logic;
       empty     : in std_logic;
+      header    : in std_logic_vector(31 downto 0);
       data      : in std_logic_vector(31 downto 0);
       sys_id    : in std_logic_vector(1 downto 0);
       nr_arrays : in std_logic_vector(1 downto 0);
@@ -124,6 +125,7 @@ begin
 
          read_done => read_done_internal,
          empty     => empty,
+         header    => header,
          sys_id    => sys_id,
          nr_arrays => nr_arrays,
 
@@ -151,8 +153,8 @@ begin
          S_AXI_RVALID  => s00_axi_rvalid,
          S_AXI_RREADY  => s00_axi_rready,
          init_txn      => m00_axi_init_axi_txn,
-         txn_done      => m00_axi_txn_done,
-         txn_error     => m00_axi_error
+         txn_done      => m00_axi_txn_done
+         --txn_error     => m00_axi_error
       );
 
    -- Instantiation of Axi Bus Interface M00_AXI

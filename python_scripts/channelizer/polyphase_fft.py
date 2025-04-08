@@ -33,7 +33,7 @@ def db(x):
 
 
 Fs = 48828.125
-M = 16      # Number of taps
+M = 8      # Tap multiplier (taps = M * P)
 P = 128     # Number of 'branches', also fft length
 
 x = signal_generator.generate_signal()

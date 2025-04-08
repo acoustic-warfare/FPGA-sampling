@@ -1,42 +1,34 @@
-library IEEE;
-library IEEE;
-use IEEE.STD_LOGIC_1164.all;
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity fifo_bram is
-   generic (
-      RAM_DEPTH : natural
-   );
    port (
-      clk     : in std_logic;
-      wr_addr : in std_logic_vector(10 downto 0);
-      wr_en   : in std_logic;
-      wr_data : in std_logic_vector(31 downto 0);
-      rd_addr : in std_logic_vector(10 downto 0);
-      rd_en   : in std_logic;
-      rd_data : out std_logic_vector(31 downto 0)
+      clk           : in std_logic;
+      write_address : in std_logic_vector(15 downto 0);
+      write_en      : in std_logic;
+      write_data    : in std_logic_vector(71 downto 0);
+      read_address  : in std_logic_vector(15 downto 0);
+      read_data     : out std_logic_vector(71 downto 0)
    );
 end entity;
 
 architecture rtl of fifo_bram is
-   type ram_type is array (RAM_DEPTH * 64 - 1 downto 0) of std_logic_vector(31 downto 0);
-   signal ram              : ram_type;
-   signal rd_data_internal : std_logic_vector(31 downto 0);
+
+   type ram_type is array (511 downto 0) of std_logic_vector(71 downto 0);
+   signal ram : ram_type := (others => (others => '0'));
+
 begin
 
    process (clk)
    begin
       if rising_edge(clk) then
-         if wr_en = '1' then
-            ram(to_integer(unsigned(wr_addr))) <= wr_data;
+         if write_en = '1' then
+            ram(to_integer(unsigned(write_address))) <= write_data;
          end if;
 
-         if rd_en = '1' then
-            rd_data_internal <= ram(to_integer(unsigned(rd_addr)));
-         end if;
-         -- denna delay är mycket viktig annars missar man fösta sloten i axi
-         -- dock tror jag den också orsakar att countern skickas två gånger ?? :thinking:
-         rd_data <= rd_data_internal;
+            read_data <= ram(to_integer(unsigned(read_address)));
+
       end if;
    end process;
 

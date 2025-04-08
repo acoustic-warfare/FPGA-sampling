@@ -69,7 +69,12 @@ begin
 
                   --rd_data_internal <= std_logic_vector(unsigned(rd_data) + (to_unsigned(mic_counter * 256, 24)));
                   rd_data_internal <= rd_data;
-                  bit_stream       <= rd_data_internal (23 - bit_counter);
+
+                  if mic_counter = 0 then
+                     bit_stream <= rd_data_internal (23 - bit_counter);
+                  else
+                     bit_stream <= '0';
+                  end if;
 
                   if (bit_counter = 23) then
                      mic_counter <= mic_counter + 1;
@@ -87,7 +92,7 @@ begin
                   counter_samp <= 0;
 
                   bit_counter <= bit_counter + 1;
-                  bit_stream  <= '1';
+                  bit_stream  <= '0';
 
                   if (mic_counter = 16) then
                      if addres_counter = to_unsigned(RAM_DEPTH - 1, 24) then

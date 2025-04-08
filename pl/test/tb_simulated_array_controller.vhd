@@ -17,7 +17,7 @@ architecture tb of tb_simulated_array_controller is
     signal clk : std_logic := '0';
     signal rst : std_logic := '1';
 
-    signal sck_clk    : std_logic := '0';
+    signal sck_clk : std_logic := '0';
 
     signal ws      : std_logic := '0';
     signal ws_d    : std_logic := '0';
@@ -42,7 +42,7 @@ begin
             ram_depth => 100
         )
         port map(
-            clk => clk,
+            clk        => clk,
             ws_edge    => ws_edge,
             rst        => rst,
             bit_stream => bit_stream
@@ -55,7 +55,7 @@ begin
         end if;
     end process;
 
-    ws_edge  <= ws and (not ws_d);
+    ws_edge <= ws and (not ws_d);
 
     main : process
     begin
@@ -63,6 +63,12 @@ begin
         while test_suite loop
             if run("wave") then
                 -- test 1 is so far only meant for gktwave
+                wait for C_CLK_CYKLE * 5;
+                rst <= '0';
+
+                wait for C_CLK_CYKLE * 1000000;
+
+            elsif run("wave_full") then
                 wait for C_CLK_CYKLE * 5;
                 rst <= '0';
 
