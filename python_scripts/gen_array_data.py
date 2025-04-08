@@ -8,17 +8,17 @@ import matplotlib.pyplot as plt
 Fs = 48828.125  # Sampling Rate
 
 max_length = 50000  # Number of samples
-max_amplitude = 1000000  # Max amplitude (all signals are normilized to this value at the end)
+max_amplitude = 65535  # Max amplitude (all signals are normilized to this value at the end)
 
 # Input signal
-frequencies = [1300, 10000, 20000]
-amplitudes = [100, 100, 100]
+frequencies = [8000]
+amplitudes = [100]
 
 # Add tone after set time
-add_frequencies = [5000, 15000]
-add_amplitudes = [100, 20]
-start_time = [20000, 50000]
-end_time = [40000, 100000]
+add_frequencies = [10000]
+add_amplitudes = [100]
+start_time = [0]
+end_time = [512]
 
 # Add chirp
 chirp_min_frequency = 2000
@@ -180,7 +180,7 @@ def save_sample_data_to_file(file_name, length, samples):
 
 # input_signal = generate_signal(long_tone=True, shot_tone=True, chirp=True, counter=False, noise=True, normalize=True, plt=True)
 # input_signal = generate_signal(long_tone=False, shot_tone=False, chirp=False, counter=True, noise=False, normalize=False, plt=True)
-input_signal = generate_signal(long_tone=False, shot_tone=False, chirp=True, counter=False, noise=False, normalize=False, plt=True)
+input_signal = generate_signal(long_tone=True, shot_tone=True, chirp=False, counter=False, noise=True, normalize=False, plt=True)
 
 
 save_sample_data_to_file(file_name_build, max_length, input_signal)

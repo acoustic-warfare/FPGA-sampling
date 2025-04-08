@@ -3,15 +3,16 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.matrix_type.all;
+use ieee.math_real.all;
 
 entity fft is
    port (
       clk        : in std_logic;
-      data_in    : in matrix_32_24_type;
+      data_in    : in matrix_128_24_type;
       valid_in   : in std_logic;
       mic_nr_in  : in std_logic_vector(7 downto 0);
-      data_r_out : out matrix_32_24_type;
-      data_i_out : out matrix_32_24_type;
+      data_r_out : out matrix_128_24_type;
+      data_i_out : out matrix_128_24_type;
       valid_out  : out std_logic;
       mic_nr_out : out std_logic_vector(7 downto 0)
    );
@@ -19,501 +20,285 @@ end entity;
 
 architecture rtl of fft is
 
-   type twiddle_type is array (0 to 15) of signed(17 downto 0);
-   constant twiddle_r    : twiddle_type         := ("010000000000000000", "001111101100010100", "001110110010000011", "001101010011011011", "001011010100000100", "001000111000111001", "000110000111110111", "000011000111110001", "000000000000000000", "111100111000001111", "111001111000001001", "110111000111000111", "110100101011111100", "110010101100100101", "110001001101111101", "110000010011101100");
-   constant twiddle_i    : twiddle_type         := ("000000000000000000", "111100111000001111", "111001111000001001", "110111000111000111", "110100101011111100", "110010101100100101", "110001001101111101", "110000010011101100", "110000000000000000", "110000010011101100", "110001001101111101", "110010101100100101", "110100101011111100", "110111000111000111", "111001111000001001", "111100111000001111");
-   constant full_bypass : signed(17 downto 0) := "010000000000000000";
+   ----------------------- CONSTATNS -----------------------
+   constant fft_size          : integer := 128;
+   constant fft_addres_lenght : integer := integer(ceil(log2(real(fft_size)))); -- if fft_size = 32 this is 5
+   ---------------------------------------------------------
+
+   ----------------------- TWIDDLE FACOTRS -----------------------
+   type twiddle_type is array (0 to fft_size / 2 - 1) of signed(17 downto 0);
+   constant twiddle_r : twiddle_type := ("010000000000000000", "001111111110110001", "001111111011000100", "001111110100111010", "001111101100010100", "001111100001010011", "001111010011111010", "001111000100001001", "001110110010000011", "001110011101101011", "001110000111000101", "001101101110010100", "001101010011011011", "001100110110011111", "001100010111100100", "001011110110101110", "001011010100000100", "001010101111101011", "001010001001100111", "001001100001111111", "001000111000111001", "001000001110011100", "000111100010101101", "000110110101110100", "000110000111110111", "000101011000111110", "000100101001010000", "000011111000110011", "000011000111110001", "000010010110010000", "000001100100010111", "000000110010001111", "000000000000000000", "111111001101110001", "111110011011101001", "111101101001110000", "111100111000001111", "111100000111001101", "111011010110110000", "111010100111000010", "111001111000001001", "111001001010001100", "111000011101010011", "110111110001100100", "110111000111000111", "110110011110000001", "110101110110011001", "110101010000010101", "110100101011111100", "110100001001010010", "110011101000011100", "110011001001100001", "110010101100100101", "110010010001101100", "110001111000111011", "110001100010010101", "110001001101111101", "110000111011110111", "110000101100000110", "110000011110101101", "110000010011101100", "110000001011000110", "110000000100111100", "110000000001001111");
+   constant twiddle_i : twiddle_type := ("000000000000000000", "111111001101110001", "111110011011101001", "111101101001110000", "111100111000001111", "111100000111001101", "111011010110110000", "111010100111000010", "111001111000001001", "111001001010001100", "111000011101010011", "110111110001100100", "110111000111000111", "110110011110000001", "110101110110011001", "110101010000010101", "110100101011111100", "110100001001010010", "110011101000011100", "110011001001100001", "110010101100100101", "110010010001101100", "110001111000111011", "110001100010010101", "110001001101111101", "110000111011110111", "110000101100000110", "110000011110101101", "110000010011101100", "110000001011000110", "110000000100111100", "110000000001001111", "110000000000000000", "110000000001001111", "110000000100111100", "110000001011000110", "110000010011101100", "110000011110101101", "110000101100000110", "110000111011110111", "110001001101111101", "110001100010010101", "110001111000111011", "110010010001101100", "110010101100100101", "110011001001100001", "110011101000011100", "110100001001010010", "110100101011111100", "110101010000010101", "110101110110011001", "110110011110000001", "110111000111000111", "110111110001100100", "111000011101010011", "111001001010001100", "111001111000001001", "111010100111000010", "111011010110110000", "111100000111001101", "111100111000001111", "111101101001110000", "111110011011101001", "111111001101110001");
    -- scale factor = (1 << 16) = 65536 (shift 16 bits)
+   ---------------------------------------------------------------
 
-   type fft_32_24_siged_type is array (31 downto 0) of signed(23 downto 0);
-   type fft_32_42_siged_type is array (31 downto 0) of signed(41 downto 0);
+   ----------------------- DSP -----------------------
+   signal operand_0_r          : signed(23 downto 0);
+   signal operand_1_r          : signed(23 downto 0);
+   signal addition_result_r    : signed(23 downto 0);
+   signal addition_result_r_d  : signed(23 downto 0);
+   signal addition_result_r_dd : signed(23 downto 0);
+   signal operand_0_i          : signed(23 downto 0);
+   signal operand_1_i          : signed(23 downto 0);
+   signal addition_result_i    : signed(23 downto 0);
+   signal addition_result_i_d  : signed(23 downto 0);
+   signal addition_result_i_dd : signed(23 downto 0);
 
-   signal bit_reversal_data_in : fft_32_24_siged_type;
+   signal subtraction_result_r    : signed(23 downto 0);
+   signal subtraction_result_r_d  : signed(23 downto 0);
+   signal subtraction_result_r_dd : signed(23 downto 0);
+   signal subtraction_result_i    : signed(23 downto 0);
+   signal subtraction_result_i_d  : signed(23 downto 0);
+   signal subtraction_result_i_dd : signed(23 downto 0);
 
-   signal stage_1 : fft_32_24_siged_type;
+   signal mul_operand_r : signed(23 downto 0);
+   signal mul_operand_i : signed(23 downto 0);
+   signal mul_twiddle_r : signed(17 downto 0);
+   signal mul_twiddle_i : signed(17 downto 0);
+   signal operand_r_1   : signed(23 downto 0);
+   signal operand_i_1   : signed(23 downto 0);
+   signal twiddle_r_1   : signed(17 downto 0);
+   signal twiddle_i_1   : signed(17 downto 0);
 
-   signal stage_2_r : fft_32_24_siged_type;
-   signal stage_2_i : fft_32_24_siged_type;
+   signal mult_rr : signed(41 downto 0);
+   signal mult_ii : signed(41 downto 0);
+   signal mult_ri : signed(41 downto 0);
+   signal mult_ir : signed(41 downto 0);
 
-   signal stage_3_r : fft_32_24_siged_type;
-   signal stage_3_i : fft_32_24_siged_type;
+   signal mult_rr_scaled : signed(23 downto 0);
+   signal mult_ii_scaled : signed(23 downto 0);
+   signal mult_ri_scaled : signed(23 downto 0);
+   signal mult_ir_scaled : signed(23 downto 0);
 
-   signal stage_4_r_full : fft_32_42_siged_type;
-   signal stage_4_i_full : fft_32_42_siged_type;
-   signal stage_4_r      : fft_32_24_siged_type;
-   signal stage_4_i      : fft_32_24_siged_type;
+   signal mul_result_r_pre : signed(23 downto 0);
+   signal mul_result_i_pre : signed(23 downto 0);
+   signal mul_result_r     : signed(23 downto 0);
+   signal mul_result_i     : signed(23 downto 0);
 
-   signal stage_5_r : fft_32_24_siged_type;
-   signal stage_5_i : fft_32_24_siged_type;
+   signal mul_bypass_r       : signed(23 downto 0);
+   signal mul_bypass_i       : signed(23 downto 0);
+   signal mul_bypass_r_d     : signed(23 downto 0);
+   signal mul_bypass_i_d     : signed(23 downto 0);
+   signal mul_bypass_r_dd    : signed(23 downto 0);
+   signal mul_bypass_i_dd    : signed(23 downto 0);
+   signal mul_bypass_r_ddd   : signed(23 downto 0);
+   signal mul_bypass_i_ddd   : signed(23 downto 0);
+   signal mul_bypass_r_dddd  : signed(23 downto 0);
+   signal mul_bypass_i_dddd  : signed(23 downto 0);
+   signal mul_bypass_r_ddddd : signed(23 downto 0);
+   signal mul_bypass_i_ddddd : signed(23 downto 0);
 
-   signal stage_6_r_full : fft_32_42_siged_type;
-   signal stage_6_i_full : fft_32_42_siged_type;
-   signal stage_6_r      : fft_32_24_siged_type;
-   signal stage_6_i      : fft_32_24_siged_type;
+   ----------------------- CONTROLL -----------------------
+   type fft_128_24_siged_type is array (127 downto 0) of signed(23 downto 0);
 
-   signal stage_7_r : fft_32_24_siged_type;
-   signal stage_7_i : fft_32_24_siged_type;
+   signal mic_nr_buffer : std_logic_vector(7 downto 0);
+   signal valid_out_pre : std_logic;
 
-   signal stage_8_r_full : fft_32_42_siged_type;
-   signal stage_8_i_full : fft_32_42_siged_type;
-   signal stage_8_r      : fft_32_24_siged_type;
-   signal stage_8_i      : fft_32_24_siged_type;
+   signal result_reg_0_r : fft_128_24_siged_type;
+   signal result_reg_0_i : fft_128_24_siged_type;
 
-   signal stage_9_r : fft_32_24_siged_type;
-   signal stage_9_i : fft_32_24_siged_type;
+   signal start                   : std_logic;
+   signal butterfly_stage         : unsigned(7 downto 0); -- 1 to 64 (numbers for 128 point fft)
+   signal butterfly_stage_counter : unsigned(7 downto 0); -- 0 to 6
 
-   -- pipe stages for valid & mic_nr
-   signal valid_1d   : std_logic;
-   signal mic_nr_1d  : std_logic_vector(7 downto 0);
-   signal valid_2d   : std_logic;
-   signal mic_nr_2d  : std_logic_vector(7 downto 0);
-   signal valid_3d   : std_logic;
-   signal mic_nr_3d  : std_logic_vector(7 downto 0);
-   signal valid_4d   : std_logic;
-   signal mic_nr_4d  : std_logic_vector(7 downto 0);
-   signal valid_5d   : std_logic;
-   signal mic_nr_5d  : std_logic_vector(7 downto 0);
-   signal valid_6d   : std_logic;
-   signal mic_nr_6d  : std_logic_vector(7 downto 0);
-   signal valid_7d   : std_logic;
-   signal mic_nr_7d  : std_logic_vector(7 downto 0);
-   signal valid_8d   : std_logic;
-   signal mic_nr_8d  : std_logic_vector(7 downto 0);
-   signal valid_9d   : std_logic;
-   signal mic_nr_9d  : std_logic_vector(7 downto 0);
-   signal valid_10d  : std_logic;
-   signal mic_nr_10d : std_logic_vector(7 downto 0);
-   signal valid_11d  : std_logic;
-   signal mic_nr_11d : std_logic_vector(7 downto 0);
-   signal valid_12d  : std_logic;
-   signal mic_nr_12d : std_logic_vector(7 downto 0);
-   signal valid_13d  : std_logic;
-   signal mic_nr_13d : std_logic_vector(7 downto 0);
+   ----------------------- BUTTERFLY -----------------------
+   signal butterfly_counter      : unsigned(7 downto 0); -- 0 to 72 ish
+   signal butterfly_counter_load : unsigned(7 downto 0); -- 0 to 126
+   signal butterfly_counter_save : unsigned(7 downto 0); -- 0 to 126
 
+   ----------------------- FUNCTION FOR BIT REVERSAL -----------------------
+   function reverse_bits(
+      x : unsigned(fft_addres_lenght - 1 downto 0))
+      return unsigned is
+      variable result : unsigned(fft_addres_lenght - 1 downto 0);
+   begin
+      for j in 0 to fft_addres_lenght - 1 loop
+         result(j) := x(fft_addres_lenght - 1 - j);
+      end loop;
+      return result;
+   end function;
+   ---------------------------------------------------------------
+
+   ----------------------- FUNCTION INCREMENTING WITH SKIP -----------------------
+   function increment_skip(
+      counter_in                 : unsigned(7 downto 0);
+      butterfly_stage_counter_in : unsigned(7 downto 0))
+      return unsigned is
+      variable tmp : unsigned(7 downto 0);
+   begin
+
+      tmp := counter_in + 1;
+      if tmp(to_integer(butterfly_stage_counter_in)) = '0' then
+         return tmp;
+      else
+         return tmp + SHIFT_LEFT("00000001", to_integer(butterfly_stage_counter_in));
+      end if;
+
+   end function;
+   ---------------------------------------------------------------
+
+   ----------------------- FUNCTION INCREMENTING WITH SKIP -----------------------
+   function calculate_twiddle(
+      butterfly_counter_load_in : unsigned(7 downto 0);
+      butterfly_stage_in        : unsigned(7 downto 0))
+      return integer is
+   begin
+
+      if butterfly_stage_in(0) = '1' then -- bf2
+         return 0;
+
+      elsif butterfly_stage_in(1) = '1' then -- bf4
+         return to_integer(butterfly_counter_load_in(0 downto 0)) * 32;
+
+      elsif butterfly_stage_in(2) = '1' then -- bf8
+         return to_integer(butterfly_counter_load_in(1 downto 0)) * 16;
+
+      elsif butterfly_stage_in(3) = '1' then -- bf16
+         return to_integer(butterfly_counter_load_in(2 downto 0)) * 8;
+
+      elsif butterfly_stage_in(4) = '1' then -- bf32
+         return to_integer(butterfly_counter_load_in(3 downto 0)) * 4;
+
+      elsif butterfly_stage_in(5) = '1' then -- bf64
+         return to_integer(butterfly_counter_load_in(4 downto 0)) * 2;
+
+      else -- bf128
+         return to_integer(butterfly_counter_load_in(5 downto 0));
+      end if;
+   end function;
+   ---------------------------------------------------------------
 begin
+
    process (clk)
    begin
       if rising_edge(clk) then
-         -- pipe stages (not part of fft)
-         valid_1d   <= valid_in;
-         mic_nr_1d  <= mic_nr_in;
-         valid_2d   <= valid_1d;
-         mic_nr_2d  <= mic_nr_1d;
-         valid_3d   <= valid_2d;
-         mic_nr_3d  <= mic_nr_2d;
-         valid_4d   <= valid_3d;
-         mic_nr_4d  <= mic_nr_3d;
-         valid_5d   <= valid_4d;
-         mic_nr_5d  <= mic_nr_4d;
-         valid_6d   <= valid_5d;
-         mic_nr_6d  <= mic_nr_5d;
-         valid_7d   <= valid_6d;
-         mic_nr_7d  <= mic_nr_6d;
-         valid_8d   <= valid_7d;
-         mic_nr_8d  <= mic_nr_7d;
-         valid_9d   <= valid_8d;
-         mic_nr_9d  <= mic_nr_8d;
-         valid_10d  <= valid_9d;
-         mic_nr_10d <= mic_nr_9d;
-         valid_11d  <= valid_10d;
-         mic_nr_11d <= mic_nr_10d;
-         valid_12d  <= valid_11d;
-         mic_nr_12d <= mic_nr_11d;
-         valid_13d  <= valid_12d;
-         mic_nr_13d <= mic_nr_12d;
-         valid_out  <= valid_13d;
-         mic_nr_out <= mic_nr_13d;
 
-         -- bit reversal (same both ways around)
-         bit_reversal_data_in(0)  <= signed(data_in(0));
-         bit_reversal_data_in(16) <= signed(data_in(1));
-         bit_reversal_data_in(8)  <= signed(data_in(2));
-         bit_reversal_data_in(24) <= signed(data_in(3));
-         bit_reversal_data_in(4)  <= signed(data_in(4));
-         bit_reversal_data_in(20) <= signed(data_in(5));
-         bit_reversal_data_in(12) <= signed(data_in(6));
-         bit_reversal_data_in(28) <= signed(data_in(7));
-         bit_reversal_data_in(2)  <= signed(data_in(8));
-         bit_reversal_data_in(18) <= signed(data_in(9));
-         bit_reversal_data_in(10) <= signed(data_in(10));
-         bit_reversal_data_in(26) <= signed(data_in(11));
-         bit_reversal_data_in(6)  <= signed(data_in(12));
-         bit_reversal_data_in(22) <= signed(data_in(13));
-         bit_reversal_data_in(14) <= signed(data_in(14));
-         bit_reversal_data_in(30) <= signed(data_in(15));
-         bit_reversal_data_in(1)  <= signed(data_in(16));
-         bit_reversal_data_in(17) <= signed(data_in(17));
-         bit_reversal_data_in(9)  <= signed(data_in(18));
-         bit_reversal_data_in(25) <= signed(data_in(19));
-         bit_reversal_data_in(5)  <= signed(data_in(20));
-         bit_reversal_data_in(21) <= signed(data_in(21));
-         bit_reversal_data_in(13) <= signed(data_in(22));
-         bit_reversal_data_in(29) <= signed(data_in(23));
-         bit_reversal_data_in(3)  <= signed(data_in(24));
-         bit_reversal_data_in(19) <= signed(data_in(25));
-         bit_reversal_data_in(11) <= signed(data_in(26));
-         bit_reversal_data_in(27) <= signed(data_in(27));
-         bit_reversal_data_in(7)  <= signed(data_in(28));
-         bit_reversal_data_in(23) <= signed(data_in(29));
-         bit_reversal_data_in(15) <= signed(data_in(30));
-         bit_reversal_data_in(31) <= signed(data_in(31));
+         valid_out     <= valid_out_pre;
+         valid_out_pre <= '0';
 
-         -- butterfly 2
-         for i in 0 to 15 loop
-            stage_1(2 * i + 0) <= bit_reversal_data_in(2 * i + 0) + bit_reversal_data_in(2 * i + 1);
-            stage_1(2 * i + 1) <= bit_reversal_data_in(2 * i + 0) - bit_reversal_data_in(2 * i + 1);
+         for i in 0 to 127 loop
+            data_r_out(i) <= std_logic_vector(result_reg_0_r(i));
+            data_i_out(i) <= std_logic_vector(result_reg_0_i(i));
          end loop;
-
-         for i in 0 to 7 loop -- twiddle factors
-            stage_2_r(4 * i + 0) <= stage_1(4 * i + 0);
-            stage_2_i(4 * i + 0) <= (others => '0'); -- =0
-
-            stage_2_r(4 * i + 1) <= stage_1(4 * i + 1);
-            stage_2_i(4 * i + 1) <= (others => '0'); -- =0
-
-            stage_2_r(4 * i + 2) <= stage_1(4 * i + 2);
-            stage_2_i(4 * i + 2) <= (others => '0'); -- =0
-
-            stage_2_r(4 * i + 3) <= (others => '0'); -- =0
-            stage_2_i(4 * i + 3) <= not(stage_1(4 * i + 3)) + 1;
-         end loop;
-
-         -- butterfly 4
-         for i in 0 to 7 loop
-            stage_3_r(4 * i + 0) <= stage_2_r(4 * i + 0) + stage_2_r(4 * i + 2);
-            stage_3_i(4 * i + 0) <= stage_2_i(4 * i + 0) + stage_2_i(4 * i + 2);
-
-            stage_3_r(4 * i + 1) <= stage_2_r(4 * i + 1) + stage_2_r(4 * i + 3);
-            stage_3_i(4 * i + 1) <= stage_2_i(4 * i + 1) + stage_2_i(4 * i + 3);
-
-            stage_3_r(4 * i + 2) <= stage_2_r(4 * i + 0) - stage_2_r(4 * i + 2);
-            stage_3_i(4 * i + 2) <= stage_2_i(4 * i + 0) - stage_2_i(4 * i + 2);
-
-            stage_3_r(4 * i + 3) <= stage_2_r(4 * i + 1) - stage_2_r(4 * i + 3);
-            stage_3_i(4 * i + 3) <= stage_2_i(4 * i + 1) - stage_2_i(4 * i + 3);
-         end loop;
-
-         for i in 0 to 3 loop -- twiddle factors
-            stage_4_r_full(8 * i + 0) <= stage_3_r(8 * i + 0) * full_bypass;
-            stage_4_i_full(8 * i + 0) <= stage_3_i(8 * i + 0) * full_bypass;
-
-            stage_4_r_full(8 * i + 1) <= stage_3_r(8 * i + 1) * full_bypass;
-            stage_4_i_full(8 * i + 1) <= stage_3_i(8 * i + 1) * full_bypass;
-
-            stage_4_r_full(8 * i + 2) <= stage_3_r(8 * i + 2) * full_bypass;
-            stage_4_i_full(8 * i + 2) <= stage_3_i(8 * i + 2) * full_bypass;
-
-            stage_4_r_full(8 * i + 3) <= stage_3_r(8 * i + 3) * full_bypass;
-            stage_4_i_full(8 * i + 3) <= stage_3_i(8 * i + 3) * full_bypass;
-
-            stage_4_r_full(8 * i + 4) <= stage_3_r(8 * i + 4) * full_bypass;-- twiddle = x8000 + x0000i
-            stage_4_i_full(8 * i + 4) <= stage_3_i(8 * i + 4) * full_bypass;
-
-            stage_4_r_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twiddle_r(4) - stage_3_i(8 * i + 5) * twiddle_i(4);
-            stage_4_i_full(8 * i + 5) <= stage_3_r(8 * i + 5) * twiddle_i(4) + stage_3_i(8 * i + 5) * twiddle_r(4);
-
-            stage_4_r_full(8 * i + 6) <= stage_3_i(8 * i + 6) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
-            stage_4_i_full(8 * i + 6) <= not(stage_3_r(8 * i + 6) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
-
-            stage_4_r_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twiddle_r(12) - stage_3_i(8 * i + 7) * twiddle_i(12);
-            stage_4_i_full(8 * i + 7) <= stage_3_r(8 * i + 7) * twiddle_i(12) + stage_3_i(8 * i + 7) * twiddle_r(12);
-         end loop;
-
-         for i in 0 to 31 loop
-            stage_4_r(i) <= stage_4_r_full(i)(39 downto 16);
-            stage_4_i(i) <= stage_4_i_full(i)(39 downto 16);
-         end loop;
-
-         -- butterfly 8
-         for i in 0 to 3 loop
-            stage_5_r(8 * i + 0) <= stage_4_r(8 * i + 0) + stage_4_r(8 * i + 4);
-            stage_5_i(8 * i + 0) <= stage_4_i(8 * i + 0) + stage_4_i(8 * i + 4);
-
-            stage_5_r(8 * i + 1) <= stage_4_r(8 * i + 1) + stage_4_r(8 * i + 5);
-            stage_5_i(8 * i + 1) <= stage_4_i(8 * i + 1) + stage_4_i(8 * i + 5);
-
-            stage_5_r(8 * i + 2) <= stage_4_r(8 * i + 2) + stage_4_r(8 * i + 6);
-            stage_5_i(8 * i + 2) <= stage_4_i(8 * i + 2) + stage_4_i(8 * i + 6);
-
-            stage_5_r(8 * i + 3) <= stage_4_r(8 * i + 3) + stage_4_r(8 * i + 7);
-            stage_5_i(8 * i + 3) <= stage_4_i(8 * i + 3) + stage_4_i(8 * i + 7);
-
-            stage_5_r(8 * i + 4) <= stage_4_r(8 * i + 0) - stage_4_r(8 * i + 4);
-            stage_5_i(8 * i + 4) <= stage_4_i(8 * i + 0) - stage_4_i(8 * i + 4);
-
-            stage_5_r(8 * i + 5) <= stage_4_r(8 * i + 1) - stage_4_r(8 * i + 5);
-            stage_5_i(8 * i + 5) <= stage_4_i(8 * i + 1) - stage_4_i(8 * i + 5);
-
-            stage_5_r(8 * i + 6) <= stage_4_r(8 * i + 2) - stage_4_r(8 * i + 6);
-            stage_5_i(8 * i + 6) <= stage_4_i(8 * i + 2) - stage_4_i(8 * i + 6);
-
-            stage_5_r(8 * i + 7) <= stage_4_r(8 * i + 3) - stage_4_r(8 * i + 7);
-            stage_5_i(8 * i + 7) <= stage_4_i(8 * i + 3) - stage_4_i(8 * i + 7);
-         end loop;
-
-         for i in 0 to 1 loop
-            stage_6_r_full(16 * i + 0) <= stage_5_r(16 * i + 0) * full_bypass;
-            stage_6_i_full(16 * i + 0) <= stage_5_i(16 * i + 0) * full_bypass;
-
-            stage_6_r_full(16 * i + 1) <= stage_5_r(16 * i + 1) * full_bypass;
-            stage_6_i_full(16 * i + 1) <= stage_5_i(16 * i + 1) * full_bypass;
-
-            stage_6_r_full(16 * i + 2) <= stage_5_r(16 * i + 2) * full_bypass;
-            stage_6_i_full(16 * i + 2) <= stage_5_i(16 * i + 2) * full_bypass;
-
-            stage_6_r_full(16 * i + 3) <= stage_5_r(16 * i + 3) * full_bypass;
-            stage_6_i_full(16 * i + 3) <= stage_5_i(16 * i + 3) * full_bypass;
-
-            stage_6_r_full(16 * i + 4) <= stage_5_r(16 * i + 4) * full_bypass;
-            stage_6_i_full(16 * i + 4) <= stage_5_i(16 * i + 4) * full_bypass;
-
-            stage_6_r_full(16 * i + 5) <= stage_5_r(16 * i + 5) * full_bypass;
-            stage_6_i_full(16 * i + 5) <= stage_5_i(16 * i + 5) * full_bypass;
-
-            stage_6_r_full(16 * i + 6) <= stage_5_r(16 * i + 6) * full_bypass;
-            stage_6_i_full(16 * i + 6) <= stage_5_i(16 * i + 6) * full_bypass;
-
-            stage_6_r_full(16 * i + 7) <= stage_5_r(16 * i + 7) * full_bypass;
-            stage_6_i_full(16 * i + 7) <= stage_5_i(16 * i + 7) * full_bypass;
-
-            stage_6_r_full(16 * i + 8) <= stage_5_r(16 * i + 8) * full_bypass;
-            stage_6_i_full(16 * i + 8) <= stage_5_i(16 * i + 8) * full_bypass;
-
-            stage_6_r_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twiddle_r(2) - stage_5_i(16 * i + 9) * twiddle_i(2);
-            stage_6_i_full(16 * i + 9) <= stage_5_r(16 * i + 9) * twiddle_i(2) + stage_5_i(16 * i + 9) * twiddle_r(2);
-
-            stage_6_r_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twiddle_r(4) - stage_5_i(16 * i + 10) * twiddle_i(4);
-            stage_6_i_full(16 * i + 10) <= stage_5_r(16 * i + 10) * twiddle_i(4) + stage_5_i(16 * i + 10) * twiddle_r(4);
-
-            stage_6_r_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twiddle_r(6) - stage_5_i(16 * i + 11) * twiddle_i(6);
-            stage_6_i_full(16 * i + 11) <= stage_5_r(16 * i + 11) * twiddle_i(6) + stage_5_i(16 * i + 11) * twiddle_r(6);
-
-            stage_6_r_full(16 * i + 12) <= stage_5_i(16 * i + 12) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
-            stage_6_i_full(16 * i + 12) <= not(stage_5_r(16 * i + 12) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
-
-            stage_6_r_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twiddle_r(10) - stage_5_i(16 * i + 13) * twiddle_i(10);
-            stage_6_i_full(16 * i + 13) <= stage_5_r(16 * i + 13) * twiddle_i(10) + stage_5_i(16 * i + 13) * twiddle_r(10);
-
-            stage_6_r_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twiddle_r(12) - stage_5_i(16 * i + 14) * twiddle_i(12);
-            stage_6_i_full(16 * i + 14) <= stage_5_r(16 * i + 14) * twiddle_i(12) + stage_5_i(16 * i + 14) * twiddle_r(12);
-
-            stage_6_r_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twiddle_r(14) - stage_5_i(16 * i + 15) * twiddle_i(14);
-            stage_6_i_full(16 * i + 15) <= stage_5_r(16 * i + 15) * twiddle_i(14) + stage_5_i(16 * i + 15) * twiddle_r(14);
-         end loop;
-
-         for i in 0 to 31 loop
-            stage_6_r(i) <= stage_6_r_full(i)(39 downto 16);
-            stage_6_i(i) <= stage_6_i_full(i)(39 downto 16);
-         end loop;
-
-         -- butterfly 16
-         for i in 0 to 1 loop
-            stage_7_r(16 * i + 0) <= stage_6_r(16 * i + 0) + stage_6_r(16 * i + 8);
-            stage_7_i(16 * i + 0) <= stage_6_i(16 * i + 0) + stage_6_i(16 * i + 8);
-
-            stage_7_r(16 * i + 1) <= stage_6_r(16 * i + 1) + stage_6_r(16 * i + 9);
-            stage_7_i(16 * i + 1) <= stage_6_i(16 * i + 1) + stage_6_i(16 * i + 9);
-
-            stage_7_r(16 * i + 2) <= stage_6_r(16 * i + 2) + stage_6_r(16 * i + 10);
-            stage_7_i(16 * i + 2) <= stage_6_i(16 * i + 2) + stage_6_i(16 * i + 10);
-
-            stage_7_r(16 * i + 3) <= stage_6_r(16 * i + 3) + stage_6_r(16 * i + 11);
-            stage_7_i(16 * i + 3) <= stage_6_i(16 * i + 3) + stage_6_i(16 * i + 11);
-
-            stage_7_r(16 * i + 4) <= stage_6_r(16 * i + 4) + stage_6_r(16 * i + 12);
-            stage_7_i(16 * i + 4) <= stage_6_i(16 * i + 4) + stage_6_i(16 * i + 12);
-
-            stage_7_r(16 * i + 5) <= stage_6_r(16 * i + 5) + stage_6_r(16 * i + 13);
-            stage_7_i(16 * i + 5) <= stage_6_i(16 * i + 5) + stage_6_i(16 * i + 13);
-
-            stage_7_r(16 * i + 6) <= stage_6_r(16 * i + 6) + stage_6_r(16 * i + 14);
-            stage_7_i(16 * i + 6) <= stage_6_i(16 * i + 6) + stage_6_i(16 * i + 14);
-
-            stage_7_r(16 * i + 7) <= stage_6_r(16 * i + 7) + stage_6_r(16 * i + 15);
-            stage_7_i(16 * i + 7) <= stage_6_i(16 * i + 7) + stage_6_i(16 * i + 15);
-
-            stage_7_r(16 * i + 8) <= stage_6_r(16 * i + 0) - stage_6_r(16 * i + 8);
-            stage_7_i(16 * i + 8) <= stage_6_i(16 * i + 0) - stage_6_i(16 * i + 8);
-
-            stage_7_r(16 * i + 9) <= stage_6_r(16 * i + 1) - stage_6_r(16 * i + 9);
-            stage_7_i(16 * i + 9) <= stage_6_i(16 * i + 1) - stage_6_i(16 * i + 9);
-
-            stage_7_r(16 * i + 10) <= stage_6_r(16 * i + 2) - stage_6_r(16 * i + 10);
-            stage_7_i(16 * i + 10) <= stage_6_i(16 * i + 2) - stage_6_i(16 * i + 10);
-
-            stage_7_r(16 * i + 11) <= stage_6_r(16 * i + 3) - stage_6_r(16 * i + 11);
-            stage_7_i(16 * i + 11) <= stage_6_i(16 * i + 3) - stage_6_i(16 * i + 11);
-
-            stage_7_r(16 * i + 12) <= stage_6_r(16 * i + 4) - stage_6_r(16 * i + 12);
-            stage_7_i(16 * i + 12) <= stage_6_i(16 * i + 4) - stage_6_i(16 * i + 12);
-
-            stage_7_r(16 * i + 13) <= stage_6_r(16 * i + 5) - stage_6_r(16 * i + 13);
-            stage_7_i(16 * i + 13) <= stage_6_i(16 * i + 5) - stage_6_i(16 * i + 13);
-
-            stage_7_r(16 * i + 14) <= stage_6_r(16 * i + 6) - stage_6_r(16 * i + 14);
-            stage_7_i(16 * i + 14) <= stage_6_i(16 * i + 6) - stage_6_i(16 * i + 14);
-
-            stage_7_r(16 * i + 15) <= stage_6_r(16 * i + 7) - stage_6_r(16 * i + 15);
-            stage_7_i(16 * i + 15) <= stage_6_i(16 * i + 7) - stage_6_i(16 * i + 15);
-         end loop;
-
-         -- twiddle factors
-         for i in 0 to 16 loop
-            stage_8_r_full(i) <= stage_7_r(i) * full_bypass;
-            stage_8_i_full(i) <= stage_7_i(i) * full_bypass;
-         end loop;
-
-         stage_8_r_full(17) <= stage_7_r(17) * twiddle_r(1) - stage_7_i(17) * twiddle_i(1);
-         stage_8_i_full(17) <= stage_7_r(17) * twiddle_i(1) + stage_7_i(17) * twiddle_r(1);
-
-         stage_8_r_full(18) <= stage_7_r(18) * twiddle_r(2) - stage_7_i(18) * twiddle_i(2);
-         stage_8_i_full(18) <= stage_7_r(18) * twiddle_i(2) + stage_7_i(18) * twiddle_r(2);
-
-         stage_8_r_full(19) <= stage_7_r(19) * twiddle_r(3) - stage_7_i(19) * twiddle_i(3);
-         stage_8_i_full(19) <= stage_7_r(19) * twiddle_i(3) + stage_7_i(19) * twiddle_r(3);
-
-         stage_8_r_full(20) <= stage_7_r(20) * twiddle_r(4) - stage_7_i(20) * twiddle_i(4);
-         stage_8_i_full(20) <= stage_7_r(20) * twiddle_i(4) + stage_7_i(20) * twiddle_r(4);
-
-         stage_8_r_full(21) <= stage_7_r(21) * twiddle_r(5) - stage_7_i(21) * twiddle_i(5);
-         stage_8_i_full(21) <= stage_7_r(21) * twiddle_i(5) + stage_7_i(21) * twiddle_r(5);
-
-         stage_8_r_full(22) <= stage_7_r(22) * twiddle_r(6) - stage_7_i(22) * twiddle_i(6);
-         stage_8_i_full(22) <= stage_7_r(22) * twiddle_i(6) + stage_7_i(22) * twiddle_r(6);
-
-         stage_8_r_full(23) <= stage_7_r(23) * twiddle_r(7) - stage_7_i(23) * twiddle_i(7);
-         stage_8_i_full(23) <= stage_7_r(23) * twiddle_i(7) + stage_7_i(23) * twiddle_r(7);
-
-         stage_8_r_full(24) <= stage_7_i(24) * full_bypass;          -- twiddle = x0000 + -x8000i (c = 0, d = -1)
-         stage_8_i_full(24) <= not(stage_7_r(24) * full_bypass) + 1; -- (a+bi)(c+di) = b + -a*i
-
-         stage_8_r_full(25) <= stage_7_r(25) * twiddle_r(9) - stage_7_i(25) * twiddle_i(9);
-         stage_8_i_full(25) <= stage_7_r(25) * twiddle_i(9) + stage_7_i(25) * twiddle_r(9);
-
-         stage_8_r_full(26) <= stage_7_r(26) * twiddle_r(10) - stage_7_i(26) * twiddle_i(10);
-         stage_8_i_full(26) <= stage_7_r(26) * twiddle_i(10) + stage_7_i(26) * twiddle_r(10);
-
-         stage_8_r_full(27) <= stage_7_r(27) * twiddle_r(11) - stage_7_i(27) * twiddle_i(11);
-         stage_8_i_full(27) <= stage_7_r(27) * twiddle_i(11) + stage_7_i(27) * twiddle_r(11);
-
-         stage_8_r_full(28) <= stage_7_r(28) * twiddle_r(12) - stage_7_i(28) * twiddle_i(12);
-         stage_8_i_full(28) <= stage_7_r(28) * twiddle_i(12) + stage_7_i(28) * twiddle_r(12);
-
-         stage_8_r_full(29) <= stage_7_r(29) * twiddle_r(13) - stage_7_i(29) * twiddle_i(13);
-         stage_8_i_full(29) <= stage_7_r(29) * twiddle_i(13) + stage_7_i(29) * twiddle_r(13);
-
-         stage_8_r_full(30) <= stage_7_r(30) * twiddle_r(14) - stage_7_i(30) * twiddle_i(14);
-         stage_8_i_full(30) <= stage_7_r(30) * twiddle_i(14) + stage_7_i(30) * twiddle_r(14);
-
-         stage_8_r_full(31) <= stage_7_r(31) * twiddle_r(15) - stage_7_i(31) * twiddle_i(15);
-         stage_8_i_full(31) <= stage_7_r(31) * twiddle_i(15) + stage_7_i(31) * twiddle_r(15);
-
-         for i in 0 to 31 loop
-            stage_8_r(i) <= stage_8_r_full(i)(39 downto 16);
-            stage_8_i(i) <= stage_8_i_full(i)(39 downto 16);
-         end loop;
-
-         -- butterfly 32
-         stage_9_r(0) <= stage_8_r(0) + stage_8_r(16);
-         stage_9_i(0) <= stage_8_i(0) + stage_8_i(16);
-
-         stage_9_r(1) <= stage_8_r(1) + stage_8_r(17);
-         stage_9_i(1) <= stage_8_i(1) + stage_8_i(17);
-
-         stage_9_r(2) <= stage_8_r(2) + stage_8_r(18);
-         stage_9_i(2) <= stage_8_i(2) + stage_8_i(18);
-
-         stage_9_r(3) <= stage_8_r(3) + stage_8_r(19);
-         stage_9_i(3) <= stage_8_i(3) + stage_8_i(19);
-
-         stage_9_r(4) <= stage_8_r(4) + stage_8_r(20);
-         stage_9_i(4) <= stage_8_i(4) + stage_8_i(20);
-
-         stage_9_r(5) <= stage_8_r(5) + stage_8_r(21);
-         stage_9_i(5) <= stage_8_i(5) + stage_8_i(21);
-
-         stage_9_r(6) <= stage_8_r(6) + stage_8_r(22);
-         stage_9_i(6) <= stage_8_i(6) + stage_8_i(22);
-
-         stage_9_r(7) <= stage_8_r(7) + stage_8_r(23);
-         stage_9_i(7) <= stage_8_i(7) + stage_8_i(23);
-
-         stage_9_r(8) <= stage_8_r(8) + stage_8_r(24);
-         stage_9_i(8) <= stage_8_i(8) + stage_8_i(24);
-
-         stage_9_r(9) <= stage_8_r(9) + stage_8_r(25);
-         stage_9_i(9) <= stage_8_i(9) + stage_8_i(25);
-
-         stage_9_r(10) <= stage_8_r(10) + stage_8_r(26);
-         stage_9_i(10) <= stage_8_i(10) + stage_8_i(26);
-
-         stage_9_r(11) <= stage_8_r(11) + stage_8_r(27);
-         stage_9_i(11) <= stage_8_i(11) + stage_8_i(27);
-
-         stage_9_r(12) <= stage_8_r(12) + stage_8_r(28);
-         stage_9_i(12) <= stage_8_i(12) + stage_8_i(28);
-
-         stage_9_r(13) <= stage_8_r(13) + stage_8_r(29);
-         stage_9_i(13) <= stage_8_i(13) + stage_8_i(29);
-
-         stage_9_r(14) <= stage_8_r(14) + stage_8_r(30);
-         stage_9_i(14) <= stage_8_i(14) + stage_8_i(30);
-
-         stage_9_r(15) <= stage_8_r(15) + stage_8_r(31);
-         stage_9_i(15) <= stage_8_i(15) + stage_8_i(31);
-
-         stage_9_r(16) <= stage_8_r(0) - stage_8_r(16);
-         stage_9_i(16) <= stage_8_i(0) - stage_8_i(16);
-
-         stage_9_r(17) <= stage_8_r(1) - stage_8_r(17);
-         stage_9_i(17) <= stage_8_i(1) - stage_8_i(17);
-
-         stage_9_r(18) <= stage_8_r(2) - stage_8_r(18);
-         stage_9_i(18) <= stage_8_i(2) - stage_8_i(18);
-
-         stage_9_r(19) <= stage_8_r(3) - stage_8_r(19);
-         stage_9_i(19) <= stage_8_i(3) - stage_8_i(19);
-
-         stage_9_r(20) <= stage_8_r(4) - stage_8_r(20);
-         stage_9_i(20) <= stage_8_i(4) - stage_8_i(20);
-
-         stage_9_r(21) <= stage_8_r(5) - stage_8_r(21);
-         stage_9_i(21) <= stage_8_i(5) - stage_8_i(21);
-
-         stage_9_r(22) <= stage_8_r(6) - stage_8_r(22);
-         stage_9_i(22) <= stage_8_i(6) - stage_8_i(22);
-
-         stage_9_r(23) <= stage_8_r(7) - stage_8_r(23);
-         stage_9_i(23) <= stage_8_i(7) - stage_8_i(23);
-
-         stage_9_r(24) <= stage_8_r(8) - stage_8_r(24);
-         stage_9_i(24) <= stage_8_i(8) - stage_8_i(24);
-
-         stage_9_r(25) <= stage_8_r(9) - stage_8_r(25);
-         stage_9_i(25) <= stage_8_i(9) - stage_8_i(25);
-
-         stage_9_r(26) <= stage_8_r(10) - stage_8_r(26);
-         stage_9_i(26) <= stage_8_i(10) - stage_8_i(26);
-
-         stage_9_r(27) <= stage_8_r(11) - stage_8_r(27);
-         stage_9_i(27) <= stage_8_i(11) - stage_8_i(27);
-
-         stage_9_r(28) <= stage_8_r(12) - stage_8_r(28);
-         stage_9_i(28) <= stage_8_i(12) - stage_8_i(28);
-
-         stage_9_r(29) <= stage_8_r(13) - stage_8_r(29);
-         stage_9_i(29) <= stage_8_i(13) - stage_8_i(29);
-
-         stage_9_r(30) <= stage_8_r(14) - stage_8_r(30);
-         stage_9_i(30) <= stage_8_i(14) - stage_8_i(30);
-
-         stage_9_r(31) <= stage_8_r(15) - stage_8_r(31);
-         stage_9_i(31) <= stage_8_i(15) - stage_8_i(31);
-
-         for i in 0 to 31 loop
-            data_r_out(i) <= std_logic_vector(stage_9_r(i));
-            data_i_out(i) <= std_logic_vector(stage_9_i(i));
-         end loop;
+         mic_nr_out <= mic_nr_buffer;
+         ----------------------- DSP -----------------------
+         addition_result_r    <= operand_0_r + operand_1_r;
+         addition_result_i    <= operand_0_i + operand_1_i;
+         subtraction_result_r <= operand_0_r - operand_1_r;
+         subtraction_result_i <= operand_0_i - operand_1_i;
+
+         addition_result_r_d    <= addition_result_r;
+         addition_result_i_d    <= addition_result_i;
+         subtraction_result_r_d <= subtraction_result_r;
+         subtraction_result_i_d <= subtraction_result_i;
+
+         addition_result_r_dd    <= addition_result_r_d;
+         addition_result_i_dd    <= addition_result_i_d;
+         subtraction_result_r_dd <= subtraction_result_r_d;
+         subtraction_result_i_dd <= subtraction_result_i_d;
+
+         operand_r_1 <= mul_operand_r;
+         operand_i_1 <= mul_operand_i;
+         twiddle_r_1 <= mul_twiddle_r;
+         twiddle_i_1 <= mul_twiddle_i;
+
+         mult_rr <= operand_r_1 * twiddle_r_1;
+         mult_ii <= operand_i_1 * twiddle_i_1;
+         mult_ri <= operand_r_1 * twiddle_i_1;
+         mult_ir <= operand_i_1 * twiddle_r_1;
+
+         mult_rr_scaled <= mult_rr(39 downto 16);
+         mult_ii_scaled <= mult_ii(39 downto 16);
+         mult_ri_scaled <= mult_ri(39 downto 16);
+         mult_ir_scaled <= mult_ir(39 downto 16);
+
+         mul_result_r_pre <= mult_rr_scaled - mult_ii_scaled;
+         mul_result_i_pre <= mult_ri_scaled + mult_ir_scaled;
+
+         --mul_result_r_full <= mult_rr - mult_ii;
+         --mul_result_i_full <= mult_ri + mult_ir;
+
+         -- mul_result_r_pre <= mul_result_r_full(39 downto 16);
+         -- mul_result_i_pre <= mul_result_i_full(39 downto 16);
+
+         mul_result_r <= mul_result_r_pre;
+         mul_result_i <= mul_result_i_pre;
+
+         mul_bypass_r_d     <= mul_bypass_r;
+         mul_bypass_i_d     <= mul_bypass_i;
+         mul_bypass_r_dd    <= mul_bypass_r_d;
+         mul_bypass_i_dd    <= mul_bypass_i_d;
+         mul_bypass_r_ddd   <= mul_bypass_r_dd;
+         mul_bypass_i_ddd   <= mul_bypass_i_dd;
+         mul_bypass_r_dddd  <= mul_bypass_r_ddd;
+         mul_bypass_i_dddd  <= mul_bypass_i_ddd;
+         mul_bypass_r_ddddd <= mul_bypass_r_dddd;
+         mul_bypass_i_ddddd <= mul_bypass_i_dddd;
+
+         if valid_in = '1' then
+            mic_nr_buffer <= mic_nr_in;
+
+            start <= '1';
+
+            for i in 0 to 127 loop
+               result_reg_0_r(to_integer(reverse_bits(to_unsigned(i, fft_addres_lenght)))) <= signed(data_in(i));
+            end loop;
+
+            result_reg_0_i <= (others => (others => '0'));
+
+            butterfly_stage         <= "00000001";
+            butterfly_stage_counter <= (others => '0');
+
+            butterfly_counter      <= (others => '0');
+            butterfly_counter_load <= (others => '0');
+            butterfly_counter_save <= (others => '0');
+
+         end if;
+         if start = '1' then
+            mul_bypass_r <= result_reg_0_r(to_integer(butterfly_counter_load));
+            mul_bypass_i <= result_reg_0_i(to_integer(butterfly_counter_load));
+
+            mul_operand_r <= result_reg_0_r(to_integer(butterfly_counter_load + butterfly_stage));
+            mul_operand_i <= result_reg_0_i(to_integer(butterfly_counter_load + butterfly_stage));
+            mul_twiddle_r <= twiddle_r(calculate_twiddle(butterfly_counter_load, butterfly_stage));
+            mul_twiddle_i <= twiddle_i(calculate_twiddle(butterfly_counter_load, butterfly_stage));
+
+            operand_0_r <= mul_bypass_r_ddddd;
+            operand_1_r <= mul_result_r;
+            operand_0_i <= mul_bypass_i_ddddd;
+            operand_1_i <= mul_result_i;
+
+            result_reg_0_r(to_integer(butterfly_counter_save)) <= addition_result_r_d;
+            result_reg_0_i(to_integer(butterfly_counter_save)) <= addition_result_i_d;
+
+            result_reg_0_r(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_r_d;
+            result_reg_0_i(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_i_d;
+
+            if butterfly_counter < 63 then
+               butterfly_counter_load <= increment_skip(butterfly_counter_load, butterfly_stage_counter);
+            end if;
+
+            if butterfly_counter > 8 then
+               butterfly_counter_save <= increment_skip(butterfly_counter_save, butterfly_stage_counter);
+            end if;
+
+            if butterfly_counter = 72 then
+               if butterfly_stage = 64 then
+                  valid_out_pre <= '1';
+                  start         <= '0';
+               else
+                  butterfly_stage_counter <= butterfly_stage_counter + 1;
+                  butterfly_stage         <= SHIFT_LEFT(butterfly_stage, 1);
+               end if;
+
+               butterfly_counter      <= (others => '0');
+               butterfly_counter_load <= (others => '0');
+               butterfly_counter_save <= (others => '0');
+            else
+               butterfly_counter <= butterfly_counter + 1;
+            end if;
+
+         end if;
 
       end if;
    end process;

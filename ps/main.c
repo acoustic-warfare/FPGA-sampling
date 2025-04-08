@@ -39,14 +39,14 @@ int main() {
   xil_printf("Nr of arrays: %x\r\n", nr_arrays);
 
   // set number of 32bit slots in payload_header
-  u32 payload_header_size = 4;
-  u32 pl_header = 5;
+  u32 payload_header_size = 3;
+  u32 pl_header = 0;
 
   // constants that will be sent in payload_header
   u32 protocol_ver = 3;
   u32 frequency = 48828;
 
-  u32 data[payload_header_size + nr_arrays * 64];
+  u32 data[payload_header_size + nr_arrays * 255];
 
   u32 empty;
 
@@ -63,7 +63,7 @@ int main() {
   u16_t Port = 21875;
 
   // 1458 bytes is max that can fit in a udp frame from the zynq
-  int buflen = (payload_header_size + nr_arrays * 64) * 4;  // 1458;
+  int buflen = (payload_header_size + nr_arrays * 256) * 4;  // 1458;
 
   /* The MAC address of the board. This should be unique per board */
   unsigned char mac_ethernet_address[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00};
@@ -179,13 +179,12 @@ int main() {
       data[1] = counter;
       counter++;
 
-      data[2] = *(data_p + 3);
-      data[3] = *(data_p + 4);
-
       // recive data from AXI
-      for (int i = 0; i < 64; i++) {
+      for (int i = 0; i < 256; i++) {
         data[i + payload_header_size] = *(data_p + pl_header + i);
       }
+
+      data[2] = *(slaveaddr_p + 2);
 
       // flush the cache from old data
       Xil_DCacheFlushRange(data_p, 2048);  // 256*4*

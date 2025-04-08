@@ -88,7 +88,7 @@ begin
             wait for C_CLK_CYKLE * 5;
             rst <= '0';
 
-            wait for C_CLK_CYKLE * 100000;
+            wait for C_CLK_CYKLE * 400000;
 
          elsif run("auto") then
 

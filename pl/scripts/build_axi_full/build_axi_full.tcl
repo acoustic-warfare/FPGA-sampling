@@ -17,7 +17,6 @@ add_files [file join "$ROOT" src axi_full axi_full_slave.vhd]
 add_files [file join "$ROOT" src axi_full axi_full_top.vhd]
 add_files [file join "$ROOT" src axi_full fifo_axi.vhd]
 add_files [file join "$ROOT" src axi_full fifo_bram.vhd]
-add_files [file join "$ROOT" src axi_full mux.vhd]
 
 add_files [file join "$ROOT" src channelizer circular_buffer_bram.vhd]
 add_files [file join "$ROOT" src channelizer down_sample.vhd]
@@ -30,7 +29,6 @@ add_files [file join "$ROOT" src decode decode_ema.vhd]
 add_files [file join "$ROOT" src decode ema.vhd]
 
 add_files [file join "$ROOT" src fft fft.vhd]
-add_files [file join "$ROOT" src fft fft_2.vhd]
 add_files [file join "$ROOT" src fft fft_bram.vhd]
 add_files [file join "$ROOT" src fft fft_controller.vhd]
 

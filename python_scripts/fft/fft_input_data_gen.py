@@ -1,15 +1,15 @@
 import numpy as np
 
 # Parameters
-length = 3200  # Number of points
+length = 128 * 200  # Number of points
 Fs = 48828.125  # Sampling frequency in Hz
-f_sine = 4000
+f_sine = 8000
 OUTPUT_FILE = './python_scripts/fft/fft_input_data.txt'
 
 # Generate sine wave
 t = np.arange(length) / Fs
 sine_wave = np.sin(2 * np.pi * f_sine * t)
-data = (sine_wave * (2**18 - 1)).astype(np.int32)  # Scale to 18-bit integer range (more like array data)
+data = (sine_wave * (2**16 - 1)).astype(np.int32)  # Scale to 18-bit integer range (more like array data)
 
 
 def int_to_twos(num, bits):
