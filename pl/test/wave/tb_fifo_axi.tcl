@@ -20,7 +20,6 @@ set signals {
     tb_fifo_axi.rd_en -
     tb_fifo_axi.rd_data -
 
-
 }
 
 foreach signal $signals {

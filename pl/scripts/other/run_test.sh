@@ -16,6 +16,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 # END PATHS
 
 # FLAGS
+all_tests=false
 wave_test=false
 wave_full_test=false
 auto_test=false
@@ -31,6 +32,9 @@ for arg in "$@"; do
     --auto)
         auto_test=true
         ;;
+    --all)
+        all_tests=true
+        ;;
     -h | --help)
         echo "Usage: run_test [--wave <test_name>] [--auto <test_name>]"
         echo "  --wave <test_name>   Run wave test with specified test name"
@@ -45,6 +49,8 @@ for arg in "$@"; do
             test_name=$arg
         elif [ "$auto_test" = true ] && [ -z "$test_name" ]; then
             test_name=$arg
+        elif [ "$all_tests" = true ]; then
+
         else
             printf "%b\n" "${BOLD}${RED}Unknown option: $arg${RESET}"
             echo "Use --help or -h for usage instructions."
@@ -56,7 +62,7 @@ done
 # END FLAGS
 
 # Check if no arguments were provided
-if [ "$wave_test" = false ] && [ "$wave_full_test" = false ] && [ "$auto_test" = false ]; then
+if [ "$wave_test" = false ] && [ "$wave_full_test" = false ] && [ "$auto_test" = false ] && [ "$all_tests" = false ]; then
     printf "%b\n" "${BOLD}${RED}Missing argument: --auto or --wave${RESET}"
     echo "Use --help or -h for usage instructions."
     exit 1
@@ -93,6 +99,10 @@ if [ "$auto_test" = true ]; then
         printf "%b\n" "${BOLD}Running auto test${RESET}"
         python3 "$GIT_ROOT/pl/run.py" -v "*$test_name.auto*" -p 0
     fi
+fi
+
+if [ "$all_tests" = true ]; then
+    python3 "$GIT_ROOT/pl/run.py" -v "*.auto" -p 0
 fi
 
 printf "%b\n" "${BOLD}${GREEN}done!${RESET}"

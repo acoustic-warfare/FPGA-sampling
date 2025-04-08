@@ -34,7 +34,7 @@ def split_to_subbands_for_mic(all_mic_data, sample_counter, mic_nr, select_mic):
 print("Enter a file to plot: ")
 # fileChooser = input()
 fileChooser = "recive_and_plot"
-select_mic = 17  # (0 - 63) Selecting microphone number 35
+select_mic = 0  # (0 - 63) Selecting microphone number 35
 
 # Load data
 all_mic_data, sample_counter, mic_nr, f_sampling = load_data_FPGA(fileChooser)
