@@ -16,8 +16,8 @@ set signals {
     tb_fft_controller.clk -
 }
 
-for {set i 0} {$i < 32} {incr i} {
-    lappend signals "tb_fft_controller.fft_controller_2_inst.fft_data_in\[$i\] -"
+for {set i 0} {$i < 128} {incr i} {
+    lappend signals "tb_fft_controller.fft_controller_inst.fft_data_in\[$i\] -"
 }
 
 foreach signal $signals {

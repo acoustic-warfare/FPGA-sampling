@@ -34,18 +34,21 @@ architecture rtl of fifo_axi is
    signal rd_en_d    : std_logic;
    signal rd_en_edge : std_logic;
    type ram_data_type is array (0 to 10) of std_logic_vector(71 downto 0);
-   signal ram_write_address : std_logic_vector(15 downto 0);
-   signal ram_write_en      : std_logic;
-   signal ram_write_data    : ram_data_type;
-   signal ram_read_address  : std_logic_vector(15 downto 0);
-   signal ram_read_data     : ram_data_type;
+   type ram_write_data_prime_full_type is array (0 to 7) of ram_data_type;
+
+   signal ram_write_address         : std_logic_vector(15 downto 0);
+   signal ram_write_en              : std_logic;
+   signal ram_write_data_prime_full : ram_write_data_prime_full_type;
+   signal ram_write_data            : ram_data_type;
+   signal ram_read_address          : std_logic_vector(15 downto 0);
+   signal ram_read_data             : ram_data_type;
 
    type header_ram_type is array(0 to FIFO_DEPTH - 1) of std_logic_vector(31 downto 0);
    signal header_ram     : header_ram_type;
    signal rd_header_next : std_logic_vector(31 downto 0);
 
    signal wr_start   : std_logic;
-   signal wr_counter : integer;
+   signal wr_counter : integer := 0;
    signal wr_done    : std_logic;
 
    type read_state_type is (idle, run, done);
@@ -82,6 +85,14 @@ begin
 
          rd_en_d <= rd_en;
 
+         for ram in 0 to 7 loop
+            for i in 0 to 9 loop
+               ram_write_data_prime_full(ram)(i) <= wr_data(ram * 32 + i * 3) & wr_data(ram * 32 + i * 3 + 1) & wr_data(ram * 32 + i * 3 + 2);
+            end loop;
+            ram_write_data_prime_full(ram)(10)(71 downto 24) <= wr_data(ram * 32 + 30) & wr_data(ram * 32 + 31);
+            ram_write_data_prime_full(ram)(10)(23 downto 0)  <= (others => '0');
+         end loop;
+
          if reset = '1' then
             write_ptr <= 0;
             read_ptr  <= 0;
@@ -95,21 +106,15 @@ begin
 
             -- write
             if wr_en = '1' and full = '0' then
+               header_ram(write_ptr / 8) <= wr_header;
+
                wr_start   <= '1';
                wr_counter <= 0;
-
-               header_ram(write_ptr / 8) <= wr_header;
             end if;
 
             if wr_start = '1' then
-
-               for i in 0 to 9 loop
-                  ram_write_data(i) <= wr_data(wr_counter * 32 + i * 3) & wr_data(wr_counter * 32 + i * 3 + 1) & wr_data(wr_counter * 32 + i * 3 + 2);
-               end loop;
-               ram_write_data(10)(71 downto 24) <= wr_data(wr_counter * 32 + 30) & wr_data(wr_counter * 32 + 31);
-               ram_write_data(10)(23 downto 0)  <= (others => '0');
-
-               ram_write_en <= '1';
+               ram_write_en   <= '1';
+               ram_write_data <= ram_write_data_prime_full(wr_counter); -- this is not perfect for WNS and build time :-1:
 
                if wr_counter > 0 then
                   write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
@@ -125,10 +130,6 @@ begin
 
             if wr_done = '1' then
                write_ptr <= (write_ptr + 1) mod RAM_DEPTH;
-            end if;
-
-            if rd_en_edge = '1' then
-
             end if;
 
             -- read

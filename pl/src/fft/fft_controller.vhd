@@ -10,8 +10,8 @@ entity fft_controller is
         rst                : in std_logic;
         chain_matrix_x4    : in matrix_4_16_24_type;
         chain_matrix_valid : in std_logic;
-        fft_data_r_out     : out matrix_32_24_type;
-        fft_data_i_out     : out matrix_32_24_type;
+        fft_data_r_out     : out matrix_128_24_type;
+        fft_data_i_out     : out matrix_128_24_type;
         fft_valid_out      : out std_logic;
         fft_mic_nr_out     : out std_logic_vector(7 downto 0)
     );
@@ -19,188 +19,267 @@ end entity;
 
 architecture rtl of fft_controller is
 
-    signal write_address : std_logic_vector(15 downto 0);
-    signal write_en_0    : std_logic;
-    signal write_en_1    : std_logic;
-    signal write_index_0 : std_logic;
-    signal write_index_1 : std_logic;
-    signal write_data_0  : std_logic_vector(23 downto 0);
-    signal write_data_1  : std_logic_vector(23 downto 0);
-    signal read_address  : unsigned(15 downto 0);
-    signal read_en       : std_logic;
-    signal read_data_0   : std_logic_vector(47 downto 0);
-    signal read_data_1   : std_logic_vector(47 downto 0);
-
-    signal chain_matrix_x4_buffer : matrix_4_16_24_type;
-
-    signal save_mic_counter      : unsigned(7 downto 0); -- 0 to 63 (counts mic to save)
-    signal agrigate_samples      : std_logic;
-    signal agrigate_samples_done : std_logic;
-
-    signal load_sample_counter : unsigned(7 downto 0); -- nr_sample (0-32) divided by 4
-
-    type agrigation_counter_type is array (0 to 63) of unsigned(5 downto 0);
-    signal agrigation_counter : agrigation_counter_type; -- 0 to 63 just rolls around
-
-    signal load_mic_counter : unsigned(5 downto 0);
-
-    type load_state_type is (idle, pause, run, load_last, done);
-    signal load_state : load_state_type;
+    signal chain_matrix_buffer : matrix_64_24_type;
 
     signal fft_mic_nr_in : std_logic_vector(7 downto 0);
-    signal fft_data_in   : matrix_32_24_type;
+    signal fft_data_in   : matrix_128_24_type;
     signal fft_valid_in  : std_logic;
+
+    type ram_data_type is array (0 to 21) of std_logic_vector(71 downto 0);
+    signal ram_write_address         : std_logic_vector(8 downto 0); -- 9 bits roll at 511
+    signal ram_write_en              : std_logic;
+    signal ram_write_data            : ram_data_type;
+    signal ram_read_address          : std_logic_vector(8 downto 0);
+    signal ram_read_address_unsigned : unsigned(8 downto 0);
+    signal ram_read_en               : std_logic;
+    signal ram_read_data             : ram_data_type;
+
+    signal write_start            : std_logic;
+    signal write_done             : std_logic;
+    signal ram_write_address_next : unsigned(8 downto 0);
+
+    type read_state_type is (idle, read_start, read_start_start, read_main, read_last, read_last_last, read_last_last_last);
+    signal read_state     : read_state_type;
+    signal read_alternate : std_logic;
+    signal read_pause     : std_logic; -- with fft size over 64 we dont run the fft each time
+
+    signal read_mic_nr    : unsigned(5 downto 0);
+    signal read_sample_nr : unsigned(7 downto 0);
+    signal read_data      : std_logic_vector(71 downto 0);
+    signal read_ram       : integer := 0;
+    signal read_index     : integer;
+
+    function tmp_increment (
+        x : unsigned(8 downto 0)
+    ) return unsigned is
+    begin
+        if x = 127 then
+            return to_unsigned(256, 9);
+        elsif x = 383 then
+            return to_unsigned(0, 9);
+        else
+            return x + 1;
+        end if;
+    end function;
+
+    function read_index_increment (
+        read_index_in  : integer;
+        read_mic_nr_in : unsigned(5 downto 0)
+    ) return integer is
+    begin
+        if read_mic_nr_in = 63 then
+            return 0;
+        elsif read_index_in = 0 then
+            return read_index_in + 1;
+        elsif read_index_in = 1 then
+            return read_index_in + 1;
+        else
+            return 0;
+        end if;
+    end function;
+
+    function read_ram_increment (
+        read_ram_in    : integer;
+        read_index_in  : integer;
+        read_mic_nr_in : unsigned(5 downto 0)
+    ) return integer is
+    begin
+        if read_mic_nr_in = 63 then
+            return 0;
+        elsif read_ram_in < 21 and read_index_in = 2 then
+            return read_ram_in + 1;
+        elsif read_index_in = 2 then
+            return 0;
+        else
+            return read_ram_in;
+        end if;
+    end function;
 
 begin
 
-    fft_bram_0 : entity work.fft_bram
-        port map(
-            clk           => clk,
-            write_address => write_address,
-            write_en      => write_en_0,
-            write_index   => write_index_0,
-            write_data    => write_data_0,
-            read_address  => std_logic_vector(read_address),
-            read_en       => read_en,
-            read_data     => read_data_0
-        );
+    fft_bram_gen : for i in 0 to 21 generate
+    begin
+        fft_bram_inst : entity work.fft_bram
+            port map(
+                clk           => clk,
+                write_address => ram_write_address,
+                write_en      => ram_write_en,
+                write_data    => ram_write_data(i),
+                read_address  => ram_read_address,
+                read_en       => ram_read_en,
+                read_data     => ram_read_data(i)
+            );
+    end generate;
 
-    fft_bram_1 : entity work.fft_bram
-        port map(
-            clk           => clk,
-            write_address => write_address,
-            write_en      => write_en_1,
-            write_index   => write_index_1,
-            write_data    => write_data_1,
-            read_address  => std_logic_vector(read_address),
-            read_en       => read_en,
-            read_data     => read_data_1
-        );
+    process (chain_matrix_buffer)
+    begin
+        for i in 0 to 20 loop
+            ram_write_data(i) <= chain_matrix_buffer(i * 3) & chain_matrix_buffer(i * 3 + 1) & chain_matrix_buffer(i * 3 + 2);
+        end loop;
+        ram_write_data(21)(71 downto 48) <= chain_matrix_buffer(63);
+        ram_write_data(21)(47 downto 0)  <= (others => '0'); -- last 48 bits are just empty becouse of bram width mismatch 
+    end process;
+
+    ram_read_address <= std_logic_vector(ram_read_address_unsigned);
 
     process (clk)
     begin
         if rising_edge(clk) then
-            fft_valid_in <= '0';
 
-            write_en_0 <= '0';
-            write_en_1 <= '0';
-
-            agrigate_samples_done <= '0';
-
-            read_en <= '0';
+            read_data <= ram_read_data(read_ram);
 
             if rst = '1' then
-                agrigation_counter    <= (others => (others => '0'));
-                agrigate_samples      <= '0';
-                agrigate_samples_done <= '0';
+                ram_write_address      <= (others => '0');
+                ram_write_address_next <= (others => '0');
 
-                load_state          <= idle;
-                load_mic_counter    <= (others => '0');
-                load_sample_counter <= (others => '0');
+                read_state     <= idle;
+                read_mic_nr    <= (others => '0');
+                read_sample_nr <= (others => '0');
+                read_index     <= 0;
+                read_ram       <= 0;
+
+                read_pause <= '0';
+
             else
+                write_start  <= '0';
+                ram_write_en <= '0';
+                write_done   <= write_start; -- just a 1 clk delay from start
 
-                -- save data 
+                ram_read_en <= '0';
+
+                fft_valid_in <= '0';
+
+                -- write
                 if chain_matrix_valid = '1' then
-                    chain_matrix_x4_buffer <= chain_matrix_x4;
-                    agrigate_samples       <= '1';
-                    save_mic_counter       <= (others => '0');
+                    for i in 0 to 15 loop
+                        chain_matrix_buffer(i)      <= chain_matrix_x4(0)(i);
+                        chain_matrix_buffer(i + 16) <= chain_matrix_x4(1)(i);
+                        chain_matrix_buffer(i + 32) <= chain_matrix_x4(2)(i);
+                        chain_matrix_buffer(i + 48) <= chain_matrix_x4(3)(i);
+                    end loop;
 
-                end if;
-
-                if agrigate_samples = '1' then
-                    if save_mic_counter = 63 then
-                        agrigate_samples      <= '0';
-                        agrigate_samples_done <= '1';
+                    ram_write_address <= std_logic_vector(ram_write_address_next);
+                    if ram_write_address_next > 255 then
+                        read_alternate <= '0';
                     else
-                        save_mic_counter <= save_mic_counter + 1;
-
-                        if agrigation_counter(to_integer(save_mic_counter))(1 downto 0) = "00" then
-                            write_data_0  <= chain_matrix_x4_buffer(to_integer(save_mic_counter / 16))(to_integer(save_mic_counter(3 downto 0)));
-                            write_en_0    <= '1';
-                            write_index_0 <= '0';
-                        elsif agrigation_counter(to_integer(save_mic_counter))(1 downto 0) = "01" then
-                            write_data_0  <= chain_matrix_x4_buffer(to_integer(save_mic_counter / 16))(to_integer(save_mic_counter(3 downto 0)));
-                            write_en_0    <= '1';
-                            write_index_0 <= '1';
-                        elsif agrigation_counter(to_integer(save_mic_counter))(1 downto 0) = "10" then
-                            write_data_1  <= chain_matrix_x4_buffer(to_integer(save_mic_counter / 16))(to_integer(save_mic_counter(3 downto 0)));
-                            write_en_1    <= '1';
-                            write_index_1 <= '0';
-                        else
-                            write_data_1  <= chain_matrix_x4_buffer(to_integer(save_mic_counter / 16))(to_integer(save_mic_counter(3 downto 0)));
-                            write_en_1    <= '1';
-                            write_index_1 <= '1';
-                        end if;
-
-                        write_address <= std_logic_vector(save_mic_counter * 8 + agrigation_counter(to_integer(save_mic_counter(4 downto 0))) / 4);
-
-                        agrigation_counter(to_integer(save_mic_counter)) <= agrigation_counter(to_integer(save_mic_counter)) + 1;
-
+                        read_alternate <= '1';
                     end if;
 
+                    --ram_write_address_next <= ram_write_address_next + 1;
+                    ram_write_address_next <= tmp_increment(ram_write_address_next);
+                    ram_write_en           <= '1';
+
+                    write_start <= '1';
+
                 end if;
 
-                -- read data
-                read_address <= (others => '0');
-
-                case load_state is
+                -- read
+                case read_state is
                     when idle =>
-                        if agrigate_samples_done = '1' then
-                            --read_address <= agrigation_counter * 8 + load_sample_counter);
-                            load_state   <= pause;
-                            read_address <= SHIFT_LEFT("0000000000" & load_mic_counter, 3);
-                            read_en      <= '1';
+                        if write_done = '1' then
+                            read_state <= read_start;
 
-                            load_sample_counter <= (others => '0');
+                            if read_alternate = '0' then
+                                ram_read_address_unsigned <= (others => '0');
+                            else
+                                ram_read_address_unsigned <= "100000000";
+                            end if;
+                            ram_read_en <= '1';
+
+                            read_sample_nr <= (others => '0');
                         end if;
 
-                    when pause =>
-                        read_address <= SHIFT_LEFT("0000000000" & load_mic_counter, 3) + 1;
-                        read_en      <= '1';
-                        load_state   <= run;
-                    when run =>
+                    when read_start =>
 
-                        if load_sample_counter = 6 then
-                            load_state <= load_last;
+                        read_state <= read_start_start;
+
+                        ram_read_address_unsigned <= ram_read_address_unsigned + 1;
+                        ram_read_en               <= '1';
+
+                    when read_start_start =>
+
+                        read_state <= read_main;
+
+                        ram_read_address_unsigned <= ram_read_address_unsigned + 1;
+                        ram_read_en               <= '1';
+
+                    when read_main =>
+
+                        if read_index = 0 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
+                        elsif read_index = 1 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
-                            load_sample_counter <= load_sample_counter + 1;
-                            read_address        <= SHIFT_LEFT("0000000000" & load_mic_counter, 3) + load_sample_counter + 2;
-                            read_en             <= '1';
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
                         end if;
 
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 0) <= read_data_0(47 downto 24);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 1) <= read_data_0(23 downto 0);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 2) <= read_data_1(47 downto 24);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 3) <= read_data_1(23 downto 0);
+                        ram_read_en               <= '1';
+                        ram_read_address_unsigned <= ram_read_address_unsigned + 1;
+                        read_sample_nr            <= read_sample_nr + 1;
 
-                    when load_last =>
+                        if read_sample_nr = 124 then
+                            read_state <= read_last;
+                        end if;
 
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 0 + 4) <= read_data_0(47 downto 24);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 1 + 4) <= read_data_0(23 downto 0);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 2 + 4) <= read_data_1(47 downto 24);
-                        fft_data_in(to_integer(load_sample_counter) * 4 + 3 + 4) <= read_data_1(23 downto 0);
+                    when read_last =>
+                        if read_index = 1 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
+                        elsif read_index = 2 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
+                        else
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
+                        end if;
 
-                        load_state <= done;
+                        read_sample_nr <= read_sample_nr + 1;
+                        read_state     <= read_last_last;
 
-                    when done =>
+                    when read_last_last =>
 
-                        load_state <= idle;
+                        if read_index = 1 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
+                        elsif read_index = 2 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
+                        else
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
+                        end if;
 
-                        fft_valid_in  <= '1';
-                        fft_mic_nr_in <= "00" & std_logic_vector(load_mic_counter);
+                        read_sample_nr <= read_sample_nr + 1;
+                        read_state     <= read_last_last_last;
 
-                        load_mic_counter                                 <= load_mic_counter + 1;
-                        agrigation_counter(to_integer(load_mic_counter)) <= (others => '0');
+                    when read_last_last_last =>
+
+                        if read_index = 1 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
+                        elsif read_index = 2 then
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
+                        else
+                            fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
+                        end if;
+
+                        if read_mic_nr = 63 then
+                            read_pause <= not read_pause;
+                        end if;
+
+                        if read_pause = '1' then
+                            fft_valid_in <= '1';
+                        end if;
+                        fft_mic_nr_in <= "00" & std_logic_vector(read_mic_nr); -- just "00" when using 64 mics
+
+                        read_mic_nr <= read_mic_nr + 1;
+                        read_index  <= read_index_increment(read_index, read_mic_nr);
+
+                        read_ram <= read_ram_increment(read_ram, read_index, read_mic_nr); --should just be read_ram <= read_ram + 1 if read_idex = 2at fft size 256
+
+                        read_state <= idle;
 
                     when others =>
                         null;
                 end case;
-
             end if;
         end if;
     end process;
 
-    fft_inst : entity work.fft_2
+    fft_inst : entity work.fft
         port map(
             clk        => clk,
             data_in    => fft_data_in,

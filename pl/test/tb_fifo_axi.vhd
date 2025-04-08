@@ -34,7 +34,7 @@ architecture behavior of tb_fifo_axi is
    signal full         : std_logic;
 
 begin
-   fifo_inst : entity work.fifo_axi
+   fifo_axi_inst : entity work.fifo_axi
       port map(
          clk          => clk,
          reset        => reset,

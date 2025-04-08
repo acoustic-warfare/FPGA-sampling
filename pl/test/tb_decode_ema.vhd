@@ -164,7 +164,7 @@ begin
 
          elsif run("auto") then
 
-            wait for 12 ns;
+            wait for (200 * C_CLK_CYKLE);
 
          end if;
       end loop;

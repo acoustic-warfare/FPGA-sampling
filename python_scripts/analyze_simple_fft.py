@@ -10,8 +10,8 @@ def load_data_FPGA(fileChooser):
     path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
     data2D = data.reshape(-1, 259)  # Each row: 4 header fields + 64 mic data values
-    mic_nr = data2D[:, 3]  # Extract subband column (4th column, index 3)
-    mic_data = data2D[:, 4:]  # Microphone data starts from column 5 (index 4)
+    mic_nr = data2D[:, 2] >> 24  # Extract subband column (4th column, index 3)
+    mic_data = data2D[:, 3:]  # Microphone data starts from column 5 (index 4)
     sample_counter = data2D[:, 2]
     sample_counter = (sample_counter - sample_counter[0])/32
     sample_counter = sample_counter.astype(int)
@@ -39,8 +39,6 @@ select_mic = 0  # (0 - 63) Selecting microphone number 35
 # Load data
 all_mic_data, sample_counter, mic_nr, f_sampling = load_data_FPGA(fileChooser)
 
-# print(all_mic_data[0])
-
 mic_data = split_to_subbands_for_mic(all_mic_data, sample_counter, mic_nr, select_mic)
 mic_data_c = []
 for a in range(len(mic_data)):
@@ -48,13 +46,6 @@ for a in range(len(mic_data)):
     for b in range(int(len(mic_data[0]) / 2)):
         complex_sample.append(complex(mic_data[a][b * 2], mic_data[a][b * 2 + 1]))
     mic_data_c.append(complex_sample)
-
-print(len(all_mic_data))
-print(len(mic_data))
-
-
-print(mic_data[0])
-print(mic_data_c[0])
 
 fft_result = mic_data_c[0]
 
@@ -99,4 +90,15 @@ plt.ylabel("Amplitude")
 plt.legend(["Real Part", "Imaginary Part"])
 plt.title("Real and Imaginary Parts of FFT")
 plt.grid()
+plt.show()
+
+
+def db(x):
+    return 20 * np.log10(x + 1e-10)
+
+
+plt.imshow(db(np.abs(mic_data_c)), cmap='viridis', aspect='auto')
+plt.colorbar()
+plt.xlabel("Channel")
+plt.ylabel("Time")
 plt.show()
