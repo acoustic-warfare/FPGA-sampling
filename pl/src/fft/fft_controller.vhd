@@ -222,9 +222,9 @@ begin
                         end if;
 
                     when read_last =>
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
@@ -235,9 +235,9 @@ begin
 
                     when read_last_last =>
 
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
@@ -248,9 +248,9 @@ begin
 
                     when read_last_last_last =>
 
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);

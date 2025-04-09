@@ -29,7 +29,7 @@ architecture tb of tb_fft_controller is
     signal fft_valid_out  : std_logic;
     signal fft_mic_nr_out : std_logic_vector(7 downto 0);
 
-    constant input_data_lenght : integer := 128 * 8;
+    constant input_data_lenght : integer := 128 * 4;
 
     type input_data_type is array (0 to input_data_lenght - 1) of std_logic_vector(23 downto 0);
     signal input_data : input_data_type;
