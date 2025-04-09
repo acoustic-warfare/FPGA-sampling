@@ -39,7 +39,8 @@ def bin_to_txt(bin_path, txt_path):
             # Write to text file
             txt_file.write(f"header: {int_to_twos_string_header(header)}    ")
             txt_file.write(f"sample_counter: {sample_counter}    ")
-            txt_file.write(f"pl_header: {int_to_twos_string_header(pl_header)}    ")
+            txt_file.write(f"pl_header: {int_to_twos_string_header(pl_header)}  ")
+            txt_file.write(f"pl_counter: {pl_header & 0xFFFFFF:07d}  ")
             txt_file.write(f"mic_nr: {(pl_header >> 24) & 0xFF:03d}    ")
 
             for i in range(int(len(mic_data)/2)):

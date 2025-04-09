@@ -128,7 +128,8 @@ samples = load_samples(INPUT_FILE)
 twiddle_lut = generate_twiddle_factors(128)
 
 print()
-window_lut = np.hanning(128)
+#window_lut = np.hanning(128)
+window_lut = np.hamming(128)
 window_lut_scaled = []
 for i in range(len(window_lut)):
     window_lut_scaled.append(int(window_lut[i] * SCALE_FACTOR))
