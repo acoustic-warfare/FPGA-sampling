@@ -17,7 +17,7 @@ set signals {
 }
 
 for {set i 0} {$i < 128} {incr i} {
-    lappend signals "tb_fft_controller.fft_controller_inst.fft_data_in\[$i\] -"
+#    lappend signals "tb_fft_controller.fft_controller_inst.fft_data_in\[$i\] -"
 }
 
 foreach signal $signals {

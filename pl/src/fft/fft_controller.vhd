@@ -30,18 +30,17 @@ architecture rtl of fft_controller is
     signal ram_write_en              : std_logic;
     signal ram_write_data            : ram_data_type;
     signal ram_read_address          : std_logic_vector(8 downto 0);
-    signal ram_read_address_unsigned : unsigned(8 downto 0);
+    signal ram_read_address_unsigned : unsigned(7 downto 0);
     signal ram_read_en               : std_logic;
     signal ram_read_data             : ram_data_type;
 
     signal write_start            : std_logic;
     signal write_done             : std_logic;
-    signal ram_write_address_next : unsigned(8 downto 0);
+    signal ram_write_address_next : unsigned(7 downto 0);
 
     type read_state_type is (idle, read_start, read_start_start, read_main, read_last, read_last_last, read_last_last_last);
     signal read_state     : read_state_type;
-    signal read_alternate : std_logic;
-    signal read_pause     : std_logic; -- with fft size over 64 we dont run the fft each time
+    signal read_alternate : std_logic_vector(1 downto 0);
 
     signal read_mic_nr    : unsigned(5 downto 0);
     signal read_sample_nr : unsigned(7 downto 0);
@@ -49,51 +48,38 @@ architecture rtl of fft_controller is
     signal read_ram       : integer := 0;
     signal read_index     : integer;
 
-    function tmp_increment (
-        x : unsigned(8 downto 0)
-    ) return unsigned is
-    begin
-        if x = 127 then
-            return to_unsigned(256, 9);
-        elsif x = 383 then
-            return to_unsigned(0, 9);
-        else
-            return x + 1;
-        end if;
-    end function;
+    --function read_index_increment (
+    --    read_index_in  : integer;
+    --    read_mic_nr_in : unsigned(5 downto 0)
+    --) return integer is
+    --begin
+    --    if read_mic_nr_in = 63 then
+    --        return 0;
+    --    elsif read_index_in = 0 then
+    --        return read_index_in + 1;
+    --    elsif read_index_in = 1 then
+    --        return read_index_in + 1;
+    --    else
+    --        return 0;
+    --    end if;
+    --end function;
 
-    function read_index_increment (
-        read_index_in  : integer;
-        read_mic_nr_in : unsigned(5 downto 0)
-    ) return integer is
-    begin
-        if read_mic_nr_in = 63 then
-            return 0;
-        elsif read_index_in = 0 then
-            return read_index_in + 1;
-        elsif read_index_in = 1 then
-            return read_index_in + 1;
-        else
-            return 0;
-        end if;
-    end function;
-
-    function read_ram_increment (
-        read_ram_in    : integer;
-        read_index_in  : integer;
-        read_mic_nr_in : unsigned(5 downto 0)
-    ) return integer is
-    begin
-        if read_mic_nr_in = 63 then
-            return 0;
-        elsif read_ram_in < 21 and read_index_in = 2 then
-            return read_ram_in + 1;
-        elsif read_index_in = 2 then
-            return 0;
-        else
-            return read_ram_in;
-        end if;
-    end function;
+    --function read_ram_increment (
+    --    read_ram_in    : integer;
+    --    read_index_in  : integer;
+    --    read_mic_nr_in : unsigned(5 downto 0)
+    --) return integer is
+    --begin
+    --    if read_mic_nr_in = 63 then
+    --        return 0;
+    --    elsif read_ram_in < 21 and read_index_in = 2 then
+    --        return read_ram_in + 1;
+    --    elsif read_index_in = 2 then
+    --        return 0;
+    --    else
+    --        return read_ram_in;
+    --    end if;
+    --end function;
 
 begin
 
@@ -120,7 +106,7 @@ begin
         ram_write_data(21)(47 downto 0)  <= (others => '0'); -- last 48 bits are just empty becouse of bram width mismatch 
     end process;
 
-    ram_read_address <= std_logic_vector(ram_read_address_unsigned);
+    ram_read_address <= "0" & std_logic_vector(ram_read_address_unsigned);
 
     process (clk)
     begin
@@ -138,7 +124,7 @@ begin
                 read_index     <= 0;
                 read_ram       <= 0;
 
-                read_pause <= '0';
+                --read_pause <= '0';
 
             else
                 write_start  <= '0';
@@ -158,15 +144,20 @@ begin
                         chain_matrix_buffer(i + 48) <= chain_matrix_x4(3)(i);
                     end loop;
 
-                    ram_write_address <= std_logic_vector(ram_write_address_next);
-                    if ram_write_address_next > 255 then
-                        read_alternate <= '0';
+                    ram_write_address <= "0" & std_logic_vector(ram_write_address_next);
+
+                    if ram_write_address_next < 64 then
+                        read_alternate <= "10";
+                    elsif ram_write_address_next < 128 then
+                        read_alternate <= "11";
+                    elsif ram_write_address_next < 192 then
+                        read_alternate <= "00";
                     else
-                        read_alternate <= '1';
+                        read_alternate <= "01";
                     end if;
 
                     --ram_write_address_next <= ram_write_address_next + 1;
-                    ram_write_address_next <= tmp_increment(ram_write_address_next);
+                    ram_write_address_next <= ram_write_address_next + 1;
                     ram_write_en           <= '1';
 
                     write_start <= '1';
@@ -179,10 +170,14 @@ begin
                         if write_done = '1' then
                             read_state <= read_start;
 
-                            if read_alternate = '0' then
+                            if read_alternate = "00" then
                                 ram_read_address_unsigned <= (others => '0');
+                            elsif read_alternate = "01" then
+                                ram_read_address_unsigned <= "01000000";
+                            elsif read_alternate = "10" then
+                                ram_read_address_unsigned <= "10000000";
                             else
-                                ram_read_address_unsigned <= "100000000";
+                                ram_read_address_unsigned <= "11000000";
                             end if;
                             ram_read_en <= '1';
 
@@ -222,9 +217,9 @@ begin
                         end if;
 
                     when read_last =>
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
@@ -235,9 +230,9 @@ begin
 
                     when read_last_last =>
 
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
@@ -248,27 +243,37 @@ begin
 
                     when read_last_last_last =>
 
-                        if read_index = 1 then
+                        if read_index = 0 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(71 downto 48);
-                        elsif read_index = 2 then
+                        elsif read_index = 1 then
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(47 downto 24);
                         else
                             fft_data_in(to_integer(read_sample_nr)) <= read_data(23 downto 0);
                         end if;
 
-                        if read_mic_nr = 63 then
-                            read_pause <= not read_pause;
-                        end if;
+                        fft_valid_in <= '1';
 
-                        if read_pause = '1' then
-                            fft_valid_in <= '1';
-                        end if;
                         fft_mic_nr_in <= "00" & std_logic_vector(read_mic_nr); -- just "00" when using 64 mics
 
                         read_mic_nr <= read_mic_nr + 1;
-                        read_index  <= read_index_increment(read_index, read_mic_nr);
 
-                        read_ram <= read_ram_increment(read_ram, read_index, read_mic_nr); --should just be read_ram <= read_ram + 1 if read_idex = 2at fft size 256
+                        --read_index  <= read_index_increment(read_index, read_mic_nr);
+                        if read_mic_nr = 63 then
+                            read_index <= 0;
+                        elsif read_index = 0 then
+                            read_index <= read_index + 1;
+                        elsif read_index = 1 then
+                            read_index <= read_index + 1;
+                        else
+                            read_index <= 0;
+                        end if;
+
+                        --read_ram <= read_ram_increment(read_ram, read_index, read_mic_nr); --should just be read_ram <= read_ram + 1 if read_idex = 2at fft size 256
+                        if read_mic_nr = 63 then
+                            read_ram <= 0;
+                        elsif read_ram < 21 and read_index = 2 then
+                            read_ram <= read_ram + 1;
+                        end if;
 
                         read_state <= idle;
 
