@@ -10,8 +10,8 @@ entity fft_controller is
         rst                : in std_logic;
         chain_matrix_x4    : in matrix_4_16_24_type;
         chain_matrix_valid : in std_logic;
-        fft_data_r_out     : out matrix_128_24_type;
-        fft_data_i_out     : out matrix_128_24_type;
+        fft_data_r_out     : out matrix_64_24_type;
+        fft_data_i_out     : out matrix_64_24_type;
         fft_valid_out      : out std_logic;
         fft_mic_nr_out     : out std_logic_vector(7 downto 0)
     );
@@ -47,39 +47,6 @@ architecture rtl of fft_controller is
     signal read_data      : std_logic_vector(71 downto 0);
     signal read_ram       : integer := 0;
     signal read_index     : integer;
-
-    --function read_index_increment (
-    --    read_index_in  : integer;
-    --    read_mic_nr_in : unsigned(5 downto 0)
-    --) return integer is
-    --begin
-    --    if read_mic_nr_in = 63 then
-    --        return 0;
-    --    elsif read_index_in = 0 then
-    --        return read_index_in + 1;
-    --    elsif read_index_in = 1 then
-    --        return read_index_in + 1;
-    --    else
-    --        return 0;
-    --    end if;
-    --end function;
-
-    --function read_ram_increment (
-    --    read_ram_in    : integer;
-    --    read_index_in  : integer;
-    --    read_mic_nr_in : unsigned(5 downto 0)
-    --) return integer is
-    --begin
-    --    if read_mic_nr_in = 63 then
-    --        return 0;
-    --    elsif read_ram_in < 21 and read_index_in = 2 then
-    --        return read_ram_in + 1;
-    --    elsif read_index_in = 2 then
-    --        return 0;
-    --    else
-    --        return read_ram_in;
-    --    end if;
-    --end function;
 
 begin
 

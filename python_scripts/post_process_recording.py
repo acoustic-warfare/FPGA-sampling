@@ -41,10 +41,11 @@ def bin_to_txt(bin_path, txt_path):
             txt_file.write(f"sample_counter: {sample_counter}    ")
             txt_file.write(f"pl_header: {int_to_twos_string_header(pl_header)}  ")
             txt_file.write(f"pl_counter: {pl_header & 0xFFFFFF:07d}  ")
-            txt_file.write(f"mic_nr: {(pl_header >> 24) & 0xFF:03d}    ")
+            txt_file.write(f"subband_nr: {(pl_header >> 24) & 0xFF:03d}    ")
 
             for i in range(int(len(mic_data)/2)):
-                txt_file.write(f"s_{i}: {int_to_twos_complement_string(mic_data[i*2], 24)} + {int_to_twos_complement_string(mic_data[i*2 + 1], 24)}j   ")
+                txt_file.write(
+                    f"mic_{i}: {int_to_twos_complement_string(mic_data[i*2], 24)} + {int_to_twos_complement_string(mic_data[i*2 + 1], 24)}j   ")
 
             txt_file.write("\n")
 

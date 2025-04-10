@@ -1,7 +1,7 @@
 import numpy as np
 
 # Parameters
-length = 128 * 200  # Number of points
+length = 128 * 20000  # Number of points
 Fs = 48828.125  # Sampling frequency in Hz
 f_sine = 8000
 OUTPUT_FILE = './python_scripts/fft/fft_input_data.txt'

@@ -24,8 +24,8 @@ architecture tb of tb_fft is
    signal data_in    : matrix_128_24_type;
    signal valid_in   : std_logic                    := '0';
    signal mic_nr_in  : std_logic_vector(7 downto 0) := (others => '0');
-   signal data_r_out : matrix_128_24_type;
-   signal data_i_out : matrix_128_24_type;
+   signal data_r_out : matrix_64_24_type;
+   signal data_i_out : matrix_64_24_type;
    signal valid_out  : std_logic;
    signal mic_nr_out : std_logic_vector(7 downto 0);
    --
@@ -86,7 +86,7 @@ begin
       if rising_edge(clk) then
          if valid_out = '1' then
             if mic_nr_out = "00000000" then
-               for s in 0 to 127 loop
+               for s in 0 to 63 loop
                   write(line_to_write, to_integer(signed(data_r_out(s)))); -- setup line
                   STRING_WRITE(line_to_write, " ");                        -- setup line
                   write(line_to_write, to_integer(signed(data_i_out(s)))); -- setup line

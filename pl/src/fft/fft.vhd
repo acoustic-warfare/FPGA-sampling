@@ -11,8 +11,8 @@ entity fft is
       data_in    : in matrix_128_24_type;
       valid_in   : in std_logic;
       mic_nr_in  : in std_logic_vector(7 downto 0);
-      data_r_out : out matrix_128_24_type;
-      data_i_out : out matrix_128_24_type;
+      data_r_out : out matrix_64_24_type;
+      data_i_out : out matrix_64_24_type;
       valid_out  : out std_logic;
       mic_nr_out : out std_logic_vector(7 downto 0)
    );
@@ -214,7 +214,7 @@ begin
          valid_out     <= valid_out_pre;
          valid_out_pre <= '0';
 
-         for i in 0 to 127 loop
+         for i in 0 to 63 loop
             data_r_out(i) <= std_logic_vector(result_reg_0_r_current(i));
             data_i_out(i) <= std_logic_vector(result_reg_0_i_current(i));
          end loop;
