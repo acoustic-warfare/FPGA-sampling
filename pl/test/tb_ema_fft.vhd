@@ -24,6 +24,7 @@ architecture tb of tb_ema_fft is
    signal mic_data_r : std_logic_vector(23 downto 0) := (others => '0');
    signal mic_data_i : std_logic_vector(23 downto 0) := (others => '0');
    signal mic_valid  : std_logic                     := '0';
+   signal mask_valid : std_logic                     := '0';
 
    signal valid_subband_out : std_logic;
 
@@ -38,8 +39,18 @@ begin
          mic_data_r        => mic_data_r,
          mic_data_i        => mic_data_i,
          mic_valid         => mic_valid,
+         mask_valid        => mask_valid,
          valid_subband_out => valid_subband_out
       );
+
+   process (mic_valid, subband_in)
+   begin
+      if mic_valid = '1' and unsigned(subband_in) > 0 then
+         mask_valid <= mic_valid;
+      else
+         mask_valid <= '0';
+      end if;
+   end process;
 
    main : process
    begin

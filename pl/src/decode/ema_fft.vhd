@@ -12,6 +12,7 @@ entity ema_fft is
       mic_data_r        : in std_logic_vector(23 downto 0);
       mic_data_i        : in std_logic_vector(23 downto 0);
       mic_valid         : in std_logic;
+      mask_valid        : in std_logic;
       valid_subband_out : out std_logic
    );
 end entity;
@@ -28,6 +29,8 @@ architecture rtl of ema_fft is
 
    type save_ema_type is array (63 downto 0) of unsigned(47 downto 0);
    signal save_ema : save_ema_type;
+
+   -- signal mask_valid_buffer : std_logic;
 
    ------------------ EMA MAX ------------------
    signal current_ema_max         : unsigned(47 downto 0);
@@ -103,6 +106,8 @@ begin
 
                      current_subband <= subband_in;
 
+                     --mask_valid_buffer <= mask_valid;
+
                      state   <= dsp;
                      counter <= (others => '0');
                   end if;
@@ -114,19 +119,19 @@ begin
                      -- save
                      save_ema(to_integer(unsigned(subband_in))) <= ema_out;
 
-                     -- compare                      
-                     if ema_out > current_ema_max_shifted then
+                     -- compare
+                     if ema_out > current_ema_max_shifted and mask_valid = '1' then
                         valid_subband_out <= '1';
                      end if;
 
                      -- next ema_max
-                     if ema_out > next_ema_max then
+                     if ema_out > next_ema_max and mask_valid = '1' then
                         next_ema_max <= ema_out;
                      end if;
 
                      -- last subband, next sample is new! 
                      if current_subband = std_logic_vector(to_unsigned(63, 8)) then
-                        if ema_out > next_ema_max then
+                        if ema_out > next_ema_max and mask_valid = '1' then
                            current_ema_max <= ema_out;
                         else
                            current_ema_max <= next_ema_max;

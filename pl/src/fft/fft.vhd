@@ -55,23 +55,23 @@ architecture rtl of fft is
    signal window_res_0_scaled : signed(23 downto 0);
    signal window_res_1_scaled : signed(23 downto 0);
 
-   signal operand_0_r         : signed(23 downto 0);
-   signal operand_1_r         : signed(23 downto 0);
-   signal addition_result_r   : signed(23 downto 0);
-   signal addition_result_r_d : signed(23 downto 0);
-   --signal addition_result_r_dd : signed(23 downto 0);
-   signal operand_0_i         : signed(23 downto 0);
-   signal operand_1_i         : signed(23 downto 0);
-   signal addition_result_i   : signed(23 downto 0);
-   signal addition_result_i_d : signed(23 downto 0);
-   --signal addition_result_i_dd : signed(23 downto 0);
+   signal operand_0_r          : signed(23 downto 0);
+   signal operand_1_r          : signed(23 downto 0);
+   signal addition_result_r    : signed(23 downto 0);
+   signal addition_result_r_d  : signed(23 downto 0);
+   signal addition_result_r_dd : signed(23 downto 0);
+   signal operand_0_i          : signed(23 downto 0);
+   signal operand_1_i          : signed(23 downto 0);
+   signal addition_result_i    : signed(23 downto 0);
+   signal addition_result_i_d  : signed(23 downto 0);
+   signal addition_result_i_dd : signed(23 downto 0);
 
-   signal subtraction_result_r   : signed(23 downto 0);
-   signal subtraction_result_r_d : signed(23 downto 0);
-   --signal subtraction_result_r_dd : signed(23 downto 0);
-   signal subtraction_result_i   : signed(23 downto 0);
-   signal subtraction_result_i_d : signed(23 downto 0);
-   --signal subtraction_result_i_dd : signed(23 downto 0);
+   signal subtraction_result_r    : signed(23 downto 0);
+   signal subtraction_result_r_d  : signed(23 downto 0);
+   signal subtraction_result_r_dd : signed(23 downto 0);
+   signal subtraction_result_i    : signed(23 downto 0);
+   signal subtraction_result_i_d  : signed(23 downto 0);
+   signal subtraction_result_i_dd : signed(23 downto 0);
 
    signal mul_operand_r : signed(23 downto 0);
    signal mul_operand_i : signed(23 downto 0);
@@ -243,6 +243,11 @@ begin
          subtraction_result_r_d <= subtraction_result_r;
          subtraction_result_i_d <= subtraction_result_i;
 
+         addition_result_r_dd    <= addition_result_r_d;
+         addition_result_i_dd    <= addition_result_i_d;
+         subtraction_result_r_dd <= subtraction_result_r_d;
+         subtraction_result_i_dd <= subtraction_result_i_d;
+
          operand_r_1 <= mul_operand_r;
          operand_i_1 <= mul_operand_i;
          twiddle_r_1 <= mul_twiddle_r;
@@ -352,21 +357,21 @@ begin
                operand_0_i <= mul_bypass_i_dddddd;
                operand_1_i <= mul_result_i;
 
-               result_reg_0_r_next(to_integer(butterfly_counter_save)) <= addition_result_r_d;
-               result_reg_0_i_next(to_integer(butterfly_counter_save)) <= addition_result_i_d;
+               result_reg_0_r_next(to_integer(butterfly_counter_save)) <= addition_result_r_dd;
+               result_reg_0_i_next(to_integer(butterfly_counter_save)) <= addition_result_i_dd;
 
-               result_reg_0_r_next(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_r_d;
-               result_reg_0_i_next(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_i_d;
+               result_reg_0_r_next(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_r_dd;
+               result_reg_0_i_next(to_integer(butterfly_counter_save + butterfly_stage)) <= subtraction_result_i_dd;
 
                if butterfly_counter < 63 then
                   butterfly_counter_load <= increment_skip(butterfly_counter_load, butterfly_stage_counter);
                end if;
 
-               if butterfly_counter > 9 then
+               if butterfly_counter > 10 then
                   butterfly_counter_save <= increment_skip(butterfly_counter_save, butterfly_stage_counter);
                end if;
 
-               if butterfly_counter = 73 then
+               if butterfly_counter = 74 then
                   state <= fft_done;
 
                else

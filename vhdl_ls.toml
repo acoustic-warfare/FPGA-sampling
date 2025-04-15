@@ -97,6 +97,7 @@ lib.files = [
     "pl/test/tb_ema.vhd",
     "pl/src/decode/decode_ema_fft.vhd",
     "pl/src/decode/decode_ema.vhd",
+    "pl/test/tb_decode_ema_fft.vhd",
     "pl/test/tb_decode_ema.vhd",
     "pl/src/channelizer/transposed_folded_fir_dsp.vhd",
     "pl/src/channelizer/transposed_fir_dsp.vhd",
