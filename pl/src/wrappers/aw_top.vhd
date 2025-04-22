@@ -47,10 +47,20 @@ architecture structual of aw_top is
    signal chain_matrix_data        : matrix_4_16_24_type;
    signal chain_matrix_valid_array : std_logic_vector(3 downto 0);
 
-   signal fft_data_r_out : matrix_128_24_type;
-   signal fft_data_i_out : matrix_128_24_type;
-   signal fft_valid_out  : std_logic;
-   signal fft_mic_nr_out : std_logic_vector(7 downto 0);
+   signal fft_data_r : matrix_64_24_type;
+   signal fft_data_i : matrix_64_24_type;
+   signal fft_valid  : std_logic;
+   signal fft_mic_nr : std_logic_vector(7 downto 0);
+
+   signal subband_data_r : matrix_64_24_type;
+   signal subband_data_i : matrix_64_24_type;
+   signal subband_valid  : std_logic;
+   signal subband_nr     : std_logic_vector(7 downto 0);
+
+   signal decode_subband_nr : std_logic_vector(7 downto 0);
+   signal decode_data_r     : matrix_64_24_type;
+   signal decode_data_i     : matrix_64_24_type;
+   signal decode_data_valid : std_logic;
 
    signal pl_sample_counter : unsigned(23 downto 0);
 
@@ -84,15 +94,17 @@ begin
          ws_d  <= ws;
          ws_dd <= ws_d;
 
-         to_fifo_valid_d  <= fft_valid_out;
+         --to_fifo_valid_d  <= fft_valid_out;
+         to_fifo_valid_d  <= decode_data_valid;
          to_fifo_valid_dd <= to_fifo_valid_d;
 
-         to_fifo_header_d  <= fft_mic_nr_out & std_logic_vector(pl_sample_counter);
+         --to_fifo_header_d  <= fft_mic_nr_out & std_logic_vector(pl_sample_counter);
+         to_fifo_header_d  <= decode_subband_nr & std_logic_vector(pl_sample_counter);
          to_fifo_header_dd <= to_fifo_header_d;
 
-         for i in 0 to 127 loop
-            to_fifo_data_d(i * 2 + 0) <= fft_data_r_out(i);
-            to_fifo_data_d(i * 2 + 1) <= fft_data_i_out(i);
+         for i in 0 to 63 loop
+            to_fifo_data_d(i * 2 + 0) <= decode_data_r(i);
+            to_fifo_data_d(i * 2 + 1) <= decode_data_i(i);
          end loop;
 
          to_fifo_data_dd <= to_fifo_data_d;
@@ -100,7 +112,7 @@ begin
          if reset = '1' then
             pl_sample_counter <= (others => '0');
          else
-            if ws_edge = '1' then
+            if ws_edge = '1' and to_fifo_header_d(31 downto 24) = "00111111" then -- after mic 63 (0-63) count up 
                pl_sample_counter <= pl_sample_counter + 1;
             else
                pl_sample_counter <= pl_sample_counter;
@@ -231,10 +243,38 @@ begin
          rst                => reset,
          chain_matrix_x4    => chain_matrix_data,
          chain_matrix_valid => chain_matrix_valid_array(0),
-         fft_data_r_out     => fft_data_r_out,
-         fft_data_i_out     => fft_data_i_out,
-         fft_valid_out      => fft_valid_out,
-         fft_mic_nr_out     => fft_mic_nr_out
+         fft_data_r_out     => fft_data_r,
+         fft_data_i_out     => fft_data_i,
+         fft_valid_out      => fft_valid,
+         fft_mic_nr_out     => fft_mic_nr
+      );
+
+   mic_to_subband_inst : entity work.mic_to_subband
+      port map(
+         clk        => clk,
+         fft_data_r => fft_data_r,
+         fft_data_i => fft_data_i,
+         fft_valid  => fft_valid,
+         fft_mic_nr => fft_mic_nr,
+         data_r_out => subband_data_r,
+         data_i_out => subband_data_i,
+         valid_out  => subband_valid,
+         subband_nr => subband_nr
+      );
+
+   decode_ema_fft_inst : entity work.decode_ema_fft
+      port map(
+         clk                => clk,
+         rst                => reset,
+         switch             => sw_ff(1),
+         subband_nr         => subband_nr,
+         subband_data_r     => subband_data_r,
+         subband_data_i     => subband_data_i,
+         subband_data_valid => subband_valid,
+         decode_subband_nr  => decode_subband_nr,
+         decode_data_r      => decode_data_r,
+         decode_data_i      => decode_data_i,
+         decode_data_valid  => decode_data_valid
       );
 
    fifo_axi : entity work.fifo_axi

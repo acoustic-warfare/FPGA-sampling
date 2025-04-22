@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 SCALE_FACTOR = (1 << 16)  # Scale twiddle factors to integer values
-print("SCALE_FACTOR", SCALE_FACTOR)
+print("SCALE_FACTOR", SCALE_FACTOR, "\n")
 
 
 def twos_to_int(bin_str, bits=24):
@@ -127,15 +127,30 @@ INPUT_FILE = './python_scripts/fft/fft_input_data.txt'
 samples = load_samples(INPUT_FILE)
 twiddle_lut = generate_twiddle_factors(128)
 
+print()
+#window_lut = np.hanning(128)
+window_lut = np.hamming(128)
+window_lut_scaled = []
+for i in range(len(window_lut)):
+    window_lut_scaled.append(int(window_lut[i] * SCALE_FACTOR))
+
+window_lut_scaled_hex = [f"{(int(num) & 0x3FFFF):018b}" for num in window_lut_scaled[:64]]
+window_lut_scaled_hex_formatted = ", ".join([f'"{num}"' for num in window_lut_scaled_hex])
+print(
+    f'constant hann : hann_type := ({window_lut_scaled_hex_formatted});')
+
+
 num_batches = len(samples) // 128
 fft_results = []
-
 for i in range(1):
     batch = samples[i * 128:(i + 1) * 128]
+    for i in range(len(batch)):
+        batch[i] = int(batch[i] * window_lut[i])
     fft_output = fft_128_point(batch, twiddle_lut)
     fft_results.append(fft_output)
 
-np_fft_result = np.fft.fft(samples[:128])
+
+np_fft_result = np.fft.fft(samples[:128] * window_lut)
 
 plt.figure(figsize=(10, 5))
 
@@ -148,11 +163,11 @@ file_path = "./python_scripts/fft/tb_result.txt"
 
 # Read data from file
 data = np.loadtxt(file_path, dtype=np.float64)
-# real = data[128:256, 0]
-# imag = data[128:256, 1]
+real = data[256:384, 0]
+imag = data[256:384, 1]
 
-real = data[512:640, 0]
-imag = data[512:640, 1]
+# real = data[512:640, 0]
+# imag = data[512:640, 1]
 
 fft_tb_result = [complex(real[i], imag[i])
                  for i in range(min(len(real), len(imag)))]

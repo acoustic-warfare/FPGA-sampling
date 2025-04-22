@@ -24,12 +24,12 @@ architecture tb of tb_fft_controller is
     signal chain_matrix_x4    : matrix_4_16_24_type;
     signal chain_matrix_valid : std_logic := '0';
 
-    signal fft_data_r_out : matrix_128_24_type;
-    signal fft_data_i_out : matrix_128_24_type;
+    signal fft_data_r_out : matrix_64_24_type;
+    signal fft_data_i_out : matrix_64_24_type;
     signal fft_valid_out  : std_logic;
     signal fft_mic_nr_out : std_logic_vector(7 downto 0);
 
-    constant input_data_lenght : integer := 128 * 4;
+    constant input_data_lenght : integer := 128 * 2;
 
     type input_data_type is array (0 to input_data_lenght - 1) of std_logic_vector(23 downto 0);
     signal input_data : input_data_type;
@@ -86,8 +86,8 @@ begin
     begin
         if rising_edge(clk) then
             if fft_valid_out = '1' then
-                if fft_mic_nr_out = "00000111" then
-                    for s in 0 to 127 loop
+                if fft_mic_nr_out = std_logic_vector(to_unsigned(63, 8)) then
+                    for s in 0 to 63 loop
                         write(line_to_write, to_integer(signed(fft_data_r_out(s)))); -- setup line
                         STRING_WRITE(line_to_write, " ");                            -- setup line
                         write(line_to_write, to_integer(signed(fft_data_i_out(s)))); -- setup line

@@ -12,7 +12,7 @@ entity tb_aw_top is
 end entity;
 
 architecture tb of tb_aw_top is
-   constant C_CLK_CYKLE : time := 4 ns;
+   constant C_CLK_CYKLE : time := 8 ns;
 
    signal clk           : std_logic                     := '0';
    signal reset         : std_logic                     := '1';

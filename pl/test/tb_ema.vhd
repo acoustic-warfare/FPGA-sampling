@@ -52,7 +52,7 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -68,14 +68,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -84,14 +84,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -100,14 +100,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -116,14 +116,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -132,14 +132,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -148,14 +148,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -164,14 +164,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(10000, 32));
+            mic_data   <= std_logic_vector(to_unsigned(10000, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
@@ -180,14 +180,14 @@ begin
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= (others => '0');
-            mic_data   <= std_logic_vector(to_unsigned(1, 32));
+            mic_data   <= std_logic_vector(to_unsigned(1, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
             wait for 10 * C_CLK_CYKLE;
             mic_valid  <= '1';
             subband_in <= std_logic_vector(to_unsigned(1, 32));
-            mic_data   <= std_logic_vector(to_unsigned(0, 32));
+            mic_data   <= std_logic_vector(to_unsigned(0, 24));
             wait for 1 * C_CLK_CYKLE;
             mic_valid <= '0';
 
