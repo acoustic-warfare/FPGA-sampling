@@ -24,7 +24,7 @@ architecture rtl of decode_ema_fft is
 
    signal valid_subbands_0 : std_logic;
 
-   constant mask          : std_logic_vector(0 to 63) := "1111111111111111111111111111111111111111111111111111111111111111";
+   constant mask          : std_logic_vector(0 to 63) := "0011111111111111111111111111111111111111111111111111111111111111";
    signal mask_data_valid : std_logic;
 
    signal switch_d             : std_logic;

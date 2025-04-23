@@ -1,14 +1,14 @@
 {
   "signal": [
     { "name": "SCK", "wave":  "p.Pp.|...|...|...|.|...." },
-    { "name": "  WS", "wave": "01..0|...|...|...|.|...." },
+    { "name": "  WS", "wave": "01.0.|...|...|...|.|...." },
     {
       "name": " SD",
                       "wave": "x.3..|.x.|4..|.x.|5|...x",
       "data": ["TMD 0", "TDM 1", "TDM 15"]
     },
     {
-      "name": "cycles",
+      "name": "SD state",
                       "wave": "x.2..|.2.|2..|.2.|2|...x",
       "data": ["data 24", "wait 8", "data 24", "wait 8", "data 24"]
     },
