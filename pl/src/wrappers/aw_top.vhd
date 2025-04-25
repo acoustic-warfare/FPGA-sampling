@@ -10,7 +10,7 @@ entity aw_top is
       constant startup_length : integer := 5000000;
 
       constant bypass_filter  : std_logic := '0'; -- 0 = filters as normal, 1 = bypass filters
-      constant nr_filter_taps : integer   := 55;
+      constant nr_filter_taps : integer   := 71;
       constant nr_subbands    : integer   := 32;
 
       constant fifo_buffer_lenght : integer := 64 --lowerd from 128

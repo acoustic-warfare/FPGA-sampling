@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
 
-num_taps = 55  # Number of taps per filter
+num_taps = 71  # Number of taps per filter
 M = 32
 
 low_cutoff = 2 * 10**3
