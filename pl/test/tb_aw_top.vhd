@@ -16,7 +16,7 @@ architecture tb of tb_aw_top is
 
    signal clk           : std_logic                     := '0';
    signal reset         : std_logic                     := '1';
-   signal sw            : std_logic_vector(3 downto 0)  := (others => '0');
+   signal sw            : std_logic_vector(3 downto 0)  := "0010";
    signal btn           : std_logic_vector(3 downto 0)  := (others => '0');
    signal bit_stream    : std_logic_vector(15 downto 0) := (others => '0');
    signal ws            : std_logic_vector(7 downto 0);
@@ -75,29 +75,13 @@ begin
    begin
       test_runner_setup(runner, runner_cfg);
       while test_suite loop
-         if run("wave") then
+         if run("wave") or run("wave_full") or run("auto") then
             reset                  <= '1';
             btn_simulated_array(0) <= '1';
             wait for (C_CLK_CYKLE * 10);
             reset               <= '0';
             btn_simulated_array <= (others => '0');
             wait for (C_CLK_CYKLE * 1000000);
-
-         elsif run("wave_full") then -- this test case will take some time!
-            reset                  <= '1';
-            btn_simulated_array(0) <= '1';
-            wait for (C_CLK_CYKLE * 10);
-            reset               <= '0';
-            btn_simulated_array <= (others => '0');
-            wait for (C_CLK_CYKLE * 100000);
-
-         elsif run("auto") then
-            reset                  <= '1';
-            btn_simulated_array(0) <= '1';
-            wait for (C_CLK_CYKLE * 10);
-            reset               <= '0';
-            btn_simulated_array <= (others => '0');
-            wait for (C_CLK_CYKLE * 10000);
 
          end if;
       end loop;
