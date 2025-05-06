@@ -96,9 +96,8 @@ def db(x):
 # plt.ylabel("Sample")
 
 
-time_axis = np.arange(len(sample_counter)) / f_sampling * 64  # X-axis: Time = (bin_index / Fs) * FFT_size
-
-freq_axis = np.linspace(f_sampling / 2, 0, 64)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
+time_axis = np.arange(len(subband_data)) / f_sampling * 32 # X-axis: Time = (bin_index / Fs) * FFT_size
+freq_axis = np.linspace(f_sampling / 2, 0, 32)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
 
 plt.figure(1)
 plt.imshow(db(subband_data_power).T,
