@@ -89,11 +89,27 @@ def db(x):
     # x = np.where(x > 0, x, np.finfo(float).eps)  # Replace zeros and negatives with a very small positive value
     return 10 * np.log10(x)
 
+# plt.figure(0)
+# plt.imshow(db(subband_data_power), cmap='viridis', aspect='auto')
+# plt.colorbar()
+# plt.xlabel("Bin")
+# plt.ylabel("Sample")
 
-plt.imshow(db(subband_data_power), cmap='viridis', aspect='auto')
+
+time_axis = np.arange(len(sample_counter)) / f_sampling * 64  # X-axis: Time = (bin_index / Fs) * FFT_size
+
+freq_axis = np.linspace(f_sampling / 2, 0, 64)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
+
+plt.figure(1)
+plt.imshow(db(subband_data_power).T,
+           cmap='viridis',
+           aspect='auto',
+           extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
+
 plt.colorbar()
-plt.xlabel("Channel")
-plt.ylabel("Time")
+plt.xlabel("Time (s)")
+plt.ylabel("Frequency (Hz)")
+
 plt.show()
 
 nonzero_counts = count_nonzero_per_subband(subband_data)
