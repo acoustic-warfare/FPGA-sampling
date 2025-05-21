@@ -128,8 +128,11 @@ samples = load_samples(INPUT_FILE)
 twiddle_lut = generate_twiddle_factors(128)
 
 print()
-#window_lut = np.hanning(128)
+# window_lut = np.blackman(128)
+# window_lut = np.hanning(128)
 window_lut = np.hamming(128)
+# window_lut = np.ones(128) #rectangular
+
 window_lut_scaled = []
 for i in range(len(window_lut)):
     window_lut_scaled.append(int(window_lut[i] * SCALE_FACTOR))
@@ -137,7 +140,7 @@ for i in range(len(window_lut)):
 window_lut_scaled_hex = [f"{(int(num) & 0x3FFFF):018b}" for num in window_lut_scaled[:64]]
 window_lut_scaled_hex_formatted = ", ".join([f'"{num}"' for num in window_lut_scaled_hex])
 print(
-    f'constant hann : hann_type := ({window_lut_scaled_hex_formatted});')
+    f'constant window : window_type := ({window_lut_scaled_hex_formatted});')
 
 
 num_batches = len(samples) // 128

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 Fs = 48828.125  # Sampling Rate
 
-num_taps = 55  # Number of taps per filter
+num_taps = 71  # Number of taps per filter
 M = 32
 
 low_cutoff = 2 * 10**3
@@ -29,19 +29,18 @@ for center_frecuency in center_frequencies:
 plt.figure(figsize=(8, 6))
 
 # Plot floating-point response
-plt.subplot(2, 1, 1)
+# plt.subplot(2, 1, 1)
 for i in range(0, len(filters)):  # Plot a subset of filters
     w, h = signal.freqz(filters[i], worN=1024, fs=Fs)
     plt.plot(w, 20 * np.log10(abs(h) + 1e-12), label=f"Filter {i} ({center_frequencies[i]:.1f} Hz)")
 ylim1 = plt.gca().get_ylim()
-plt.legend()
 
 # Scale coefficients to fixed-point
 filters_scaled_all = []
 for filter in filters:
     max_scale = 2**11 / np.max(np.abs(filter))  # Scale to fit 12-bit range
     scale_factor = 2**int(np.floor(np.log2(max_scale)))  # Ensure power-of-2 scaling
-    print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
+    # print("scale_factor=2**", int(np.floor(np.log2(max_scale))))
 
     filter_scaled = np.round(filter * scale_factor).astype(np.int16)  # Keep int16 to avoid overflow
     filter_scaled = np.clip(filter_scaled, -2048, 2047)  # Ensure values fit in 12-bit range
@@ -49,13 +48,22 @@ for filter in filters:
 
     # filter fixed point for plot
     filter_fixed_point = filter_scaled / scale_factor
+#
+#     plt.subplot(2, 1, 2)
+#     w, h = signal.freqz(filter_fixed_point, worN=1024, fs=Fs)
+#     plt.plot(w, 20 * np.log10(abs(h) + 1e-12))
+#     plt.ylabel("Magnitude (dB)")
+#     plt.xlabel("Frequency (Hz)")
+#     plt.ylim(ylim1)
 
-    plt.subplot(2, 1, 2)
-    w, h = signal.freqz(filter_fixed_point, worN=1024, fs=Fs)
-    plt.plot(w, 20 * np.log10(abs(h) + 1e-12))
-    plt.ylabel("Magnitude (dB)")
-    plt.xlabel("Frequency (Hz)")
-    plt.ylim(ylim1)
+# plt.legend()
+plt.ylabel("Magnitude (dB)")
+plt.xlabel("Frequency (Hz)")
+plt.ylim(-50, 10)
+plt.xlim(0, Fs/2)
+
+plt.savefig("./recorded_data/images/subband_filter_magnitude_response.png")
+plt.savefig("./recorded_data/images/subband_filter_magnitude_response.pdf")
 
 plt.show()
 
@@ -85,4 +93,4 @@ def print_all_vhdl_format_folded(filters):
 
 
 # print_all_vhdl_format(np.array(filters_scaled_all))
-print_all_vhdl_format_folded(np.array(filters_scaled_all))
+# print_all_vhdl_format_folded(np.array(filters_scaled_all))

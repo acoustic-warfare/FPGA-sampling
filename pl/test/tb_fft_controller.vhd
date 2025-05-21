@@ -114,7 +114,7 @@ begin
                     chain_matrix_valid <= '1';
                     wait for (1 * C_CLK_CYKLE);
                     chain_matrix_valid <= '0';
-                    wait for (600 * C_CLK_CYKLE);
+                    wait for (800 * C_CLK_CYKLE);
 
                 end loop;
 

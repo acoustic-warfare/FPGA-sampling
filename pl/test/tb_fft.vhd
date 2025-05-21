@@ -122,7 +122,7 @@ begin
                valid_in <= '1';
                wait for (1 * C_CLK_CYKLE);
                valid_in <= '0';
-               wait for (600 * C_CLK_CYKLE);
+               wait for (800 * C_CLK_CYKLE);
 
             end loop;
 
