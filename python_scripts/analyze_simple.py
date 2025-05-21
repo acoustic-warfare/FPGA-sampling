@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v21/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:  # fft-channelizer fomat
@@ -79,8 +79,8 @@ plt.colorbar()
 plt.xlabel("Time (s)")
 plt.ylabel("Frequency (Hz)")
 
-plt.savefig("./recorded_data/images/" + fileChooser + ".png")
-plt.savefig("./recorded_data/images/" + fileChooser + ".pdf")
+plt.savefig("./recorded_data/v21/images/" + fileChooser + ".png")
+plt.savefig("./recorded_data/v21/images/" + fileChooser + ".pdf")
 
 average_magnitude = np.mean(result_array, axis=0)
 

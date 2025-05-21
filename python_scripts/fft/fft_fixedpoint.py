@@ -196,3 +196,12 @@ plt.colorbar()
 plt.xlabel("Channel")
 plt.ylabel("Time")
 plt.show()
+
+
+plt.figure(2)
+plt.plot(np.ones(128), label="ones")
+plt.plot(np.hanning(128), label="hanning")
+plt.plot(np.hamming(128), label="hamming")
+plt.plot(np.blackman(128), label="blackman")
+plt.legend()
+plt.show()

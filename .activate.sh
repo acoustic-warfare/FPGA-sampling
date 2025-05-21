@@ -77,6 +77,7 @@ alias run_test='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/run_test.s
 alias build='zsh $(git rev-parse --show-toplevel)/pl/scripts/other/build.sh'
 alias clean_vivado='sh pl/scripts/other/clean_vivado_files.sh'
 alias recive_and_plot='g++ python_scripts/udp_reciver.cpp && echo "recive_and_plot 5" | ./a.out && rm ./a.out && echo "recive_and_plot" | python3 python_scripts/post_process_recording.py && echo "recive_and_plot" | python3 python_scripts/analyze_simple.py'
+alias save_and_plot='g++ python_scripts/udp_reciver.cpp && ./a.out && rm ./a.out && python3 python_scripts/analyze_simple.py'
 
 echo -e '
 Welcome to Acustic Warfare!
