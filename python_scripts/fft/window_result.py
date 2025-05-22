@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v21/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:  # fft-channelizer format
@@ -34,7 +34,7 @@ def db(x):
 
 
 # List of input files
-input_file_names = ["4k_fft_rect", "4k_fft_hamm", "4k_fft_hann"]
+input_file_names = ["4k_rect", "4k_hann", "4k_hamm", "4k_black"]
 
 mic_nr = 0  # Choose the microphone index to process (e.g., 0–63)
 
@@ -64,13 +64,12 @@ for fileChooser in input_file_names:
     plt.plot(db(average_magnitude), label=fileChooser)
 
 # Final plot setup
-plt.title("Average Magnitude Response per Input File")
-plt.xlabel("Subband Index")
+plt.xlabel("Frequency bin")
 plt.ylabel("Magnitude (dB)")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
 
-plt.savefig("./recorded_data/images/window_result.png")
-plt.savefig("./recorded_data/images/window_result.pdf")
+plt.savefig("./recorded_data/v21/images/window_result.png")
+plt.savefig("./recorded_data/v21/images/window_result.pdf")
 plt.show()
