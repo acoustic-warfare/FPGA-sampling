@@ -66,10 +66,10 @@ def count_nonzero_per_subband(subband_data):
 
 # Main execution block
 print("Enter a file to plot: ")
-# fileChooser = input()
-fileChooser = "recive_and_plot"
-mic_nr = 35  # (0 - 63) Selecting microphone number 35
-
+fileChooser = input()
+# fileChooser = "recive_and_plot"
+mic_nr = 0  # (0 - 63) Selecting microphone number 35
+# v21/4k_subband_base
 # Load data
 mic_data, sample_counter, subband_info, f_sampling = load_data_FPGA(fileChooser)
 
@@ -96,11 +96,11 @@ def db(x):
 # plt.ylabel("Sample")
 
 
-time_axis = np.arange(len(subband_data)) / f_sampling * 32 # X-axis: Time = (bin_index / Fs) * FFT_size
+time_axis = np.arange(len(subband_data)) / f_sampling * 32  # X-axis: Time = (bin_index / Fs) * FFT_size
 freq_axis = np.linspace(f_sampling / 2, 0, 32)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
 
 plt.figure(1)
-plt.imshow(db(subband_data_power).T,
+plt.imshow(db(subband_data_power).T[::-1, :],
            cmap='viridis',
            aspect='auto',
            extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
