@@ -52,14 +52,15 @@ def process_mic_data(fileChooser, mic_nr=0):
 
 
 def db(x):
-    return 20 * np.log10(np.maximum(x, 1e-12))  # avoid log(0)
+    eps = 1e-12
+    return 10 * np.log10(x + eps)
 
 
 # === Configurable Settings ===
-file1 = "4k_subband_decode"
-file2 = "4k_fft_hamm_decode"
+file1 = "4k_subband_base"
+file2 = "4k_fft_hamm"
 
-freq_range1 = (2000, 20000)         # in Hz
+freq_range1 = (0, 48828.125 / 2)         # in Hz
 freq_range2 = (0, 48828.125 / 2)    # in Hz
 
 mic_nr = 0
@@ -99,9 +100,9 @@ avg1 = np.mean(data1, axis=0)
 avg2 = np.mean(data2, axis=0)
 
 plt.figure(figsize=(12, 5))
-plt.plot(freq_axis1[::-1], db(avg1), label=label1)
-plt.plot(freq_axis2[::-1], db(avg2), label=label2)
-plt.title("Average Magnitude vs Frequency (Flipped)")
+plt.plot(freq_axis1[::-1], db(avg1) - 20, label=label1)
+plt.plot(freq_axis2[::-1], db(avg2) - 20, label=label2)
+# plt.title("Average Magnitude vs Frequency (Flipped)")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude (dB)")
 plt.legend()

@@ -64,7 +64,8 @@ for i in range(len(mic_data_power_mic)):
 
 
 def db(x):
-    return 20 * np.log10(x)
+    eps = 1e-12
+    return 10 * np.log10(x + eps)
 
 time_axis = np.arange(len(result_array)) / f_sampling * nr_subbands  # X-axis: Time = (bin_index / Fs) * FFT_size
 freq_axis = np.linspace(f_sampling / 2, 0, nr_subbands)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
