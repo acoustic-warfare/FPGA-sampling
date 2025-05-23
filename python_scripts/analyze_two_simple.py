@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/v21/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v21_2/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:
@@ -32,11 +32,15 @@ def load_data_FPGA(fileChooser):
 def process_mic_data(fileChooser, mic_nr=0):
     mic_data, sample_counter, subband_info, f_sampling, nr_subbands = load_data_FPGA(fileChooser)
 
-    mic_data = mic_data[:, :128]
-    mic_data_real = mic_data[:, 0::2].astype(np.float32)
-    mic_data_imag = mic_data[:, 1::2].astype(np.float32)
+    if nr_subbands == 64:
+        mic_data = mic_data[:, :128]
+        mic_data_real = mic_data[:, 0::2].astype(np.float32)
+        mic_data_imag = mic_data[:, 1::2].astype(np.float32)
 
-    mic_data_power = mic_data_real**2 + mic_data_imag**2
+        mic_data_power = (mic_data_real**2 + mic_data_imag**2) / 2**0.5
+    else:
+        mic_data_power = (mic_data.astype(np.float32) ** 2)
+
     mic_data_power_mic = mic_data_power[:, mic_nr]
 
     unique_samples, inverse_indices = np.unique(sample_counter, return_inverse=True)
@@ -48,17 +52,24 @@ def process_mic_data(fileChooser, mic_nr=0):
         col = subband_info[i]
         result_array[row, col] = mic_data_power_mic[i]
 
-    return result_array, f_sampling, nr_subbands, len(mic_data), fileChooser
+    return result_array, f_sampling, nr_subbands, len(mic_data)
 
 
 def db(x):
     eps = 1e-12
-    return 10 * np.log10(x + eps)
+    return 20 * np.log10(x + eps)
 
 
 # === Configurable Settings ===
-file1 = "4k_subband_base"
-file2 = "4k_fft_hamm"
+#file1 = "4k_subband_0_24"
+#file2 = "4k_fft_hamm"
+
+file1 = "noise_subband_0_24"
+file2 = "noise_fft"
+
+label1 = "band-pass"
+label2 = "fft-based"
+
 
 freq_range1 = (0, 48828.125 / 2)         # in Hz
 freq_range2 = (0, 48828.125 / 2)    # in Hz
@@ -66,8 +77,8 @@ freq_range2 = (0, 48828.125 / 2)    # in Hz
 mic_nr = 0
 
 # === Process Files ===
-data1, fs1, bands1, len1, label1 = process_mic_data(file1, mic_nr)
-data2, fs2, bands2, len2, label2 = process_mic_data(file2, mic_nr)
+data1, fs1, bands1, len1 = process_mic_data(file1, mic_nr)
+data2, fs2, bands2, len2 = process_mic_data(file2, mic_nr)
 
 time_axis1 = np.arange(len(data1)) / fs1 * bands1
 time_axis2 = np.arange(len(data2)) / fs2 * bands2
@@ -92,24 +103,24 @@ axs[1].set_ylabel("Frequency (Hz)")
 plt.colorbar(im1, ax=axs[1])
 
 plt.tight_layout()
-plt.savefig(f"./recorded_data/v21/images/spectrogram_compare_{file1}_vs_{file2}.png")
-plt.savefig(f"./recorded_data/v21/images/spectrogram_compare_{file1}_vs_{file2}.pdf")
+plt.savefig(f"./recorded_data/v21_2/images/spectrogram_compare_{file1}_vs_{file2}.png")
+plt.savefig(f"./recorded_data/v21_2/images/spectrogram_compare_{file1}_vs_{file2}.pdf")
 
-# === Average Magnitude Plot (Flipped Frequency Axis) ===
+# === Average Magnitude Plot  Frequency Axis) ===
 avg1 = np.mean(data1, axis=0)
 avg2 = np.mean(data2, axis=0)
 
 plt.figure(figsize=(12, 5))
 plt.plot(freq_axis1[::-1], db(avg1) - 20, label=label1)
-plt.plot(freq_axis2[::-1], db(avg2) - 20, label=label2)
-# plt.title("Average Magnitude vs Frequency (Flipped)")
+plt.plot(freq_axis2[::-1], db(avg2) - 40, label=label2)
+# plt.title("Average Magnitude vs Frequency )")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude (dB)")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(f"./recorded_data/v21/images/avg_freq_response_flipped_{file1}_vs_{file2}.png")
-plt.savefig(f"./recorded_data/v21/images/avg_freq_response_flipped_{file1}_vs_{file2}.pdf")
+plt.savefig(f"./recorded_data/v21_2/images/avg_freq_response_{file1}_vs_{file2}.png")
+plt.savefig(f"./recorded_data/v21_2/images/avg_freq_response_{file1}_vs_{file2}.pdf")
 
 plt.show()
 

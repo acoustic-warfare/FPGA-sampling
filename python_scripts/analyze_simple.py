@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/v21/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v21_2/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:  # fft-channelizer fomat
@@ -41,13 +41,16 @@ mic_nr = 0  # (0 - 63) Selecting microphone number 35
 # Load data
 mic_data, sample_counter, subband_info, f_sampling, nr_subbands = load_data_FPGA(fileChooser)
 
-mic_data = mic_data[:, :128]
-mic_data_real = mic_data[:, 0::2]  # even indices: 0, 2, 4, ...
-mic_data_imag = mic_data[:, 1::2]  # odd indices: 1, 3, 5, ...
-mic_data_real = mic_data_real.astype(np.float32)
-mic_data_imag = mic_data_imag.astype(np.float32)
+if nr_subbands == 64:
+    mic_data = mic_data[:, :128]
+    mic_data_real = mic_data[:, 0::2]  # even indices: 0, 2, 4, ...
+    mic_data_imag = mic_data[:, 1::2]  # odd indices: 1, 3, 5, ...
+    mic_data_real = mic_data_real.astype(np.float32)
+    mic_data_imag = mic_data_imag.astype(np.float32)
 
-mic_data_power = mic_data_real**2 + mic_data_imag**2
+    mic_data_power = (mic_data_real**2 + mic_data_imag**2) / 2**0.5
+else:
+    mic_data_power = mic_data.astype(np.float32) ** 2
 
 mic_data_power_mic = mic_data_power[:, mic_nr]
 
@@ -65,29 +68,46 @@ for i in range(len(mic_data_power_mic)):
 
 def db(x):
     eps = 1e-12
-    return 10 * np.log10(x + eps)
+    return 20 * np.log10(x + eps)
+
 
 time_axis = np.arange(len(result_array)) / f_sampling * nr_subbands  # X-axis: Time = (bin_index / Fs) * FFT_size
-freq_axis = np.linspace(f_sampling / 2, 0, nr_subbands)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
+
+# freq_range = [0, f_sampling/2]
+freq_range = [3000, 5000]
+freq_axis = np.linspace(freq_range[1], freq_range[0], nr_subbands)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
 
 plt.figure(0)
-plt.imshow(db(result_array).T[::-1, :],  # [::-1, :] is to flip the y axis
-           cmap='viridis',
-           aspect='auto',
-           extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
+
+if nr_subbands == 64:
+    plt.imshow(db(result_array).T[::-1, :] - 20,  # [::-1, :] is to flip the y axis
+               cmap='viridis',
+               aspect='auto',
+               extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
+else:
+    plt.imshow(db(result_array).T[::-1, :] - 40,  # [::-1, :] is to flip the y axis
+               cmap='viridis',
+               aspect='auto',
+               extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
 
 plt.colorbar()
 plt.xlabel("Time (s)")
 plt.ylabel("Frequency (Hz)")
 
-plt.savefig("./recorded_data/v21/images/" + fileChooser + ".png")
-plt.savefig("./recorded_data/v21/images/" + fileChooser + ".pdf")
+plt.savefig("./recorded_data/v21_2/images/" + fileChooser + ".png")
+plt.savefig("./recorded_data/v21_2/images/" + fileChooser + ".pdf")
 
 average_magnitude = np.mean(result_array, axis=0)
 
 plt.figure(1)
-plt.plot(db(average_magnitude))
 
+if nr_subbands == 64:
+    plt.plot(db(average_magnitude) - 20)
+else:
+    plt.plot(db(average_magnitude) - 40)
+
+plt.savefig("./recorded_data/v21_2/images/" + fileChooser + "_average.png")
+plt.savefig("./recorded_data/v21_2/images/" + fileChooser + "_average.pdf")
 
 total_elements = result_array.size
 non_zero_elements = np.sum(result_array != 0)
