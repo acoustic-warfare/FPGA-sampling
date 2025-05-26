@@ -112,6 +112,7 @@ begin
          if reset = '1' then
             pl_sample_counter <= (others => '0');
          else
+            -- this could be alot better, but i guess it works :)
             if ws_edge = '1' and to_fifo_header_d(31 downto 24) = "00111111" then -- after mic 63 (0-63) count up 
                pl_sample_counter <= pl_sample_counter + 1;
             else
