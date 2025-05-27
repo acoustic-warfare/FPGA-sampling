@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/v21_2/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v22_2/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:
@@ -61,8 +61,8 @@ def db(x):
 
 
 # === Configurable Settings ===
-#file1 = "4k_subband_0_24"
-#file2 = "4k_fft_hamm"
+# file1 = "4k_subband_0_24"
+# file2 = "4k_fft_hamm"
 
 file1 = "noise_subband_0_24"
 file2 = "noise_fft"
@@ -103,8 +103,8 @@ axs[1].set_ylabel("Frequency (Hz)")
 plt.colorbar(im1, ax=axs[1])
 
 plt.tight_layout()
-plt.savefig(f"./recorded_data/v21_2/images/spectrogram_compare_{file1}_vs_{file2}.png")
-plt.savefig(f"./recorded_data/v21_2/images/spectrogram_compare_{file1}_vs_{file2}.pdf")
+plt.savefig(f"./recorded_data/v22_2/images/spectrogram_compare_{file1}_vs_{file2}.png")
+plt.savefig(f"./recorded_data/v22_2/images/spectrogram_compare_{file1}_vs_{file2}.pdf")
 
 # === Average Magnitude Plot  Frequency Axis) ===
 avg1 = np.mean(data1, axis=0)
@@ -119,8 +119,8 @@ plt.ylabel("Magnitude (dB)")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(f"./recorded_data/v21_2/images/avg_freq_response_{file1}_vs_{file2}.png")
-plt.savefig(f"./recorded_data/v21_2/images/avg_freq_response_{file1}_vs_{file2}.pdf")
+plt.savefig(f"./recorded_data/v22_2/images/avg_freq_response_{file1}_vs_{file2}.png")
+plt.savefig(f"./recorded_data/v22_2/images/avg_freq_response_{file1}_vs_{file2}.pdf")
 
 plt.show()
 

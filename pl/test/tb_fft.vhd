@@ -21,6 +21,8 @@ architecture tb of tb_fft is
    signal clk : std_logic := '1';
    signal rst : std_logic := '1';
 
+   signal clk_coutner : integer := 0;
+
    signal data_in    : matrix_128_24_type;
    signal valid_in   : std_logic                    := '0';
    signal mic_nr_in  : std_logic_vector(7 downto 0) := (others => '0');
@@ -63,7 +65,8 @@ architecture tb of tb_fft is
    end function;
 
 begin
-   clk <= not(clk) after C_CLK_CYKLE/2;
+   clk         <= not(clk) after C_CLK_CYKLE/2;
+   clk_coutner <= clk_coutner + 1 after C_CLK_CYKLE;
 
    input_data <= init_ram_bin;
 

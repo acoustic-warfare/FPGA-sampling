@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def load_data_FPGA(fileChooser):
     ROOT = os.getcwd()
-    path = Path(ROOT + "/recorded_data/v21_2/" + fileChooser + ".bin")
+    path = Path(ROOT + "/recorded_data/v22_2/" + fileChooser + ".bin")
     data = np.fromfile(path, dtype=np.int32, count=-1, offset=0)
 
     try:  # fft-channelizer fomat
@@ -75,6 +75,8 @@ time_axis = np.arange(len(result_array)) / f_sampling * nr_subbands  # X-axis: T
 
 # freq_range = [0, f_sampling/2]
 freq_range = [3000, 5000]
+# freq_range = [1000, f_sampling/2]
+
 freq_axis = np.linspace(freq_range[1], freq_range[0], nr_subbands)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
 
 plt.figure(0)
@@ -94,8 +96,8 @@ plt.colorbar()
 plt.xlabel("Time (s)")
 plt.ylabel("Frequency (Hz)")
 
-plt.savefig("./recorded_data/v21_2/images/" + fileChooser + ".png")
-plt.savefig("./recorded_data/v21_2/images/" + fileChooser + ".pdf")
+plt.savefig("./recorded_data/v22_2/images/" + fileChooser + ".png")
+plt.savefig("./recorded_data/v22_2/images/" + fileChooser + ".pdf")
 
 average_magnitude = np.mean(result_array, axis=0)
 
@@ -106,8 +108,8 @@ if nr_subbands == 64:
 else:
     plt.plot(db(average_magnitude) - 40)
 
-plt.savefig("./recorded_data/v21_2/images/" + fileChooser + "_average.png")
-plt.savefig("./recorded_data/v21_2/images/" + fileChooser + "_average.pdf")
+# plt.savefig("./recorded_data/v22_2/images/" + fileChooser + "_average.png")
+# plt.savefig("./recorded_data/v22_2/images/" + fileChooser + "_average.pdf")
 
 total_elements = result_array.size
 non_zero_elements = np.sum(result_array != 0)
