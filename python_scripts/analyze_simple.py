@@ -41,6 +41,8 @@ mic_nr = 0  # (0 - 63) Selecting microphone number 35
 # Load data
 mic_data, sample_counter, subband_info, f_sampling, nr_subbands = load_data_FPGA(fileChooser)
 
+print("nr_subbands", nr_subbands)
+
 if nr_subbands == 64:
     mic_data = mic_data[:, :128]
     mic_data_real = mic_data[:, 0::2]  # even indices: 0, 2, 4, ...
@@ -73,8 +75,13 @@ def db(x):
 
 time_axis = np.arange(len(result_array)) / f_sampling * nr_subbands  # X-axis: Time = (bin_index / Fs) * FFT_size
 
+if nr_subbands == 64:
+    freq_range = [0, f_sampling/2]
+else:
+    freq_range = [1000, f_sampling/2]
+
 # freq_range = [0, f_sampling/2]
-freq_range = [3000, 5000]
+# freq_range = [3000, 5000]
 # freq_range = [1000, f_sampling/2]
 
 freq_axis = np.linspace(freq_range[1], freq_range[0], nr_subbands)  # Y-axis: Frequency goes from f_sampling / 2 (top) to 0 (bottom)
@@ -82,7 +89,7 @@ freq_axis = np.linspace(freq_range[1], freq_range[0], nr_subbands)  # Y-axis: Fr
 plt.figure(0)
 
 if nr_subbands == 64:
-    plt.imshow(db(result_array).T[::-1, :] - 20,  # [::-1, :] is to flip the y axis
+    plt.imshow(db(result_array).T[::-1, :] - 40,  # [::-1, :] is to flip the y axis
                cmap='viridis',
                aspect='auto',
                extent=[time_axis[0], time_axis[-1], freq_axis[-1], freq_axis[0]])
@@ -99,14 +106,17 @@ plt.ylabel("Frequency (Hz)")
 plt.savefig("./recorded_data/v22_2/images/" + fileChooser + ".png")
 plt.savefig("./recorded_data/v22_2/images/" + fileChooser + ".pdf")
 
+
+plt.savefig("../ExJobb_Rapport/images/results/" + fileChooser + ".pdf")
+
 average_magnitude = np.mean(result_array, axis=0)
 
 plt.figure(1)
 
 if nr_subbands == 64:
-    plt.plot(db(average_magnitude) - 20)
+    plt.plot(db(average_magnitude))
 else:
-    plt.plot(db(average_magnitude) - 40)
+    plt.plot(db(average_magnitude))
 
 # plt.savefig("./recorded_data/v22_2/images/" + fileChooser + "_average.png")
 # plt.savefig("./recorded_data/v22_2/images/" + fileChooser + "_average.pdf")
