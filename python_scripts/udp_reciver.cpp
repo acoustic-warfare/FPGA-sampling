@@ -82,7 +82,7 @@ int main() {
 
   std::cout << "Enter filename for the recording: ";
   std::cin >> filename;
-  filename = "./recorded_data/v22_2/" + filename + ".bin";
+  filename = "./recorded_data/v22_3/" + filename + ".bin";
 
   // std::cout << "Enter time to record (seconds): ";
   // std::cin >> recordTime;
