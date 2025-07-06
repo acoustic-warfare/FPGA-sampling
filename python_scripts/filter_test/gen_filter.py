@@ -8,7 +8,7 @@ num_taps = 71  # Number of taps per filter
 M = 32
 
 low_cutoff = 2 * 10**3
-high_cutoff = 20 * 10**3
+high_cutoff = Fs/2
 filter_width = (high_cutoff - low_cutoff) / M
 
 center_frequencies = np.linspace(low_cutoff + filter_width/2, high_cutoff - filter_width/2, M, endpoint=True)
@@ -20,10 +20,21 @@ print("num_subbands", M)
 # Floating-point filter design
 filters = []
 for center_frecuency in center_frequencies:
-    low_edge = max(0.1, center_frecuency - filter_width/2)
-    high_edge = min(Fs / 2 - 0.1, center_frecuency + filter_width/2)
-    # print("low_edge:", low_edge, "  high_edge:", high_edge)
-    taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
+    low_edge = center_frecuency - filter_width / 2
+    high_edge = center_frecuency + filter_width / 2
+
+    # Clamp to valid range
+    low_edge = max(0.0, low_edge)
+    high_edge = min(Fs / 2, high_edge)
+
+    # Determine the type of filter needed
+    if low_edge <= 0.0:  # Low-pass filter
+        taps = signal.firwin(num_taps, high_edge, fs=Fs, pass_zero=True)
+    elif high_edge >= Fs / 2:  # High-pass filter
+        taps = signal.firwin(num_taps, low_edge, fs=Fs, pass_zero=False)
+    else:  # Band-pass filter
+        taps = signal.firwin(num_taps, [low_edge, high_edge], fs=Fs, pass_zero=False)
+
     filters.append(taps)
 
 plt.figure(figsize=(8, 6))

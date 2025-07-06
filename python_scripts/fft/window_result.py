@@ -47,7 +47,7 @@ for fileChooser in input_file_names:
     mic_data_real = mic_data[:, 0::2].astype(np.float32)
     mic_data_imag = mic_data[:, 1::2].astype(np.float32)
 
-    mic_data_power = mic_data_real**2 + mic_data_imag**2
+    mic_data_power = (mic_data_real**2 + mic_data_imag**2) / 2**0.5
     mic_data_power_mic = mic_data_power[:, mic_nr]
 
     unique_samples, inverse_indices = np.unique(sample_counter, return_inverse=True)
@@ -61,7 +61,7 @@ for fileChooser in input_file_names:
 
     # Compute average magnitude response for this file
     average_magnitude = np.mean(result_array, axis=0)
-    plt.plot(db(average_magnitude), label=fileChooser)
+    plt.plot(db(average_magnitude) - 20, label=fileChooser)
 
 # Final plot setup
 plt.xlabel("Frequency bin")
